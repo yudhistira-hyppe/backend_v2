@@ -116,12 +116,12 @@ export class PostContentService {
     var fullurl = headers.host + '/api/posts/createpost';
     var reqbody = JSON.parse(JSON.stringify(body));
     // reqbody['postContent'] = file;
-    
+
     //Create Response
     let CreatePostResponse_ = new CreatePostResponse();
     let Messages_ = new Messages();
     CreatePostResponse_.response_code = 204;
-    
+
     //Generate postID
     const postID = await this.utilService.generateId();
     body.postID = postID;
@@ -179,19 +179,19 @@ export class PostContentService {
 
     const mime = file.mimetype;
     if (mime.startsWith('video')) {
-      console.log('============================================== CREATE POST TYPE ' + body.postID +' ==============================================', mime);
+      console.log('============================================== CREATE POST TYPE ' + body.postID + ' ==============================================', mime);
       return this.createNewPostVideoV5(file, body, data_userbasics, fullurl);
     } else {
-      console.log('============================================== CREATE POST TYPE ' + body.postID +' ==============================================', mime);
+      console.log('============================================== CREATE POST TYPE ' + body.postID + ' ==============================================', mime);
       return this.createNewPostPictV5(file, body, data_userbasics, fullurl);
     }
   }
 
-  async createNewPostV4(file: Express.Multer.File, body: any, headers: any, url:string): Promise<CreatePostResponse> {
+  async createNewPostV4(file: Express.Multer.File, body: any, headers: any, url: string): Promise<CreatePostResponse> {
     var timestamps_start = await this.utilService.getDateTimeString();
     var reqbody = body;
     reqbody['postContent'] = file;
-    
+
     this.logger.log('createNewPost >>> start: ' + JSON.stringify(body));
     var res = new CreatePostResponse();
     res.response_code = 204;
@@ -600,6 +600,7 @@ export class PostContentService {
     Posts_._id = body.postID;
     Posts_.postID = body.postID;
     Posts_.postType = body.postType;
+
     Posts_.active = true;
     Posts_.email = data_userbasics.email;
     Posts_.createdAt = currentDate;
@@ -608,6 +609,9 @@ export class PostContentService {
     Posts_.expiration = Long.fromBigInt(generateExpired);
     if (body.musicId != undefined) {
       Posts_.musicId = new mongoose.Types.ObjectId(body.musicId);
+    }
+    if (body.stiker != undefined) {
+      Posts_.stiker = body.stiker;
     }
     if (body.description != undefined) {
       Posts_.description = body.description;
@@ -1534,7 +1538,7 @@ export class PostContentService {
     return res;
   }
 
-  private async createNewPostVideoV5(file: Express.Multer.File, body: any, data_userbasics: Userbasic, link:string): Promise<CreatePostResponse> {
+  private async createNewPostVideoV5(file: Express.Multer.File, body: any, data_userbasics: Userbasic, link: string): Promise<CreatePostResponse> {
     //Current Date
     const currentDate = await this.utilService.getDateTimeString();
     var reqbody = JSON.parse(JSON.stringify(body));
@@ -1544,7 +1548,7 @@ export class PostContentService {
 
     //Build Post
     let Posts_: Posts = await this.buildPost_(body, data_userbasics);
-    console.log('============================================== BUILD POST ' + Posts_._id +' ==============================================', JSON.stringify(Posts_));
+    console.log('============================================== BUILD POST ' + Posts_._id + ' ==============================================', JSON.stringify(Posts_));
     let contentMedias_ = [];
     if (Posts_.postType == 'vid') {
       //Set Metadata
@@ -2162,7 +2166,7 @@ export class PostContentService {
       let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: Posts_._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: body.width, height: body.height };
       Posts_.metadata = metadata;
       Posts_.active = true;
-      console.log('============================================== UPDATE POST MEDIAVIDEOS ' + Posts_._id +' ==============================================', JSON.stringify(Posts_));
+      console.log('============================================== UPDATE POST MEDIAVIDEOS ' + Posts_._id + ' ==============================================', JSON.stringify(Posts_));
       await this.postService.create(Posts_);
     } else if (namespace_ == 'mediapicts') {
       //Update Post mediapicts
@@ -2187,7 +2191,7 @@ export class PostContentService {
 
       //Update Post
       Posts_.active = true;
-      console.log('============================================== UPDATE POST MEDIAPICTS ' + Posts_._id +' ==============================================', JSON.stringify(Posts_));
+      console.log('============================================== UPDATE POST MEDIAPICTS ' + Posts_._id + ' ==============================================', JSON.stringify(Posts_));
       await this.postService.create(Posts_);
     } else if (namespace_ == 'mediastories') {
       //Update Post mediastories
@@ -2206,7 +2210,7 @@ export class PostContentService {
         Posts_.metadata = metadata;
       }
       Posts_.active = true;
-      console.log('============================================== UPDATE POST MEDIASTORIES ' + Posts_._id +' ==============================================', JSON.stringify(Posts_));
+      console.log('============================================== UPDATE POST MEDIASTORIES ' + Posts_._id + ' ==============================================', JSON.stringify(Posts_));
       await this.postService.create(Posts_);
 
       if (story.mediaType == 'video') {
@@ -2214,7 +2218,7 @@ export class PostContentService {
         let getApsara = await this.getVideoApsaraSingleNoDefinition(body.videoId);
         if (getApsara != undefined && getApsara.PlayUrl != undefined && getApsara.PlayUrl.length > 0) {
           let aim = getApsara.PlayUrl;
-        //Post Ceck Moderation
+          //Post Ceck Moderation
           this.cmodService.cmodVideo(body.postID, aim);
         }
       } else {
@@ -2224,7 +2228,7 @@ export class PostContentService {
         let getApsara = await this.getImageApsara(videoIdArray);
         if (getApsara != undefined && getApsara.ImageInfo != undefined && getApsara.ImageInfo.length > 0) {
           let aim = getApsara.ImageInfo[0];
-        //Post Ceck Moderation
+          //Post Ceck Moderation
           this.cmodService.cmodImage(body.postID, aim.URL);
         }
       }
@@ -2243,7 +2247,7 @@ export class PostContentService {
       let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: Posts_._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: meta.width, height: meta.height };
       Posts_.metadata = metadata;
       Posts_.active = true;
-      console.log('============================================== UPDATE POST MEDIADIARIES ' + Posts_._id +' ==============================================', JSON.stringify(Posts_));
+      console.log('============================================== UPDATE POST MEDIADIARIES ' + Posts_._id + ' ==============================================', JSON.stringify(Posts_));
       await this.postService.create(Posts_);
 
       //Get Video Apsara
@@ -3320,7 +3324,7 @@ export class PostContentService {
     return res;
   }
 
-  private async createNewPostPictV5(file: Express.Multer.File, body: any, data_userbasics: Userbasic, link:string): Promise<CreatePostResponse> {
+  private async createNewPostPictV5(file: Express.Multer.File, body: any, data_userbasics: Userbasic, link: string): Promise<CreatePostResponse> {
     //Current Date
     const currentDate = await this.utilService.getDateTimeString();
     var reqbody = JSON.parse(JSON.stringify(body));
@@ -3471,7 +3475,7 @@ export class PostContentService {
     //Generate Certified
     if (Posts_.certified) {
       this.generateCertificate(Posts_.postID.toString(), lang.toString());
-    } 
+    }
 
     //Create Post
     await this.PostsModel.create(Posts_);
@@ -3520,7 +3524,7 @@ export class PostContentService {
     PostData_.description = Posts_.description.toString();
     PostData_.email = Posts_.email.toString();
     PostData_.comment = [];
-    PostData_.comments = 0; 
+    PostData_.comments = 0;
     PostData_.reportedStatus = Posts_.reportedStatus;
 
     //PRIPACY
@@ -4146,7 +4150,7 @@ export class PostContentService {
   }
 
   async uploadOssProfile(buffer: Buffer, filename: string, userId: string) {
-    var result = await this.ossContentPictService.uploadFileBuffer(buffer, userId + "/profilePict/" + filename); 
+    var result = await this.ossContentPictService.uploadFileBuffer(buffer, userId + "/profilePict/" + filename);
     return result;
   }
 
@@ -4964,11 +4968,11 @@ export class PostContentService {
     var timestamps_start = await this.utilService.getDateTimeString();
     var fullurl = headers.host + "/api/posts/getuserposts/my";
     var setdata = {
-      "pageNumber":pageNumber,
-      "pageRow":pageRow,
+      "pageNumber": pageNumber,
+      "pageRow": pageRow,
     };
     var reqbody = JSON.parse(JSON.stringify(setdata));
-    
+
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
@@ -6916,9 +6920,9 @@ export class PostContentService {
     return xres;
   }
 
-  public async getVideoPlayAuth(ids: String, link:string, email:string): Promise<ApsaraPlayResponse> {
+  public async getVideoPlayAuth(ids: String, link: string, email: string): Promise<ApsaraPlayResponse> {
     var timestamps_start = await this.utilService.getDateTimeString();
-    
+
     this.logger.log('getVideoApsaraSingle >>> start: ' + ids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 
