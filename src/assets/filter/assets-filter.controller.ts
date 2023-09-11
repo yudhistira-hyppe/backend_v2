@@ -129,6 +129,7 @@ export class AssetsFilterController {
             var file_convert = null;
             file_convert = await sharp(imageFile.buffer, { failOnError: false }).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
 
+            
             //Generate Thumnail
             var image_information2 = await sharp(file_convert).metadata();
             var image_orientation2 = image_information2.orientation;
@@ -491,4 +492,99 @@ export class AssetsFilterController {
             response.download(null);
         }
     }
+
+    // @Get('image/:id')
+    // @HttpCode(HttpStatus.OK)
+    // async getImage(
+    //     @Param('id') id: string,
+    //     @Query('x-auth-token') token: string,
+    //     @Query('x-auth-user') email: string, @Res() response) {
+    //     console.log(id);
+    //     if ((id != undefined) && (token != undefined) && (email != undefined)) {
+    //         if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+    //             var assetsFilter = await this.assetsFilterService.findOne(id);
+    //             if (assetsFilter.mediaBasePath != undefined) {
+    //                 const path = assetsFilter.mediaBasePath.toString();
+    //                 var data = await this.ossService.readFile(path);
+    //                 if (data != null) {
+    //                     response.set("Content-Type", "image/jpeg");
+    //                     response.send(data);
+    //                 } else {
+    //                     response.send(null);
+    //                 }
+    //             } else {
+    //                 response.send(null);
+    //             }
+    //         } else {
+    //             response.send(null);
+    //         }
+    //     } else {
+    //         response.send(null);
+    //     }
+    // }
+
+    // @Get('image/thumb/:id')
+    // @HttpCode(HttpStatus.OK)
+    // async getImageThum(
+    //     @Param('id') id: string,
+    //     @Query('x-auth-token') token: string,
+    //     @Query('x-auth-user') email: string, @Res() response) {
+    //     if ((id != undefined) && (token != undefined) && (email != undefined)) {
+    //         if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+    //             var assetsFilter = await this.assetsFilterService.findOne(id);
+    //             if (assetsFilter.mediaThumBasePath != undefined) {
+    //                 const path = assetsFilter.mediaThumBasePath.toString();
+    //                 var data = await this.ossService.readFile(path);
+    //                 if (data != null) {
+    //                     response.set("Content-Type", "image/jpeg");
+    //                     response.send(data);
+    //                 } else {
+    //                     response.send(null);
+    //                 }
+    //             } else {
+    //                 response.send(null);
+    //             }
+    //         } else {
+    //             response.send(null);
+    //         }
+    //     } else {
+    //         response.send(null);
+    //     }
+    // }
+
+    // @Get('file/:id')
+    // @HttpCode(HttpStatus.OK)
+    // async getFile(
+    //     @Param('id') id: string,
+    //     @Query('x-auth-token') token: string,
+    //     @Query('x-auth-user') email: string, @Res() response) {
+    //     console.log(id);
+    //     if ((id != undefined) && (token != undefined) && (email != undefined)) {
+    //         if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+    //             var assetsFilter = await this.assetsFilterService.findOne(id);
+    //             if (assetsFilter.fileAssetUri != undefined) {
+    //                 http.get(assetsFilter.fileAssetUri.toString(), function (file) {
+    //                     response.setHeader('Content-disposition', 'attachment; filename=' + assetsFilter.fileAssetName);
+    //                     file.pipe(response);
+    //                 });
+    //                 // response.setHeader('Content-disposition', 'attachment; filename=' + assetsFilter.fileAssetName);
+    //                 // response.download(assetsFilter.fileAssetUri);
+    //                 // const path = assetsFilter.mediaBasePath.toString();
+    //                 // var data = await this.ossService.readFile(path);
+    //                 // if (data != null) {
+    //                 //     response.setHeader('Content-disposition', 'attachment; filename=' + assetsFilter.fileAssetName);
+    //                 //     response.download(data);
+    //                 // } else {
+    //                 //     response.download(null);
+    //                 // }
+    //             } else {
+    //                 response.download(null);
+    //             }
+    //         } else {
+    //             response.download(null);
+    //         }
+    //     } else {
+    //         response.download(null);
+    //     }
+    // }
 }

@@ -56,6 +56,8 @@ export class CreatePostsDto {
     isBoost: number;
     moderationReason: string;
     viewer: any[];
+    stiker: any[];
+    text: any[];
 }
 
 export class CreatePostResponse {

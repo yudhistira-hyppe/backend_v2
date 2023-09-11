@@ -700,6 +700,7 @@ export class ChallengeService {
                 null
               ]
           },
+          // listParticipant:1
         }
       },
       {
@@ -1162,11 +1163,25 @@ export class ChallengeService {
                                     "$notifikasiPush.akanDatang.title",0
                                 ]
                             },
+                            "titleEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.akanDatang.titleEN",0
+                                ]
+                            },
                             "description":
                             {
                                 "$arrayElemAt":
                                 [
                                     "$notifikasiPush.akanDatang.description",0
+                                ]
+                            },
+                            "descriptionEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.akanDatang.descriptionEN",0
                                 ]
                             },
                             "unit":
@@ -1269,11 +1284,25 @@ export class ChallengeService {
                                     "$notifikasiPush.challengeDimulai.title",0
                                 ]
                             },
+                            "titleEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.challengeDimulai.titleEN",0
+                                ]
+                            },
                             "description":
                             {
                                 "$arrayElemAt":
                                 [
                                     "$notifikasiPush.challengeDimulai.description",0
+                                ]
+                            },
+                            "descriptionEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.challengeDimulai.descriptionEN",0
                                 ]
                             },
                             "unit":
@@ -1338,11 +1367,25 @@ export class ChallengeService {
                                     "$notifikasiPush.updateLeaderboard.title",0
                                 ]
                             },
+                            "titleEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.updateLeaderboard.titleEN",0
+                                ]
+                            },
                             "description":
                             {
                                 "$arrayElemAt":
                                 [
                                     "$notifikasiPush.updateLeaderboard.description",0
+                                ]
+                            },
+                            "descriptionEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.updateLeaderboard.descriptionEN",0
                                 ]
                             },
                             "unit":
@@ -1536,11 +1579,25 @@ export class ChallengeService {
                                     "$notifikasiPush.challengeAkanBerakhir.title",0
                                 ]
                             },
+                            "titleEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.challengeAkanBerakhir.titleEN",0
+                                ]
+                            },
                             "description":
                             {
                                 "$arrayElemAt":
                                 [
                                     "$notifikasiPush.challengeAkanBerakhir.description",0
+                                ]
+                            },
+                            "descriptionEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.challengeAkanBerakhir.descriptionEN",0
                                 ]
                             },
                             "unit":
@@ -1643,11 +1700,25 @@ export class ChallengeService {
                                     "$notifikasiPush.challengeBerakhir.title",0
                                 ]
                             },
+                            "titleEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.challengeBerakhir.titleEN",0
+                                ]
+                            },
                             "description":
                             {
                                 "$arrayElemAt":
                                 [
                                     "$notifikasiPush.challengeBerakhir.description",0
+                                ]
+                            },
+                            "descriptionEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.challengeBerakhir.descriptionEN",0
                                 ]
                             },
                             "unit":
@@ -1750,11 +1821,25 @@ export class ChallengeService {
                                     "$notifikasiPush.untukPemenang.title",0
                                 ]
                             },
+                            "titleEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.untukPemenang.titleEN",0
+                                ]
+                            },
                             "description":
                             {
                                 "$arrayElemAt":
                                 [
                                     "$notifikasiPush.untukPemenang.description",0
+                                ]
+                            },
+                            "descriptionEN":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$notifikasiPush.untukPemenang.descriptionEN",0
                                 ]
                             },
                             "unit":
@@ -1847,6 +1932,26 @@ export class ChallengeService {
             {
                 "$last": "$session.session"
             },
+            //listParticipant:1,
+						// listParticipant:
+						// {
+						// 		"$reduce": 
+						// 		{
+            //         input: "$listParticipant",
+            //         initialValue: "",
+            //         in: 
+						// 				{ 
+						// 					$concat: 
+						// 					[ 
+						// 						"$$value",
+						// 						{
+						// 							"$toString":"$$this"
+						// 						},
+						// 						","
+						// 					] 
+						// 				}
+            //     }
+						// },
             session: 1
         }
       }

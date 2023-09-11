@@ -131,59 +131,11 @@ export class UserchallengesService {
                         $arrayElemAt: ["$subChallenge_data.session", 0]
                     },
                     "timenow": 1,
-                    // "status": {
-                    //     $cond: {
-                    //         if: {
-                    //             $and: [
-                    //                 {
-                    //                     $lte:
-                    //                         [
-                    //                             "$timenow",
-                    //                             "$endDatetime",
 
-                    //                         ]
-                    //                 },
-                    //                 {
-                    //                     $gte:
-                    //                         [
-                    //                             "$timenow",
-                    //                             "$startDatetime",
-
-                    //                         ]
-                    //                 },
-
-                    //             ]
-                    //         },
-                    //         then: "BERLANGSUNG",
-                    //         else:
-                    //         {
-                    //             $cond: {
-                    //                 if: {
-                    //                     $and: [
-                    //                         {
-                    //                             $lt:
-                    //                                 [
-                    //                                     "$endDatetime",
-                    //                                     "$timenow",
-                    //                                 ]
-                    //                         },
-
-                    //                     ]
-                    //                 },
-                    //                 else: "AKAN DATANG",
-                    //                 then: "BERAKHIR"
-                    //             }
-                    //         },
-                    //     }
-                    // },
 
                 }
             },
-            // {
-            //     $match: {
-            //         "status": "BERLANGSUNG"
-            //     }
-            // },
+
         ]);
         return query;
     }
@@ -293,6 +245,14 @@ export class UserchallengesService {
                     "isActive": 1,
                     "activity": 1,
                     "history": 1,
+                    "ranking":
+                    {
+                        "$ifNull":
+                            [
+                                "$ranking",
+                                0
+                            ]
+                    },
                     "session": {
                         $arrayElemAt: ["$subChallenge_data.session", 0]
                     },
@@ -329,6 +289,7 @@ export class UserchallengesService {
                     "activity": 1,
                     "history": 1,
                     "session": 1,
+                    "ranking": 1,
                     "nameChallenge": 1,
                     "notifikasiPush": 1,
                     "username": {
@@ -347,7 +308,8 @@ export class UserchallengesService {
                         endDatetime: "$endDatetime",
                         session: "$session",
                         nameChallenge: "$nameChallenge",
-                        notifikasiPush: "$notifikasiPush"
+                        notifikasiPush: "$notifikasiPush",
+
                     },
                     userID:
                     {
@@ -355,7 +317,8 @@ export class UserchallengesService {
                         {
                             "idUser": "$idUser",
                             "email": "$email",
-                            "username": "$username"
+                            "username": "$username",
+                            "ranking": "$ranking"
                         }
                     }
                 }

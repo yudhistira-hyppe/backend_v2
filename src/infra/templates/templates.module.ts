@@ -4,6 +4,7 @@ import { TemplatesService } from './templates.service';
 import { TemplatesController } from './templates.controller';
 import { ConfigModule } from '@nestjs/config';
 import { Templates, TemplatesSchema } from './schemas/templates.schema';
+
 @Module({
     imports: [
         ConfigModule.forRoot(),

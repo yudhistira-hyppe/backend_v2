@@ -14067,7 +14067,6 @@ export class TagCountService {
         return query;
     }
 
-
     async detailsearchcontenNew2(key: string, email: string, skip: number, limit: number, pict: any, vid: any, diary: any) {
 
 

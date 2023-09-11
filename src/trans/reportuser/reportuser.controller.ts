@@ -1581,7 +1581,8 @@ export class ReportuserController {
             } catch (e) {
                 datacount = null;
             }
-
+        
+            // reportedUserCount hanya mengambil data yang status nya true
             for (let i = 0; i < datacount.length; i++) {
                 let mycount = datacount[i].myCount;
                 let reason = datacount[i]._id;

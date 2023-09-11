@@ -45,13 +45,17 @@ export class Notifications {
   @Prop()
   contentEventID: String
   @Prop()
-  postID: String  
+  postID: String
   @Prop([])
   devices: any[]
   @Prop()
   actionButtons: String
   @Prop()
   deviceType: String
+  @Prop()
+  templateID: mongoose.Types.ObjectId;
+  @Prop([])
+  statusDevices: any[]
 }
 
 export const NotificationsSchema = SchemaFactory.createForClass(Notifications);

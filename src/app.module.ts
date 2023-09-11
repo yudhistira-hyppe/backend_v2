@@ -113,8 +113,13 @@ import { AdsTypesModule } from './trans/adsv2/adstype/adstype.module';
 import { AdsObjectivitasModule } from './trans/adsv2/adsobjectivitas/adsobjectivitas.module';
 import { VoucherpromoModule } from './trans/adsv2/voucherpromo/voucherpromo.module';
 
+import { BannerModule } from './trans/banner/banner.module';
+import { MediastikerModule } from './content/mediastiker/mediastiker.module';
+import { StickerCategoryModule } from './trans/stickercategory/stickercategory.module';
 @Module({
   imports: [
+    BannerModule,
+    MediastikerModule,
     VoucherpromoModule,
     AdslogsModule,
     Adsv2Module,
@@ -248,6 +253,7 @@ import { VoucherpromoModule } from './trans/adsv2/voucherpromo/voucherpromo.modu
     Settings2Module,
     JenischallengeModule,
     BadgeModule,
+    StickerCategoryModule,
     //  ChallengeModule
   ], providers: [],
 })

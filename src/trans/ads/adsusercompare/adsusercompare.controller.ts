@@ -268,7 +268,8 @@ export class AdsUserCompareController {
 
         var current_date = await this.utilsService.getDateTimeString();
         //const data_ads = await this.adsService.findAds(headers['x-auth-user'], type_);
-        const data_ads = await this.adsService.findAdsNew(headers['x-auth-user'], data_userbasic._id.toString(), type_);
+        //const data_ads = await this.adsService.findAdsNew(headers['x-auth-user'], data_userbasic._id.toString(), type_);
+        const data_ads = await this.adsService.findAds(headers['x-auth-user'], data_userbasic._id.toString(), type_);
         console.log(data_ads);
         var genIdUserAds = new mongoose.Types.ObjectId();
         if (await this.utilsService.ceckData(data_ads)) {
@@ -1307,11 +1308,5 @@ export class AdsUserCompareController {
                 'Unabled to proceed Ads not found',
             );
         }
-    }
-
-    @Get('/user/test/')
-    @HttpCode(HttpStatus.ACCEPTED)
-    async test(){
-        return await this.adsService.findAdsNewTest("randyaji.ra@gmail.com", "62144383602c354635ed786b", "In App Ads");
     }
 }

@@ -1159,6 +1159,7 @@ export class ContenteventsController {
             //   this.userChallengeView(iduser.toString(), idevent1.toString(), "contentevents", "VIEW", request.body.postID);
             // }
             //  this.userChallengeViewv2(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+            this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
             await this.postsService.updateView(email_receiverParty, request.body.postID);
             await this.insightsService.updateViews(email_receiverParty);
           } catch (error) {
@@ -1227,7 +1228,7 @@ export class ContenteventsController {
                 error,
               );
             }
-            //this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+            this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
           }
 
         }
@@ -1312,6 +1313,7 @@ export class ContenteventsController {
           //   this.userChallengeLike(iduser.toString(), idevent1.toString(), "contentevents", "LIKE", request.body.postID);
           // }
           //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+          this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
@@ -1344,6 +1346,7 @@ export class ContenteventsController {
             //   this.userChallengeUnLike(iduser.toString(), idevent1.toString(), "contentevents", "UNLIKE", request.body.postID);
             // }
             // this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+            this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
             var timestamps_end = await this.utilsService.getDateTimeString();
@@ -1366,6 +1369,7 @@ export class ContenteventsController {
             let event1 = ceck_data_DONE.eventType.toString();
             // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
             // this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+            this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
@@ -1402,6 +1406,7 @@ export class ContenteventsController {
           //   this.userChallengeUnLike(iduser.toString(), idevent1.toString(), "contentevents", "UNLIKE", request.body.postID);
           // }
           //this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+          this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
@@ -1435,6 +1440,7 @@ export class ContenteventsController {
               // }
 
               //this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+              this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -1465,6 +1471,7 @@ export class ContenteventsController {
               // }
 
               //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+              this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -1493,14 +1500,14 @@ export class ContenteventsController {
           let idevent1 = ceck_data_FOLLOWING._id;
           //await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNFOLLOW", userbasic1._id);
 
-          // const databasic = await this.userbasicsService.findOne(
-          //   email_user
-          // );
-          // var iduser = null;
-          // if (databasic !== null) {
-          //   iduser = databasic._id;
-          //   this.userChallengeUnFollow(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW");
-          // }
+          const databasic = await this.userbasicsService.findOne(
+            email_user
+          );
+          var iduser = null;
+          if (databasic !== null) {
+            iduser = databasic._id;
+            this.userChallengeUnFollow(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW");
+          }
 
           this.checkFriendbasedString(email_user, email_receiverParty, "delete");
         } catch (error) {
@@ -2074,7 +2081,7 @@ export class ContenteventsController {
         if (tagar != undefined && tagar != "") {
 
           try {
-            datatag = await this.tagCountService.listag(tagar.toLowerCase());
+            datatag = await this.tagCountService.listag(tagar);
           } catch (e) {
             datatag = null;
           }
@@ -2327,7 +2334,7 @@ export class ContenteventsController {
         if (tagar != undefined && tagar != "") {
 
           try {
-            datatag = await this.tagCountService.listag(tagar.toLowerCase());
+            datatag = await this.tagCountService.listag(tagar);
           } catch (e) {
             datatag = null;
           }
@@ -2582,7 +2589,7 @@ export class ContenteventsController {
         if (tagar != undefined && tagar != "") {
 
           try {
-            datatag = await this.tagCountService.listag(tagar.toLowerCase());
+            datatag = await this.tagCountService.listag(tagar);
           } catch (e) {
             datatag = null;
           }
@@ -2943,7 +2950,7 @@ export class ContenteventsController {
         if (tagar != undefined && tagar != "") {
 
           try {
-            datatag = await this.tagCountService.listag(tagar.toLowerCase());
+            datatag = await this.tagCountService.listag(tagar);
           } catch (e) {
             datatag = null;
           }
@@ -3233,7 +3240,7 @@ export class ContenteventsController {
         if (tagar != undefined && tagar != "") {
 
           try {
-            datatag = await this.tagCountService.listag(tagar.toLowerCase());
+            datatag = await this.tagCountService.listag(tagar);
           } catch (e) {
             datatag = null;
           }
@@ -3524,7 +3531,7 @@ export class ContenteventsController {
         if (tagar != undefined && tagar != "") {
 
           try {
-            datatag = await this.tagCountService.listag(tagar.toLowerCase());
+            datatag = await this.tagCountService.listag(tagar);
           } catch (e) {
             datatag = null;
           }
@@ -3828,7 +3835,7 @@ export class ContenteventsController {
         if (tagar != undefined && tagar != "") {
 
           try {
-            datatag = await this.tagCountService.listag(tagar.toLowerCase());
+            datatag = await this.tagCountService.listag(tagar);
           } catch (e) {
             datatag = null;
           }
@@ -4274,7 +4281,7 @@ export class ContenteventsController {
         if (tagar != undefined && tagar != "") {
 
           try {
-            datatag = await this.tagCountService.listag(tagar.toLowerCase());
+            datatag = await this.tagCountService.listag(tagar);
           } catch (e) {
             datatag = null;
           }
@@ -4723,7 +4730,7 @@ export class ContenteventsController {
         if (tagar != undefined && tagar != "") {
 
           try {
-            datatag = await this.tagCountService.listag(tagar.toLowerCase());
+            datatag = await this.tagCountService.listag(tagar);
           } catch (e) {
             datatag = null;
           }

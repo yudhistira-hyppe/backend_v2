@@ -35,12 +35,15 @@ import { BanksModule } from '../trans/banks/banks.module';
 import { DeepArModule } from '../trans/deepar/deepar.module';
 import { UserscoresModule } from '../trans/userscores/userscores.module';
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
+import { ScheduleModule } from '@nestjs/schedule';
 import { Settings2Schema, SettingsMixed } from 'src/trans/settings2/schemas/settings2.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
     LogapisModule,
+    UserbasicsModule,
+    ScheduleModule,
     UserscoresModule,
     DeepArModule,
     BanksModule,

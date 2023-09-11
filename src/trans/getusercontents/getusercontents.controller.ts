@@ -1837,7 +1837,8 @@ export class GetusercontentsController {
         };
 
         try {
-            datadetail = await this.getusercontentsService.detailcontent(postID, page, limit);
+            // datadetail = await this.getusercontentsService.detailcontent(postID, page, limit);
+            datadetail = await this.getusercontentsService.detailcontent2(postID, page, limit);
             lengdetail = datadetail.length;
         } catch (e) {
             datadetail = null;
@@ -5858,6 +5859,71 @@ export class GetusercontentsController {
         return { response_code: 202, data: picts, version: version.toString(), version_ios: (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString(), messages };
     }
 
+    async testSend(limit: number, postID: string, titlein: string, bodyin: string, type: string, emailuser: any[]) {
+        var email = null;
+        var datacount = null;
+        var totalall = 0;
+
+        if (type != undefined && type == "ALL") {
+            try {
+                datacount = await this.userbasicsService.getcount();
+                totalall = datacount[0].totalpost / limit;
+            } catch (e) {
+                datacount = null;
+                totalall = 0;
+            }
+            var totalpage = 0;
+            var tpage2 = (totalall).toFixed(0);
+            var tpage = (totalall % limit);
+            if (tpage > 0 && tpage < 5) {
+                totalpage = parseInt(tpage2) + 1;
+
+            } else {
+                totalpage = parseInt(tpage2);
+            }
+
+            console.log(totalpage);
+
+            for (let x = 0; x < totalpage; x++) {
+                var data = await this.userbasicsService.getuser(x, limit);
+                for (var i = 0; i < data.length; i++) {
+                    email = data[i].email;
+                    console.log('data ke-' + i);
+                    try {
+                        console.log(i);
+                        //await this.friendlistService.create(data[i]);
+
+                        this.sendInteractiveFCM(email, postID, titlein, bodyin);
+                    }
+                    catch (e) {
+                        //await this.friendlistService.update(data[i]._id, data[i]);
+                    }
+                }
+            }
+        }
+        else if (type != undefined && type == "OPTION") {
+            if (emailuser !== undefined && emailuser.length > 0) {
+
+
+                for (var i = 0; i < emailuser.length; i++) {
+                    email = emailuser[i];
+                    console.log('data ke-' + i);
+                    try {
+                        console.log(i);
+                        //await this.friendlistService.create(data[i]);
+
+                        this.sendInteractiveFCM(email, postID, titlein, bodyin);
+                    }
+                    catch (e) {
+                        //await this.friendlistService.update(data[i]._id, data[i]);
+                    }
+                }
+
+            }
+        }
+
+
+    }
 
     @Post('api/getusercontents/landingpage')
     @UseGuards(JwtAuthGuard)
@@ -5919,7 +5985,7 @@ export class GetusercontentsController {
 
         try {
             // data = await this.postsService.landingpage(email, type, skip, limit);
-            data = await this.postsService.landingpage4(email, type, skip, limit);
+            data = await this.postsService.landingpage5(email, type, skip, limit);
             lengpict = data.length;
 
         } catch (e) {
@@ -6186,72 +6252,81 @@ export class GetusercontentsController {
         return { response_code: 202, messages };
     }
 
+    // @UseGuards(JwtAuthGuard)
+    // //@Get('api/getusercontents/musiccard')
+    // @Get('api/musiccard/')
+    // async getMusicCard(@Headers() headers) {
+    //     const data = await this.getusercontentsService.getmusicCard();
 
-    async testSend(limit: number, postID: string, titlein: string, bodyin: string, type: string, emailuser: any[]) {
-        var email = null;
-        var datacount = null;
-        var totalall = 0;
+    //     //CREATE ARRAY APSARA THUMNAIL
+    //     let thumnail_data_artist: string[] = [];
+    //     for (let i = 0; i < data[0].artistPopuler.length; i++) {
+    //         let data_item = data[0].artistPopuler[i];
+    //         if (data_item._id.apsaraThumnail != undefined && data_item._id.apsaraThumnail != "" && data_item._id.apsaraThumnail != null) {
+    //             thumnail_data_artist.push(data_item._id.apsaraThumnail.toString());
+    //         }
+    //     }
+    //     let thumnail_data_music: string[] = [];
+    //     for (let i = 0; i < data[0].musicPopuler.length; i++) {
+    //         let data_item = data[0].musicPopuler[i];
+    //         if (data_item._id.apsaraThumnail != undefined && data_item._id.apsaraThumnail != "" && data_item._id.apsaraThumnail != null) {
+    //             thumnail_data_music.push(data_item._id.apsaraThumnail.toString());
+    //         }
+    //     }
 
-        if (type != undefined && type == "ALL") {
-            try {
-                datacount = await this.userbasicsService.getcount();
-                totalall = datacount[0].totalpost / limit;
-            } catch (e) {
-                datacount = null;
-                totalall = 0;
-            }
-            var totalpage = 0;
-            var tpage2 = (totalall).toFixed(0);
-            var tpage = (totalall % limit);
-            if (tpage > 0 && tpage < 5) {
-                totalpage = parseInt(tpage2) + 1;
+    //     //GET DATA APSARA THUMNAIL
+    //     var dataApsaraThumnail_artist = await this.mediamusicService.getImageApsara(thumnail_data_artist);
+    //     var dataApsaraThumnail_music = await this.mediamusicService.getImageApsara(thumnail_data_music);
 
-            } else {
-                totalpage = parseInt(tpage2);
-            }
+    //     var data_artist = await Promise.all(data[0].artistPopuler.map(async (item, index) => {
+    //         //APSARA THUMNAIL
+    //         var apsaraThumnailUrl = null
+    //         if (item._id.apsaraThumnail != undefined && item._id.apsaraThumnail != "" && item._id.apsaraThumnail != null) {
+    //             apsaraThumnailUrl = dataApsaraThumnail_artist.ImageInfo.find(x => x.ImageId == item._id.apsaraThumnail).URL;
+    //         }
 
-            console.log(totalpage);
+    //         return {
+    //             _id: {
+    //                 artistName: item._id.artistName,
+    //                 apsaraMusic: item._id.apsaraMusic,
+    //                 apsaraThumnail: item._id.apsaraThumnail,
+    //                 apsaraThumnailUrl: apsaraThumnailUrl
+    //             }
+    //         };
+    //     }));
 
-            for (let x = 0; x < totalpage; x++) {
-                var data = await this.userbasicsService.getuser(x, limit);
-                for (var i = 0; i < data.length; i++) {
-                    email = data[i].email;
-                    console.log('data ke-' + i);
-                    try {
-                        console.log(i);
-                        //await this.friendlistService.create(data[i]);
+    //     var data_music = await Promise.all(data[0].musicPopuler.map(async (item, index) => {
+    //         //APSARA THUMNAIL
+    //         var apsaraThumnailUrl = null
+    //         if (item._id.apsaraThumnail != undefined && item._id.apsaraThumnail != "" && item._id.apsaraThumnail != null) {
+    //             apsaraThumnailUrl = dataApsaraThumnail_music.ImageInfo.find(x => x.ImageId == item._id.apsaraThumnail).URL;
+    //         }
 
-                        this.sendInteractiveFCM(email, postID, titlein, bodyin);
-                    }
-                    catch (e) {
-                        //await this.friendlistService.update(data[i]._id, data[i]);
-                    }
-                }
-            }
-        }
-        else if (type != undefined && type == "OPTION") {
-            if (emailuser !== undefined && emailuser.length > 0) {
+    //         return {
+    //             _id: {
+    //                 musicTitle: item._id.musicTitle,
+    //                 apsaraMusic: item._id.apsaraMusic,
+    //                 apsaraThumnail: item._id.apsaraThumnail,
+    //                 apsaraThumnailUrl: apsaraThumnailUrl
+    //             }
+    //         };
+    //     }));
 
-
-                for (var i = 0; i < emailuser.length; i++) {
-                    email = emailuser[i];
-                    console.log('data ke-' + i);
-                    try {
-                        console.log(i);
-                        //await this.friendlistService.create(data[i]);
-
-                        this.sendInteractiveFCM(email, postID, titlein, bodyin);
-                    }
-                    catch (e) {
-                        //await this.friendlistService.update(data[i]._id, data[i]);
-                    }
-                }
-
-            }
-        }
+    //     data[0].artistPopuler = data_artist;
+    //     data[0].musicPopuler = data_music;
 
 
-    }
+    //     var Response = {
+    //         response_code: 202,
+    //         data: data,
+    //         messages: {
+    //             info: [
+    //                 "Retrieved music card succesfully"
+    //             ]
+    //         }
+    //     }
+    //     return Response;
+    // }
 
     @UseGuards(JwtAuthGuard)
     //@Get('api/getusercontents/musiccard')

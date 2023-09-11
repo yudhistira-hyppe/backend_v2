@@ -114,6 +114,10 @@ export class Posts {
   moderationReason: string;
   @Prop()
   viewer: any[];
+  @Prop()
+  stiker: any[];
+  @Prop()
+  text: any[];
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

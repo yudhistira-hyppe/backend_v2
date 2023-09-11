@@ -18,12 +18,14 @@ import { notifChallenge, notifChallengeSchema } from './schemas/notifChallenge.s
 import { notifChallengeService } from './notifChallenge.service';
 import { UserbadgeModule } from '../userbadge/userbadge.module';
 import { LogapisModule } from '../logapis/logapis.module';
+import { LanguagesModule } from '../../infra/languages/languages.module';
 @Module({
   imports: [
     LogapisModule,
     ConfigModule.forRoot(),
     OssModule,
     UserbadgeModule,
+    LanguagesModule,
     UtilsModule,
     BadgeModule,
     UserchallengesModule,

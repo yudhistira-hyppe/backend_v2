@@ -22,4 +22,5 @@ export class CreateChallengeDto {
     bannerSearch: any[];
     popUp: any[];
     notifikasiPush: any[];
+    listParticipant: any[];
 }

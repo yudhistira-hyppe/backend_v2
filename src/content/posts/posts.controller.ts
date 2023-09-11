@@ -49,6 +49,8 @@ import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.serv
 import { Postchallenge } from 'src/trans/postchallenge/schemas/postchallenge.schema';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 
+import { MediastikerService } from 'src/content/mediastiker/mediastiker.service';
+import { CountstikerService } from 'src/content/mediastiker/countstiker.service';
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -75,8 +77,10 @@ export class PostsController {
     private readonly userchallengesService: UserchallengesService,
     private readonly challengeService: ChallengeService,
     private readonly postchallengeService: PostchallengeService,
-    private readonly methodepaymentsService: MethodepaymentsService,
-    private readonly logapiSS: LogapisService) { }
+    private readonly logapiSS: LogapisService,
+    private readonly MediastikerService: MediastikerService,
+    private readonly CountstikerService: CountstikerService,
+    private readonly methodepaymentsService: MethodepaymentsService) { }
 
   @Post()
   async create(@Body() CreatePostsDto: CreatePostsDto) {
@@ -1808,7 +1812,90 @@ export class PostsController {
   async createPostV4new(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     console.log('============================================== CREATE POST HEADERS ==============================================', JSON.stringify(headers));
     console.log('============================================== CREATE POST BODY ==============================================', JSON.stringify(body));
+    if (body.stiker !== undefined && body.image !== undefined && body.type !== undefined && body.position !== undefined) {
+
+      var arrayStiker = [];
+      var stiker = body.stiker;
+
+      var splitstiker = stiker.toString();
+      var splitreq2stiker = splitstiker.split(',');
+
+
+      var image = body.image;
+      var splitimage = image.toString();
+      var splitreq2image = splitimage.split(',');
+
+      var type = body.type;
+      var splittype = type.toString();
+      var splitreq2type = splittype.split(',');
+
+      var position = body.position;
+      var splitposition = position.toString();
+      var splitreq2position = splitposition.split('#');
+
+      if (splitreq2stiker.length !== splitreq2image.length && splitreq2stiker.length !== splitreq2type.length && splitreq2stiker.length !== splitreq2position.length) {
+        throw new BadRequestException("Unabled to proceed,the amount of data must be the same");
+      } else {
+        for (var i = 0; i < splitreq2stiker.length; i++) {
+          let id = splitreq2stiker[i];
+          let image = splitreq2image[i];
+          let type = splitreq2type[i];
+          let position = splitreq2position[i];
+          var ids = new mongoose.Types.ObjectId(id);
+          let arrayPosition = [];
+          let splitpos = position.split(',');
+          for (let x = 0; x < splitpos.length; x++) {
+            var num = parseFloat(splitpos[x]);
+            arrayPosition.push(num);
+          }
+
+          var obj = {
+            "_id": ids,
+            "image": image,
+            "position": arrayPosition,
+            "type": type
+          };
+          arrayStiker.push(obj);
+        }
+        body.stiker = arrayStiker;
+
+
+      }
+    }
+
+    if (body.text !== undefined) {
+
+      var arraytext = [];
+      var text = body.text;
+
+      var splitreqtext = text.toString();
+      var splitreq2text = splitreqtext.split(',');
+
+      for (var i = 0; i < splitreq2text.length; i++) {
+        let idtext = splitreq2text[i];
+        arraytext.push(idtext);
+      }
+      body.text = arraytext;
+    }
     var data = await this.postContentService.createNewPostV5(file, body, headers);
+
+    if (data !== undefined && data !== null) {
+      var stiker = data.data.stiker;
+      this.updateused(stiker, "used");
+    }
+
+    // var postID = data.data.postID;
+
+    // var email = data.data.email;
+
+    // const databasic = await this.userbasicsService.findOne(
+    //   email
+    // );
+    // var iduser = null;
+    // if (databasic !== null) {
+    //   iduser = databasic._id;
+    //   this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
+    // }
     return data;
   }
 
@@ -3816,5 +3903,8 @@ export class PostsController {
     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
 
     return Response;
+  }
+  async updateused(list: any[], target: string) {
+    await this.CountstikerService.updatedata(list, target);
   }
 }

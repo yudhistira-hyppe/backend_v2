@@ -1747,6 +1747,44 @@ export class AuthService {
             data_CreateUserbasicDto.createdAt = current_date;
             data_CreateUserbasicDto.updatedAt = current_date;
             data_CreateUserbasicDto.statusKyc = 'unverified';
+            data_CreateUserbasicDto.tutor = [
+              {
+                key: "protection",
+                status: false
+              },
+              {
+                key: "sell",
+                status: false
+              },
+              {
+                key: "interest",
+                status: false
+              },
+              {
+                key: "ownership",
+                status: false
+              },
+              {
+                key: "boost",
+                status: false
+              },
+              {
+                key: "transaction",
+                status: false
+              },
+              {
+                key: "idRefferal",
+                status: false
+              },
+              {
+                key: "shareRefferal",
+                status: false
+              },
+              {
+                key: "codeRefferal",
+                status: false
+              }
+            ];
             data_CreateUserbasicDto.insight = {
               $ref: 'insights',
               $id: Object(ID_insights),
@@ -8899,7 +8937,7 @@ export class AuthService {
           CreateReferralDto_._class = "io.melody.core.domain.Referral";
           var insertdata = await this.referralService.create(CreateReferralDto_);
           var idref = insertdata._id;
-          // this.userChallenge(iduser.toString(), idref.toString(), "referral", "REFERAL");
+          this.userChallenge(iduser.toString(), idref.toString(), "referral", "REFERAL");
 
 
           var _id_1 = (await this.utilsService.generateId());
@@ -9678,14 +9716,14 @@ export class AuthService {
                         CreateReferralDto_._class = "io.melody.core.domain.Referral";
                         var insertdata = await this.referralService.create(CreateReferralDto_);
 
-                        // const databasic = await this.userbasicsService.findOne(
-                        //   req.body.referral,
-                        // );
+                        const databasic = await this.userbasicsService.findOne(
+                          req.body.referral,
+                        );
 
-                        // if (databasic !== null) {
-                        //   var idref = insertdata._id;
-                        //   this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
-                        // }
+                        if (databasic !== null) {
+                          var idref = insertdata._id;
+                          this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
+                        }
 
                         var _id_1 = (await this.utilsService.generateId());
                         var _id_2 = (await this.utilsService.generateId());
@@ -10215,45 +10253,44 @@ export class AuthService {
             data_CreateUserbasicDto.createdAt = current_date;
             data_CreateUserbasicDto.updatedAt = current_date;
             data_CreateUserbasicDto.statusKyc = 'unverified';
-            data_CreateUserbasicDto.statusKyc = 'unverified';
-            // data_CreateUserbasicDto.tutor = [
-            //   {
-            //     key: "protection",
-            //     status: false
-            //   },
-            //   {
-            //     key: "sell",
-            //     status: false
-            //   },
-            //   {
-            //     key: "interest",
-            //     status: false
-            //   },
-            //   {
-            //     key: "ownership",
-            //     status: false
-            //   },
-            //   {
-            //     key: "boost",
-            //     status: false
-            //   },
-            //   {
-            //     key: "transaction",
-            //     status: false
-            //   },
-            //   {
-            //     key: "idRefferal",
-            //     status: false
-            //   },
-            //   {
-            //     key: "shareRefferal",
-            //     status: false
-            //   },
-            //   {
-            //     key: "codeRefferal",
-            //     status: false
-            //   }
-            // ];
+            data_CreateUserbasicDto.tutor = [
+              {
+                key: "protection",
+                status: false
+              },
+              {
+                key: "sell",
+                status: false
+              },
+              {
+                key: "interest",
+                status: false
+              },
+              {
+                key: "ownership",
+                status: false
+              },
+              {
+                key: "boost",
+                status: false
+              },
+              {
+                key: "transaction",
+                status: false
+              },
+              {
+                key: "idRefferal",
+                status: false
+              },
+              {
+                key: "shareRefferal",
+                status: false
+              },
+              {
+                key: "codeRefferal",
+                status: false
+              }
+            ];
             data_CreateUserbasicDto.insight = {
               $ref: 'insights',
               $id: Object(ID_insights),
@@ -10417,7 +10454,45 @@ export class AuthService {
               email: user_email,
               username: username_,
               isComplete: "false",
-              status: "NOTIFY"
+              status: "NOTIFY",
+              tutor: [
+                {
+                  key: "protection",
+                  status: false
+                },
+                {
+                  key: "sell",
+                  status: false
+                },
+                {
+                  key: "interest",
+                  status: false
+                },
+                {
+                  key: "ownership",
+                  status: false
+                },
+                {
+                  key: "boost",
+                  status: false
+                },
+                {
+                  key: "transaction",
+                  status: false
+                },
+                {
+                  key: "idRefferal",
+                  status: false
+                },
+                {
+                  key: "shareRefferal",
+                  status: false
+                },
+                {
+                  key: "codeRefferal",
+                  status: false
+                }
+              ]
             },
             messages: {
               nextFlow: [
