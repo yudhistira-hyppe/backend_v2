@@ -1797,8 +1797,15 @@ export class PostsController {
     var data = await this.postContentService.createNewPostV5(file, body, headers);
 
     if (data !== undefined && data !== null) {
-      var stiker = data.data.stiker;
-      this.updateused(stiker, "used");
+      var stiker = null;
+
+      try {
+        stiker = data.data.stiker;
+        this.updateused(stiker, "used");
+      } catch (e) {
+
+      }
+
 
       var postID = data.data.postID;
 
