@@ -64,9 +64,11 @@ export class InterestsRepoController {
       else
       {
         var insertfile = files.icon_file[0];
-        var path = "images/icon_interest/" + insertdata._id + "." + insertfile.originalname.split(".")[1];
+        var path = "images/icon_interest/" + insertdata._id + "." + insertfile.originalname.split(".").pop();
         var result = await this.OssServices.uploadFile(insertfile, path);
-        insertdata.icon = result.url;
+        var geturl = result.url;
+        var konvert = geturl.replace("http", "https");
+        insertdata.icon = konvert;
       }
 
       await this.InterestsRepoService.create(insertdata);
@@ -246,9 +248,11 @@ export class InterestsRepoController {
       {
         var insertfile = files.icon_file[0];
         var convertstring = repoID.toString();
-        var path = "images/icon_interest/" + convertstring + "." + insertfile.originalname.split(".")[1];
+        var path = "images/icon_interest/" + convertstring + "." + insertfile.originalname.split(".").pop();
         var result = await this.OssServices.uploadFile(insertfile, path);
-        updatedata.icon = result.url;
+        var geturl = result.url;
+        var konvert = geturl.replace("http", "https");
+        updatedata.icon = konvert;
       }
       
       const messages = {
