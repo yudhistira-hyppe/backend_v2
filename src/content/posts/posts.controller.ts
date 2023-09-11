@@ -1882,20 +1882,21 @@ export class PostsController {
     if (data !== undefined && data !== null) {
       var stiker = data.data.stiker;
       this.updateused(stiker, "used");
+
+      var postID = data.data.postID;
+
+      var email = data.data.email;
+
+      const databasic = await this.userbasicsService.findOne(
+        email
+      );
+      var iduser = null;
+      if (databasic !== null) {
+        iduser = databasic._id;
+        this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
+      }
     }
 
-    // var postID = data.data.postID;
-
-    // var email = data.data.email;
-
-    // const databasic = await this.userbasicsService.findOne(
-    //   email
-    // );
-    // var iduser = null;
-    // if (databasic !== null) {
-    //   iduser = databasic._id;
-    //   this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
-    // }
     return data;
   }
 

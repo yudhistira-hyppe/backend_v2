@@ -361,6 +361,16 @@ export class NotificationsService {
 
       },
       {
+        $lookup: {
+          from: 'templates',
+          localField: 'templateID',
+          foreignField: '_id',
+          as: 'template_data',
+
+        },
+
+      },
+      {
         $unwind: {
           path: "$post",
           preserveNullAndEmptyArrays: true
@@ -450,6 +460,9 @@ export class NotificationsService {
           notificationID: 1,
           actionButtons: 1,
           postID: 1,
+          titleEN: {
+            "$arrayElemAt": ["$template_data.subject", 0]
+          },
           senderOrReceiverInfo:
           {
             fullName: "$senderOrReceiverInfo.fullName",
@@ -761,6 +774,7 @@ export class NotificationsService {
           postID: 1,
           senderOrReceiverInfo: 1,
           title: 1,
+          titleEN: 1,
           updatedAt: 1,
           urluserBadge:
           {
