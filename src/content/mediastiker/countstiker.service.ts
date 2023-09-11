@@ -15,7 +15,7 @@ export class CountstikerService {
     ) { }
 
     async updatedata(list: any[], target: string) {
-        if (list.length > 0) {
+        if (list !== undefined) {
             for (let i = 0; i < list.length; i++) {
                 setTimeout(function () {
                     console.log('This printed after about 1 second');
