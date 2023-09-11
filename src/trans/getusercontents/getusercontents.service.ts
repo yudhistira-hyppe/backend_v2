@@ -17468,9 +17468,15 @@ export class GetusercontentsService {
                       {
                           age:
                           {
-                              "$arrayElemAt":
+                              "$ifNull":
                               [
-                                  "$basic_data.ageQualication",0
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$basic_data.ageQualication",0
+                                    ]
+                                },
+                                "OTHER"
                               ]
                           }
                       }
@@ -17564,9 +17570,15 @@ export class GetusercontentsService {
                       {
                           wilayah:
                           {
-                              "$arrayElemAt":
+                              "$ifNull":
                               [
-                                  "$basic_data.stateName",0
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$basic_data.stateName",0
+                                    ]
+                                },
+                                "LAINNYA"
                               ]
                           }
                       }
@@ -17702,9 +17714,15 @@ export class GetusercontentsService {
                       {
                           gender:
                           {
-                              "$arrayElemAt":
+                              "$ifNull":
                               [
-                                  "$basic_data.gender",0
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$basic_data.gender",0
+                                    ]
+                                },
+                                "OTHER"
                               ]
                           }
                       }

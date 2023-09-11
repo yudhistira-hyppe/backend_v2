@@ -1880,8 +1880,16 @@ export class PostsController {
     var data = await this.postContentService.createNewPostV5(file, body, headers);
 
     if (data !== undefined && data !== null) {
-      var stiker = data.data.stiker;
-      this.updateused(stiker, "used");
+      var stiker = null;
+
+      try {
+        stiker = data.data.stiker;
+      } catch (e) {
+        stiker = null;
+      }
+      if (stiker !== null) {
+        this.updateused(stiker, "used");
+      }
 
       var postID = data.data.postID;
 
@@ -3906,6 +3914,6 @@ export class PostsController {
     return Response;
   }
   async updateused(list: any[], target: string) {
-    await this.CountstikerService.updatedata(list, target);
+    await this.CountstikerService.updatedata(list, target, "penjumlahan");
   }
 }

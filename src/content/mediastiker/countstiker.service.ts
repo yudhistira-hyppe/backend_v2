@@ -11,53 +11,72 @@ export class CountstikerService {
     constructor(
         @InjectModel(Countstiker.name, 'SERVER_FULL')
         private readonly CountstikerModel: Model<CountstikerDocument>,
-        private readonly MediastikerSS:MediastikerService
+        private readonly MediastikerSS: MediastikerService
     ) { }
 
-    async updatedata(list:any[], target:string)
+    async updatedata(list:any[], target:string, operathmath:string)
     {
-        for(let i = 0; i < list.length; i++)
-        {
-            setTimeout(function() {
-                console.log('This printed after about 1 second');
-            }, 1000);
-
-            var mongo = require('mongoose');
-            var konvertid = mongo.Types.ObjectId(list[i]._id);
-            var data = await this.CountstikerModel.findOne({ stikerId:konvertid });
-
-            var setdata = new Countstiker();
-
-            if(data == null)
+        if (list !== undefined) {
+            for(let i = 0; i < list.length; i++)
             {
-                var getdata = await this.MediastikerSS.findOne(list[i]._id);
-                setdata._id = mongo.Types.ObjectId();
-                setdata.stikerId = konvertid;
-                setdata.name = getdata.name;
-                setdata.image = getdata.image;
-                setdata.countsearch = (target == "search" ? 1 : 0);
-                setdata.countused = (target == "used" ? 1 : 0);
-                setdata.createdAt = getdata.createdAt;
+                setTimeout(() => {
+                    console.log('looping ke ' + i);
+                    this.intothedatabase2(i, target, operathmath, list);
+                }, (i * 1000));
+            }
+        }
+    }
+
+    async intothedatabase2(loop:number, target:string, operathmath:string, list:any[])
+    {
+        var operationresult = null;
+        var mongo = require('mongoose');
+        var konvertid = mongo.Types.ObjectId(list[loop]._id);
+        var data = await this.CountstikerModel.findOne({ stikerId:konvertid });
+
+        var setdata = new Countstiker();
+
+        if(data == null)
+        {
+            var getdata = await this.MediastikerSS.findOne(list[loop]._id);
+            setdata._id = mongo.Types.ObjectId();
+            setdata.stikerId = konvertid;
+            setdata.name = getdata.name;
+            setdata.image = getdata.image;
+            setdata.countsearch = (target == "search" ? 1 : 0);
+            setdata.countused = (target == "used" ? 1 : 0);
+            setdata.createdAt = getdata.createdAt;
+        }
+        else
+        {
+            if(target == "search")
+            {
+                setdata.countsearch = (operathmath == "penjumlahan" ? data.countsearch + 1 : data.countsearch - 1);
+                if(setdata.countsearch < 0)
+                {
+                    setdata.countsearch = 0;
+                }
             }
             else
             {
-                if(target == "search")
+                setdata.countused = (operathmath == "penjumlahan" ? data.countused + 1 : data.countused - 1);
+                if(setdata.countused < 0)
                 {
-                    setdata.countsearch = data.countsearch + 1;
-                }
-                else
-                {
-                    setdata.countused = data.countused + 1;
+                    setdata.countused = 0;
                 }
             }
+        }
 
+        try
+        {
             if(setdata._id == null)
             {
-                await this.CountstikerModel.updateOne(
+                //stuck disini
+                operationresult = await this.CountstikerModel.updateOne(
                     { 
-                        _id:data._id 
+                        _id:konvertid 
                     },
-                    setdata,
+                    data,
                     function (err, docs) {
                         if (err) {
                         console.log(err);
@@ -65,17 +84,19 @@ export class CountstikerService {
                         console.log(docs);
                         }
                     },
-                )
+                );
             }
             else
             {
-                await this.CountstikerModel.create(setdata);
+                operationresult = await this.CountstikerModel.create(data);
             }
         }
-    }
+        catch(e)
+        {
+            console.log(e);
+        }
 
-    async delay(time:number) 
-    {
-        return new Promise(resolve => setTimeout(resolve, time));
-    } 
+        console.log(operationresult);
+        console.log(konvertid);
+    }
 }
