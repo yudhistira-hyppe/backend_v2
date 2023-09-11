@@ -1796,30 +1796,30 @@ export class PostsController {
     }
     var data = await this.postContentService.createNewPostV5(file, body, headers);
 
-    // if (data !== undefined && data !== null) {
-    //   var stiker = null;
+    if (data !== undefined && data !== null) {
+      // var stiker = null;
 
-    //   try {
-    //     stiker = data.data.stiker;
-    //     this.updateused(stiker, "used");
-    //   } catch (e) {
+      // try {
+      //   stiker = data.data.stiker;
+      //   this.updateused(stiker, "used");
+      // } catch (e) {
 
-    //   }
+      // }
 
 
-    //   var postID = data.data.postID;
+      var postID = data.data.postID;
 
-    //   var email = data.data.email;
+      var email = data.data.email;
 
-    //   const databasic = await this.userbasicsService.findOne(
-    //     email
-    //   );
-    //   var iduser = null;
-    //   if (databasic !== null) {
-    //     iduser = databasic._id;
-    //     this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
-    //   }
-    // }
+      const databasic = await this.userbasicsService.findOne(
+        email
+      );
+      var iduser = null;
+      if (databasic !== null) {
+        iduser = databasic._id;
+        this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
+      }
+    }
 
     return data;
   }
