@@ -1290,7 +1290,7 @@ export class MediastikerService {
             });
         }
 
-        if(jenis == "STICKER" || jenis == "EMOJI")
+        if((jenis == "STICKER" || jenis == "EMOJI") && keyword == null && keyword == undefined)
         {
             pipeline.push(
                 {

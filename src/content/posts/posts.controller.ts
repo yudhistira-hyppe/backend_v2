@@ -3669,6 +3669,6 @@ export class PostsController {
     return Response;
   }
   async updateused(list: any[], target: string) {
-    await this.CountstikerService.updatedata(list, target);
+    await this.CountstikerService.updatedata(list, target, "penjumlahan");
   }
 }

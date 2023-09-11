@@ -613,7 +613,7 @@ export class MediastikerController {
         
         if(keyword != null && keyword != undefined)
         {
-            this.countstick.updatedata(data, "search");
+            this.countstick.updatedata(data, "search", "penjumlahan");
         }
         return {
             response_code:202,
