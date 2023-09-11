@@ -165,7 +165,8 @@ export class PostData {
     comments: number;
     following: boolean;
     urluserBadge: any[];
-
+    stiker: any[];
+    text: any[];
 }
 
 export class Messages {

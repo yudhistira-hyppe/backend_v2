@@ -5864,7 +5864,7 @@ export class PostContentService {
         pa.description = String(ps.description);
         pa.email = String(ps.email);
         pa.following = getFollowing;
-
+        pa.stiker = ps.stiker;
 
         //SET DISCUS/COMMENT
         var discus = await this.disqusService.findDisqusByPost(ps.postID.toString(), "COMMENT");
