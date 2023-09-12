@@ -257,10 +257,15 @@ export class BannerController {
         var id = request_json['id'];
         var statustayang = request_json['statustayang'];
 
+        var checkexists = await this.BannerService.listing(null, true, null, null, null, null, true);
         if (statustayang == true) {
-            var checkexists = await this.BannerService.listing(null, true, null, null, null, null, true);
             if (checkexists.length >= 5) {
                 throw new NotAcceptableException("Unabled to proceed, show banner quote already full");
+            }
+        }
+        else{
+            if (checkexists.length == 1) {
+                throw new NotAcceptableException("Unabled to proceed, show banner list must exist with at least one");
             }
         }
 
