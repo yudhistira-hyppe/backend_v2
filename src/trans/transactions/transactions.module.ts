@@ -31,11 +31,14 @@ import { HttpModule } from '@nestjs/axios';
 import { AdsBalaceCreditModule } from '../adsv2/adsbalacecredit/adsbalacecredit.module';
 import { VoucherpromoModule } from '../adsv2/voucherpromo/voucherpromo.module';
 import { LogapisModule } from '../logapis/logapis.module';
+import { AdsPriceCreditsModule } from '../adsv2/adspricecredits/adspricecredits.module';
+
 
 @Module({
 
     imports: [
         LogapisModule,
+        AdsPriceCreditsModule,
         VoucherpromoModule,
         AdsBalaceCreditModule,
         HttpModule,

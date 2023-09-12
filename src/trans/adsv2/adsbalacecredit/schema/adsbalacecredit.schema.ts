@@ -20,6 +20,8 @@ export class AdsBalaceCredit {
     description: string
     @Prop()
     idtrans: mongoose.Types.ObjectId;
+    @Prop()
+    idAdspricecredits: mongoose.Types.ObjectId;
 }
 
 export const AdsBalaceCreditSchema = SchemaFactory.createForClass(AdsBalaceCredit);

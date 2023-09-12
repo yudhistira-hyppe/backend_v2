@@ -9,4 +9,5 @@ export class AdsBalaceCreditDto {
     timestamp: String;
     description: String;
     idtrans: mongoose.Types.ObjectId;
+    idAdspricecredits: mongoose.Types.ObjectId;
 }
