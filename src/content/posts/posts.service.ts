@@ -115760,6 +115760,24 @@ export class PostsService {
       pipeline.push(
 
         {
+          $set: {
+            postStart: "2022-10-18 04:51:36"
+          }
+        },
+        {
+          $match: {
+            $expr: {
+              $gte: ["$createdAt", "$postStart"]
+            }
+          }
+        },
+        {
+          $sort: {
+            createdAt: - 1,
+
+          }
+        },
+        {
           "$unwind": {
             "path": "$boosted",
             "preserveNullAndEmptyArrays": true
@@ -115952,24 +115970,9 @@ export class PostsService {
                 {
                   $size: "$dodolCount"
                 },
-                //{
-                //		$subtract: [
-                //				{
-                //						$size: "$dodolCount"
-                //				},
-                //				1
-                //		]
-                //},
                 else: 1
               }
             },
-
-          }
-        },
-
-        {
-          $sort: {
-            createdAt: - 1,
 
           }
         },
@@ -115979,11 +115982,6 @@ export class PostsService {
             $or: [
               {
                 $and: [
-                  {
-                    $expr: {
-                      $gte: ["$createdAt", "2022-10-18 04:51:36"]
-                    }
-                  },
                   {
                     "reportedStatus": {
                       $ne: "OWNED"
@@ -116124,15 +116122,6 @@ export class PostsService {
               },
 
             ]
-          }
-        },
-        {
-          $sort: {
-            viewerCounts: 1,
-            selfContents: - 1,
-            isBoost: - 1,
-            createdAt: - 1,
-
           }
         },
         {
