@@ -40,6 +40,8 @@ import { Console } from 'console';
 import { AdsBalaceCreditDto } from '../adsv2/adsbalacecredit/dto/adsbalacecredit.dto';
 import { AdsBalaceCreditService } from '../adsv2/adsbalacecredit/adsbalacecredit.service';
 import { VoucherpromoService } from '../adsv2/voucherpromo/voucherpromo.service';
+import { AdsPriceCreditsService } from '../adsv2/adspricecredits/adspricecredits.service';
+import { AdsPriceCredits } from '../adsv2/adspricecredits/schema/adspricecredits.schema';
 
 const cheerio = require('cheerio');
 const nodeHtmlToImage = require('node-html-to-image');
@@ -73,6 +75,7 @@ export class TransactionsController {
         private readonly adsService: AdsService, 
         private readonly adsBalaceCreditService: AdsBalaceCreditService, 
         private readonly voucherpromoService: VoucherpromoService,
+        private readonly adsPriceCreditsService: AdsPriceCreditsService,
     ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -1491,7 +1494,8 @@ export class TransactionsController {
                             await this.uservouchersService.create(datauservoucher);
                             // await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml), (pendingUsed - jml));
                             await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml));
-                            await this.insertBalanceCredit(iduserbuy.toString(), 0, all_total_credit_voucher, "TOPUP", "PURCHASING VOUCHERS", idtransaction.toString());
+                            var getSetting_CreditPrice = await this.adsPriceCreditsService.findStatusActive();
+                            await this.insertBalanceCredit(iduserbuy.toString(), 0, all_total_credit_voucher, "TOPUP", "PURCHASING VOUCHERS", idtransaction.toString(), getSetting_CreditPrice);
                         }
 
                         //UPDATE VOUCHER PROMO
@@ -10372,7 +10376,7 @@ export class TransactionsController {
         await this.utilsService.sendFcmWebMode(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", no, "TRANSACTION");
     }
 
-    async insertBalanceCredit(iduser: string, debet: number, kredit: number, type: String, description: String, idtrans: string){
+    async insertBalanceCredit(iduser: string, debet: number, kredit: number, type: String, description: String, idtrans: string, getSetting_CreditPrice: AdsPriceCredits){
         var AdsBalaceCreditDto_ = new AdsBalaceCreditDto();
         AdsBalaceCreditDto_._id = new mongoose.Types.ObjectId;
         AdsBalaceCreditDto_.iduser = new mongoose.Types.ObjectId(iduser);
@@ -10382,6 +10386,9 @@ export class TransactionsController {
         AdsBalaceCreditDto_.timestamp = await this.utilsService.getDateTimeString();
         AdsBalaceCreditDto_.description = description;
         AdsBalaceCreditDto_.idtrans = new mongoose.Types.ObjectId(idtrans);
+        if (await this.utilsService.ceckData(getSetting_CreditPrice)) {
+            AdsBalaceCreditDto_.idAdspricecredits = getSetting_CreditPrice._id;
+        }
         await this.adsBalaceCreditService.create(AdsBalaceCreditDto_);
     }
 }

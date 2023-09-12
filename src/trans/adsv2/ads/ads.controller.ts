@@ -25,6 +25,7 @@ import { AdslogsService } from '../adslog/adslog.service';
 import { AccountbalancesService } from '../../../trans/accountbalances/accountbalances.service';
 import { CreateAccountbalancesDto } from '../../../trans/accountbalances/dto/create-accountbalances.dto';
 import { AdsBalaceCreditService } from '../adsbalacecredit/adsbalacecredit.service';
+import { AdsPriceCreditsService } from '../adspricecredits/adspricecredits.service';
 const sharp = require('sharp');
 
 @Controller('api/adsv2/ads')
@@ -47,6 +48,7 @@ export class AdsController {
         private readonly adslogsService: AdslogsService,
         private accountbalancesService: AccountbalancesService,
         private adsBalaceCreditService: AdsBalaceCreditService,
+        private readonly adsPriceCreditsService: AdsPriceCreditsService,
         private readonly adsService: AdsService) {
         this.locks = new Map();
     }
@@ -536,6 +538,11 @@ export class AdsController {
             AdsDto_.endAge = 0;
             AdsDto_.totalView = 0;
             AdsDto_.isActive = false;
+
+            var getSetting_CreditPrice = await this.adsPriceCreditsService.findStatusActive();
+            if (await this.utilsService.ceckData(getSetting_CreditPrice)) {
+                AdsDto_.idAdspricecredits = getSetting_CreditPrice._id;
+            }
             let data = await this.adsService.create(AdsDto_);
             if (AdsDto_.status == "UNDER_REVIEW") {
                 //--------------------INSERT BALANCE DEBET--------------------

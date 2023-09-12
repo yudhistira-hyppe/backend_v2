@@ -39,6 +39,7 @@ import mongoose, { Model, Types } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { SettingsDocument, SettingsMixed } from 'src/trans/settings2/schemas/settings2.schema';
 import { InjectModel } from '@nestjs/mongoose';
+import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -2324,199 +2325,209 @@ export class UtilsService {
   }
 
   async sendFcmPushNotif(email: string, titlein: string, bodyin: any, titleen: string, bodyen: any, eventType: string, event: string, url: string, idtemplate: string) {
+      var emailuserbasic = null;
+      var datadevice = null;
+      var languages = null;
+      var payload = null;
+      var payloadios = null;
+      var idlanguages = null;
+      var datalanguage = null;
+      var langIso = null;
+      var idprofilepict = null;
+      var profilepict = null;
+      var dt = new Date(Date.now());
+      dt.setHours(dt.getHours() + 7); // timestamp
+      dt = new Date(dt);
+      var dtstring = dt.toISOString();
+      var splitdt = dtstring.split(".");
+      var date = splitdt[0].replace("T", " ");
+      var mediaprofilepicts = null;
+      var bodypayload = null;
+      let createNotificationsDto = new CreateNotificationsDto();
 
-
-    var emailuserbasic = null;
-    var datadevice = null;
-    var languages = null;
-    var payload = null;
-    var payloadios = null;
-    var idlanguages = null;
-    var datalanguage = null;
-    var langIso = null;
-    var idprofilepict = null;
-    var profilepict = null;
-    var dt = new Date(Date.now());
-    dt.setHours(dt.getHours() + 7); // timestamp
-    dt = new Date(dt);
-    var dtstring = dt.toISOString();
-    var splitdt = dtstring.split(".");
-    var date = splitdt[0].replace("T", " ");
-    var mediaprofilepicts = null;
-    var bodypayload = null;
-    let createNotificationsDto = new CreateNotificationsDto();
-
-    const datauserbasicsService = await this.userbasicsService.findOne(
-      email
-    );
-    if (await this.ceckData(datauserbasicsService)) {
-      emailuserbasic = datauserbasicsService.email;
-
-      try {
-        profilepict = datauserbasicsService.profilePict;
-        idprofilepict = profilepict.oid;
-        mediaprofilepicts = await this.mediaprofilepictsService.findOne(idprofilepict);
-      } catch (e) {
-        mediaprofilepicts = null;
-      }
-      const user_userAuth = await this.userauthsService.findOne(
-        emailuserbasic
+      const datauserbasicsService = await this.userbasicsService.findOne(
+        email
       );
+      if (await this.ceckData(datauserbasicsService)) {
+        emailuserbasic = datauserbasicsService.email;
 
-      var mediaUri = null;
-      var mediaBasePath = null;
-      var mediaType = null;
-      var mediaEndpoint = null;
-      var regSrc = null;
-      var title = null;
-      if (mediaprofilepicts != null) {
-        mediaUri = mediaprofilepicts.mediaUri;
-      }
-
-      let result = null;
-      if (mediaUri != null) {
-        result = '/profilepict/' + mediaUri.replace('_0001.jpeg', '');
-      }
-      if (mediaprofilepicts != null) {
-        if (mediaprofilepicts.mediaBasePath != null) {
-          mediaBasePath = mediaprofilepicts.mediaBasePath;
+        try {
+          profilepict = datauserbasicsService.profilePict;
+          idprofilepict = profilepict.oid;
+          mediaprofilepicts = await this.mediaprofilepictsService.findOne(idprofilepict);
+        } catch (e) {
+          mediaprofilepicts = null;
         }
+        const user_userAuth = await this.userauthsService.findOne(
+          emailuserbasic
+        );
 
-        if (mediaprofilepicts.mediaUri != null) {
+        var mediaUri = null;
+        var mediaBasePath = null;
+        var mediaType = null;
+        var mediaEndpoint = null;
+        var regSrc = null;
+        var title = null;
+        if (mediaprofilepicts != null) {
           mediaUri = mediaprofilepicts.mediaUri;
         }
 
-        if (mediaprofilepicts.mediaType != null) {
-          mediaType = mediaprofilepicts.mediaType;
+        let result = null;
+        if (mediaUri != null) {
+          result = '/profilepict/' + mediaUri.replace('_0001.jpeg', '');
         }
-      }
+        if (mediaprofilepicts != null) {
+          if (mediaprofilepicts.mediaBasePath != null) {
+            mediaBasePath = mediaprofilepicts.mediaBasePath;
+          }
 
-      if (result != null) {
-        mediaEndpoint = result;
-      }
+          if (mediaprofilepicts.mediaUri != null) {
+            mediaUri = mediaprofilepicts.mediaUri;
+          }
 
-      var senderreceiver = {
-        fullName: datauserbasicsService.fullName,
-        avatar: {
-          mediaBasePath: mediaBasePath,
-          mediaUri: mediaUri,
-          mediaType: mediaType,
-          mediaEndpoint: mediaEndpoint
-        },
-        username: user_userAuth.username.toString()
-      };
-      try {
-        languages = datauserbasicsService.languages;
-        idlanguages = languages.oid.toString();
-        datalanguage = await this.languagesService.findOne(idlanguages)
-        langIso = datalanguage.langIso;
-
-        console.log(idlanguages)
-      } catch (e) {
-        languages = null;
-        idlanguages = "";
-        datalanguage = null;
-        langIso = "";
-      }
-      if (langIso === "id") {
-
-        payload = {
-          data: {
-
-            title: titlein,
-            body: bodyin,
-            url: url,
+          if (mediaprofilepicts.mediaType != null) {
+            mediaType = mediaprofilepicts.mediaType;
           }
         }
 
-
-      }
-      else if (langIso === "en") {
-
-        payload = {
-          data: {
-
-            title: titleen,
-            body: bodyen,
-            url: url,
-          }
+        if (result != null) {
+          mediaEndpoint = result;
         }
-      } else {
-        payload = {
-          data: {
 
-            title: titlein,
-            body: bodyin,
-            url: url,
-          }
+        var senderreceiver = {
+          fullName: datauserbasicsService.fullName,
+          avatar: {
+            mediaBasePath: mediaBasePath,
+            mediaUri: mediaUri,
+            mediaType: mediaType,
+            mediaEndpoint: mediaEndpoint
+          },
+          username: user_userAuth.username.toString()
+        };
+        try {
+          languages = datauserbasicsService.languages;
+          idlanguages = languages.oid.toString();
+          datalanguage = await this.languagesService.findOne(idlanguages)
+          langIso = datalanguage.langIso;
+
+          console.log(idlanguages)
+        } catch (e) {
+          languages = null;
+          idlanguages = "";
+          datalanguage = null;
+          langIso = "";
         }
-      }
-      var option = {
-        priority: "high",
-        contentAvailable: true
-      }
+        if (langIso === "id") {
 
-      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              url: url,
+            }
+          }
 
 
-      var arraydevice = [];
-      var arrStatusDevice = [];
-      var objDevice = null;
-      datadevice = await this.userdevicesService.findActive(emailuserbasic);
-      for (var i = 0; i < datadevice.length; i++) {
-        var deviceid = datadevice[i].deviceID;
-        var adm = await admin.messaging().sendToDevice(deviceid, payload, option);
-        console.log(adm);
-        if (adm.successCount > 0) {
-          objDevice = {
+        }
+        else if (langIso === "en") {
 
-            "device": deviceid,
-            "status": "SEND"
+          payload = {
+            data: {
+
+              title: titleen,
+              body: bodyen,
+              url: url,
+            }
           }
         } else {
-          objDevice = {
+          payload = {
+            data: {
 
-            "device": deviceid,
-            "status": "NOTSEND"
+              title: titlein,
+              body: bodyin,
+              url: url,
+            }
           }
         }
+        var option = {
+          priority: "high",
+          contentAvailable: true
+        }
 
-        arraydevice.push(deviceid);
-        arrStatusDevice.push(objDevice);
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
 
+
+        var arraydevice = [];
+        var arrStatusDevice = [];
+        var objDevice = null;
+        datadevice = await this.userdevicesService.findActive(emailuserbasic);
+        for (var i = 0; i < datadevice.length; i++) {
+          var deviceid = datadevice[i].deviceID;
+          var adm = await admin.messaging().sendToDevice(deviceid, payload, option);
+          console.log(adm);
+          if (adm.successCount > 0) {
+            objDevice = {
+
+              "device": deviceid,
+              "status": "SEND"
+            }
+          } else {
+            objDevice = {
+
+              "device": deviceid,
+              "status": "NOTSEND"
+            }
+          }
+
+          arraydevice.push(deviceid);
+          arrStatusDevice.push(objDevice);
+
+        }
+        var generateID = await this.generateId();
+        createNotificationsDto._id = generateID;
+        createNotificationsDto.notificationID = generateID;
+        createNotificationsDto.email = emailuserbasic;
+        createNotificationsDto.eventType = eventType;
+        createNotificationsDto.event = event;
+        createNotificationsDto.mate = emailuserbasic;
+        createNotificationsDto.devices = arraydevice;
+        createNotificationsDto.title = payload.data.title;
+        createNotificationsDto.body = bodyen;
+        createNotificationsDto.bodyId = bodyin;
+        createNotificationsDto.active = true;
+        createNotificationsDto.flowIsDone = true;
+        createNotificationsDto.createdAt = date;
+        createNotificationsDto.updatedAt = date;
+        createNotificationsDto.statusDevices = arrStatusDevice;
+        createNotificationsDto.actionButtons = null;
+        createNotificationsDto.contentEventID = null;
+        createNotificationsDto.senderOrReceiverInfo = senderreceiver;
+        createNotificationsDto.templateID = new Types.ObjectId(idtemplate);
+
+
+        if (url != undefined) {
+          createNotificationsDto.actionButtons = url;
+        }
+
+
+        console.log('notif: ' + JSON.stringify(createNotificationsDto));
+        await this.notificationsService.create(createNotificationsDto);
+
+
+    async getIdUserByToken(head: any): Promise<Userbasic> {
+      var token = ((head['x-auth-token']).split(" "))[1];
+      var data = await this.jwtService.decode(token);
+      if (data != undefined) {
+        if (data['email'] != undefined) {
+          const Userbasic_: Userbasic = await this.userbasicsService.findOne(data['email'])
+          return Userbasic_;
+        }else{
+          return null;
+        }
+      } else {
+        return null;
       }
-      var generateID = await this.generateId();
-      createNotificationsDto._id = generateID;
-      createNotificationsDto.notificationID = generateID;
-      createNotificationsDto.email = emailuserbasic;
-      createNotificationsDto.eventType = eventType;
-      createNotificationsDto.event = event;
-      createNotificationsDto.mate = emailuserbasic;
-      createNotificationsDto.devices = arraydevice;
-      createNotificationsDto.title = payload.data.title;
-      createNotificationsDto.body = bodyen;
-      createNotificationsDto.bodyId = bodyin;
-      createNotificationsDto.active = true;
-      createNotificationsDto.flowIsDone = true;
-      createNotificationsDto.createdAt = date;
-      createNotificationsDto.updatedAt = date;
-      createNotificationsDto.statusDevices = arrStatusDevice;
-      createNotificationsDto.actionButtons = null;
-      createNotificationsDto.contentEventID = null;
-      createNotificationsDto.senderOrReceiverInfo = senderreceiver;
-      createNotificationsDto.templateID = new Types.ObjectId(idtemplate);
-
-
-      if (url != undefined) {
-        createNotificationsDto.actionButtons = url;
       }
-
-
-      console.log('notif: ' + JSON.stringify(createNotificationsDto));
-      await this.notificationsService.create(createNotificationsDto);
-
-
-    }
   }
 }
-
