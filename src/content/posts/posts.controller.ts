@@ -387,7 +387,7 @@ export class PostsController {
   @UseInterceptors(FileInterceptor('postContent'))
   async createPostv4(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     var fullurl = headers.host + "/api/posts/v4/createpost";
-    
+
     this.logger.log("createPost >>> start");
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
     var arrtag = [];
@@ -643,7 +643,7 @@ export class PostsController {
     var timestamps_start = await this.utilsService.getDateTimeString();
     var fullurl = headers.host + "/api/posts/updatepost";
     var reqbody = body;
-    
+
     this.logger.log("updatePost >>> start");
     var email = headers['x-auth-user'];
     var saleAmount = body.saleAmount;
@@ -1543,7 +1543,7 @@ export class PostsController {
     }
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
     console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
-    
+
     if (saleAmount > 0) {
       if (posts.saleAmount != saleAmount) {
         await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
@@ -1566,7 +1566,7 @@ export class PostsController {
     var fullurl = headers.host + "/api/posts/createpost";
     var reqbody = body;
     // reqbody['postContent'] = file;
-    
+
     this.logger.log("createPost >>> start");
     console.log('>>>>>>>>>> BODY <<<<<<<<<<', JSON.stringify(body))
     var arrtag = [];
@@ -1880,15 +1880,9 @@ export class PostsController {
     var data = await this.postContentService.createNewPostV5(file, body, headers);
 
     if (data !== undefined && data !== null) {
-      var stiker = null;
 
-      try {
-        stiker = data.data.stiker;
-      } catch (e) {
-        stiker = null;
-      }
-      if (stiker !== null) {
-        this.updateused(stiker, "used");
+      if (arrayStiker !== null && arrayStiker.length > 0) {
+        this.updateused(arrayStiker, "used");
       }
 
       var postID = data.data.postID;
@@ -2231,7 +2225,7 @@ export class PostsController {
     if (!(await this.utilsService.ceckData(data_userbasic))) {
       var timestamps_end = await this.utilsService.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
-      
+
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed User not found'
       );
@@ -2979,7 +2973,7 @@ export class PostsController {
   async stream(@Param('id') mediaFile: string, @Headers() headers, @Res() response) {
     var timestamps_start = await this.utilsService.getDateTimeString();
     var fullurl = headers.host + "/stream/" + mediaFile;
-    
+
     console.log(mediaFile);
     if ((headers['x-auth-user'] != undefined) && (headers['x-auth-token'] != undefined) && (headers['post-id'] != undefined) && (mediaFile != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(headers['x-auth-token'], headers['x-auth-user'])) {
@@ -3087,7 +3081,7 @@ export class PostsController {
     var fullurl = headers.host + "/api/posts/postbychart";
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    
+
     var data = null;
     var date = null;
     var iduser = null;
@@ -3199,7 +3193,7 @@ export class PostsController {
     var fullurl = headers.host + "/api/posts/analityc";
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    
+
     var data = null;
     var startdate = null;
     var enddate = null;
@@ -3305,7 +3299,7 @@ export class PostsController {
     } else {
       var timestamps_end = await this.utilsService.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
-      
+
       throw new BadRequestException("Unabled to proceed");
     }
     if (request_json["limit"] !== undefined) {
