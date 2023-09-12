@@ -7649,6 +7649,7 @@ export class UserbasicsService {
       {gender: "Male" },
       {gender: "LAKI-LAKI" },
       {gender: "Laki-laki" },
+      {gender: "Pria" },
     ] }).count();
     
     var getfemaledata = await this.userbasicModel.find( {$or: [
