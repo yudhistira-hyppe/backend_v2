@@ -3909,6 +3909,6 @@ export class PostsController {
     return Response;
   }
   async updateused(list: any[]) {
-    return await this.CountstikerService.updatedata(list);
+    return await this.CountstikerService.updatedata(list, "used");
   }
 }

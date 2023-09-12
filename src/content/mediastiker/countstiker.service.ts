@@ -24,7 +24,7 @@ export class CountstikerService {
     //         }
     //     }
     // }
-    async updatedata(list: any[]) {
+    async updatedata(list: any[], type: string) {
         if (list !== undefined) {
             for (let i = 0; i < list.length; i++) {
                 let id = list[i]._id;
@@ -38,15 +38,33 @@ export class CountstikerService {
                     setdata.stikerId = id;
                     setdata.name = getdata.name;
                     setdata.image = getdata.image;
-                    setdata.countsearch = 0;
-                    setdata.countused = 1;
+                    if (type == "used") {
+                        setdata.countused = 1;
+                    } else {
+                        setdata.countused = 0;
+                    }
+                    if (type == "search") {
+                        setdata.countsearch = 1;
+                    } else {
+                        setdata.countsearch = 0;
+                    }
+
+
                     setdata.createdAt = getdata.createdAt;
                     await this.CountstikerModel.create(setdata);
                 } else {
-                    setTimeout(() => {
-                        console.log('looping ke ' + i);
-                        this.updateUsed(id.toString());
-                    }, (i * 1000));
+                    if (type == "used") {
+                        setTimeout(() => {
+                            console.log('looping ke ' + i);
+                            this.updateUsed(id.toString());
+                        }, (i * 1000));
+                    } else {
+                        setTimeout(() => {
+                            console.log('looping ke ' + i);
+                            this.updateSearch(id.toString());
+                        }, (i * 1000));
+                    }
+
                 }
             }
         }
@@ -67,127 +85,142 @@ export class CountstikerService {
             },
         );
     }
-    async intothedatabase2(loop: number, target: string, operathmath: string, list: any[]) {
-        var operationresult = null;
-        var mongo = require('mongoose');
-        var konvertid = mongo.Types.ObjectId(list[loop]._id);
-        var data = await this.CountstikerModel.findOne({ stikerId: konvertid });
-
-        var setdata = new Countstiker();
-
-        if (data == null) {
-            var getdata = await this.MediastikerSS.findOne(list[loop]._id);
-            setdata._id = mongo.Types.ObjectId();
-            setdata.stikerId = konvertid;
-            setdata.name = getdata.name;
-            setdata.image = getdata.image;
-            setdata.countsearch = (target == "search" ? 1 : 0);
-            setdata.countused = (target == "used" ? 1 : 0);
-            setdata.createdAt = getdata.createdAt;
-        }
-        else {
-            if (target == "search") {
-                setdata.countsearch = (operathmath == "penjumlahan" ? data.countsearch + 1 : data.countsearch - 1);
-                if (setdata.countsearch < 0) {
-                    setdata.countsearch = 0;
+    async updateSearch(_id: string) {
+        this.CountstikerModel.updateOne(
+            {
+                stikerId: new mongoose.Types.ObjectId(_id),
+            },
+            { $inc: { countsearch: 1 } },
+            function (err, docs) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(docs);
                 }
-            }
-            else {
-                setdata.countused = (operathmath == "penjumlahan" ? data.countused + 1 : data.countused - 1);
-                if (setdata.countused < 0) {
-                    setdata.countused = 0;
-                }
-            }
-        }
-
-        try {
-            if (setdata._id == null) {
-                //stuck disini
-                operationresult = await this.CountstikerModel.updateOne(
-                    {
-                        _id: konvertid
-                    },
-                    data,
-                    function (err, docs) {
-                        if (err) {
-                            console.log(err);
-                        } else {
-                            console.log(docs);
-                        }
-                    },
-                );
-            }
-            else {
-                operationresult = await this.CountstikerModel.create(data);
-            }
-        }
-        catch (e) {
-            console.log(e);
-        }
-
-        console.log(operationresult);
-        console.log(konvertid);
+            },
+        );
     }
+    // async intothedatabase2(loop: number, target: string, operathmath: string, list: any[]) {
+    //     var operationresult = null;
+    //     var mongo = require('mongoose');
+    //     var konvertid = mongo.Types.ObjectId(list[loop]._id);
+    //     var data = await this.CountstikerModel.findOne({ stikerId: konvertid });
 
-    async searchstikerlog(loop: number, target: string, operathmath: string, list: any[]) {
-        var operationresult = null;
-        var mongo = require('mongoose');
-        var konvertid = mongo.Types.ObjectId(list[loop]._id);
-        var data = await this.CountstikerModel.findOne({ stikerId: konvertid });
+    //     var setdata = new Countstiker();
 
-        var setdata = new Countstiker();
+    //     if (data == null) {
+    //         var getdata = await this.MediastikerSS.findOne(list[loop]._id);
+    //         setdata._id = mongo.Types.ObjectId();
+    //         setdata.stikerId = konvertid;
+    //         setdata.name = getdata.name;
+    //         setdata.image = getdata.image;
+    //         setdata.countsearch = (target == "search" ? 1 : 0);
+    //         setdata.countused = (target == "used" ? 1 : 0);
+    //         setdata.createdAt = getdata.createdAt;
+    //     }
+    //     else {
+    //         if (target == "search") {
+    //             setdata.countsearch = (operathmath == "penjumlahan" ? data.countsearch + 1 : data.countsearch - 1);
+    //             if (setdata.countsearch < 0) {
+    //                 setdata.countsearch = 0;
+    //             }
+    //         }
+    //         else {
+    //             setdata.countused = (operathmath == "penjumlahan" ? data.countused + 1 : data.countused - 1);
+    //             if (setdata.countused < 0) {
+    //                 setdata.countused = 0;
+    //             }
+    //         }
+    //     }
 
-        if (data == null) {
-            var getdata = await this.MediastikerSS.findOne(list[loop]._id);
-            setdata._id = mongo.Types.ObjectId();
-            setdata.stikerId = konvertid;
-            setdata.name = getdata.name;
-            setdata.image = getdata.image;
-            setdata.countsearch = (target == "search" ? 1 : 0);
-            setdata.countused = (target == "used" ? 1 : 0);
-            setdata.createdAt = getdata.createdAt;
-        }
-        else {
-            if (target == "search") {
-                setdata.countsearch = (operathmath == "penjumlahan" ? data.countsearch + 1 : data.countsearch - 1);
-                if (setdata.countsearch < 0) {
-                    setdata.countsearch = 0;
-                }
-            }
-            else {
-                setdata.countused = (operathmath == "penjumlahan" ? data.countused + 1 : data.countused - 1);
-                if (setdata.countused < 0) {
-                    setdata.countused = 0;
-                }
-            }
-        }
+    //     try {
+    //         if (setdata._id == null) {
+    //             //stuck disini
+    //             operationresult = await this.CountstikerModel.updateOne(
+    //                 {
+    //                     _id: konvertid
+    //                 },
+    //                 data,
+    //                 function (err, docs) {
+    //                     if (err) {
+    //                         console.log(err);
+    //                     } else {
+    //                         console.log(docs);
+    //                     }
+    //                 },
+    //             );
+    //         }
+    //         else {
+    //             operationresult = await this.CountstikerModel.create(data);
+    //         }
+    //     }
+    //     catch (e) {
+    //         console.log(e);
+    //     }
 
-        try {
-            if (setdata._id == null) {
-                //stuck disini
-                operationresult = await this.CountstikerModel.updateOne(
-                    {
-                        _id: konvertid
-                    },
-                    data,
-                    function (err, docs) {
-                        if (err) {
-                            console.log(err);
-                        } else {
-                            console.log(docs);
-                        }
-                    },
-                );
-            }
-            else {
-                operationresult = await this.CountstikerModel.create(data);
-            }
-        }
-        catch (e) {
-            console.log(e);
-        }
+    //     console.log(operationresult);
+    //     console.log(konvertid);
+    // }
 
-        console.log(operationresult);
-        console.log(konvertid);
-    }
+    // async searchstikerlog(loop: number, target: string, operathmath: string, list: any[]) {
+    //     var operationresult = null;
+    //     var mongo = require('mongoose');
+    //     var konvertid = mongo.Types.ObjectId(list[loop]._id);
+    //     var data = await this.CountstikerModel.findOne({ stikerId: konvertid });
+
+    //     var setdata = new Countstiker();
+
+    //     if (data == null) {
+    //         var getdata = await this.MediastikerSS.findOne(list[loop]._id);
+    //         setdata._id = mongo.Types.ObjectId();
+    //         setdata.stikerId = konvertid;
+    //         setdata.name = getdata.name;
+    //         setdata.image = getdata.image;
+    //         setdata.countsearch = (target == "search" ? 1 : 0);
+    //         setdata.countused = (target == "used" ? 1 : 0);
+    //         setdata.createdAt = getdata.createdAt;
+    //     }
+    //     else {
+    //         if (target == "search") {
+    //             setdata.countsearch = (operathmath == "penjumlahan" ? data.countsearch + 1 : data.countsearch - 1);
+    //             if (setdata.countsearch < 0) {
+    //                 setdata.countsearch = 0;
+    //             }
+    //         }
+    //         else {
+    //             setdata.countused = (operathmath == "penjumlahan" ? data.countused + 1 : data.countused - 1);
+    //             if (setdata.countused < 0) {
+    //                 setdata.countused = 0;
+    //             }
+    //         }
+    //     }
+
+    //     try {
+    //         if (setdata._id == null) {
+    //             //stuck disini
+    //             operationresult = await this.CountstikerModel.updateOne(
+    //                 {
+    //                     _id: konvertid
+    //                 },
+    //                 data,
+    //                 function (err, docs) {
+    //                     if (err) {
+    //                         console.log(err);
+    //                     } else {
+    //                         console.log(docs);
+    //                     }
+    //                 },
+    //             );
+    //         }
+    //         else {
+    //             operationresult = await this.CountstikerModel.create(data);
+    //         }
+    //     }
+    //     catch (e) {
+    //         console.log(e);
+    //     }
+
+    //     console.log(operationresult);
+    //     console.log(konvertid);
+    // }
 }

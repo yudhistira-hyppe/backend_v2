@@ -606,6 +606,11 @@ export class MediastikerController {
 
         var data = await this.MediastikerService.listingapp(keyword, tipesticker, page, limit);
 
+        if (data !== undefined && data.length > 0) {
+
+            this.updateused(data);
+        }
+
         // if(keyword != null && keyword != undefined)
         // {
         //     this.countstick.updatedata(data, "search", "penjumlahan");
@@ -657,5 +662,7 @@ export class MediastikerController {
             // listdata.push(data[i]);
         }
     }
-
+    async updateused(list: any[]) {
+        return await this.countstick.updatedata(list, "search");
+    }
 }
