@@ -1880,10 +1880,9 @@ export class PostsController {
     var data = await this.postContentService.createNewPostV5(file, body, headers);
 
     if (data !== undefined && data !== null) {
+      var stiker = null;
 
-      console.log(arrayStiker)
-
-      if (arrayStiker !== null && arrayStiker.length > 0) {
+      if (arrayStiker !== undefined && arrayStiker.length > 0) {
         this.updateused(arrayStiker);
       }
 
@@ -3910,6 +3909,6 @@ export class PostsController {
     return Response;
   }
   async updateused(list: any[]) {
-    await this.CountstikerService.updatedata(list);
+    return await this.CountstikerService.updatedata(list);
   }
 }

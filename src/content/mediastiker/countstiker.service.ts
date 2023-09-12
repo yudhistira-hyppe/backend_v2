@@ -29,13 +29,13 @@ export class CountstikerService {
             for (let i = 0; i < list.length; i++) {
                 let id = list[i]._id;
                 var mongo = require('mongoose');
-                var konvertid = mongo.Types.ObjectId(id);
-                var data = await this.CountstikerModel.findOne({ _id: new Types.ObjectId(id.toString()) });
+
+                var data = await this.CountstikerModel.findOne({ stikerId: new Types.ObjectId(id.toString()) });
                 if (data == null) {
                     var setdata = new Countstiker();
-                    var getdata = await this.MediastikerSS.findOne(id);
+                    var getdata = await this.MediastikerSS.findOne(id.toString());
                     setdata._id = mongo.Types.ObjectId();
-                    setdata.stikerId = konvertid;
+                    setdata.stikerId = id;
                     setdata.name = getdata.name;
                     setdata.image = getdata.image;
                     setdata.countsearch = 0;
@@ -45,7 +45,7 @@ export class CountstikerService {
                 } else {
                     setTimeout(() => {
                         console.log('looping ke ' + i);
-                        this.updateUsed(id);
+                        this.updateUsed(id.toString());
                     }, (i * 1000));
                 }
             }
@@ -55,7 +55,7 @@ export class CountstikerService {
     async updateUsed(_id: string) {
         this.CountstikerModel.updateOne(
             {
-                _id: new mongoose.Types.ObjectId(_id),
+                stikerId: new mongoose.Types.ObjectId(_id),
             },
             { $inc: { countused: 1 } },
             function (err, docs) {
