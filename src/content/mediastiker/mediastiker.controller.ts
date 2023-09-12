@@ -573,15 +573,13 @@ export class MediastikerController {
     }
 
     @Get(':id')
-    async getdatabyid(@Param('id') id: string)
-    {
+    async getdatabyid(@Param('id') id: string) {
         return await this.MediastikerService.findOne(id)
     }
 
     @UseGuards(JwtAuthGuard)
     @Get(':id/chart')
-    async getdetailchartbyid(@Param('id') id: string)
-    {
+    async getdetailchartbyid(@Param('id') id: string) {
         return await this.MediastikerService.stickerchartbyId(id);
     }
 
@@ -589,35 +587,32 @@ export class MediastikerController {
     @Post('listingapp')
     async listingapp(@Req() request) {
         var request_json = JSON.parse(JSON.stringify(request.body));
-        
+
         var page = request_json['page'];
         var limit = request_json['limit'];
         var keyword = request_json['keyword'];
         var tipesticker = request_json['tipestiker'];
-        if(page == null || page == undefined)
-        {
+        if (page == null || page == undefined) {
             throw new BadRequestException("Unabled to proceed, page field is required");
         }
 
-        if(limit == null || limit == undefined)
-        {
+        if (limit == null || limit == undefined) {
             throw new BadRequestException("Unabled to proceed, limit field is required");
         }
 
-        if(tipesticker == null || tipesticker == undefined)
-        {
+        if (tipesticker == null || tipesticker == undefined) {
             throw new BadRequestException("Unabled to proceed, tipestiker field is required");
         }
 
         var data = await this.MediastikerService.listingapp(keyword, tipesticker, page, limit);
-        
-        if(keyword != null && keyword != undefined)
-        {
-            this.countstick.updatedata(data, "search", "penjumlahan");
-        }
+
+        // if(keyword != null && keyword != undefined)
+        // {
+        //     this.countstick.updatedata(data, "search", "penjumlahan");
+        // }
         return {
-            response_code:202,
-            data:data
+            response_code: 202,
+            data: data
         }
     }
 
