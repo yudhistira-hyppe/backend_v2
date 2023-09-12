@@ -1880,7 +1880,7 @@ export class PostsController {
     var data = await this.postContentService.createNewPostV5(file, body, headers);
 
     if (data !== undefined && data !== null) {
-      var stiker = null;
+      console.log(arrayStiker)
 
       if (arrayStiker !== undefined && arrayStiker.length > 0) {
         this.updateused(arrayStiker);
