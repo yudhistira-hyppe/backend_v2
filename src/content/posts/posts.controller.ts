@@ -1881,8 +1881,10 @@ export class PostsController {
 
     if (data !== undefined && data !== null) {
 
+      console.log(arrayStiker)
+
       if (arrayStiker !== null && arrayStiker.length > 0) {
-        this.updateused(arrayStiker, "used");
+        this.updateused(arrayStiker);
       }
 
       var postID = data.data.postID;
@@ -3907,7 +3909,7 @@ export class PostsController {
 
     return Response;
   }
-  async updateused(list: any[], target: string) {
-    await this.CountstikerService.updatedata(list, target, "penjumlahan");
+  async updateused(list: any[]) {
+    await this.CountstikerService.updatedata(list);
   }
 }
