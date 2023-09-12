@@ -27170,4 +27170,10 @@ export class AdsService {
 
         return query;
     }
+
+    async totalads()
+    {
+        var data = await this.adsModel.count();
+        return data;
+    }
 }

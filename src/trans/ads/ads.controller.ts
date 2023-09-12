@@ -844,7 +844,8 @@ export class AdsController {
         var dataSumGender = [];
         var data = null;
         try {
-            datacount = await this.userbasicsService.countBy();
+            datacount = await this.userbasicsService.countuserchart();
+            datacount[0].ads = await this.adsService.totalads();
             lengdata = datacount.length;
         } catch (e) {
             datacount = [];
