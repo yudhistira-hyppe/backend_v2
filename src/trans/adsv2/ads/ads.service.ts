@@ -69,11 +69,6 @@ export class AdsService {
 
     async dashboard(start_date: any, end_date: any): Promise<any> {
         var paramaggregate = [];
-        paramaggregate.push({
-            $addFields: {
-                settingId: new mongoose.Types.ObjectId(this.configService.get("ID_SETTING_ADS_CREDIT_PRICE"))
-            }
-        });
         if (start_date != null && end_date != null) {
             start_date = new Date(start_date);
             end_date = new Date(end_date);
@@ -81,6 +76,7 @@ export class AdsService {
             const ObjectMatch = {
                 $match: {
                     adsObjectivitasId: { $ne: null },
+                    status:"ACTIVE",
                     timestamp: {
                         $gte: start_date.toISOString(),
                         $lte: end_date.toISOString()
@@ -97,13 +93,13 @@ export class AdsService {
             paramaggregate.push(ObjectMatch)
         }
         paramaggregate.push({
-            $lookup: {
-                from: "userbasics",
-                localField: "userID",
-                foreignField: "_id",
-                as: "userbasics_data"
-            }
-        },
+                $lookup: {
+                    from: "userbasics",
+                    localField: "userID",
+                    foreignField: "_id",
+                    as: "userbasics_data"
+                }
+            },
             {
                 $lookup: {
                     from: "adstypes",
@@ -122,10 +118,10 @@ export class AdsService {
             },
             {
                 $lookup: {
-                    from: "settings",
-                    localField: "settingId",
+                    from: "adspricecredits",
+                    localField: "idAdspricecredits",
                     foreignField: "_id",
-                    as: "settings_data"
+                    as: "adspricecredits_data"
                 }
             },
             {
@@ -134,9 +130,9 @@ export class AdsService {
                     creditPrice: {
                         "$let": {
                             "vars": {
-                                "tmp": { "$arrayElemAt": ["$settings_data", 0] },
+                                "tmp": { "$arrayElemAt": ["$adspricecredits_data", 0] },
                             },
-                            "in": "$$tmp.value"
+                            "in": "$$tmp.creditPrice"
                         }
                     },
                     name: 1,

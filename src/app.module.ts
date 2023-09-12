@@ -112,8 +112,10 @@ import { AdsModule as Adsv2Module } from './trans/adsv2/ads/ads.module'
 import { AdsTypesModule } from './trans/adsv2/adstype/adstype.module';
 import { AdsObjectivitasModule } from './trans/adsv2/adsobjectivitas/adsobjectivitas.module';
 import { VoucherpromoModule } from './trans/adsv2/voucherpromo/voucherpromo.module';
+import { AdsPriceCreditsModule } from './trans/adsv2/adspricecredits/adspricecredits.module';
 @Module({
   imports: [
+    AdsPriceCreditsModule,
     VoucherpromoModule,
     AdslogsModule,
     Adsv2Module,

@@ -91,6 +91,7 @@ export class AdsDto {
     mediaThumUri: string;
     width: number;
     height: number;
+    idAdspricecredits: mongoose.Types.ObjectId;
 }
 
 export class AdsAction {

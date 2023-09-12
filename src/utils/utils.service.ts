@@ -36,6 +36,7 @@ import { UserscoresService } from '../trans/userscores/userscores.service';
 import { UserscoresDto } from 'src/trans/userscores/dto/create-userscores.dto';
 import mongoose, { Types } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
+import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -1945,6 +1946,21 @@ export class UtilsService {
       }
     } else {
       return "Unabled to proceed param " + nameParam + " is required";
+    }
+  }
+
+  async getIdUserByToken(head: any): Promise<Userbasic> {
+    var token = ((head['x-auth-token']).split(" "))[1];
+    var data = await this.jwtService.decode(token);
+    if (data != undefined) {
+      if (data['email'] != undefined) {
+        const Userbasic_: Userbasic = await this.userbasicsService.findOne(data['email'])
+        return Userbasic_;
+      }else{
+        return null;
+      }
+    } else {
+      return null;
     }
   }
 }
