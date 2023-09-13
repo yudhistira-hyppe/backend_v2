@@ -17,10 +17,11 @@ import { AdsplacesModule } from '../../../trans/adsplaces/adsplaces.module';
 import { AdstypesModule } from '../../../trans/adstypes/adstypes.module';
 import { AdslogsModule } from '../adslog/adslogs.module';
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
-
+import { AdsPriceCreditsModule } from '../adspricecredits/adspricecredits.module';
 @Module({
     imports: [
         LogapisModule,
+        AdsPriceCreditsModule,
         AdsBalaceCreditModule,
         AdslogsModule,
         AdsplacesModule,

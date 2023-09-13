@@ -39,6 +39,7 @@ import mongoose, { Model, Types } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { SettingsDocument, SettingsMixed } from 'src/trans/settings2/schemas/settings2.schema';
 import { InjectModel } from '@nestjs/mongoose';
+import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -2325,8 +2326,6 @@ export class UtilsService {
   }
 
   async sendFcmPushNotif(email: string, titlein: string, bodyin: any, titleen: string, bodyen: any, eventType: string, event: string, url: string, idtemplate: string) {
-
-
     var emailuserbasic = null;
     var datadevice = null;
     var languages = null;
@@ -2516,7 +2515,21 @@ export class UtilsService {
       console.log('notif: ' + JSON.stringify(createNotificationsDto));
       await this.notificationsService.create(createNotificationsDto);
 
+    }
+  }
 
+  async getIdUserByToken(head: any): Promise<Userbasic> {
+    var token = ((head['x-auth-token']).split(" "))[1];
+    var data = await this.jwtService.decode(token);
+    if (data != undefined) {
+      if (data['email'] != undefined) {
+        const Userbasic_: Userbasic = await this.userbasicsService.findOne(data['email'])
+        return Userbasic_;
+      }else{
+        return null;
+      }
+    } else {
+      return null;
     }
   }
 }

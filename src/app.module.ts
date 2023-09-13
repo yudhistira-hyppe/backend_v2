@@ -116,10 +116,12 @@ import { VoucherpromoModule } from './trans/adsv2/voucherpromo/voucherpromo.modu
 import { BannerModule } from './trans/banner/banner.module';
 import { MediastikerModule } from './content/mediastiker/mediastiker.module';
 import { StickerCategoryModule } from './trans/stickercategory/stickercategory.module';
+import { AdsPriceCreditsModule } from './trans/adsv2/adspricecredits/adspricecredits.module';
 @Module({
   imports: [
     BannerModule,
     MediastikerModule,
+    AdsPriceCreditsModule,
     VoucherpromoModule,
     AdslogsModule,
     Adsv2Module,

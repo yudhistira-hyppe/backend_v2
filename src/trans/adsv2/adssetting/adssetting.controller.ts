@@ -15,6 +15,8 @@ import { AdslogsService } from '../adslog/adslog.service';
 import { AdsObjectivitasService } from '../adsobjectivitas/adsobjectivitas.service';
 import { AdsObjectivitasDto } from '../adsobjectivitas/dto/adsobjectivitas.dto';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { AdsPriceCreditsService } from '../adspricecredits/adspricecredits.service';
+import { AdsPriceCredits } from '../adspricecredits/schema/adspricecredits.schema';
 
 @Controller('api/adsv2/setting')
 export class AdsSettingController {
@@ -28,6 +30,7 @@ export class AdsSettingController {
         private readonly configService: ConfigService, 
         private readonly adsObjectivitasService: AdsObjectivitasService,
         private readonly logapiSS: LogapisService,
+        private readonly adsPriceCreditsService: AdsPriceCreditsService,
         private readonly errorHandler: ErrorHandler) { }
 
     @UseGuards(JwtAuthGuard)
@@ -95,7 +98,7 @@ export class AdsSettingController {
         var _remark_PopUpAds_Economy_Sharing = this.configService.get("REMARK_ADS_IN_POPUP_ECONOMY_SHARING");
 
         //ADS SETTING
-        var _id_setting_CreditPrice = this.configService.get("ID_SETTING_ADS_CREDIT_PRICE");
+        //var _id_setting_CreditPrice = this.configService.get("ID_SETTING_ADS_CREDIT_PRICE");
         var _remark_setting_CreditPrice = this.configService.get("REMARK_SETTING_ADS_CREDIT_PRICE");
 
         var _id_setting_AdsDurationMin = this.configService.get("ID_SETTING_ADS_DURATION_MIN");
@@ -133,7 +136,7 @@ export class AdsSettingController {
             var getSetting_InContentAds = await this.adsTypeService.findOne(_id_InContentAds);
             var getSetting_InBetweenAds = await this.adsTypeService.findOne(_id_InBetweenAds);
             var getSetting_PopUpAds = await this.adsTypeService.findOne(_id_PopUpAds);
-            var getSetting_CreditPrice = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CreditPrice));
+            var getSetting_CreditPrice = await this.adsPriceCreditsService.findStatusActive();
             var getSetting_AdsDurationMin = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsDurationMin));
             var getSetting_AdsDurationMax = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsDurationMax));
             var getSetting_AdsPlanMin = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsPlanMin));
@@ -430,7 +433,7 @@ export class AdsSettingController {
                 //ADS SETTING
                 {
                     Jenis: "CreditPrice",
-                    Nilai: (getSetting_CreditPrice.value != undefined) ? getSetting_CreditPrice.value : 0,
+                    Nilai: (getSetting_CreditPrice.creditPrice != undefined) ? getSetting_CreditPrice.creditPrice : 0,
                     Unit: getSetting_CreditPrice.remark,
                     Aktifitas: (CreditPrice.length > 0) ? CreditPrice[0].userbasics_data[0].fullName : "",
                     Date: (CreditPrice.length > 0) ? CreditPrice[0].dateTime : "-",
@@ -627,7 +630,7 @@ export class AdsSettingController {
         var _remark_PopUpAds_Economy_Sharing = this.configService.get("REMARK_ADS_IN_POPUP_ECONOMY_SHARING");
 
         //ADS SETTING
-        var _id_setting_CreditPrice = this.configService.get("ID_SETTING_ADS_CREDIT_PRICE");
+        //var _id_setting_CreditPrice = this.configService.get("ID_SETTING_ADS_CREDIT_PRICE");
         var _remark_setting_CreditPrice = this.configService.get("REMARK_SETTING_ADS_CREDIT_PRICE");
 
         var _id_setting_AdsDurationMin = this.configService.get("ID_SETTING_ADS_DURATION_MIN");
@@ -1128,7 +1131,15 @@ export class AdsSettingController {
                 }
                 try {
                     nameActivitas.push("CreditPrice");
-                    await this.adssettingService.updateAdsSetting(_id_setting_CreditPrice, body.CreditPrice);
+                    const currentDate = await this.utilsService.getDateTimeISOString()
+                    let AdsPriceCredits_ = new AdsPriceCredits();
+                    AdsPriceCredits_._id = new mongoose.Types.ObjectId();
+                    AdsPriceCredits_.iduser = new mongoose.Types.ObjectId(ubasic._id.toString());
+                    AdsPriceCredits_.createAt = currentDate;
+                    AdsPriceCredits_.updateAt = currentDate;
+                    AdsPriceCredits_.status = true;
+                    AdsPriceCredits_.creditPrice = body.CreditPrice;
+                    await this.adsPriceCreditsService.create(AdsPriceCredits_);
                 } catch (e) {
                     var timestamps_end = await this.utilsService.getDateTimeString();
                     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
@@ -1460,7 +1471,7 @@ export class AdsSettingController {
             var getSetting_InContentAds = await this.adsTypeService.findOne(_id_InContentAds);
             var getSetting_InBetweenAds = await this.adsTypeService.findOne(_id_InBetweenAds);
             var getSetting_PopUpAds = await this.adsTypeService.findOne(_id_PopUpAds);
-            var getSetting_CreditPrice = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_CreditPrice));
+            var getSetting_CreditPrice = await this.adsPriceCreditsService.findStatusActive();
             var getSetting_AdsDurationMin = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsDurationMin));
             var getSetting_AdsDurationMax = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsDurationMax));
             var getSetting_AdsPlanMin = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsPlanMin));
@@ -1748,7 +1759,7 @@ export class AdsSettingController {
                     //ADS SETTING
                     {
                         Jenis: "CreditPrice",
-                        Nilai: (getSetting_CreditPrice.value != undefined) ? getSetting_CreditPrice.value : 0,
+                        Nilai: (getSetting_CreditPrice.creditPrice != undefined) ? getSetting_CreditPrice.creditPrice : 0,
                         Unit: getSetting_AdsPlanMax.remark,
                         Aktifitas: (CreditPrice.length > 0) ? CreditPrice[0].userbasics_data[0].fullName : "",
                         Date: (CreditPrice.length > 0) ? CreditPrice[0].dateTime : "-",
