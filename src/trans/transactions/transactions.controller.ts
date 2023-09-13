@@ -1195,14 +1195,6 @@ export class TransactionsController {
 
     @Post('api/pg/oy/callback/va')
     async callbackVa(@Res() res, @Body() payload: VaCallback, @Req() req, @Headers() headers) {
-        var timestamps_start = await this.utilsService.getDateTimeString();
-        var fullurl = req.get("Host") + req.originalUrl;
-        var timestamps_start = await this.utilsService.getDateTimeString();
-        var token = headers['x-auth-token'];
-        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-        var setemail = auth.email;
-        var reqbody = JSON.parse(JSON.stringify(payload));
-
         const messages = {
             "info": ["The update successful"],
         };
@@ -1300,9 +1292,6 @@ export class TransactionsController {
                     bankcode = databank._doc.bankcode;
 
                 } catch (e) {
-                    var timestamps_end = await this.utilsService.getDateTimeString();
-                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
-
                     throw new BadRequestException("Banks not found...!");
                 }
                 type = datatransaksi.type;
@@ -1315,6 +1304,11 @@ export class TransactionsController {
                 var tamount = datatransaksi.totalamount;
                 var status = datatransaksi.status;
                 var detail = datatransaksi.detail;
+
+                var timestamps_start = await this.utilsService.getDateTimeString();
+                var fullurl = req.get("Host") + req.originalUrl;
+                var setiduser = iduserbuy;
+                var reqbody = JSON.parse(JSON.stringify(payload));
 
                 try {
                     salelike = datatransaksi.salelike;
@@ -1482,7 +1476,7 @@ export class TransactionsController {
                         await this.postContentService.generateCertificate(postid, langIso);
 
                         var timestamps_end = await this.utilsService.getDateTimeString();
-                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
 
 
                         return res.status(HttpStatus.OK).json({
@@ -1491,7 +1485,7 @@ export class TransactionsController {
                         });
                     } else {
                         var timestamps_end = await this.utilsService.getDateTimeString();
-                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
 
 
                         return res.status(HttpStatus.OK).json({
@@ -1624,7 +1618,7 @@ export class TransactionsController {
                         }
 
                         var timestamps_end = await this.utilsService.getDateTimeString();
-                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
 
                         return res.status(HttpStatus.OK).json({
                             response_code: 202,
@@ -1633,7 +1627,7 @@ export class TransactionsController {
                     } else {
 
                         var timestamps_end = await this.utilsService.getDateTimeString();
-                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
 
                         return res.status(HttpStatus.OK).json({
                             response_code: 202,
@@ -1689,7 +1683,7 @@ export class TransactionsController {
                         //this.sendemail(emailbuyer.toString(), "BOOST_SUCCES_TEST", datatransaksi, OwnerShip);
 
                         var timestamps_end = await this.utilsService.getDateTimeString();
-                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
 
                         //RESPONSE SUCCES
                         return res.status(HttpStatus.OK).json({
@@ -1698,7 +1692,7 @@ export class TransactionsController {
                         });
                     } else {
                         var timestamps_end = await this.utilsService.getDateTimeString();
-                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
 
                         return res.status(HttpStatus.OK).json({
                             response_code: 202,
@@ -1707,9 +1701,6 @@ export class TransactionsController {
                     }
                 }
             } catch (e) {
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
-
                 throw new BadRequestException("Unabled to proceed" + e);
             }
         }
@@ -2304,12 +2295,6 @@ export class TransactionsController {
 
     @Post('api/pg/oy/callback/disbursement')
     async callbackDisbursement(@Res() res, @Body() payload: OyDisburseCallbacks, @Req() request, @Headers() headers) {
-        var timestamps_start = await this.utilsService.getDateTimeString();
-        var fullurl = request.get("Host") + request.originalUrl;
-        var token = headers['x-auth-token'];
-        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-        var email = auth.email;
-        var reqbody = JSON.parse(JSON.stringify(payload));
 
         const messages = {
             "info": ["Disbursement Request has been completed (success)"],
@@ -2329,9 +2314,6 @@ export class TransactionsController {
             idbank = databank._doc._id;
 
         } catch (e) {
-            var timestamps_end = await this.utilsService.getDateTimeString();
-            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
-            
             throw new BadRequestException("Banks not found...!");
         }
 
@@ -2345,12 +2327,17 @@ export class TransactionsController {
 
         if (datarek !== null) {
 
+            var timestamps_start = await this.utilsService.getDateTimeString();
+            var fullurl = request.get("Host") + request.originalUrl;
+            var reqbody = JSON.parse(JSON.stringify(payload));
+            var setiduser = datarek.userId;
+
             if (statusCallback === "000") {
 
                 await this.withdrawsService.updateone(partner_trx_id, payload);
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
 
                 return res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -2364,7 +2351,7 @@ export class TransactionsController {
                 await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload);
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
 
                 return res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -2378,7 +2365,7 @@ export class TransactionsController {
                 await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
 
                 return res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -2391,7 +2378,7 @@ export class TransactionsController {
                 await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload);
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
 
                 return res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -2402,7 +2389,7 @@ export class TransactionsController {
                 await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
 
                 return res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -2410,8 +2397,6 @@ export class TransactionsController {
                 });
             }
         } else {
-            var timestamps_end = await this.utilsService.getDateTimeString();
-            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
 
             throw new BadRequestException("recipient_account not found...!");
         }
