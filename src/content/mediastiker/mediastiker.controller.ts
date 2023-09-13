@@ -105,7 +105,7 @@ export class MediastikerController {
             var index = dataindex[0].index;
         }
 
-        if (parseInt(nourut) > index) {
+        if (parseInt(nourut) > (index + 1)) {
             throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
         }
         if (parseInt(nourut) < 1) {
@@ -272,7 +272,7 @@ export class MediastikerController {
             var index = dataindex[0].index;
         }
 
-        if (parseInt(nourut) > index) {
+        if (parseInt(nourut) > (index + 1)) {
             throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
         }
         if (parseInt(nourut) < 1) {
