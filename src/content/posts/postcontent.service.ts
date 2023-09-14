@@ -3734,6 +3734,8 @@ export class PostContentService {
             await setTimeout(async function () {
               console.error('Third log message - after 3 second');
               let getApsara = await this.getVideoApsara([video.apsaraId]);
+              console.error("------------------------------------ APSARA RESPONSE ------------------------------------");
+              console.error(JSON.stringify(getApsara)); 
               if (getApsara != undefined && getApsara.VideoList != undefined && getApsara.VideoList.length > 0) {
                 let vi = getApsara.VideoList[0];
                 if (video.apsaraId == vi.VideoId) {
@@ -3742,7 +3744,7 @@ export class PostContentService {
               }
               PostData_.apsaraId = String(video.apsaraId);
               PostData_.isApsara = true;
-            }, 5000);
+            }, 15000);
           } else {
             PostData_.mediaThumbUri = video.mediaThumb;
             PostData_.mediaEndpoint = '/stream/' + video.postID;
