@@ -588,27 +588,27 @@ export class MediastikerController {
     async listingapp(@Req() request) {
         var request_json = JSON.parse(JSON.stringify(request.body));
 
-        var page = request_json['page'];
-        var limit = request_json['limit'];
+        // var page = request_json['page'];
+        // var limit = request_json['limit'];
         var keyword = request_json['keyword'];
         var tipesticker = request_json['tipestiker'];
-        if (page == null || page == undefined) {
-            throw new BadRequestException("Unabled to proceed, page field is required");
-        }
+        // if (page == null || page == undefined) {
+        //     throw new BadRequestException("Unabled to proceed, page field is required");
+        // }
 
-        if (limit == null || limit == undefined) {
-            throw new BadRequestException("Unabled to proceed, limit field is required");
-        }
+        // if (limit == null || limit == undefined) {
+        //     throw new BadRequestException("Unabled to proceed, limit field is required");
+        // }
 
         if (tipesticker == null || tipesticker == undefined) {
             throw new BadRequestException("Unabled to proceed, tipestiker field is required");
         }
 
-        var data = await this.MediastikerService.listingapp(keyword, tipesticker, page, limit);
+        var data = await this.MediastikerService.listingapp(keyword, tipesticker);
 
-        if (data !== undefined && data.length > 0) {
+        if(keyword != null && keyword != undefined){
 
-            this.updateused(data);
+            this.updateused(data[0].data);
         }
 
         // if(keyword != null && keyword != undefined)

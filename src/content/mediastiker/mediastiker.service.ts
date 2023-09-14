@@ -1053,7 +1053,7 @@ export class MediastikerService {
         return data[0];
     }
 
-    async listingapp(keyword:string, jenis:string, page:number, limit:number)
+    async listingapp(keyword:string, jenis:string)
     {
         var pipeline = [];
         pipeline.push(
@@ -1190,7 +1190,8 @@ export class MediastikerService {
                         ]
                     },
                     status:1,
-                    type:1
+                    type:1,
+                    isDelete:1
                 }
             },
         )
@@ -1215,7 +1216,32 @@ export class MediastikerService {
                         countused:-1,
                         name:1
                     }
-                }
+                },
+                {
+                    "$group":
+                    {
+                        _id:null,
+                        data:
+                        {
+                            "$push":
+                            {
+                                _id: "$_id",
+                                name: "$name",
+                                kategori: "$kategori",
+                                image: "$image",
+                                createdAt: "$createdAt",
+                                updatedAt: "$updatedAt",
+                                used: "$used",
+                                status: "$status",
+                                isDelete: "$isDelete",
+                                index: "$index",
+                                type: "$type",
+                                countsearch: "$countsearch", 
+                                countused: "$countused", 
+                            }
+                        }
+                    }
+                },
             )
         }
         else if(jenis == "GIF")
@@ -1226,7 +1252,31 @@ export class MediastikerService {
                     {
                         "createdAt":-1
                     }
-                }
+                },
+                {
+                    "$group":
+                    {
+                        _id:null,
+                        data:
+                        {
+                            "$push":
+                            {
+                                _id: "$_id",
+                                name: "$name",
+                                image: "$image",
+                                createdAt: "$createdAt",
+                                updatedAt: "$updatedAt",
+                                used: "$used",
+                                status: "$status",
+                                isDelete: "$isDelete",
+                                index: "$index",
+                                type: "$type",
+                                countsearch: "$countsearch", 
+                                countused: "$countused", 
+                            }
+                        }
+                    }
+                },
             );
         }
         else if(jenis == "STICKER" || jenis == "EMOJI")
@@ -1276,32 +1326,19 @@ export class MediastikerService {
             );
         }
 
-        if(page > 0)
-        {
-            pipeline.push({
-                "$skip":(page * limit)
-            });
-        }
 
-        if(limit > 0)
-        {
-            pipeline.push({
-                "$limit":limit
-            });
-        }
-
-        if((jenis == "STICKER" || jenis == "EMOJI") && keyword == null && keyword == undefined)
-        {
-            pipeline.push(
-                {
-                    "$unwind":
-                    {
-                        path:"$data",
-                        preserveNullAndEmptyArrays:true
-                    }
-                }
-            )
-        }
+        // if((jenis == "STICKER" || jenis == "EMOJI") && keyword == null && keyword == undefined)
+        // {
+        //     pipeline.push(
+        //         {
+        //             "$unwind":
+        //             {
+        //                 path:"$data",
+        //                 preserveNullAndEmptyArrays:true
+        //             }
+        //         }
+        //     )
+        // }
 
         var data = await this.MediastikerModel.aggregate(pipeline);
         return data;
