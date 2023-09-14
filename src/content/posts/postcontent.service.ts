@@ -1687,6 +1687,10 @@ export class PostContentService {
 
     //Create Response
     let dataPosts = await this.postService.findByPostId(Posts_._id.toString());
+    console.error('Third log message - after 3 second');
+    await setTimeout(function () {
+      console.error('Third log message - after 3 second');
+    }, 3000);
     var dataResponseGenerate = await this.genrateDataPost5(dataPosts, data_userbasics);
     let CreatePostResponse_ = new CreatePostResponse();
     let Messages_ = new Messages();
@@ -3497,11 +3501,6 @@ export class PostContentService {
 
     //Create Response
     let dataPosts = await this.postService.findByPostId(Posts_._id.toString());
-
-    console.error('Third log message - after 3 second');
-    await setTimeout(function () {
-      console.error('Third log message - after 3 second');
-    }, 3000);
     var dataResponseGenerate = await this.genrateDataPost5(dataPosts, data_userbasics);
     let CreatePostResponse_ = new CreatePostResponse();
     let Messages_ = new Messages();
@@ -3737,8 +3736,6 @@ export class PostContentService {
           let video = await this.videoService.findOne(String(med.oid));
           if (video.apsara == true) {
             let getApsara = await this.getVideoApsara([video.apsaraId]);
-            console.log("----------------------------- APSARA RESPONSE UPLOAD ----------------------------")
-            console.log(JSON.stringify(getApsara))
             if (getApsara != undefined && getApsara.VideoList != undefined && getApsara.VideoList.length > 0) {
               let vi = getApsara.VideoList[0];
               if (video.apsaraId == vi.VideoId) {
