@@ -1687,12 +1687,7 @@ export class PostContentService {
 
     //Create Response
     let dataPosts = await this.postService.findByPostId(Posts_._id.toString());
-    
-    let dataResponseGenerate = null;
-    await setTimeout(async function () {
-      console.error('Third log message - after 3 second');
-      dataResponseGenerate = await this.genrateDataPost5(dataPosts, data_userbasics);
-    }, 3000);
+    var dataResponseGenerate = await this.genrateDataPost5(dataPosts, data_userbasics);
     let CreatePostResponse_ = new CreatePostResponse();
     let Messages_ = new Messages();
 
@@ -3736,15 +3731,18 @@ export class PostContentService {
         if (ns == 'mediavideos') {
           let video = await this.videoService.findOne(String(med.oid));
           if (video.apsara == true) {
-            let getApsara = await this.getVideoApsara([video.apsaraId]);
-            if (getApsara != undefined && getApsara.VideoList != undefined && getApsara.VideoList.length > 0) {
-              let vi = getApsara.VideoList[0];
-              if (video.apsaraId == vi.VideoId) {
-                PostData_.mediaThumbEndpoint = vi.CoverURL;
+            await setTimeout(async function () {
+              console.error('Third log message - after 3 second');
+              let getApsara = await this.getVideoApsara([video.apsaraId]);
+              if (getApsara != undefined && getApsara.VideoList != undefined && getApsara.VideoList.length > 0) {
+                let vi = getApsara.VideoList[0];
+                if (video.apsaraId == vi.VideoId) {
+                  PostData_.mediaThumbEndpoint = vi.CoverURL;
+                }
               }
-            }
-            PostData_.apsaraId = String(video.apsaraId);
-            PostData_.isApsara = true;
+              PostData_.apsaraId = String(video.apsaraId);
+              PostData_.isApsara = true;
+            }, 5000);
           } else {
             PostData_.mediaThumbUri = video.mediaThumb;
             PostData_.mediaEndpoint = '/stream/' + video.postID;
