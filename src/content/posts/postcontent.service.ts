@@ -1687,11 +1687,12 @@ export class PostContentService {
 
     //Create Response
     let dataPosts = await this.postService.findByPostId(Posts_._id.toString());
-    console.error('Third log message - after 3 second');
-    await setTimeout(function () {
+    
+    let dataResponseGenerate = null;
+    await setTimeout(async function () {
       console.error('Third log message - after 3 second');
+      dataResponseGenerate = await this.genrateDataPost5(dataPosts, data_userbasics);
     }, 3000);
-    var dataResponseGenerate = await this.genrateDataPost5(dataPosts, data_userbasics);
     let CreatePostResponse_ = new CreatePostResponse();
     let Messages_ = new Messages();
 
