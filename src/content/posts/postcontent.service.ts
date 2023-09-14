@@ -3732,7 +3732,7 @@ export class PostContentService {
           let video = await this.videoService.findOne(String(med.oid));
           if (video.apsara == true) {
             await setTimeout(function () {
-              console.log('Third log message - after 3 second');
+              console.error('Third log message - after 3 second');
             }, 3000);
             let getApsara = await this.getVideoApsara([video.apsaraId]);
             console.log("----------------------------- APSARA RESPONSE UPLOAD ----------------------------")
