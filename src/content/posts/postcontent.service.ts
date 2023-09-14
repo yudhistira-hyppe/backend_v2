@@ -3732,6 +3732,8 @@ export class PostContentService {
           let video = await this.videoService.findOne(String(med.oid));
           if (video.apsara == true) {
             let getApsara = await this.getVideoApsara([video.apsaraId]);
+            console.log("----------------------------- APSARA RESPONSE UPLOAD ----------------------------")
+            console.log(JSON.stringify(getApsara))
             if (getApsara != undefined && getApsara.VideoList != undefined && getApsara.VideoList.length > 0) {
               let vi = getApsara.VideoList[0];
               if (video.apsaraId == vi.VideoId) {
