@@ -3497,6 +3497,8 @@ export class PostContentService {
 
     //Create Response
     let dataPosts = await this.postService.findByPostId(Posts_._id.toString());
+
+    console.error('Third log message - after 3 second');
     await setTimeout(function () {
       console.error('Third log message - after 3 second');
     }, 3000);
