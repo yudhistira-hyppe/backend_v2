@@ -1189,6 +1189,13 @@ export class MediastikerService {
                             "$kategori_data.createdAt",0
                         ]
                     },
+                    kategoriicon:
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$kategori_data.icon",0
+                        ]
+                    },
                     status:1,
                     type:1,
                     isDelete:1
@@ -1295,6 +1302,10 @@ export class MediastikerService {
                         kategoritime:
                         {
                             "$first":"$kategoricreatedAt"
+                        },
+                        kategoriicon:
+                        {
+                            "$first":"$kategoriicon"
                         },
                         data:
                         {
