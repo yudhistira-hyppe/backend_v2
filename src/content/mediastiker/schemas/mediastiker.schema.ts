@@ -17,7 +17,9 @@ export class Mediastiker {
     @Prop()
     updatedAt: string;
     @Prop()
-    used: number;
+    countused: number;
+    @Prop()
+    countsearch: number;
     @Prop()
     status: boolean;
     @Prop()

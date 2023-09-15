@@ -50,7 +50,6 @@ import { Postchallenge } from 'src/trans/postchallenge/schemas/postchallenge.sch
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 
 import { MediastikerService } from 'src/content/mediastiker/mediastiker.service';
-import { CountstikerService } from 'src/content/mediastiker/countstiker.service';
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -79,7 +78,6 @@ export class PostsController {
     private readonly postchallengeService: PostchallengeService,
     private readonly logapiSS: LogapisService,
     private readonly MediastikerService: MediastikerService,
-    private readonly CountstikerService: CountstikerService,
     private readonly methodepaymentsService: MethodepaymentsService) { }
 
   @Post()
@@ -3909,6 +3907,6 @@ export class PostsController {
     return Response;
   }
   async updateused(list: any[]) {
-    return await this.CountstikerService.updatedata(list, "used");
+    return await this.MediastikerService.updatedata(list, "used");
   }
 }

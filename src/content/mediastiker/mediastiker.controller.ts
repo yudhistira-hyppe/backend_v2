@@ -8,7 +8,6 @@ import mongoose from 'mongoose';
 import { FileFieldsInterceptor } from '@nestjs/platform-express/multer';
 import { OssService } from 'src/stream/oss/oss.service';
 import { isNegative } from 'class-validator';
-import { CountstikerService } from './countstiker.service';
 @Controller('api/mediastiker')
 export class MediastikerController {
 
@@ -17,7 +16,6 @@ export class MediastikerController {
         private readonly errorHandler: ErrorHandler,
         private readonly utilsService: UtilsService,
         private readonly osservices: OssService,
-        private readonly countstick: CountstikerService
     ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -142,7 +140,8 @@ export class MediastikerController {
         insertdata.status = status;
         insertdata.kategori = kategori;
         insertdata.index = parseInt(nourut);
-        insertdata.used = 0;
+        insertdata.countused = 0;
+        insertdata.countsearch = 0;
         insertdata.type = type;
         var insertMediastiker = files.image[0];
         var path = "images/mediastiker/" + insertdata._id + "_mediastiker" + "." + insertMediastiker.originalname.split(".").pop();
@@ -663,6 +662,6 @@ export class MediastikerController {
         }
     }
     async updateused(list: any[]) {
-        return await this.countstick.updatedata(list, "search");
+        return await this.MediastikerService.updatedata(list, "search");
     }
 }
