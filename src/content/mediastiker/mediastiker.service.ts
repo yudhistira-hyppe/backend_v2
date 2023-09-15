@@ -1059,15 +1059,6 @@ export class MediastikerService {
             {
                 "$lookup":
                 {
-                    "from": "countStiker",
-                    "localField": "_id",
-                    "foreignField": "stikerId",
-                    "as": "stiker_data"
-                }
-            },
-            {
-                "$lookup":
-                {
                     "from": "stickerCategory",
                     "as": "kategori_data",
                     "let":
@@ -1107,27 +1098,6 @@ export class MediastikerService {
                                 }
                             }
                         ]
-                }
-            },
-            {
-                "$addFields":
-                {
-                    "countused":
-                    {
-                        "$arrayElemAt":
-                            [
-                                "$stiker_data.countused",
-                                0
-                            ]
-                    },
-                    "countsearch":
-                    {
-                        "$arrayElemAt":
-                            [
-                                "$stiker_data.countsearch",
-                                0
-                            ]
-                    }
                 }
             },
             {
