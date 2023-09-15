@@ -554,45 +554,51 @@ export class ActivityeventsService {
           lastlogin: "$createdAt",
           urluserBadge:
           {
-              "$filter":
-              {
-                input:
-                { 
-                  $arrayElemAt: 
-                  [
-                    "$user.userBadge", 0
-                  ] 
-                },
-                as:"listbadge",
-                cond:
+              "$ifNull":
+              [
                 {
-                  "$and":
-                  [
-                    {
-                      "$eq":
+                  "$filter":
+                  {
+                    input:
+                    { 
+                      $arrayElemAt: 
                       [
-                        "$$listbadge.isActive", true
-                      ]
+                        "$user.userBadge", 0
+                      ] 
                     },
+                    as:"listbadge",
+                    cond:
                     {
-                      "$lte": [
+                      "$and":
+                      [
                         {
-                          "$dateToString": {
-                            "format": "%Y-%m-%d %H:%M:%S",
-                            "date": {
-                              "$add": [
-                                new Date(),
-                                25200000
-                              ]
-                            }
-                          }
+                          "$eq":
+                          [
+                            "$$listbadge.isActive", true
+                          ]
                         },
-                        "$$listbadge.endDatetime"
+                        {
+                          "$lte": [
+                            {
+                              "$dateToString": {
+                                "format": "%Y-%m-%d %H:%M:%S",
+                                "date": {
+                                  "$add": [
+                                    new Date(),
+                                    25200000
+                                  ]
+                                }
+                              }
+                            },
+                            "$$listbadge.endDatetime"
+                          ]
+                        }
                       ]
                     }
-                  ]
-                }
-              }
+                  }
+                },
+                []
+              ]
           },
         }
       },

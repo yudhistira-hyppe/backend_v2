@@ -473,39 +473,45 @@ export class NotificationsService {
           },
           urluserBadge:
           {
-            "$filter":
-            {
-              input: "$userSender.userBadge",
-              as: "listbadge",
-              cond:
-              {
-                "$and":
-                  [
-                    {
-                      "$eq":
-                        [
-                          "$$listbadge.isActive", true
-                        ]
-                    },
-                    {
-                      "$lte": [
-                        {
-                          "$dateToString": {
-                            "format": "%Y-%m-%d %H:%M:%S",
-                            "date": {
-                              "$add": [
-                                new Date(),
-                                25200000
+              "$ifNull":
+              [
+                  {
+                      "$filter":
+                      {
+                      input: "$userSender.userBadge",
+                      as: "listbadge",
+                      cond:
+                      {
+                          "$and":
+                          [
+                          {
+                              "$eq":
+                              [
+                              "$$listbadge.isActive", true
                               ]
-                            }
+                          },
+                          {
+                              "$lte": [
+                              {
+                                  "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                      "$add": [
+                                      new Date(),
+                                      25200000
+                                      ]
+                                  }
+                                  }
+                              },
+                              "$$listbadge.endDatetime"
+                              ]
                           }
-                        },
-                        "$$listbadge.endDatetime"
-                      ]
-                    }
-                  ]
-              }
-            }
+                          ]
+                      }
+                      }
+                  },
+                  []
+              ]
           },
           title: 1,
           updatedAt: 1,
@@ -779,12 +785,12 @@ export class NotificationsService {
           urluserBadge:
           {
             "$ifNull":
-              [
-                {
-                  "$arrayElemAt": ["$urluserBadge", 0]
-                },
-                null
-              ]
+            [
+              {
+                "$arrayElemAt": ["$urluserBadge", 0]
+              },
+              null
+            ]
           },
           content:
           {
