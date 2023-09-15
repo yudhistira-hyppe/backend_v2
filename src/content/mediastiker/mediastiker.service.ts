@@ -1286,10 +1286,7 @@ export class MediastikerService {
                         {
                             "$first": "$kategoriicon"
                         },
-                        kategoriicon:
-                        {
-                            "$first": "$kategoriicon"
-                        },
+
                         data:
                         {
                             "$push":
