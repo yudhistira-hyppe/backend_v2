@@ -486,22 +486,20 @@ export class MediastikerController {
             throw new BadRequestException("Unabled to proceed, sorting field is required")
         }
 
-        if (request_json['page'] == null && request_json['page'] == undefined) {
-            throw new BadRequestException("Unabled to proceed, page field is required")
-        }
-
-        if (request_json['limit'] == null && request_json['limit'] == undefined) {
-            throw new BadRequestException("Unabled to proceed, limit field is required")
-        }
-
         if (request_json['tipesticker'] == null && request_json['tipesticker'] == undefined) {
             throw new BadRequestException("Unabled to proceed, tipesticker field is required")
         }
 
+        if (request_json['page'] != null && request_json['page'] != undefined) {
+            page = request_json['page'];
+        }
+
+        if (request_json['limit'] != null && request_json['limit'] != undefined) {
+            limit = request_json['limit'];
+        }
+
         tipesticker = request_json['tipesticker'];
         sorting = request_json['sorting'];
-        page = request_json['page'];
-        limit = request_json['limit'];
 
         if (request_json['nama'] != null && request_json['nama'] != undefined) {
             nama = request_json['nama'];

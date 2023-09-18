@@ -429,13 +429,13 @@ export class MediastikerService {
             }
         }
 
-        if (page > 0) {
+        if (page != null && page > 0) {
             pipeline.push({
                 "$skip": limit * page
             });
         }
 
-        if (limit > 0) {
+        if (limit != null && limit > 0) {
             pipeline.push({
                 "$limit": limit
             });
