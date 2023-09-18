@@ -190,7 +190,7 @@ export class MediastikerService {
                                                 isDelete: false
                                             },
                                             {
-                                                used:
+                                                countused:
                                                 {
                                                     "$ne": 0
                                                 }
@@ -201,7 +201,7 @@ export class MediastikerService {
                             {
                                 "$sort":
                                 {
-                                    used: -1
+                                    countused: -1
                                 }
                             },
                             {
@@ -225,7 +225,7 @@ export class MediastikerService {
                                                 isDelete: false
                                             },
                                             {
-                                                used:
+                                                countused:
                                                 {
                                                     "$ne": 0
                                                 }
@@ -236,7 +236,7 @@ export class MediastikerService {
                             {
                                 "$sort":
                                 {
-                                    used: -1
+                                    countused: -1
                                 }
                             },
                             {
@@ -260,7 +260,7 @@ export class MediastikerService {
                                                 isDelete: false
                                             },
                                             {
-                                                used:
+                                                countused:
                                                 {
                                                     "$ne": 0
                                                 }
@@ -271,7 +271,7 @@ export class MediastikerService {
                             {
                                 "$sort":
                                 {
-                                    used: -1
+                                    countused: -1
                                 }
                             },
                             {
@@ -339,13 +339,13 @@ export class MediastikerService {
         if (startused != null) {
             firstmatch.push(
                 {
-                    "used":
+                    "countused":
                     {
                         "$gte": startused
                     }
                 },
                 {
-                    "used":
+                    "countused":
                     {
                         "$lte": endused
                     }
@@ -386,12 +386,24 @@ export class MediastikerService {
             )
         }
 
+        pipeline.push(
+            {
+                "$addFields":
+                {
+                    "lowername":
+                    {
+                        "$toLower":"$name"
+                    }
+                }
+            }
+        );
+
         if (sorting != null) {
             if (sorting == "name+") {
                 pipeline.push({
                     "$sort":
                     {
-                        name: 1
+                        lowername: 1
                     }
                 })
             }
@@ -399,7 +411,7 @@ export class MediastikerService {
                 pipeline.push({
                     "$sort":
                     {
-                        name: -1
+                        lowername: -1
                     }
                 })
             }
@@ -423,7 +435,7 @@ export class MediastikerService {
                 pipeline.push({
                     "$sort":
                     {
-                        used: -1
+                        countused: -1
                     }
                 })
             }
@@ -1059,15 +1071,6 @@ export class MediastikerService {
             {
                 "$lookup":
                 {
-                    "from": "countStiker",
-                    "localField": "_id",
-                    "foreignField": "stikerId",
-                    "as": "stiker_data"
-                }
-            },
-            {
-                "$lookup":
-                {
                     "from": "stickerCategory",
                     "as": "kategori_data",
                     "let":
@@ -1107,27 +1110,6 @@ export class MediastikerService {
                                 }
                             }
                         ]
-                }
-            },
-            {
-                "$addFields":
-                {
-                    "countused":
-                    {
-                        "$arrayElemAt":
-                            [
-                                "$stiker_data.countused",
-                                0
-                            ]
-                    },
-                    "countsearch":
-                    {
-                        "$arrayElemAt":
-                            [
-                                "$stiker_data.countsearch",
-                                0
-                            ]
-                    }
                 }
             },
             {
@@ -1335,6 +1317,35 @@ export class MediastikerService {
         return data;
     }
 
+    async updatejamaah(listid:any[], status:string)
+    {
+        var updatedata = new Mediastiker();
+        if(status == "active")
+        {
+            updatedata.status = true;
+        }
+        else if(status == "noneactive")
+        {
+            updatedata.status = false;
+        }
+        else if(status == "delete")
+        {
+            updatedata.isDelete = true;
+        }
+
+        try {
+            for(var i = 0; i < listid.length; i++)
+            {
+                await this.myLoop(i, listid[i], updatedata);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+
+        // return result;
+        return true;
+    }
+
     async updatedata(list: any[], type: string) {
         if (list !== undefined) {
             for (let i = 0; i < list.length; i++) {
@@ -1356,6 +1367,30 @@ export class MediastikerService {
 
             }
         }
+    }
+
+    async myLoop(i: number, data:string, insertdata:Mediastiker) {
+        var mongo = require('mongoose');
+        setTimeout(() => {
+            console.log('loop ' + i);
+            this.MediastikerModel.updateOne(
+                    {
+                        "_id": new mongo.Types.ObjectId(data)
+                    },
+                    insertdata,
+                    // {
+                    //     "$set":insertdata
+                    // },
+                    function (err, docs) {
+                        if (err) {
+                            console.log(err)
+                        }
+                        else {
+                            console.log("Updated Docs : ", docs);
+                        }
+                    }
+                );
+        }, i * 2000)
     }
 
     async updateUsed(_id: string) {

@@ -102,16 +102,6 @@ export class StickerCategoryController {
       throw new BadRequestException("Unabled to proceed, tipesticker field is required");
     }
     
-    if(request_json['page'] == undefined && request_json['page'] == null)
-    {
-      throw new BadRequestException("Unabled to proceed, page field is required");
-    }
-    
-    if(request_json['limit'] == undefined && request_json['limit'] == null)
-    {
-      throw new BadRequestException("Unabled to proceed, limit field is required");
-    }
-    
     tipesticker = request_json['tipesticker'];
     page = request_json['page'];
     limit = request_json['limit'];

@@ -109,18 +109,21 @@ export class ChallengeController {
     insertdata.tampilStatusPengguna = request_json['tampilStatusPengguna'];
     insertdata.objectChallenge = request_json['objectChallenge'];
 
-    if (request_json['statusChallenge'] == 'PUBLISH') {
-      var getdata = await this.challengeService.findAll(null, request_json['jenisChallenge'], null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
-      if ((request_json['jenisChallenge'] == '647055de0435000059003462' && getdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && getdata.length >= 5)) {
-        insertdata.statusChallenge = 'DRAFT';
-      }
-      else {
-        insertdata.statusChallenge = request_json['statusChallenge'];
-      }
-    }
-    else {
-      insertdata.statusChallenge = request_json['statusChallenge'];
-    }
+    //nanti balikin lagi
+    // if (request_json['statusChallenge'] == 'PUBLISH') {
+    //   var getdata = await this.challengeService.findAll(null, request_json['jenisChallenge'], null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
+    //   if ((request_json['jenisChallenge'] == '647055de0435000059003462' && getdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && getdata.length >= 5)) {
+    //     insertdata.statusChallenge = 'DRAFT';
+    //   }
+    //   else {
+    //     insertdata.statusChallenge = request_json['statusChallenge'];
+    //   }
+    // }
+    // else {
+    //   insertdata.statusChallenge = request_json['statusChallenge'];
+    // }
+
+    insertdata.statusChallenge = request_json['statusChallenge'];
 
     // return res.status(HttpStatus.OK).json({
     //   response_code: 202,
@@ -742,20 +745,21 @@ export class ChallengeController {
       throw new BadRequestException("Unabled to proceed, status challenge field is required");
     }
 
-    if (request_json['statusChallenge'] == 'PUBLISH') {
-      var setjenischallenge = null;
-      if (request_json['jenisChallenge'] == null) {
-        setjenischallenge = getdata["jenisChallenge"].toString();
-      }
-      else {
-        setjenischallenge = request_json['jenisChallenge'];
-      }
+    //nanti balikin lagi
+    // if (request_json['statusChallenge'] == 'PUBLISH') {
+    //   var setjenischallenge = null;
+    //   if (request_json['jenisChallenge'] == null) {
+    //     setjenischallenge = getdata["jenisChallenge"].toString();
+    //   }
+    //   else {
+    //     setjenischallenge = request_json['jenisChallenge'];
+    //   }
 
-      var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
-      if ((request_json['jenisChallenge'] == '647055de0435000059003462' && cekdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
-        request_json['statusChallenge'] = 'DRAFT';
-      }
-    }
+    //   var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
+    //   if ((request_json['jenisChallenge'] == '647055de0435000059003462' && cekdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
+    //     request_json['statusChallenge'] = 'DRAFT';
+    //   }
+    // }
 
     if (getdata["statusChallenge"] == 'DRAFT') {
       // var insertdata = new CreateChallengeDto();
@@ -1176,7 +1180,7 @@ export class ChallengeController {
       var checkjoinchallenge = request_json['caraGabung'];
       var checkstatusChallenge = request_json['statusChallenge'];
       if (checkstatusChallenge != 'NONACTIVE') {
-        if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkjoinchallenge == checkpartisipan != null && checkpartisipan != undefined) {
+        if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined) {
           this.insertchildofchallenge(insertdata, request_json['list_partisipan_challenge']);
         }
         else {
@@ -1340,13 +1344,14 @@ export class ChallengeController {
     // var mongo = require('mongoose');
     // setupdatedata._id = new mongo.Types.ObjectId(id);
 
-    if (statusChallenge == 'PUBLISH') {
-      var setjenischallenge = getdata["jenisChallenge"].toString();
-      var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
-      if ((setjenischallenge == '647055de0435000059003462' && cekdata.length >= 3) || (setjenischallenge == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
-        statusChallenge = 'DRAFT';
-      }
-    }
+    //nanti balikin lagi
+    // if (statusChallenge == 'PUBLISH') {
+    //   var setjenischallenge = getdata["jenisChallenge"].toString();
+    //   var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
+    //   if ((setjenischallenge == '647055de0435000059003462' && cekdata.length >= 3) || (setjenischallenge == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
+    //     statusChallenge = 'DRAFT';
+    //   }
+    // }
 
     getdata.statusChallenge = statusChallenge;
     getdata.updatedAt = await this.util.getDateTimeString();
@@ -1356,6 +1361,17 @@ export class ChallengeController {
     };
 
     await this.challengeService.update(id, getdata);
+    if(statusChallenge == "PUBLISH")
+    {
+      var checkjoinchallenge = getdata.peserta[0].caraGabung;
+      var checkpartisipan = getdata.listParticipant;
+      if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined) {
+        this.insertchildofchallenge(getdata, request_json['list_partisipan_challenge']);
+      }
+      else {
+        this.insertchildofchallenge(getdata, null);
+      }
+    }
 
     var timestamps_end = await this.util.getDateTimeString();
     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
@@ -1722,6 +1738,10 @@ export class ChallengeController {
       var endtanggal = new Date(getvalue.split(" ")[0] + " " + parentdata.startTime);
       endtanggal.setHours(endtanggal.getHours() + 7);
 
+      // if (satuanhari == 0) {
+      //   endtanggal.setDate(endtanggal.getDate() + 1);
+      // }
+
       for (var i = 0; i < parentdata.jumlahSiklusdurasi; i++) {
         var pecahdata = temptanggal.toISOString().split("T");
         var startdatetime = pecahdata[0] + " " + parentdata.startTime;
@@ -1739,7 +1759,6 @@ export class ChallengeController {
         temptanggal = new Date(temptanggal);
 
         var datediff = endtanggal.getTime() - temptanggal.getTime();
-        // console.log(datediff);
 
         if (datediff >= 0) {
           listtanggal.push([startdatetime, enddatetime]);

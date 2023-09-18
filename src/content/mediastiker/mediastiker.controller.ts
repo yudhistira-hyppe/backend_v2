@@ -486,18 +486,18 @@ export class MediastikerController {
             throw new BadRequestException("Unabled to proceed, sorting field is required")
         }
 
-        if (request_json['page'] == null && request_json['page'] == undefined) {
-            throw new BadRequestException("Unabled to proceed, page field is required")
-        }
-
-        if (request_json['limit'] == null && request_json['limit'] == undefined) {
-            throw new BadRequestException("Unabled to proceed, limit field is required")
-        }
-
         if (request_json['tipesticker'] == null && request_json['tipesticker'] == undefined) {
             throw new BadRequestException("Unabled to proceed, tipesticker field is required")
         }
 
+        if (request_json['page'] == null && request_json['page'] == undefined) {
+            throw new BadRequestException("Unabled to proceed, page field is required");
+        }
+
+        if (request_json['limit'] == null && request_json['limit'] == undefined) {
+            throw new BadRequestException("Unabled to proceed, limit field is required");
+        }
+        
         tipesticker = request_json['tipesticker'];
         sorting = request_json['sorting'];
         page = request_json['page'];
@@ -569,6 +569,35 @@ export class MediastikerController {
             response_code: 202,
             messages: messages,
         };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('update/list')
+    async multipleupdate(@Req() request)
+    {
+        var request_json = await JSON.parse(JSON.stringify(request.body));
+        var status = request_json['status'];
+        var listid = request_json['listid'];
+        if(request_json['status'] == null && request_json['status'] == undefined)
+        {
+            throw new BadRequestException("unabled to proceed. status field is required");
+        }
+
+        if(request_json['listid'] == null && request_json['listid'] == undefined)
+        {
+            throw new BadRequestException("unabled to proceed. status field is required");
+        }
+
+        var data = await this.MediastikerService.updatejamaah(listid, status);
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        return {
+            response_code:202,
+            message:messages
+        }
     }
 
     @Get(':id')
