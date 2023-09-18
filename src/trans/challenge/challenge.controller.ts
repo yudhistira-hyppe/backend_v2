@@ -1734,9 +1734,9 @@ export class ChallengeController {
       var endtanggal = new Date(getvalue.split(" ")[0] + " " + parentdata.startTime);
       endtanggal.setHours(endtanggal.getHours() + 7);
 
-      if (satuanhari == 0) {
-        endtanggal.setDate(endtanggal.getDate() + 1);
-      }
+      // if (satuanhari == 0) {
+      //   endtanggal.setDate(endtanggal.getDate() + 1);
+      // }
 
       for (var i = 0; i < parentdata.jumlahSiklusdurasi; i++) {
         var pecahdata = temptanggal.toISOString().split("T");
