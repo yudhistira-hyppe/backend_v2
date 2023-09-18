@@ -386,12 +386,24 @@ export class MediastikerService {
             )
         }
 
+        pipeline.push(
+            {
+                "$addFields":
+                {
+                    "lowername":
+                    {
+                        "$toLower":"$name"
+                    }
+                }
+            }
+        );
+
         if (sorting != null) {
             if (sorting == "name+") {
                 pipeline.push({
                     "$sort":
                     {
-                        name: 1
+                        lowername: 1
                     }
                 })
             }
@@ -399,7 +411,7 @@ export class MediastikerService {
                 pipeline.push({
                     "$sort":
                     {
-                        name: -1
+                        lowername: -1
                     }
                 })
             }
