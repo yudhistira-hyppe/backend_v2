@@ -441,13 +441,13 @@ export class MediastikerService {
             }
         }
 
-        if (page != null && page > 0) {
+        if (page > 0) {
             pipeline.push({
                 "$skip": limit * page
             });
         }
 
-        if (limit != null && limit > 0) {
+        if (limit > 0) {
             pipeline.push({
                 "$limit": limit
             });
@@ -1317,6 +1317,35 @@ export class MediastikerService {
         return data;
     }
 
+    async updatejamaah(listid:any[], status:string)
+    {
+        var updatedata = new Mediastiker();
+        if(status == "active")
+        {
+            updatedata.status = true;
+        }
+        else if(status == "noneactive")
+        {
+            updatedata.status = false;
+        }
+        else if(status == "delete")
+        {
+            updatedata.isDelete = true;
+        }
+
+        try {
+            for(var i = 0; i < listid.length; i++)
+            {
+                await this.myLoop(i, listid[i], updatedata);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+
+        // return result;
+        return true;
+    }
+
     async updatedata(list: any[], type: string) {
         if (list !== undefined) {
             for (let i = 0; i < list.length; i++) {
@@ -1338,6 +1367,30 @@ export class MediastikerService {
 
             }
         }
+    }
+
+    async myLoop(i: number, data:string, insertdata:Mediastiker) {
+        var mongo = require('mongoose');
+        setTimeout(() => {
+            console.log('loop ' + i);
+            this.MediastikerModel.updateOne(
+                    {
+                        "_id": new mongo.Types.ObjectId(data)
+                    },
+                    insertdata,
+                    // {
+                    //     "$set":insertdata
+                    // },
+                    function (err, docs) {
+                        if (err) {
+                            console.log(err)
+                        }
+                        else {
+                            console.log("Updated Docs : ", docs);
+                        }
+                    }
+                );
+        }, i * 2000)
     }
 
     async updateUsed(_id: string) {

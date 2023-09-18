@@ -109,18 +109,21 @@ export class ChallengeController {
     insertdata.tampilStatusPengguna = request_json['tampilStatusPengguna'];
     insertdata.objectChallenge = request_json['objectChallenge'];
 
-    if (request_json['statusChallenge'] == 'PUBLISH') {
-      var getdata = await this.challengeService.findAll(null, request_json['jenisChallenge'], null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
-      if ((request_json['jenisChallenge'] == '647055de0435000059003462' && getdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && getdata.length >= 5)) {
-        insertdata.statusChallenge = 'DRAFT';
-      }
-      else {
-        insertdata.statusChallenge = request_json['statusChallenge'];
-      }
-    }
-    else {
-      insertdata.statusChallenge = request_json['statusChallenge'];
-    }
+    //nanti balikin lagi
+    // if (request_json['statusChallenge'] == 'PUBLISH') {
+    //   var getdata = await this.challengeService.findAll(null, request_json['jenisChallenge'], null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
+    //   if ((request_json['jenisChallenge'] == '647055de0435000059003462' && getdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && getdata.length >= 5)) {
+    //     insertdata.statusChallenge = 'DRAFT';
+    //   }
+    //   else {
+    //     insertdata.statusChallenge = request_json['statusChallenge'];
+    //   }
+    // }
+    // else {
+    //   insertdata.statusChallenge = request_json['statusChallenge'];
+    // }
+
+    insertdata.statusChallenge = request_json['statusChallenge'];
 
     // return res.status(HttpStatus.OK).json({
     //   response_code: 202,
@@ -742,20 +745,21 @@ export class ChallengeController {
       throw new BadRequestException("Unabled to proceed, status challenge field is required");
     }
 
-    if (request_json['statusChallenge'] == 'PUBLISH') {
-      var setjenischallenge = null;
-      if (request_json['jenisChallenge'] == null) {
-        setjenischallenge = getdata["jenisChallenge"].toString();
-      }
-      else {
-        setjenischallenge = request_json['jenisChallenge'];
-      }
+    //nanti balikin lagi
+    // if (request_json['statusChallenge'] == 'PUBLISH') {
+    //   var setjenischallenge = null;
+    //   if (request_json['jenisChallenge'] == null) {
+    //     setjenischallenge = getdata["jenisChallenge"].toString();
+    //   }
+    //   else {
+    //     setjenischallenge = request_json['jenisChallenge'];
+    //   }
 
-      var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
-      if ((request_json['jenisChallenge'] == '647055de0435000059003462' && cekdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
-        request_json['statusChallenge'] = 'DRAFT';
-      }
-    }
+    //   var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
+    //   if ((request_json['jenisChallenge'] == '647055de0435000059003462' && cekdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
+    //     request_json['statusChallenge'] = 'DRAFT';
+    //   }
+    // }
 
     if (getdata["statusChallenge"] == 'DRAFT') {
       // var insertdata = new CreateChallengeDto();
@@ -1340,7 +1344,7 @@ export class ChallengeController {
     // var mongo = require('mongoose');
     // setupdatedata._id = new mongo.Types.ObjectId(id);
 
-    //nanti aktifkan kembali
+    //nanti balikin lagi
     // if (statusChallenge == 'PUBLISH') {
     //   var setjenischallenge = getdata["jenisChallenge"].toString();
     //   var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
