@@ -190,7 +190,7 @@ export class MediastikerService {
                                                 isDelete: false
                                             },
                                             {
-                                                used:
+                                                countused:
                                                 {
                                                     "$ne": 0
                                                 }
@@ -201,7 +201,7 @@ export class MediastikerService {
                             {
                                 "$sort":
                                 {
-                                    used: -1
+                                    countused: -1
                                 }
                             },
                             {
@@ -225,7 +225,7 @@ export class MediastikerService {
                                                 isDelete: false
                                             },
                                             {
-                                                used:
+                                                countused:
                                                 {
                                                     "$ne": 0
                                                 }
@@ -236,7 +236,7 @@ export class MediastikerService {
                             {
                                 "$sort":
                                 {
-                                    used: -1
+                                    countused: -1
                                 }
                             },
                             {
@@ -260,7 +260,7 @@ export class MediastikerService {
                                                 isDelete: false
                                             },
                                             {
-                                                used:
+                                                countused:
                                                 {
                                                     "$ne": 0
                                                 }
@@ -271,7 +271,7 @@ export class MediastikerService {
                             {
                                 "$sort":
                                 {
-                                    used: -1
+                                    countused: -1
                                 }
                             },
                             {
@@ -339,13 +339,13 @@ export class MediastikerService {
         if (startused != null) {
             firstmatch.push(
                 {
-                    "used":
+                    "countused":
                     {
                         "$gte": startused
                     }
                 },
                 {
-                    "used":
+                    "countused":
                     {
                         "$lte": endused
                     }
@@ -423,7 +423,7 @@ export class MediastikerService {
                 pipeline.push({
                     "$sort":
                     {
-                        used: -1
+                        countused: -1
                     }
                 })
             }
