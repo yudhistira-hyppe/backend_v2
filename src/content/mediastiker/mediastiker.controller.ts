@@ -66,8 +66,6 @@ export class MediastikerController {
         }
         if (request_json["nourut"] !== undefined) {
             nourut = request_json["nourut"];
-        } else {
-            throw new BadRequestException("nourut required");
         }
 
         if (files.image == undefined) {
@@ -102,13 +100,15 @@ export class MediastikerController {
         if (dataindex !== undefined && dataindex.length > 0) {
             var index = dataindex[0].index;
         }
+        if (nourut !== undefined) {
+            if (parseInt(nourut) > (index + 1)) {
+                throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+            }
+            if (parseInt(nourut) < 1) {
+                throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+            }
+        }
 
-        if (parseInt(nourut) > (index + 1)) {
-            throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
-        }
-        if (parseInt(nourut) < 1) {
-            throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
-        }
         //var listdatastiker = await this.MediastikerService.findByKategori(kategori);
         // var panjangdata = listdatastiker.length + 1;
         // if (parseInt(targetindex) <= 0 || parseInt(targetindex) > panjangdata) {
@@ -139,7 +139,13 @@ export class MediastikerController {
         insertdata.isDelete = false;
         insertdata.status = status;
         insertdata.kategori = kategori;
-        insertdata.index = parseInt(nourut);
+
+        if (nourut !== undefined) {
+            insertdata.index = parseInt(nourut);
+        } else {
+            insertdata.index = index + 1;
+        }
+
         insertdata.countused = 0;
         insertdata.countsearch = 0;
         insertdata.type = type;
@@ -497,7 +503,7 @@ export class MediastikerController {
         if (request_json['limit'] == null && request_json['limit'] == undefined) {
             throw new BadRequestException("Unabled to proceed, limit field is required");
         }
-        
+
         tipesticker = request_json['tipesticker'];
         sorting = request_json['sorting'];
         page = request_json['page'];
@@ -573,18 +579,15 @@ export class MediastikerController {
 
     @UseGuards(JwtAuthGuard)
     @Post('update/list')
-    async multipleupdate(@Req() request)
-    {
+    async multipleupdate(@Req() request) {
         var request_json = await JSON.parse(JSON.stringify(request.body));
         var status = request_json['status'];
         var listid = request_json['listid'];
-        if(request_json['status'] == null && request_json['status'] == undefined)
-        {
+        if (request_json['status'] == null && request_json['status'] == undefined) {
             throw new BadRequestException("unabled to proceed. status field is required");
         }
 
-        if(request_json['listid'] == null && request_json['listid'] == undefined)
-        {
+        if (request_json['listid'] == null && request_json['listid'] == undefined) {
             throw new BadRequestException("unabled to proceed. status field is required");
         }
 
@@ -595,8 +598,8 @@ export class MediastikerController {
         };
 
         return {
-            response_code:202,
-            message:messages
+            response_code: 202,
+            message: messages
         }
     }
 
@@ -634,7 +637,7 @@ export class MediastikerController {
 
         var data = await this.MediastikerService.listingapp(keyword, tipesticker);
 
-        if(keyword != null && keyword != undefined){
+        if (keyword != null && keyword != undefined) {
 
             this.updateused(data[0].data);
         }

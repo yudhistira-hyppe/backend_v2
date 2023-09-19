@@ -5,8 +5,7 @@
 
 // @Schema({ collection: 'newUserBasics' })
 // export class Userbasicnew {
-//     @Prop({ type: Object })
-//     _id: { oid: String };
+//     _id: mongoose.Types.ObjectId;
 //     @Prop()
 //     profileID: string;
 //     @Prop()
@@ -135,7 +134,7 @@
 //     @Prop()
 //     listAddKyc: any[];
 //     @Prop()
-//     userAssets: mongoose.Types.ObjectId[];
+//     userAssets: any[];
 //     @Prop()
 //     import: String;
 //     @Prop()
@@ -144,6 +143,32 @@
 //     tutor: any[];
 //     @Prop()
 //     userEvent: string
+
+//     citiesName: string;
+//     statesName: string;
+//     countriesName: string;
+//     languagesLang: string;
+//     languagesLangIso: string;
+//     _idAuth: mongoose.Types.ObjectId;
+//     username: string;
+//     "password": "$2a$10$1oA/qD9n7Cs5FM2nmQv6IuF1SJ5R3qjJSQN6epngNpmgYaWMJoxTi",
+//     "userID": "52de1ddb-f24d-42ae-a30f-2b282b925ea1",
+//     "isExpiryPass": false,
+//     "isEmailVerified": true,
+//     "otpRequestTime": NumberLong("0"),
+//     "otpAttempt": NumberLong("0"),
+//     "otpNextAttemptAllow": NumberLong("0"),
+//     "location": {
+//         "latitude": 0,
+//         "longitude": 0
+//     },
+//     "isEnabled": true,
+//     "isAccountNonExpired": true,
+//     "isAccountNonLocked": true,
+//     "isCredentialsNonExpired": true,
+//     "roles": [
+//         "ROLE_USER"
+//     ],
 // }
 
 // export const UserbasicnewSchema = SchemaFactory.createForClass(Userbasicnew);
