@@ -165,14 +165,24 @@ export class MediastikerController {
         };
 
 
+        if (nourut !== undefined) {
+            try {
+                dataurut = await this.MediastikerService.findByNourut(parseInt(nourut), type, kategori);
 
-        try {
-            dataurut = await this.MediastikerService.findByNourut(parseInt(nourut), type, kategori);
+            } catch (e) {
+                dataurut = null;
 
-        } catch (e) {
-            dataurut = null;
+            }
+        } else {
+            try {
+                dataurut = await this.MediastikerService.findByNourut(parseInt(index + 1), type, kategori);
 
+            } catch (e) {
+                dataurut = null;
+
+            }
         }
+
         if (dataurut !== undefined && dataurut.length > 0) {
             for (let i = 0; i < dataurut.length; i++) {
                 let id = dataurut[i]._id.toString();
