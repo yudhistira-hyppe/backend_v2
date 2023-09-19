@@ -981,31 +981,10 @@ export class MediastikerService {
                 }
             },
             {
-                "$lookup":
-                {
-                    from: 'countStiker',
-                    localField: '_id',
-                    foreignField: 'stikerId',
-                    as: 'count_data',
-                }
-            },
-            {
                 "$project":
                 {
-                    // used:
-                    // {
-                    //     "$arrayElemAt":
-                    //     [
-                    //         "$count_data.countused",0
-                    //     ]
-                    // },
-                    search:
-                    {
-                        "$arrayElemAt":
-                            [
-                                "$count_data.countsearch", 0
-                            ]
-                    },
+                    // used:"$countused",
+                    search:"$countsearch",
                     used:
                     {
                         "$arrayElemAt":
@@ -1319,24 +1298,11 @@ export class MediastikerService {
 
     async updatejamaah(listid:any[], status:string)
     {
-        var updatedata = new Mediastiker();
-        if(status == "active")
-        {
-            updatedata.status = true;
-        }
-        else if(status == "noneactive")
-        {
-            updatedata.status = false;
-        }
-        else if(status == "delete")
-        {
-            updatedata.isDelete = true;
-        }
-
         try {
             for(var i = 0; i < listid.length; i++)
             {
-                await this.myLoop(i, listid[i], updatedata);
+                var result = await this.myLoop(i, listid[i], status);
+                console.log(result);
             }
         } catch (e) {
             console.log(e);
@@ -1369,28 +1335,46 @@ export class MediastikerService {
         }
     }
 
-    async myLoop(i: number, data:string, insertdata:Mediastiker) {
-        var mongo = require('mongoose');
-        setTimeout(() => {
-            console.log('loop ' + i);
-            this.MediastikerModel.updateOne(
-                    {
-                        "_id": new mongo.Types.ObjectId(data)
-                    },
-                    insertdata,
-                    // {
-                    //     "$set":insertdata
-                    // },
-                    function (err, docs) {
-                        if (err) {
-                            console.log(err)
-                        }
-                        else {
-                            console.log("Updated Docs : ", docs);
-                        }
+    async myLoop(i: number, data:string, insertdata:string) {
+        var updatedata = new Mediastiker();
+        if(insertdata == "active")
+        {
+            updatedata.status = true;
+        }
+        else if(insertdata == "noneactive")
+        {
+            updatedata.status = false;
+        }
+        else if(insertdata == "delete")
+        {
+            updatedata.isDelete = true;
+        }
+        
+        try
+        {
+            var result = await this.MediastikerModel.updateOne(
+                {
+                    "_id":data
+                },
+                updatedata,
+                function (err, docs) {
+                    if (err) {
+                        console.log(err)
                     }
-                );
-        }, i * 2000)
+                    else {
+                        console.log("Updated Docs : ", docs);
+                    }
+                }
+            );
+        }
+        catch(e)
+        {
+            console.log(e);
+        }
+
+        console.log(result);
+
+        return result;
     }
 
     async updateUsed(_id: string) {
