@@ -76,7 +76,6 @@ export class AdsService {
             const ObjectMatch = {
                 $match: {
                     adsObjectivitasId: { $ne: null },
-                    status:"ACTIVE",
                     timestamp: {
                         $gte: start_date.toISOString(),
                         $lte: end_date.toISOString()
@@ -88,7 +87,6 @@ export class AdsService {
             const ObjectMatch = {
                 $match: {
                     adsObjectivitasId: { $ne: null },
-                    status: "ACTIVE",
                 }
             };
             paramaggregate.push(ObjectMatch)
@@ -241,6 +239,11 @@ export class AdsService {
                     ],
                     typeAdsID: [
                         {
+                            $match: {
+                                status: "ACTIVE",
+                            }
+                        },
+                        {
                             $group: {
                                 _id: "$typeAdsID",
                                 nameType: { $first: '$nameType' },
@@ -259,6 +262,11 @@ export class AdsService {
                     ],
                     adsObjectivitasId: [
                         {
+                            $match: {
+                                status: "ACTIVE",
+                            }
+                        },
+                        {
                             $group: {
                                 _id: "$adsObjectivitasId",
                                 name_id: { $first: '$name_id' },
@@ -268,6 +276,11 @@ export class AdsService {
                         }
                     ],
                     tayangQualication: [
+                        {
+                            $match: {
+                                status: "ACTIVE",
+                            }
+                        },
                         {
                             $group: {
                                 _id: "$tayangQualication",
