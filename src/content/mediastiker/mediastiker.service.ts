@@ -981,31 +981,10 @@ export class MediastikerService {
                 }
             },
             {
-                "$lookup":
-                {
-                    from: 'countStiker',
-                    localField: '_id',
-                    foreignField: 'stikerId',
-                    as: 'count_data',
-                }
-            },
-            {
                 "$project":
                 {
-                    // used:
-                    // {
-                    //     "$arrayElemAt":
-                    //     [
-                    //         "$count_data.countused",0
-                    //     ]
-                    // },
-                    search:
-                    {
-                        "$arrayElemAt":
-                            [
-                                "$count_data.countsearch", 0
-                            ]
-                    },
+                    // used:"$countused",
+                    search:"$countsearch",
                     used:
                     {
                         "$arrayElemAt":
