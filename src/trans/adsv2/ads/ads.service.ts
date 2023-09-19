@@ -7079,7 +7079,7 @@ export class AdsService {
                         mediaBasePath: 1,
                         mediaUri: 1,
                         mediaThumBasePath: 1,
-                        mediaThumUri: 1,
+                        mediaThumUri: 1
 
                     }
                 },
