@@ -417,7 +417,7 @@ export class UserAdsService {
             }
         ];
         const util = require('util');
-        console.log(util.inspect(pipeline, false, null, true /* enable colors */))
+       // console.log(util.inspect(pipeline, false, null, true /* enable colors */))
 
         let data = await this.userAdsModel.aggregate(pipeline);
         return data;
@@ -2499,7 +2499,7 @@ export class UserAdsService {
             });
         }
 
-        console.log(JSON.stringify(pipeline));
+        //console.log(JSON.stringify(pipeline));
 
         var query = await this.userAdsModel.aggregate(pipeline);
         return query;
@@ -3020,9 +3020,10 @@ export class UserAdsService {
             start_date = new Date(start_date);
             end_date = new Date(end_date);
             end_date.setDate(end_date.getDate() + 1);
+            console.log(end_date.toISOString())
             var andExpr = [];
-            andExpr.push({ $gte: ["$timestamp", start_date.toISOString()] });
-            andExpr.push({ $lte: ["$timestamp", end_date.toISOString()] });
+            andExpr.push({ $gte: ["$timestamp", start_date] });
+            andExpr.push({ $lte: ["$timestamp", end_date] });
             if (userId != undefined) {
                 andExpr.push({ $eq: [ "$userID", new mongoose.Types.ObjectId(userId) ] });
             }
@@ -3569,116 +3570,116 @@ export class UserAdsService {
                 }
             });
 
-        console.log(JSON.stringify([
-            {
-                $addFields: {
-                    dateStart: start_date,
-                    dateEnd: end_date
-                }
-            },
-            {
-                $lookup:
-                {
-                    from: "ads",
-                    as: "ads_data",
-                    let:
-                    {
-                        dateStart_: "$dateStart",
-                        dateEnd_: "$dateEnd"
-                    },
-                    pipeline: pipelineMatch
-                }
-            },
-            {
-                $facet:
-                {
-                    viewed: viewedFacet,
-                    reach: reachFacet,
-                    impresi: impresiFacet,
-                    CTA: CTAFacet,
-                    CTACount: CTACountFacet,
-                    viewTime: viewTimeFacet,
-                    clickTime: clickTimeFacet,
-                    status: [
-                        {
-                            $group: {
-                                _id: "$ads_data",
-                                count: { $sum: 1 }
-                            }
-                        },
-                        {
-                            $group: {
-                                _id: null,
-                                data: {
-                                    "$first": "$_id"
-                                },
-                            }
-                        },
-                    ],
-                }
-            },
-            {
-                $project: {
-                    statusIklan: {
-                        "$arrayElemAt": [{
-                            "$let": {
-                                "vars": {
-                                    "tmp": { "$arrayElemAt": ["$status", 0] },
-                                },
-                                "in": "$$tmp.data.status"
-                            }
-                        }, 0]
-                    },
-                    saldoKredit: {
-                        $sum: [
-                            {
-                                $convert: {
-                                    input: { "$arrayElemAt": ['$viewTime.count', 0] },
-                                    to: "int",
-                                    onError: 0,
-                                    onNull: 0
-                                }
-                            },
-                            {
-                                $convert: {
-                                    input: { "$arrayElemAt": ['$clickTime.count', 0] },
-                                    to: "int",
-                                    onError: 0,
-                                    onNull: 0
-                                }
-                            }
-                        ]
-                    },
-                    Totalimpresi: {
-                        "$let": {
-                            "vars": {
-                                "tmp": { "$arrayElemAt": ["$viewed", 0] },
-                            },
-                            "in": "$$tmp.impresi"
-                        }
-                    },
-                    Totalreach: {
-                        "$let": {
-                            "vars": {
-                                "tmp": { "$arrayElemAt": ["$viewed", 0] },
-                            },
-                            "in": "$$tmp.reach"
-                        }
-                    },
-                    TotalCTA: {
-                        "$let": {
-                            "vars": {
-                                "tmp": { "$arrayElemAt": ["$CTACount", 0] },
-                            },
-                            "in": "$$tmp.CTACount"
-                        }
-                    },
-                    impresi: 1,
-                    reach: 1,
-                    CTA: 1
-                }
-            }
-        ]))
+        // console.log(JSON.stringify([
+        //     {
+        //         $addFields: {
+        //             dateStart: start_date,
+        //             dateEnd: end_date
+        //         }
+        //     },
+        //     {
+        //         $lookup:
+        //         {
+        //             from: "ads",
+        //             as: "ads_data",
+        //             let:
+        //             {
+        //                 dateStart_: "$dateStart",
+        //                 dateEnd_: "$dateEnd"
+        //             },
+        //             pipeline: pipelineMatch
+        //         }
+        //     },
+        //     {
+        //         $facet:
+        //         {
+        //             viewed: viewedFacet,
+        //             reach: reachFacet,
+        //             impresi: impresiFacet,
+        //             CTA: CTAFacet,
+        //             CTACount: CTACountFacet,
+        //             viewTime: viewTimeFacet,
+        //             clickTime: clickTimeFacet,
+        //             status: [
+        //                 {
+        //                     $group: {
+        //                         _id: "$ads_data",
+        //                         count: { $sum: 1 }
+        //                     }
+        //                 },
+        //                 {
+        //                     $group: {
+        //                         _id: null,
+        //                         data: {
+        //                             "$first": "$_id"
+        //                         },
+        //                     }
+        //                 },
+        //             ],
+        //         }
+        //     },
+        //     {
+        //         $project: {
+        //             statusIklan: {
+        //                 "$arrayElemAt": [{
+        //                     "$let": {
+        //                         "vars": {
+        //                             "tmp": { "$arrayElemAt": ["$status", 0] },
+        //                         },
+        //                         "in": "$$tmp.data.status"
+        //                     }
+        //                 }, 0]
+        //             },
+        //             saldoKredit: {
+        //                 $sum: [
+        //                     {
+        //                         $convert: {
+        //                             input: { "$arrayElemAt": ['$viewTime.count', 0] },
+        //                             to: "int",
+        //                             onError: 0,
+        //                             onNull: 0
+        //                         }
+        //                     },
+        //                     {
+        //                         $convert: {
+        //                             input: { "$arrayElemAt": ['$clickTime.count', 0] },
+        //                             to: "int",
+        //                             onError: 0,
+        //                             onNull: 0
+        //                         }
+        //                     }
+        //                 ]
+        //             },
+        //             Totalimpresi: {
+        //                 "$let": {
+        //                     "vars": {
+        //                         "tmp": { "$arrayElemAt": ["$viewed", 0] },
+        //                     },
+        //                     "in": "$$tmp.impresi"
+        //                 }
+        //             },
+        //             Totalreach: {
+        //                 "$let": {
+        //                     "vars": {
+        //                         "tmp": { "$arrayElemAt": ["$viewed", 0] },
+        //                     },
+        //                     "in": "$$tmp.reach"
+        //                 }
+        //             },
+        //             TotalCTA: {
+        //                 "$let": {
+        //                     "vars": {
+        //                         "tmp": { "$arrayElemAt": ["$CTACount", 0] },
+        //                     },
+        //                     "in": "$$tmp.CTACount"
+        //                 }
+        //             },
+        //             impresi: 1,
+        //             reach: 1,
+        //             CTA: 1
+        //         }
+        //     }
+        // ]))
         var aggregateData = [];
         aggregateData.push(
             {
@@ -3826,7 +3827,7 @@ export class UserAdsService {
                     CTA: 1
                 }
             });
-        console.log(JSON.stringify(aggregateData));
+        //console.log(JSON.stringify(aggregateData));
         let query = await this.userAdsModel.aggregate(aggregateData);
         return query;
     }
