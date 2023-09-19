@@ -77,10 +77,10 @@ export class AdsService {
                 $match: {
                     adsObjectivitasId: { $ne: null },
                     status:"ACTIVE",
-                    timestamp: {
-                        $gte: start_date.toISOString(),
-                        $lte: end_date.toISOString()
-                    },
+                    // timestamp: {
+                    //     $gte: start_date.toISOString(),
+                    //     $lte: end_date.toISOString()
+                    // },
                 }
             };
             paramaggregate.push(ObjectMatch)
@@ -88,6 +88,7 @@ export class AdsService {
             const ObjectMatch = {
                 $match: {
                     adsObjectivitasId: { $ne: null },
+                    status: "ACTIVE",
                 }
             };
             paramaggregate.push(ObjectMatch)
