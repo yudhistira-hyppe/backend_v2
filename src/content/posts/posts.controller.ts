@@ -1832,7 +1832,7 @@ export class PostsController {
       var splitreq2position = splitposition.split('#');
 
       if (splitreq2stiker.length !== splitreq2image.length && splitreq2stiker.length !== splitreq2type.length && splitreq2stiker.length !== splitreq2position.length) {
-        throw new BadRequestException("Unabled to proceed,the amount of data must be the same");
+        throw new BadRequestException("Unabled to proceed,the length of data must be the same");
       } else {
         for (var i = 0; i < splitreq2stiker.length; i++) {
           let id = splitreq2stiker[i];
