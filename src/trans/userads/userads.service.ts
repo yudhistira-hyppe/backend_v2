@@ -3017,10 +3017,6 @@ export class UserAdsService {
     async campaignDashboard(userId: string,start_date: any, end_date: any){
         var pipelineMatch = [];
         if (start_date != null && end_date != null) {
-            start_date = new Date(start_date);
-            end_date = new Date(end_date);
-            end_date.setDate(end_date.getDate() + 1);
-            console.log(end_date.toISOString())
             var andExpr = [];
             andExpr.push({ $gte: ["$timestamp", start_date] });
             andExpr.push({ $lte: ["$timestamp", end_date] });

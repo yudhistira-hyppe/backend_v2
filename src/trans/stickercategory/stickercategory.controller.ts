@@ -73,7 +73,7 @@ export class StickerCategoryController {
       var result = await this.osService.uploadFile(insertfile, path);
       insertdata.icon = result.url;
 
-      // await this.stickerCategoryService.create(insertdata);
+      await this.stickerCategoryService.create(insertdata);
 
       return res.status(HttpStatus.OK).json({
           response_code: 202,
