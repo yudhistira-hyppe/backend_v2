@@ -17,6 +17,12 @@ export class Userbasicnew {
     @Prop()
     gender: String;
     @Prop()
+    regSrc: String;
+    @Prop()
+    loginSrc: String;
+    @Prop()
+    loginSource: String;
+    @Prop()
     mobileNumber: String;
     @Prop()
     status: String;
@@ -40,7 +46,6 @@ export class Userbasicnew {
     isFollowPrivate: boolean;
     @Prop()
     isPostPrivate: boolean;
-
     @Prop()
     createdAt: String;
     @Prop()
@@ -65,14 +70,6 @@ export class Userbasicnew {
     };
     @Prop()
     userInterests: any[];
-    @Prop({ type: Object })
-    userAuth: {
-        ref: String;
-        id: {
-            oid: String;
-        };
-        db: String;
-    };
     @Prop({ type: Object })
     cities: {
         ref: String;
@@ -140,43 +137,81 @@ export class Userbasicnew {
     tutor: any[];
     @Prop()
     userEvent: string;
+    @Prop()
     following: any[];
+    @Prop()
     follower: any[];
+    @Prop()
     citiesName: string;
+    @Prop()
     statesName: string;
+    @Prop()
     countriesName: string;
+    @Prop()
     languagesLang: string;
+    @Prop()
     languagesLangIso: string;
+    @Prop()
     _idAuth: mongoose.Types.ObjectId;
+    @Prop()
     username: string;
+    @Prop()
     password: string;
+    @Prop()
     userID: string;
+    @Prop()
     isExpiryPass: string;
+    @Prop()
     isEmailVerified: boolean;
+    @Prop()
     otpRequestTime: number;
+    @Prop()
     otpAttempt: number;
+    @Prop()
     otpNextAttemptAllow: number;
+    @Prop()
     location: any;
+    @Prop()
     isEnabled: boolean;
+    @Prop()
     isAccountNonExpired: boolean;
+    @Prop()
     isAccountNonLocked: boolean;
+    @Prop()
     isCredentialsNonExpired: boolean;
+    @Prop()
     roles: any[]
+    @Prop()
     authUsers: any;
+    @Prop()
     _idAvatar: string;
+    @Prop()
     mediaType: string;
+    @Prop()
     mediaBasePath: string;
+    @Prop()
     mediaUri: string;
+    @Prop()
     originalName: string;
+    @Prop()
     fsSourceUri: string;
+    @Prop()
     fsSourceName: string;
+    @Prop()
     fsTargetUri: string;
+    @Prop()
     mediaEndpoint: string;
+    @Prop()
     ktpMediaBasePath: string;
+    @Prop()
     ktpMediaUri: string;
+    @Prop()
     ktpOriginalName: string;
+    @Prop()
     ktpFsSourceUri: string;
+    @Prop()
     ktpFsSourceName: string;
+    @Prop()
     ktpFsTargetUri: string;
 
 }
