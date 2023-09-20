@@ -190,6 +190,37 @@ export class MediastikerController {
 
             }
 
+        } else {
+            insertdata._id = new mongoose.Types.ObjectId();
+            if (datastiker !== null) {
+                await this.errorHandler.generateBadRequestException(
+                    'Maaf Nama Stiker tidak boleh sama',
+                );
+            } else {
+                insertdata.name = name;
+            }
+
+            insertdata.createdAt = timedate;
+            insertdata.updatedAt = timedate;
+            insertdata.isDelete = false;
+            insertdata.status = status;
+            insertdata.kategori = null;
+
+            // if (nourut !== undefined) {
+            //     insertdata.index = parseInt(nourut);
+            // } else {
+            //     insertdata.index = index + 1;
+            // }
+
+            insertdata.countused = 0;
+            insertdata.countsearch = 0;
+            insertdata.type = type;
+            var insertMediastiker = files.image[0];
+            var path = "images/mediastiker/" + insertdata._id + "_mediastiker" + "." + insertMediastiker.originalname.split(".").pop();
+            var result = await this.osservices.uploadFile(insertMediastiker, path);
+            var resuldata = result.url;
+            insertdata.image = resuldata.replace("http", "https");
+
         }
 
         try {
@@ -274,23 +305,6 @@ export class MediastikerController {
             throw new BadRequestException("type required");
         }
 
-        try {
-            dataindex = await this.MediastikerService.findByTypekategori(type, kategori);
-
-        } catch (e) {
-            dataindex = null;
-
-        }
-        if (dataindex !== undefined && dataindex.length > 0) {
-            var index = dataindex[0].index;
-        }
-
-        if (parseInt(nourut) > (index + 1)) {
-            throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
-        }
-        if (parseInt(nourut) < 1) {
-            throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
-        }
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
@@ -299,20 +313,6 @@ export class MediastikerController {
         var splitdate = repdate.split('.');
         var timedate = splitdate[0];
         var mongoose = require('mongoose');
-        insertdata.updatedAt = timedate;
-        insertdata.status = status;
-        insertdata.kategori = kategori;
-        insertdata.index = parseInt(nourut);
-        insertdata.type = type;
-
-        if (files.image !== undefined) {
-            var insertMediastiker = files.image[0];
-            var path = "images/mediastiker/" + id + "_mediastiker" + "." + insertMediastiker.originalname.split(".").pop();
-            var result = await this.osservices.uploadFile(insertMediastiker, path);
-            var resuldata = result.url;
-            insertdata.image = resuldata.replace("http", "https");
-        }
-
 
 
         const messages = {
@@ -324,6 +324,38 @@ export class MediastikerController {
         };
 
         if (type !== "GIF") {
+            try {
+                dataindex = await this.MediastikerService.findByTypekategori(type, kategori);
+
+            } catch (e) {
+                dataindex = null;
+
+            }
+            if (dataindex !== undefined && dataindex.length > 0) {
+                var index = dataindex[0].index;
+            }
+
+            if (parseInt(nourut) > (index + 1)) {
+                throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+            }
+            if (parseInt(nourut) < 1) {
+                throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+            }
+
+            insertdata.updatedAt = timedate;
+            insertdata.status = status;
+            insertdata.kategori = kategori;
+            insertdata.index = parseInt(nourut);
+            insertdata.type = type;
+
+            if (files.image !== undefined) {
+                var insertMediastiker = files.image[0];
+                var path = "images/mediastiker/" + id + "_mediastiker" + "." + insertMediastiker.originalname.split(".").pop();
+                var result = await this.osservices.uploadFile(insertMediastiker, path);
+                var resuldata = result.url;
+                insertdata.image = resuldata.replace("http", "https");
+            }
+
             try {
                 dataurutold = await this.MediastikerService.findOne(id);
 
@@ -381,6 +413,18 @@ export class MediastikerController {
                 }
             }
 
+        } else {
+            insertdata.updatedAt = timedate;
+            insertdata.status = status;
+            insertdata.type = type;
+
+            if (files.image !== undefined) {
+                var insertMediastiker = files.image[0];
+                var path = "images/mediastiker/" + id + "_mediastiker" + "." + insertMediastiker.originalname.split(".").pop();
+                var result = await this.osservices.uploadFile(insertMediastiker, path);
+                var resuldata = result.url;
+                insertdata.image = resuldata.replace("http", "https");
+            }
         }
 
 
