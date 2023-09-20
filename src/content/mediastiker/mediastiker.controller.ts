@@ -42,6 +42,23 @@ export class MediastikerController {
         var nourut = null;
         var dataindex = null;
         var dataurutoldganti = null;
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var strdate = dt.toISOString();
+        var repdate = strdate.replace('T', ' ');
+        var splitdate = repdate.split('.');
+        var timedate = splitdate[0];
+        var mongoose = require('mongoose');
+        var insertdata = new Mediastiker();
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
         if (request_json["name"] !== undefined) {
             name = request_json["name"];
         } else {
@@ -61,8 +78,6 @@ export class MediastikerController {
         }
         if (request_json["kategori"] !== undefined) {
             kategori = request_json["kategori"];
-        } else {
-            throw new BadRequestException("kategori required");
         }
         if (request_json["nourut"] !== undefined) {
             nourut = request_json["nourut"];
@@ -71,124 +86,140 @@ export class MediastikerController {
         if (files.image == undefined) {
             throw new BadRequestException("image required");
         }
-        if (request_json["kategori"] !== undefined) {
 
-            kategori = request_json["kategori"];
-        } else {
-            if (type !== "GIF") {
-                throw new BadRequestException("kategori required");
-            } else {
+        // } else {
+        //     if (type !== "GIF") {
+        //         throw new BadRequestException("kategori required");
+        //     } else {
 
-            }
+        //     }
 
-        }
-        try {
-            datastiker = await this.MediastikerService.findByname(name);
-
-        } catch (e) {
-            datastiker = null;
-
-        }
-
-        try {
-            dataindex = await this.MediastikerService.findByTypekategori(type, kategori);
-
-        } catch (e) {
-            dataindex = null;
-
-        }
-        if (dataindex !== undefined && dataindex.length > 0) {
-            var index = dataindex[0].index;
-        }
-        if (nourut !== undefined) {
-            if (parseInt(nourut) > (index + 1)) {
-                throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
-            }
-            if (parseInt(nourut) < 1) {
-                throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
-            }
-        }
-
-        //var listdatastiker = await this.MediastikerService.findByKategori(kategori);
-        // var panjangdata = listdatastiker.length + 1;
-        // if (parseInt(targetindex) <= 0 || parseInt(targetindex) > panjangdata) {
-        //     throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
         // }
 
-
-        var dt = new Date(Date.now());
-        dt.setHours(dt.getHours() + 7); // timestamp
-        dt = new Date(dt);
-        var strdate = dt.toISOString();
-        var repdate = strdate.replace('T', ' ');
-        var splitdate = repdate.split('.');
-        var timedate = splitdate[0];
-        var mongoose = require('mongoose');
-        var insertdata = new Mediastiker();
-        insertdata._id = new mongoose.Types.ObjectId();
-        if (datastiker !== null) {
-            await this.errorHandler.generateBadRequestException(
-                'Maaf Nama Stiker tidak boleh sama',
-            );
-        } else {
-            insertdata.name = name;
-        }
-
-        insertdata.createdAt = timedate;
-        insertdata.updatedAt = timedate;
-        insertdata.isDelete = false;
-        insertdata.status = status;
-        insertdata.kategori = kategori;
-
-        if (nourut !== undefined) {
-            insertdata.index = parseInt(nourut);
-        } else {
-            insertdata.index = index + 1;
-        }
-
-        insertdata.countused = 0;
-        insertdata.countsearch = 0;
-        insertdata.type = type;
-        var insertMediastiker = files.image[0];
-        var path = "images/mediastiker/" + insertdata._id + "_mediastiker" + "." + insertMediastiker.originalname.split(".").pop();
-        var result = await this.osservices.uploadFile(insertMediastiker, path);
-        var resuldata = result.url;
-        insertdata.image = resuldata.replace("http", "https");
-
-
-        const messages = {
-            "info": ["The process successful"],
-        };
-
-        const messagesEror = {
-            "info": ["Todo is not found!"],
-        };
-
-
-        if (nourut !== undefined) {
+        if (type !== "GIF") {
             try {
-                dataurut = await this.MediastikerService.findByNourut(parseInt(nourut), type, kategori);
+                datastiker = await this.MediastikerService.findByname(name);
 
             } catch (e) {
-                dataurut = null;
+                datastiker = null;
 
             }
-        } else {
+
             try {
-                dataurut = await this.MediastikerService.findByNourut(parseInt(index + 1), type, kategori);
+                dataindex = await this.MediastikerService.findByTypekategori(type, kategori);
 
             } catch (e) {
-                dataurut = null;
+                dataindex = null;
 
             }
-        }
-
-        if (dataurut !== undefined && dataurut.length > 0) {
-            for (let i = 0; i < dataurut.length; i++) {
-                let id = dataurut[i]._id.toString();
-                let urut = parseInt(dataurut[i].index) + 1;
-                await this.MediastikerService.updateIndex(id, urut, timedate);
+            if (dataindex !== undefined && dataindex.length > 0) {
+                var index = dataindex[0].index;
             }
+            if (nourut !== undefined) {
+                if (parseInt(nourut) > (index + 1)) {
+                    throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+                }
+                if (parseInt(nourut) < 1) {
+                    throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+                }
+            }
+
+            //var listdatastiker = await this.MediastikerService.findByKategori(kategori);
+            // var panjangdata = listdatastiker.length + 1;
+            // if (parseInt(targetindex) <= 0 || parseInt(targetindex) > panjangdata) {
+            //     throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+            // }
+
+
+
+            insertdata._id = new mongoose.Types.ObjectId();
+            if (datastiker !== null) {
+                await this.errorHandler.generateBadRequestException(
+                    'Maaf Nama Stiker tidak boleh sama',
+                );
+            } else {
+                insertdata.name = name;
+            }
+
+            insertdata.createdAt = timedate;
+            insertdata.updatedAt = timedate;
+            insertdata.isDelete = false;
+            insertdata.status = status;
+            insertdata.kategori = kategori;
+
+            if (nourut !== undefined) {
+                insertdata.index = parseInt(nourut);
+            } else {
+                insertdata.index = index + 1;
+            }
+
+            insertdata.countused = 0;
+            insertdata.countsearch = 0;
+            insertdata.type = type;
+            var insertMediastiker = files.image[0];
+            var path = "images/mediastiker/" + insertdata._id + "_mediastiker" + "." + insertMediastiker.originalname.split(".").pop();
+            var result = await this.osservices.uploadFile(insertMediastiker, path);
+            var resuldata = result.url;
+            insertdata.image = resuldata.replace("http", "https");
+
+
+            if (nourut !== undefined) {
+                try {
+                    dataurut = await this.MediastikerService.findByNourut(parseInt(nourut), type, kategori);
+
+                } catch (e) {
+                    dataurut = null;
+
+                }
+            } else {
+                try {
+                    dataurut = await this.MediastikerService.findByNourut(parseInt(index + 1), type, kategori);
+
+                } catch (e) {
+                    dataurut = null;
+
+                }
+            }
+
+            if (dataurut !== undefined && dataurut.length > 0) {
+                for (let i = 0; i < dataurut.length; i++) {
+                    let id = dataurut[i]._id.toString();
+                    let urut = parseInt(dataurut[i].index) + 1;
+                    await this.MediastikerService.updateIndex(id, urut, timedate);
+                }
+
+            }
+
+        } else {
+            insertdata._id = new mongoose.Types.ObjectId();
+            if (datastiker !== null) {
+                await this.errorHandler.generateBadRequestException(
+                    'Maaf Nama Stiker tidak boleh sama',
+                );
+            } else {
+                insertdata.name = name;
+            }
+
+            insertdata.createdAt = timedate;
+            insertdata.updatedAt = timedate;
+            insertdata.isDelete = false;
+            insertdata.status = status;
+            insertdata.kategori = null;
+
+            // if (nourut !== undefined) {
+            //     insertdata.index = parseInt(nourut);
+            // } else {
+            //     insertdata.index = index + 1;
+            // }
+
+            insertdata.countused = 0;
+            insertdata.countsearch = 0;
+            insertdata.type = type;
+            var insertMediastiker = files.image[0];
+            var path = "images/mediastiker/" + insertdata._id + "_mediastiker" + "." + insertMediastiker.originalname.split(".").pop();
+            var result = await this.osservices.uploadFile(insertMediastiker, path);
+            var resuldata = result.url;
+            insertdata.image = resuldata.replace("http", "https");
 
         }
 
@@ -263,6 +294,212 @@ export class MediastikerController {
 
         if (request_json["nourut"] !== undefined) {
             nourut = request_json["nourut"];
+        }
+
+        if (request_json["status"] !== undefined) {
+            status = request_json["status"];
+        }
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            throw new BadRequestException("type required");
+        }
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var strdate = dt.toISOString();
+        var repdate = strdate.replace('T', ' ');
+        var splitdate = repdate.split('.');
+        var timedate = splitdate[0];
+        var mongoose = require('mongoose');
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+        if (type !== "GIF") {
+            try {
+                dataindex = await this.MediastikerService.findByTypekategori(type, kategori);
+
+            } catch (e) {
+                dataindex = null;
+
+            }
+            if (dataindex !== undefined && dataindex.length > 0) {
+                var index = dataindex[0].index;
+            }
+
+            if (parseInt(nourut) > (index + 1)) {
+                throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+            }
+            if (parseInt(nourut) < 1) {
+                throw new BadRequestException("can't insert data to database. targetindex out of length sticker data")
+            }
+
+            insertdata.updatedAt = timedate;
+            insertdata.status = status;
+            insertdata.kategori = kategori;
+            insertdata.index = parseInt(nourut);
+            insertdata.type = type;
+
+            if (files.image !== undefined) {
+                var insertMediastiker = files.image[0];
+                var path = "images/mediastiker/" + id + "_mediastiker" + "." + insertMediastiker.originalname.split(".").pop();
+                var result = await this.osservices.uploadFile(insertMediastiker, path);
+                var resuldata = result.url;
+                insertdata.image = resuldata.replace("http", "https");
+            }
+
+            try {
+                dataurutold = await this.MediastikerService.findOne(id);
+
+            } catch (e) {
+                dataurutold = null;
+
+            }
+
+            try {
+                dataurutoldganti = await this.MediastikerService.findByIndex(parseInt(nourut), type, kategori);
+
+            } catch (e) {
+                dataurutoldganti = null;
+
+            }
+            if (dataurutoldganti !== null) {
+                var indexoldganti = dataurutoldganti.index;
+                var idganti = dataurutoldganti._id.toString();
+            }
+            if (dataurutold !== null) {
+                var indexold = dataurutold.index;
+            }
+
+            if (indexold < indexoldganti) {
+                try {
+                    dataurut = await this.MediastikerService.findByNourutLebihkecil(parseInt(indexold), parseInt(indexoldganti), type, kategori);
+
+                } catch (e) {
+                    dataurut = null;
+
+                }
+                if (dataurut !== undefined && dataurut.length > 0) {
+                    for (let i = 0; i < dataurut.length; i++) {
+                        let id = dataurut[i]._id.toString();
+                        let urut = parseInt(dataurut[i].index) - 1;
+                        await this.MediastikerService.updateIndex(id, urut, timedate);
+                    }
+
+                }
+            } else if (indexold > indexoldganti) {
+                try {
+                    dataurut = await this.MediastikerService.findByNourutLebihbesar(parseInt(indexold), parseInt(indexoldganti), type, kategori);
+
+                } catch (e) {
+                    dataurut = null;
+
+                }
+                if (dataurut !== undefined && dataurut.length > 0) {
+                    for (let i = 0; i < dataurut.length; i++) {
+                        let id = dataurut[i]._id.toString();
+                        let urut = parseInt(dataurut[i].index) + 1;
+                        await this.MediastikerService.updateIndex(id, urut, timedate);
+                    }
+
+                }
+            }
+
+        } else {
+            insertdata.updatedAt = timedate;
+            insertdata.status = status;
+            insertdata.type = type;
+
+            if (files.image !== undefined) {
+                var insertMediastiker = files.image[0];
+                var path = "images/mediastiker/" + id + "_mediastiker" + "." + insertMediastiker.originalname.split(".").pop();
+                var result = await this.osservices.uploadFile(insertMediastiker, path);
+                var resuldata = result.url;
+                insertdata.image = resuldata.replace("http", "https");
+            }
+        }
+
+
+
+        try {
+
+            await this.MediastikerService.update(id, insertdata);
+            return res.status(HttpStatus.OK).json({
+                response_code: 202,
+                "data": insertdata,
+                "message": messages
+            });
+        }
+        catch (e) {
+            return res.status(HttpStatus.BAD_REQUEST).json({
+                "message": messagesEror
+            });
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put('update/v2')
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 },]))
+    async update2(
+        @UploadedFiles() files: {
+            image?: Express.Multer.File[]
+
+        },
+        @Req() request: Request,
+        @Res() res,
+    ) {
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var id = null;
+        var name = null;
+        var kategori = null;
+        var status = null;
+        var datastiker = null;
+        var dataurut = null;
+        var dataurutold = null;
+        var insertdata = new Mediastiker();
+        var nourut = null;
+        var dataurutoldganti = null;
+        var type = null;
+        var dataindex = null;
+        var datakategori = null;
+        if (request_json["id"] !== undefined) {
+            id = request_json["id"];
+        } else {
+            throw new BadRequestException("id required");
+        }
+
+        if (request_json["name"] !== undefined) {
+            name = request_json["name"];
+
+            try {
+                datastiker = await this.MediastikerService.findByname(name);
+
+            } catch (e) {
+                datastiker = null;
+
+            }
+
+            if (datastiker !== null) {
+
+            } else {
+                insertdata.name = name;
+            }
+        }
+        if (request_json["kategori"] !== undefined) {
+            kategori = request_json["kategori"];
+
+        }
+
+        if (request_json["nourut"] !== undefined) {
+            nourut = request_json["nourut"];
         } else {
             throw new BadRequestException("nourut required");
         }
@@ -300,6 +537,8 @@ export class MediastikerController {
         var repdate = strdate.replace('T', ' ');
         var splitdate = repdate.split('.');
         var timedate = splitdate[0];
+        var indexoldganti = null;
+        var idganti = null;
         var mongoose = require('mongoose');
         insertdata.updatedAt = timedate;
         insertdata.status = status;
@@ -341,63 +580,86 @@ export class MediastikerController {
 
         }
         if (dataurutoldganti !== null) {
-            var indexoldganti = dataurutoldganti.index;
-            var idganti = dataurutoldganti._id.toString();
+            indexoldganti = dataurutoldganti.index;
+            idganti = dataurutoldganti._id.toString();
+        } else {
+            try {
+                datakategori = await this.MediastikerService.findByTypekategori(type, kategori);
+
+            } catch (e) {
+                dataurutoldganti = null;
+
+            }
+
+            if (datakategori.length == 0) {
+                indexoldganti = 1;
+                idganti = id;
+            }
+
+
         }
         if (dataurutold !== null) {
             var indexold = dataurutold.index;
+            var kategoriold = dataurutold.kategori;
         }
 
-        if (indexold < indexoldganti) {
-            try {
-                dataurut = await this.MediastikerService.findByNourutLebihkecil(parseInt(indexold), parseInt(indexoldganti), type, kategori);
+        if (kategoriold == kategori) {
+            if (indexold < indexoldganti) {
+                try {
+                    dataurut = await this.MediastikerService.findByNourutLebihkecil(parseInt(indexold), parseInt(indexoldganti), type, kategori);
 
-            } catch (e) {
-                dataurut = null;
+                } catch (e) {
+                    dataurut = null;
 
-            }
-            if (dataurut !== undefined && dataurut.length > 0) {
-                for (let i = 0; i < dataurut.length; i++) {
-                    let id = dataurut[i]._id.toString();
-                    let urut = parseInt(dataurut[i].index) - 1;
-                    await this.MediastikerService.updateIndex(id, urut, timedate);
                 }
+                if (dataurut !== undefined && dataurut.length > 0) {
+                    for (let i = 0; i < dataurut.length; i++) {
+                        let id = dataurut[i]._id.toString();
+                        let urut = parseInt(dataurut[i].index) - 1;
+                        await this.MediastikerService.updateIndex(id, urut, timedate);
+                    }
 
-            }
-        } else if (indexold > indexoldganti) {
-            try {
-                dataurut = await this.MediastikerService.findByNourutLebihbesar(parseInt(indexold), parseInt(indexoldganti), type, kategori);
-
-            } catch (e) {
-                dataurut = null;
-
-            }
-            if (dataurut !== undefined && dataurut.length > 0) {
-                for (let i = 0; i < dataurut.length; i++) {
-                    let id = dataurut[i]._id.toString();
-                    let urut = parseInt(dataurut[i].index) + 1;
-                    await this.MediastikerService.updateIndex(id, urut, timedate);
                 }
+            } else if (indexold > indexoldganti) {
+                try {
+                    dataurut = await this.MediastikerService.findByNourutLebihbesar(parseInt(indexold), parseInt(indexoldganti), type, kategori);
 
+                } catch (e) {
+                    dataurut = null;
+
+                }
+                if (dataurut !== undefined && dataurut.length > 0) {
+                    for (let i = 0; i < dataurut.length; i++) {
+                        let id = dataurut[i]._id.toString();
+                        let urut = parseInt(dataurut[i].index) + 1;
+                        await this.MediastikerService.updateIndex(id, urut, timedate);
+                    }
+
+                }
             }
+            try {
+
+                await this.MediastikerService.update(id, insertdata);
+                return res.status(HttpStatus.OK).json({
+                    response_code: 202,
+                    "data": insertdata,
+                    "message": messages
+                });
+            }
+            catch (e) {
+                return res.status(HttpStatus.BAD_REQUEST).json({
+                    "message": messagesEror
+                });
+            }
+
+        } else {
+
         }
 
 
-        try {
 
-            await this.MediastikerService.update(id, insertdata);
-            return res.status(HttpStatus.OK).json({
-                response_code: 202,
-                "data": insertdata,
-                "message": messages
-            });
-        }
-        catch (e) {
-            return res.status(HttpStatus.BAD_REQUEST).json({
-                "message": messagesEror
-            });
-        }
     }
+
 
     @UseGuards(JwtAuthGuard)
     @Put('/index/update')

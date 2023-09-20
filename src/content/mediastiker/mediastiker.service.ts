@@ -23,6 +23,9 @@ export class MediastikerService {
     async findByname(name: string): Promise<Mediastiker> {
         return this.MediastikerModel.findOne({ name: name }).exec();
     }
+    async findBynamekategori(type: string, kategori: string): Promise<Mediastiker> {
+        return this.MediastikerModel.findOne({ type: type, kategori: kategori }).exec();
+    }
     async findByIndex(index: number, type: string, kategori: string): Promise<Mediastiker> {
         return this.MediastikerModel.findOne({ index: index, type: type, kategori: kategori }).exec();
     }
@@ -392,7 +395,7 @@ export class MediastikerService {
                 {
                     "lowername":
                     {
-                        "$toLower":"$name"
+                        "$toLower": "$name"
                     }
                 }
             }
@@ -984,7 +987,7 @@ export class MediastikerService {
                 "$project":
                 {
                     // used:"$countused",
-                    search:"$countsearch",
+                    search: "$countsearch",
                     used:
                     {
                         "$arrayElemAt":
@@ -1296,11 +1299,9 @@ export class MediastikerService {
         return data;
     }
 
-    async updatejamaah(listid:any[], status:string)
-    {
+    async updatejamaah(listid: any[], status: string) {
         try {
-            for(var i = 0; i < listid.length; i++)
-            {
+            for (var i = 0; i < listid.length; i++) {
                 var result = await this.myLoop(i, listid[i], status);
                 console.log(result);
             }
@@ -1335,26 +1336,22 @@ export class MediastikerService {
         }
     }
 
-    async myLoop(i: number, data:string, insertdata:string) {
+    async myLoop(i: number, data: string, insertdata: string) {
         var updatedata = new Mediastiker();
-        if(insertdata == "active")
-        {
+        if (insertdata == "active") {
             updatedata.status = true;
         }
-        else if(insertdata == "noneactive")
-        {
+        else if (insertdata == "noneactive") {
             updatedata.status = false;
         }
-        else if(insertdata == "delete")
-        {
+        else if (insertdata == "delete") {
             updatedata.isDelete = true;
         }
-        
-        try
-        {
+
+        try {
             var result = await this.MediastikerModel.updateOne(
                 {
-                    "_id":data
+                    "_id": data
                 },
                 updatedata,
                 function (err, docs) {
@@ -1367,8 +1364,7 @@ export class MediastikerService {
                 }
             );
         }
-        catch(e)
-        {
+        catch (e) {
             console.log(e);
         }
 
