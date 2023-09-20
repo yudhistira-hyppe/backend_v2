@@ -91,14 +91,15 @@ export class MediastikerController {
         if (request_json["kategori"] !== undefined) {
 
             kategori = request_json["kategori"];
-        } else {
-            if (type !== "GIF") {
-                throw new BadRequestException("kategori required");
-            } else {
-
-            }
-
         }
+        // } else {
+        //     if (type !== "GIF") {
+        //         throw new BadRequestException("kategori required");
+        //     } else {
+
+        //     }
+
+        // }
 
         if (type !== "GIF") {
             try {
@@ -267,8 +268,6 @@ export class MediastikerController {
 
         if (request_json["nourut"] !== undefined) {
             nourut = request_json["nourut"];
-        } else {
-            throw new BadRequestException("nourut required");
         }
 
         if (request_json["status"] !== undefined) {
