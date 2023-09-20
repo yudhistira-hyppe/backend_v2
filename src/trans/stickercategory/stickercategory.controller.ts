@@ -5,12 +5,14 @@ import { UtilsService } from 'src/utils/utils.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { OssService } from 'src/stream/oss/oss.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { MediastikerService } from 'src/content/mediastiker/mediastiker.service';
 
 @Controller('api/stickercategory')
 export class StickerCategoryController {
   constructor(private readonly stickerCategoryService: StickerCategoryService,
     private readonly utilService:UtilsService,
-    private readonly osService: OssService) {}
+    private readonly osService: OssService,
+    private readonly mstikerService:MediastikerService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -39,7 +41,7 @@ export class StickerCategoryController {
         throw new BadRequestException("Unabled to proceed, tipesticker field is required");
     }
 
-    var checkdata = await this.stickerCategoryService.findOne(name, tipesticker, "name");
+    var checkdata = await this.stickerCategoryService.checkdata(name, tipesticker, null);
     if(checkdata != null)
     {
         throw new NotAcceptableException("cannot create data, data still exist on database");   
@@ -71,7 +73,7 @@ export class StickerCategoryController {
       var result = await this.osService.uploadFile(insertfile, path);
       insertdata.icon = result.url;
 
-      await this.stickerCategoryService.create(insertdata);
+      // await this.stickerCategoryService.create(insertdata);
 
       return res.status(HttpStatus.OK).json({
           response_code: 202,
@@ -152,32 +154,25 @@ export class StickerCategoryController {
       name = request_json['name'];
       tipesticker = request_json['tipesticker'];
 
-      var checkdata = await this.stickerCategoryService.findOne(name, tipesticker, "name");
-
+      var checkdata = await this.stickerCategoryService.checkdata(name, tipesticker, id);
       if(checkdata != null)
       {
-        if(checkdata.name == name)
-        {
-            if(id != checkdata._id)
-            {
-                throw new NotAcceptableException("cannot update data, data still exist on database");   
-            }
-        }
-        else
-        {
-            var childdata = checkdata.stiker_data;
-            if(childdata.length != 0)
-            {
-                updatechild = true;
-            }
-        }
+        throw new NotAcceptableException("cannot create data, data still exist on database");
       }
+
+      var getdata = await this.stickerCategoryService.findone2(id);
 
       var updateStickerCategory = new CreateStickerCategoryDto();
       updateStickerCategory.name = name;
       updateStickerCategory.type = tipesticker;
       
-      await this.stickerCategoryService.update(id, updateStickerCategory, updatechild); 
+      await this.stickerCategoryService.update(id, updateStickerCategory); 
+
+      var checkanak = await this.mstikerService.findByKategori(getdata.name.toString());
+      if(checkanak.length != 0)
+      {
+        await this.mstikerService.updatedatabasedonkategori(getdata.name.toString(), name.toString(), tipesticker); 
+      }
 
       const messages = {
         "info": ["The process successful"],
@@ -190,12 +185,24 @@ export class StickerCategoryController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('delete/:id')
+  @Get(':id/status/delete')
   async remove(@Param('id') id: string) {
+    var data = await this.stickerCategoryService.findone2(id);
+    var child = await this.mstikerService.findByKategori(data.name.toString());
+
     var updatedata = new CreateStickerCategoryDto();
     updatedata.active = false;
 
-    await this.stickerCategoryService.update(id, updatedata, false);
+    await this.stickerCategoryService.update(id, updatedata);
+
+    if(child.length != 0)
+    {
+      for(var i = 0; i < child.length; i++)
+      {
+        var konvert = child[i]._id;
+        await this.mstikerService.updateNonactive(konvert.toString());
+      }
+    }
 
     const messages = {
       "info": ["The process successful"],
