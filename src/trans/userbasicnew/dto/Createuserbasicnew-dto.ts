@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 export class CreateuserbasicnewDto {
-  _id: { oid:String; };
-  profileID: String;
+  _id: mongoose.Types.ObjectId;
+  profileID: string;
   email: String;
   fullName: String;
   dob: String;
@@ -16,12 +16,12 @@ export class CreateuserbasicnewDto {
   idProofName:String;
   idProofNumber:String;
   idProofStatus:String;
-  isComplete:String;
-  isCelebrity:String;
-  isIdVerified:String;
-  isPrivate:String;
-  isFollowPrivate:String;
-  isPostPrivate:String;
+  isComplete:boolean;
+  isCelebrity:boolean;
+  isIdVerified:boolean;
+  isPrivate:boolean;
+  isFollowPrivate:boolean;
+  isPostPrivate:boolean;
   createdAt:String;
   updatedAt:String;
   bio:String;
@@ -32,7 +32,7 @@ export class CreateuserbasicnewDto {
   };
   proofPict: {
     $ref: String;
-    $id: { oid: String };
+    $id: String;
     $db: String;
   };
   insight: {
@@ -67,6 +67,7 @@ export class CreateuserbasicnewDto {
   _class: String;
   pin: String;
   otp_pin: String;
+  otpToken:String;
   otp_expired_time: String;
   otppinVerified: boolean;
   statusKyc: string;
@@ -80,19 +81,19 @@ export class CreateuserbasicnewDto {
   import: String;
   userBadge: any[];
   tutor: any[];
-  userEvent: String;
+  userEvent: string;
   following: any[];
   follower: any[];
-  citiesName: String;
-  statesName: String;
-  countriesName: String;
-  languagesLang: String;
-  languagesLangIso: String;
-  _idAuth: {oid:String;};
-  username: String;
-  password: String;
-  userID: String;
-  isExpiryPass: String;
+  citiesName: string;
+  statesName: string;
+  countriesName: string;
+  languagesLang: string;
+  languagesLangIso: string;
+  _idAuth: mongoose.Types.ObjectId;
+  username: string;
+  password: string;
+  userID: string;
+  isExpiryPass: string;
   isEmailVerified: boolean;
   otpRequestTime: number;
   otpAttempt: number;
@@ -103,19 +104,19 @@ export class CreateuserbasicnewDto {
   isAccountNonLocked: boolean;
   isCredentialsNonExpired: boolean;
   roles: any[];
-  _idAvatar: String;
-  mediaType: String;
-  mediaBasePath: String;
-  mediaUri: String;
-  originalName: String;
-  fsSourceUri: String;
-  fsSourceName: String;
-  fsTargetUri: String;
-  mediaEndpoint: String;
-  ktpMediaBasePath: String;
-  ktpMediaUri: String;
-  ktpOriginalName: String;
-  ktpFsSourceUri: String;
-  ktpFsSourceName: String;
-  ktpFsTargetUri: String;
+  _idAvatar: string;
+  mediaType: string;
+  mediaBasePath: string;
+  mediaUri: string;
+  originalName: string;
+  fsSourceUri: string;
+  fsSourceName: string;
+  fsTargetUri: string;
+  mediaEndpoint: string;
+  ktpMediaBasePath: string;
+  ktpMediaUri: string;
+  ktpOriginalName: string;
+  ktpFsSourceUri: string;
+  ktpFsSourceName: string;
+  ktpFsTargetUri: string;
 }

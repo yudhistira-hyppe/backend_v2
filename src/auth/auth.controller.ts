@@ -66,6 +66,8 @@ import { FriendListService } from 'src/content/friend_list/friend_list.service';
 import { CreateUserauthDto } from 'src/trans/userauths/dto/create-userauth.dto';
 import { ConfigService } from '@nestjs/config';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { CreateuserbasicnewDto } from 'src/trans/userbasicnew/dto/Createuserbasicnew-dto';
+import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 const sharp = require('sharp');
 const convert = require('heic-convert');
 
@@ -98,7 +100,8 @@ export class AuthController {
     private userticketdetailsService: UserticketdetailsService,
     private friendListService: FriendListService,
     private readonly configService: ConfigService,
-    private readonly logapiSS: LogapisService
+    private readonly logapiSS: LogapisService,
+    private readonly basic2SS: UserbasicnewService
   ) { }
 
   // @UseGuards(LocalAuthGuard)
@@ -1023,6 +1026,7 @@ export class AuthController {
     }
   }
 
+  
   @UseGuards(LocalAuthGuard)
   @Post('api/user/login/v2')
   @HttpCode(HttpStatus.ACCEPTED)
@@ -1055,16 +1059,11 @@ export class AuthController {
       }
     }
 
-    //Ceck User Userauths
-    const data_userauths = await this.userauthsService.findOneByEmail(
-      LoginRequest_.email,
-    );
-
     //Generate Refresh Token
     await this.authService.updateRefreshToken(LoginRequest_.email.toString());
 
     //Ceck User Userbasics
-    const data_userbasics = await this.userbasicsService.findOne(
+    const data_userbasics = await this.basic2SS.findbyemail(
       LoginRequest_.email,
     );
 
@@ -1078,26 +1077,13 @@ export class AuthController {
       lang = LoginRequest_.lang.toString();
     }
 
-    if ((await this.utilsService.ceckData(data_userbasics)) && (await this.utilsService.ceckData(data_jwtrefreshtoken))) {
-      if (await this.utilsService.ceckData(data_userauths)) {
-        _isEmailVerified = data_userauths.isEmailVerified;
-      } else {
-        var fullurl = req.get("Host") + req.originalUrl;
-        var timestamps_end = await this.utilsService.getDateTimeString();
-        var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
-        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
-        if (lang == "en") {
-          await this.errorHandler.generateNotAcceptableException(
-            'No users were found. Please check again.',
-          );
-        } else {
-          await this.errorHandler.generateNotAcceptableException(
-            'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
-          );
-        }
-      }
+    console.log(data_userbasics);
 
-      if (_isEmailVerified) {
+    if ((await this.utilsService.ceckData(data_userbasics))) {
+      _isEmailVerified = data_userbasics.isEmailVerified;
+
+      if (_isEmailVerified == true) {
+        var mongo = require('mongoose');
         let messages_response;
         if (Object.keys(data_activityevents).length > 0) {
           var Activityevents_child = new CreateActivityeventsDto();
@@ -1143,13 +1129,19 @@ export class AuthController {
             Activityevents_child.parentActivityEventID =
               data_activityevents[0].activityEventID;
             Activityevents_child.userbasic =
-              data_userbasics._id;
+              mongo.Types.ObjectId(data_userbasics._id);
 
             //Insert ActivityEvent child
 
             const event = await this.activityeventsService.create(Activityevents_child);
             let idevent = event._id;
             let eventType = event.event.toString();
+
+            var updateactivityevent = new CreateuserbasicnewDto();
+            updateactivityevent.userEvent = "AWAKE";
+
+            var konvert = data_userbasics._id;
+            await this.basic2SS.update(konvert.toString(), updateactivityevent);
 
             //await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
           } catch (error) {
@@ -1246,7 +1238,7 @@ export class AuthController {
                 $db: 'hyppe_trans_db',
               },
             ];
-            Activityevents_parent.userbasic = data_userbasics._id;
+            Activityevents_parent.userbasic = mongo.Types.ObjectId(data_userbasics._id);
 
             //Insert ActivityEvent Parent
             const event = await this.activityeventsService.create(Activityevents_parent);
@@ -1292,7 +1284,13 @@ export class AuthController {
             Activityevents_child.flowIsDone = false;
             Activityevents_child.__v = undefined;
             Activityevents_child.parentActivityEventID = generate_activityEventID_Activityevents_parent;
-            Activityevents_child.userbasic = data_userbasics._id;
+            Activityevents_child.userbasic = mongo.Types.ObjectId(data_userbasics._id);
+
+            var updateactivityevent = new CreateuserbasicnewDto();
+            updateactivityevent.userEvent = "AWAKE";
+
+            var konvert = data_userbasics._id;
+            await this.basic2SS.update(konvert.toString(), updateactivityevent);
 
             //Insert ActivityEvent Parent
 
@@ -1376,7 +1374,7 @@ export class AuthController {
           //Update Devices Userauths
           try {
             //Get Devices Userauths
-            const data_userauths_devices_list = data_userauths.devices;
+            const data_userauths_devices_list = data_userbasics.authUsers.devices;
 
             //Filter ID_user_userdevicesService Devices UserDevices
             var filteredData = data_userauths_devices_list.filter(function (data_userauths_devices_list) {
@@ -1391,9 +1389,13 @@ export class AuthController {
                 $db: 'hyppe_trans_db',
               });
 
-              await this.userauthsService.updatebyEmail(LoginRequest_.email, {
-                devices: data_userauths_devices_list,
-              });
+              var insertdevice = new CreateuserbasicnewDto();
+              insertdevice.authUsers = {
+                "devices":data_userauths_devices_list
+              };
+
+              var konvert = data_userbasics._id;
+              await this.basic2SS.update(konvert.toString(), insertdevice);
             }
           } catch (error) {
             var fullurl = req.get("Host") + req.originalUrl;
@@ -1410,21 +1412,21 @@ export class AuthController {
         messages_response = 'Login successful';
         var datasetting = await this.settingsService.findAll();
 
-        var CreateUserauthDto_ = new CreateUserauthDto();
+        var insertSource = new CreateuserbasicnewDto();
         if (LoginRequest_.regSrc == undefined) {
-          if (await this.utilsService.ceckData(data_userauths)) {
-            if (data_userauths.regSrc != undefined) {
-              CreateUserauthDto_.loginSrc = data_userauths.regSrc.toString();
+          if (await this.utilsService.ceckData(data_userbasics)) {
+            if (data_userbasics.regSrc != undefined) {
+              insertSource.loginSrc = data_userbasics.regSrc.toString();
             } else {
-              CreateUserauthDto_.loginSrc = "android";
+              insertSource.loginSrc = "android";
             }
           } else {
-            CreateUserauthDto_.loginSrc = "android";
+            insertSource.loginSrc = "android";
           }
         } else {
-          CreateUserauthDto_.loginSrc = LoginRequest_.regSrc.toString();
+          insertSource.loginSrc = LoginRequest_.regSrc.toString();
         }
-        this.userauthsService.update2(data_userauths._id.toString(), CreateUserauthDto_);
+        this.basic2SS.update(data_userbasics._id.toString(), insertSource);
 
         var ProfileDTO_ = new ProfileDTO();
         ProfileDTO_ = await this.utilsService.generateProfile(LoginRequest_.email, 'LOGIN');
@@ -1484,8 +1486,10 @@ export class AuthController {
         // }
       }
     } else {
-      if (await this.utilsService.ceckData(data_userauths)) {
-        _isEmailVerified = data_userauths.isEmailVerified;
+
+
+      if (await this.utilsService.ceckData(data_userbasics)) {
+        _isEmailVerified = data_userbasics.isEmailVerified;
         var messages = "Tidak dapat melanjutkan, Email pengguna belum diverifikasi";
         if (lang == "en") {
           messages = 'Unable to continue, User`s email has not been verified';

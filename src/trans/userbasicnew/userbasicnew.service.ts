@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { Userbasicnew, UserbasicnewDocument } from './schemas/userbasicnew.schema';
+import { CreateUserbasicnewDto } from '../newuserbasic/dto/create-userbasicnew.dto';
 
 @Injectable()
 export class UserbasicnewService {
@@ -19,6 +20,149 @@ export class UserbasicnewService {
     }
     async find(): Promise<Userbasicnew[]> {
         return this.UserbasicnewModel.find().exec();
+    }
+
+    async findbyemail(email:string): Promise<Userbasicnew> {
+        return this.UserbasicnewModel.findOne({ email:email }).exec();
+    }
+
+    async finddetail(email:string){
+        var result = await this.UserbasicnewModel.aggregate([
+            {
+                "$match":
+                {
+                    email:email
+                }
+            },
+            {
+                "$addFields":
+                {
+                    "urluserBadge":
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                "$filter":
+                                {
+                                input: "$userBadge",
+                                as: "listbadge",
+                                cond:
+                                {
+                                    "$and":
+                                    [
+                                        {
+                                        "$eq":
+                                            [
+                                            "$$listbadge.isActive", true
+                                            ]
+                                        },
+                                        {
+                                        "$lte": [
+                                            {
+                                            "$dateToString": {
+                                                "format": "%Y-%m-%d %H:%M:%S",
+                                                "date": {
+                                                "$add": [
+                                                    new Date(),
+                                                    25200000
+                                                ]
+                                                }
+                                            }
+                                            },
+                                            "$$listbadge.endDatetime"
+                                        ]
+                                        }
+                                    ]
+                                }
+                                },
+                            },
+                            []
+                        ]
+                    },
+                }
+            },
+            {
+                "$project":
+                {
+                    "_id":1,
+                    "profileID": 1,
+                    "email": 1,
+                    "fullName": 1,
+                    "dob":1,
+                    "gender": 
+                    {
+                        "$ifNull":
+                        [
+                            "$gender",
+                            "Other"
+                        ]
+                    },
+                    "status": 1,
+                    "event": 1,
+                    "isComplete": 1,
+                    "isCelebrity": 1,
+                    "isIdVerified": 1,
+                    "isPrivate": 1,
+                    "isFollowPrivate": 1,
+                    "isPostPrivate": 1,
+                    "createdAt": 1,
+                    "updatedAt": 1,
+                    "insight": 1,
+                    "userInterests": 1,
+                    "userAuth": 1,
+                    "languages": 1,
+                    "_class": 1,
+                    "statusKyc": 1,
+                    "reportedUser": 1,
+                    "reportedUserHandle": 1,
+                    "listAddKyc": 1,
+                    "userAssets": 1,
+                    "__v": 1,
+                    "profilePict": 1,
+                    "bio": 1,
+                    "mobileNumber": 1,
+                    "timeEmailSend": 1,
+                    "icon": 1,
+                    "userBadge": 1,
+                    "countries": 1,
+                    "states": 1,
+                    "cities": 1,
+                    "idProofNumber": 1,
+                    "idProofStatus": 1,
+                    "pin": 1,
+                    "otppinVerified": 1,
+                    "tutor": 1,
+                    urluserBadge: 
+                    {
+                        "$ifNull":[
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$urluserBadge", 0
+                            ]
+                        },
+                        null
+                        ]
+                    },
+                    "username":1,
+                    "languagesLangIso":1,
+                    "countriesName":1,
+                    "citiesName":1,
+                    "statesName":1,
+                    "mediaBasePath":1,
+                    "mediaUri":1,
+                    "mediaType":1,
+                    "mediaEndpoint":1,
+                    "oneTimePassword":1,
+                    "otpToken":1,
+                    "isEmailVerified":1,
+                    "authUsers":1,
+                    "roles":1
+                }
+            }
+        ]);
+
+        return result[0];
     }
 
     async update(id: string, Userbasicnew_: Userbasicnew): Promise<Userbasicnew> {
