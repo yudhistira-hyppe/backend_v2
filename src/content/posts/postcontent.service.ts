@@ -3527,6 +3527,7 @@ export class PostContentService {
     PostData_.comment = [];
     PostData_.comments = 0;
     PostData_.reportedStatus = Posts_.reportedStatus;
+    PostData_.stiker = Posts_.stiker;
 
     //PRIPACY
     let privacy = new Privacy();
