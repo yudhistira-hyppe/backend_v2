@@ -5340,7 +5340,12 @@ export class AdsService {
                                         },
                                         {
                                             isActive: true
-                                        },
+                                        }, 
+                                        {
+                                            $expr: {
+                                                $lte: ["$viewed", "$frekwensi"]
+                                            }
+                                        }
 
                                     ]
                                 },
