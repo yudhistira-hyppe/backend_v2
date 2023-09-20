@@ -78,8 +78,6 @@ export class MediastikerController {
         }
         if (request_json["kategori"] !== undefined) {
             kategori = request_json["kategori"];
-        } else {
-            throw new BadRequestException("kategori required");
         }
         if (request_json["nourut"] !== undefined) {
             nourut = request_json["nourut"];
@@ -88,10 +86,7 @@ export class MediastikerController {
         if (files.image == undefined) {
             throw new BadRequestException("image required");
         }
-        if (request_json["kategori"] !== undefined) {
 
-            kategori = request_json["kategori"];
-        }
         // } else {
         //     if (type !== "GIF") {
         //         throw new BadRequestException("kategori required");
