@@ -768,9 +768,13 @@ export class AdsController {
                     AdsBalaceCreditDto_.description = "ADS CREATION";
 
                     // const getUserVoucher = await this.uservouchersService.findUserVouchers(ads.userID.toString());
+                    // let creditBayar = 0;
                     // if (await this.utilsService.ceckData(getUserVoucher)){
                     //     for (let i = 0; i < getUserVoucher.length;i++){
-                    //         let sisaKredit = getUserVoucher[i].s
+                    //         let sisaKredit = Number(getUserVoucher[i].totalCredit) - Number(getUserVoucher[i].usedCredit);
+                    //         if (ads.credit <= sisaKredit){
+
+                    //         }
                     //     }
                     // }
                 }

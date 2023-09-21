@@ -3119,7 +3119,10 @@ export class AdsService {
                                             },
                                             "in": {
                                                 "name": {
-                                                    "$arrayElemAt": ["$userAdsArea._id", "$$this"]
+                                                    $ifNull: [
+                                                        { "$arrayElemAt": ["$userAdsArea._id", "$$this"] },
+                                                        "Lainnya"
+                                                    ] 
                                                 },
                                                 "count": {
                                                     "$arrayElemAt": ["$userAdsArea.areasCount", "$$this"]
