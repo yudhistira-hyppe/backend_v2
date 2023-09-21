@@ -5689,6 +5689,10 @@ export class AdsService {
                         isValid: 1,
                         objectivitasId: "$objectivitas.name_id",
                         objectivitasEn: "$objectivitas.name_en",
+                        "mediaBasePath": 1,
+                        "mediaUri": 1,
+                        "mediaThumBasePath": 1,
+                        "mediaThumUri": 1
 
                     }
                 },
