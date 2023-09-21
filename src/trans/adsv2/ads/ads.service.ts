@@ -2962,7 +2962,7 @@ export class AdsService {
                                                                         "$arrayElemAt": ["$viewed", 0]
                                                                     }
                                                                 },
-                                                                "in": "$$tmp.reach"
+                                                                "in": "$$tmp.impresi"
                                                             }
                                                         }]
                                                     }, 100]
