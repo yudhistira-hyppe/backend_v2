@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 // import { Types } from 'aws-sdk/clients/lightsail';
 import { query } from 'express';
 import { ObjectId } from 'mongodb';
-import { Model, Types } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { CreateUservouchersDto } from './dto/create-uservouchers.dto';
 import { Uservouchers, UservouchersDocument } from './schemas/uservouchers.schema';
 
@@ -29,6 +29,10 @@ export class UservouchersService {
 
     async findOne(id: string): Promise<Uservouchers> {
         return this.uservouchersModel.findOne({ _id: id }).exec();
+    }
+
+    async findUserVouchers(userID: string): Promise<Uservouchers[]> {
+        return this.uservouchersModel.find({ userID: new mongoose.Types.ObjectId(userID), $expr: { $gt: ["$voucherCredit", "$usedCredit"] } }).exec();
     }
 
     // async findUser(userID: ObjectId): Promise<Uservouchers[]> {

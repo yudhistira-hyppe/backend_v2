@@ -28,6 +28,7 @@ import { AccountbalancesService } from '../../../trans/accountbalances/accountba
 import { CreateAccountbalancesDto } from '../../../trans/accountbalances/dto/create-accountbalances.dto';
 import { AdsBalaceCreditService } from '../adsbalacecredit/adsbalacecredit.service';
 import { AdsPriceCreditsService } from '../adspricecredits/adspricecredits.service';
+import { UservouchersService } from 'src/trans/uservouchers/uservouchers.service';
 const sharp = require('sharp');
 
 @Controller('api/adsv2/ads')
@@ -51,7 +52,8 @@ export class AdsController {
         private accountbalancesService: AccountbalancesService,
         private readonly logapiSS: LogapisService,
         private adsBalaceCreditService: AdsBalaceCreditService,
-        private readonly adsPriceCreditsService: AdsPriceCreditsService,
+        private readonly adsPriceCreditsService: AdsPriceCreditsService, 
+        private readonly uservouchersService: UservouchersService,
         private readonly adsService: AdsService) {
         this.locks = new Map();
     }
@@ -764,6 +766,13 @@ export class AdsController {
                     AdsBalaceCreditDto_.kredit = 0;
                     AdsBalaceCreditDto_.type = "USE";
                     AdsBalaceCreditDto_.description = "ADS CREATION";
+
+                    // const getUserVoucher = await this.uservouchersService.findUserVouchers(ads.userID.toString());
+                    // if (await this.utilsService.ceckData(getUserVoucher)){
+                    //     for (let i = 0; i < getUserVoucher.length;i++){
+                    //         let sisaKredit = getUserVoucher[i].s
+                    //     }
+                    // }
                 }
                 if ((ads.status == "UNDER_REVIEW") && (AdsDto_.status == "IN_ACTIVE")) {
                     //--------------------INSERT BALANCE KREDIT--------------------
