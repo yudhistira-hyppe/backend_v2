@@ -1949,10 +1949,11 @@ export class AccountbalancesService {
             } else {
                 if (type === "image") {
 
-                    try {
-                        datanew = await this.postContentService.getImageApsara(pict);
-                    } catch (e) {
-                        datanew = [];
+                    idapsaradefine = "konak";
+                    datanew = {
+                        "imageInfo": [{
+                            url: dataquery[i].mediaThumUri
+                        }]
                     }
                 }
                 else if (type === "video") {
