@@ -126,6 +126,7 @@ export class UservouchersService {
                     isActive: 1,
                     description: "$field.description",
                     jmlVoucher: 1,
+                    usedCredit: 1,
                     expiredDay: "$field.expiredDay"
                 }
             });
