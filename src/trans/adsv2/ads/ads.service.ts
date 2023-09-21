@@ -5330,6 +5330,13 @@ export class AdsService {
                         },
                         pipeline: [
                             {
+                                $set: {
+                                    viewed: {
+                                        $ifNull: ["$viewed", 0]
+                                    }
+                                }
+                            },
+                            {
                                 $match:
                                 {
                                     $and: [
@@ -5340,13 +5347,13 @@ export class AdsService {
                                         },
                                         {
                                             isActive: true
-                                        }, 
+                                        },
                                         {
                                             $expr: {
-                                                $lte: ["$viewed", "$frekwensi"]
+                                                $ne: ["$viewed", "$frekwensi"]
                                             }
-                                        }
 
+                                        }
                                     ]
                                 },
 
@@ -5368,6 +5375,29 @@ export class AdsService {
 
                     }
                 },
+                //{
+                //    $addFields: {
+                //        isValid: 
+                //        {
+                //            $and: [
+                //                {
+                //                    $in: [
+                //                        "$_id",
+                //                        "$adsUser.adsID"
+                //                    ]
+                //                },
+                //                //{
+                //                //    $lte: ['$adsUser.viewed', '$audiensFrekuensi']
+                //                //},
+                //                {
+                //                    "adsUser.isActive": true,
+                //                    
+                //                },
+                //                
+                //            ]
+                //        }
+                //    }
+                //},
                 {
                     "$lookup": {
                         from: "adsobjectivitas",
@@ -5443,51 +5473,60 @@ export class AdsService {
                 },
                 {
                     $match: {
-                        $or:
-                            [
-                                {
-                                    $and: [
-                                        {
-                                            $expr: {
-                                                $eq: [{ $arrayElemAt: ["$adsUser.isActive", 0] }, true]
-                                            }
-                                        },
-                                        {
-                                            $expr: {
-                                                $eq: ['$sorts', true]
-                                            }
-                                        },
-                                        {
-                                            "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
-                                        },
-                                        {
-                                            $expr: {
-                                                $lt: [
-                                                    {
-                                                        $arrayElemAt: ["$balances.total", 0]
-                                                    }, 49000
-                                                ]
-                                            }
-                                        },
+                        $or: [
+                            {
+                                $and: [
+                                    //{
+                                    //		$expr: {
+                                    //				$eq: ['$isValid', false]
+                                    //		}
+                                    //},
+                                    {
+                                        $expr: {
+                                            $eq: [{ $arrayElemAt: ["$adsUser.isActive", 0] }, true]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$sorts', true]
+                                        }
+                                    },
+                                    {
+                                        "userID": new mongoose.Types.ObjectId(idUser)
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: [
+                                                {
+                                                    $arrayElemAt: ["$balances.total", 0]
+                                                },
+                                                49000]
+                                        }
+                                    },
 
-                                    ]
-                                },
-                                {
-                                    $and: [
-                                        {
-                                            $expr: {
-                                                $eq: [{ $arrayElemAt: ["$adsUser.isActive", 0] }, true]
-                                            }
-                                        },
-                                        {
-                                            $expr: {
-                                                $eq: ['$sorts', true]
-                                            }
-                                        },
+                                ]
+                            },
+                            {
+                                $and: [
+                                    //{
+                                    //		$expr: {
+                                    //				$eq: ['$isValid', false]
+                                    //		}
+                                    //},
+                                    {
+                                        $expr: {
+                                            $eq: [{ $arrayElemAt: ["$adsUser.isActive", 0] }, true]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$sorts', true]
+                                        }
+                                    },
 
-                                    ]
-                                },
-                            ]
+                                ]
+                            },
+                        ]
                     }
                 },
                 {
@@ -5607,14 +5646,10 @@ export class AdsService {
                         isValid: 1,
                         objectivitasId: "$objectivitas.name_id",
                         objectivitasEn: "$objectivitas.name_en",
-                        mediaBasePath: 1,
-                        mediaUri: 1,
-                        mediaThumBasePath: 1,
-                        mediaThumUri: 1
 
                     }
                 },
-                { $limit: 1 }
+
             ]
         );
         return query;
