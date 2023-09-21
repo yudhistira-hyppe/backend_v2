@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, ObjectId, Types } from 'mongoose';
 import { Mediastiker, MediastikerDocument } from './schemas/mediastiker.schema';
 import { first, pipe } from 'rxjs';
+import { start } from 'repl';
 
 @Injectable()
 export class MediastikerService {
@@ -202,9 +203,19 @@ export class MediastikerService {
                                 }
                             },
                             {
+                                "$addFields":
+                                {
+                                    "lowername":
+                                    {
+                                        "$toLower":"$name"
+                                    }
+                                }
+                            },
+                            {
                                 "$sort":
                                 {
-                                    countused: -1
+                                    countused: -1,
+                                    lowername:1
                                 }
                             },
                             {
@@ -237,9 +248,19 @@ export class MediastikerService {
                                 }
                             },
                             {
+                                "$addFields":
+                                {
+                                    "lowername":
+                                    {
+                                        "$toLower":"$name"
+                                    }
+                                }
+                            },
+                            {
                                 "$sort":
                                 {
-                                    countused: -1
+                                    countused: -1,
+                                    lowername:1
                                 }
                             },
                             {
@@ -272,9 +293,19 @@ export class MediastikerService {
                                 }
                             },
                             {
+                                "$addFields":
+                                {
+                                    "lowername":
+                                    {
+                                        "$toLower":"$name"
+                                    }
+                                }
+                            },
+                            {
                                 "$sort":
                                 {
-                                    countused: -1
+                                    countused: -1,
+                                    lowername:1
                                 }
                             },
                             {
@@ -320,20 +351,23 @@ export class MediastikerService {
         }
 
         if (startdate != null) {
-            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-            var dateend = currentdate.toISOString();
+            // var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+            // var dateend = currentdate.toISOString().split(" ")[0];
+            var convertstart = startdate.split(" ")[0];
+            var dateend = new Date(enddate);
+            var convertend = dateend.toISOString().split(" ")[0];
 
             firstmatch.push(
                 {
                     "createdAt":
                     {
-                        "$gte": startdate
+                        "$gte": convertstart
                     }
                 },
                 {
                     "createdAt":
                     {
-                        "$lte": dateend
+                        "$lte": convertend
                     }
                 },
             );
@@ -434,11 +468,20 @@ export class MediastikerService {
                     }
                 })
             }
+            else if(sorting == "index"){
+                pipeline.push({
+                    "$sort":
+                    {
+                        index:1
+                    }
+                });
+            }
             else {
                 pipeline.push({
                     "$sort":
                     {
-                        countused: -1
+                        countused: -1,
+                        lowername:1
                     }
                 })
             }
@@ -1163,10 +1206,19 @@ export class MediastikerService {
                     }
                 },
                 {
+                    "$addFields":
+                    {
+                        "lowername":
+                        {
+                            "$toLower":"$name"
+                        }
+                    }
+                },
+                {
                     "$sort":
                     {
                         countused: -1,
-                        name: 1
+                        lowername:1
                     }
                 },
                 {

@@ -31,6 +31,7 @@ export class MediastikerController {
     ) {
         var request_json = JSON.parse(JSON.stringify(request.body));
         var name = null;
+        var nameEn = null;
         var kategori = null;
         var status = null;
         var datastiker = null;
@@ -63,6 +64,11 @@ export class MediastikerController {
             name = request_json["name"];
         } else {
             throw new BadRequestException("name required");
+        }
+        if (request_json["nameEn"] !== undefined) {
+            nameEn = request_json["nameEn"];
+        } else {
+            throw new BadRequestException("nameEn required");
         }
 
 
@@ -141,6 +147,7 @@ export class MediastikerController {
                 insertdata.name = name;
             }
 
+            insertdata.nameEn = nameEn;
             insertdata.createdAt = timedate;
             insertdata.updatedAt = timedate;
             insertdata.isDelete = false;
@@ -200,6 +207,7 @@ export class MediastikerController {
                 insertdata.name = name;
             }
 
+            insertdata.nameEn = nameEn;
             insertdata.createdAt = timedate;
             insertdata.updatedAt = timedate;
             insertdata.isDelete = false;
@@ -255,6 +263,7 @@ export class MediastikerController {
         var request_json = JSON.parse(JSON.stringify(request.body));
         var id = null;
         var name = null;
+        var nameEn = null;
         var kategori = null;
         var status = null;
         var datastiker = null;
@@ -287,6 +296,10 @@ export class MediastikerController {
             } else {
                 insertdata.name = name;
             }
+        }
+        if (request_json["nameEn"] !== undefined) {
+            nameEn = request_json["nameEn"];
+            insertdata.nameEn = nameEn;
         }
         if (request_json["kategori"] !== undefined) {
             kategori = request_json["kategori"];
@@ -459,6 +472,7 @@ export class MediastikerController {
         var request_json = JSON.parse(JSON.stringify(request.body));
         var id = null;
         var name = null;
+        var nameEn = null;
         var kategori = null;
         var status = null;
         var datastiker = null;
@@ -492,6 +506,10 @@ export class MediastikerController {
             } else {
                 insertdata.name = name;
             }
+        }
+        if (request_json["nameEn"] !== undefined) {
+            nameEn = request_json["nameEn"];
+            insertdata.nameEn = nameEn;
         }
         if (request_json["kategori"] !== undefined) {
             kategori = request_json["kategori"];

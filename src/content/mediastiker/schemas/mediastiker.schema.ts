@@ -9,6 +9,8 @@ export class Mediastiker {
     @Prop()
     name: string;
     @Prop()
+    nameEn: string;
+    @Prop()
     kategori: string;
     @Prop()
     image: string;
