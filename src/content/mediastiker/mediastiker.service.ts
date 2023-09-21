@@ -21,13 +21,13 @@ export class MediastikerService {
         return this.MediastikerModel.findOne({ _id: new Types.ObjectId(id) }).exec();
     }
     async findByname(name: string): Promise<Mediastiker> {
-        return this.MediastikerModel.findOne({ name: name }).exec();
+        return this.MediastikerModel.findOne({ name: name, isDelete: false }).exec();
     }
     async findBynamekategori(type: string, kategori: string): Promise<Mediastiker> {
-        return this.MediastikerModel.findOne({ type: type, kategori: kategori }).exec();
+        return this.MediastikerModel.findOne({ type: type, kategori: kategori, isDelete: false }).exec();
     }
     async findByIndex(index: number, type: string, kategori: string): Promise<Mediastiker> {
-        return this.MediastikerModel.findOne({ index: index, type: type, kategori: kategori }).exec();
+        return this.MediastikerModel.findOne({ index: index, type: type, kategori: kategori, isDelete: false }).exec();
     }
     async findByKategori(target: string): Promise<Mediastiker[]> {
         return this.MediastikerModel.aggregate([
@@ -111,7 +111,7 @@ export class MediastikerService {
             {
                 "$match":
                 {
-                    'index': { $gte: nourut }, 'type': type, 'kategori': kategori
+                    'index': { $gte: nourut }, 'type': type, 'kategori': kategori, isDelete: false
                 }
             },
             {
@@ -125,7 +125,7 @@ export class MediastikerService {
             {
                 "$match":
                 {
-                    'type': type, 'kategori': kategori
+                    'type': type, 'kategori': kategori, isDelete: false
                 }
             },
             {
@@ -139,7 +139,7 @@ export class MediastikerService {
             {
                 "$match":
                 {
-                    'index': { $gte: nourutStart, $lte: nourutEnd }, 'type': type, 'kategori': kategori
+                    'index': { $gte: nourutStart, $lte: nourutEnd }, 'type': type, 'kategori': kategori, isDelete: false
                 }
             },
             {
@@ -154,7 +154,7 @@ export class MediastikerService {
             {
                 "$match":
                 {
-                    'index': { $lte: nourutStart, $gte: nourutEnd }, 'type': type, 'kategori': kategori
+                    'index': { $lte: nourutStart, $gte: nourutEnd }, 'type': type, 'kategori': kategori, isDelete: false
 
                 }
             },
