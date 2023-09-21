@@ -708,7 +708,7 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
                                                         "$gte": start_date.toISOString(),
                                                         "$lte": end_date.toISOString()
@@ -718,12 +718,12 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$viewTime",
-                                            "includeArrayIndex": "viewTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "viewTime": {
+                                            "updateAt": {
                                                 "$gte": start_date.toISOString(),
                                                 "$lte": end_date.toISOString()
                                             }
@@ -757,7 +757,7 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
                                                         "$gte": start_date.toISOString(),
                                                         "$lte": end_date.toISOString()
@@ -767,12 +767,12 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$viewTime",
-                                            "includeArrayIndex": "viewTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "viewTime": {
+                                            "updateAt": {
                                                 "$gte": start_date.toISOString(),
                                                 "$lte": end_date.toISOString()
                                             }
@@ -781,7 +781,7 @@ export class AdsService {
                                         "$project": {
                                             "userID": 1,
                                             "viewTime": {
-                                                "$substr": ["$viewTime", 0, 10]
+                                                "$substr": ["$updateAt", 0, 10]
                                             }
                                         }
                                     }, {
@@ -820,7 +820,7 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
                                                         "$gte": start_date.toISOString(),
                                                         "$lte": end_date.toISOString()
@@ -830,12 +830,12 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$viewTime",
-                                            "includeArrayIndex": "viewTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "viewTime": {
+                                            "updateAt": {
                                                 "$gte": start_date.toISOString(),
                                                 "$lte": end_date.toISOString()
                                             }
@@ -843,7 +843,7 @@ export class AdsService {
                                     }, {
                                         "$project": {
                                             "viewTime": {
-                                                "$substr": ["$viewTime", 0, 10]
+                                                "$substr": ["$updateAt", 0, 10]
                                             }
                                         }
                                     }, {
@@ -944,7 +944,7 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
                                                         "$gte": start_date.toISOString(),
                                                         "$lte": end_date.toISOString()
@@ -1112,7 +1112,7 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
                                                         "$gte": start_date.toISOString(),
                                                         "$lte": end_date.toISOString()
@@ -1471,7 +1471,7 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
                                                         "$gte": start_date.toISOString(),
                                                         "$lte": end_date.toISOString()
@@ -1830,7 +1830,7 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
                                                         "$gte": start_date.toISOString(),
                                                         "$lte": end_date.toISOString()
@@ -2189,7 +2189,7 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
                                                         "$gte": start_date.toISOString(),
                                                         "$lte": end_date.toISOString()
@@ -2550,7 +2550,7 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
                                                         "$gte": start_date.toISOString(),
                                                         "$lte": end_date.toISOString()
@@ -2962,7 +2962,7 @@ export class AdsService {
                                                                         "$arrayElemAt": ["$viewed", 0]
                                                                     }
                                                                 },
-                                                                "in": "$$tmp.reach"
+                                                                "in": "$$tmp.impresi"
                                                             }
                                                         }]
                                                     }, 100]

@@ -1110,6 +1110,7 @@ export class AdsController {
         var end_date = null;
         if (body.end_date != undefined) {
             end_date = new Date(body.end_date);
+            end_date = new Date(end_date.setDate(end_date.getDate() + 1));
         }
 
         try {
