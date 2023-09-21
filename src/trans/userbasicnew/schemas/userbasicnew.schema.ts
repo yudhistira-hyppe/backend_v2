@@ -161,7 +161,7 @@ export class Userbasicnew {
     @Prop()
     userID: string;
     @Prop()
-    isExpiryPass: string;
+    isExpiryPass: boolean;
     @Prop()
     isEmailVerified: boolean;
     @Prop()

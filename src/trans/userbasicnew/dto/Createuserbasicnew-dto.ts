@@ -93,7 +93,7 @@ export class CreateuserbasicnewDto {
   username: string;
   password: string;
   userID: string;
-  isExpiryPass: string;
+  isExpiryPass: boolean;
   isEmailVerified: boolean;
   otpRequestTime: number;
   otpAttempt: number;

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { Userbasicnew, UserbasicnewDocument } from './schemas/userbasicnew.schema';
-import { CreateUserbasicnewDto } from '../newuserbasic/dto/create-userbasicnew.dto';
 
 @Injectable()
 export class UserbasicnewService {
@@ -176,6 +175,25 @@ export class UserbasicnewService {
     async delete(id: string) {
         const data = await this.UserbasicnewModel.findByIdAndRemove({ _id: new Types.ObjectId(id) }).exec();
         return data;
+    }
+
+    async updateLanguage(email: string, CreateUserbasicnewDto_: Userbasicnew) {
+        console.log(CreateUserbasicnewDto_);
+        this.UserbasicnewModel.updateOne(
+          {
+            email: email,
+          },
+          {
+            $set: CreateUserbasicnewDto_
+          },
+          function (err, docs) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(docs);
+            }
+          },
+        ).clone().exec();
     }
 
 }

@@ -1131,17 +1131,17 @@ export class AuthController {
             Activityevents_child.userbasic =
               mongo.Types.ObjectId(data_userbasics._id);
 
+            var updateactivityevent = new CreateuserbasicnewDto();
+            updateactivityevent.userEvent = "LOGIN";
+            updateactivityevent.event = "LOGIN";
+            var konvert = data_userbasics._id;
+            await this.basic2SS.update(konvert.toString(), updateactivityevent);
+
             //Insert ActivityEvent child
 
             const event = await this.activityeventsService.create(Activityevents_child);
             let idevent = event._id;
             let eventType = event.event.toString();
-
-            var updateactivityevent = new CreateuserbasicnewDto();
-            updateactivityevent.userEvent = "AWAKE";
-
-            var konvert = data_userbasics._id;
-            await this.basic2SS.update(konvert.toString(), updateactivityevent);
 
             //await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
           } catch (error) {
@@ -1245,6 +1245,12 @@ export class AuthController {
             let idevent = event._id;
             let eventType = event.event.toString();
 
+            var updateactivityevent = new CreateuserbasicnewDto();
+            updateactivityevent.userEvent = "LOGIN";
+            updateactivityevent.event = "LOGIN";
+            var konvert = data_userbasics._id;
+            await this.basic2SS.update(konvert.toString(), updateactivityevent);
+
             //await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, data_userbasics._id);
           } catch (error) {
             var fullurl = req.get("Host") + req.originalUrl;
@@ -1285,12 +1291,6 @@ export class AuthController {
             Activityevents_child.__v = undefined;
             Activityevents_child.parentActivityEventID = generate_activityEventID_Activityevents_parent;
             Activityevents_child.userbasic = mongo.Types.ObjectId(data_userbasics._id);
-
-            var updateactivityevent = new CreateuserbasicnewDto();
-            updateactivityevent.userEvent = "AWAKE";
-
-            var konvert = data_userbasics._id;
-            await this.basic2SS.update(konvert.toString(), updateactivityevent);
 
             //Insert ActivityEvent Parent
 
@@ -1417,14 +1417,18 @@ export class AuthController {
           if (await this.utilsService.ceckData(data_userbasics)) {
             if (data_userbasics.regSrc != undefined) {
               insertSource.loginSrc = data_userbasics.regSrc.toString();
+              insertSource.loginSource = data_userbasics.regSrc.toString();
             } else {
               insertSource.loginSrc = "android";
+              insertSource.loginSource = "android";
             }
           } else {
             insertSource.loginSrc = "android";
+            insertSource.loginSource = "android";
           }
         } else {
           insertSource.loginSrc = LoginRequest_.regSrc.toString();
+          insertSource.loginSource = LoginRequest_.regSrc.toString();
         }
         this.basic2SS.update(data_userbasics._id.toString(), insertSource);
 
@@ -2967,6 +2971,13 @@ export class AuthController {
   async signupsosmed(@Req() request: any, @Headers() headers) {
     this.logger.log("signupsosmed >>> start: " + JSON.stringify(request.body));
     return await this.socmed.signupsosmed(request, headers);
+  }
+
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/user/signup/socmed/v2')
+  async signupsosmed2(@Req() request: any, @Headers() headers) {
+    this.logger.log("signupsosmed >>> start: " + JSON.stringify(request.body));
+    return await this.socmed.newsignupsosmed(request, headers);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
