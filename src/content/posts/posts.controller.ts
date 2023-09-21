@@ -3284,6 +3284,7 @@ export class PostsController {
     var email = null;
     var page = null;
     var limit = null;
+    var dataApsaraThumnail = null;
     var request_json = JSON.parse(JSON.stringify(request.body));
     if (request_json["email"] !== undefined) {
       email = request_json["email"];
@@ -3344,8 +3345,12 @@ export class PostsController {
           }
 
           if (getchildata.music.apsaraThumnail != undefined) {
-            var dataApsaraThumnail = await this.mediamusicService.getImageApsara([getchildata.music.apsaraThumnail]);
-            getchildata.music.apsaraThumnailUrl = dataApsaraThumnail.ImageInfo.find(x => x.ImageId == getchildata.music.apsaraThumnail).URL;
+            try {
+              dataApsaraThumnail = await this.mediamusicService.getImageApsara([getchildata.music.apsaraThumnail]);
+              getchildata.music.apsaraThumnailUrl = dataApsaraThumnail.ImageInfo.find(x => x.ImageId == getchildata.music.apsaraThumnail).URL;
+            } catch (e) {
+              console.log(dataApsaraThumnail)
+            }
             // getchildata.music.apsaraThumnailUrl = dataApsaraThumnail.ImageInfo[0].URL;
           }
 
