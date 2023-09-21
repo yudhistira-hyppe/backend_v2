@@ -1947,7 +1947,7 @@ export class AccountbalancesService {
             if (idapsara === "") {
 
             } else {
-                if (type === "image") {
+                if (type === "Image") {
 
                     idapsaradefine = "konak";
                     datanew = {
@@ -1956,7 +1956,7 @@ export class AccountbalancesService {
                         }]
                     }
                 }
-                else if (type === "video") {
+                else if (type === "Video") {
                     try {
                         datanew = await this.postContentService.getVideoApsara(pict);
                     } catch (e) {

@@ -928,8 +928,14 @@ export class MediastikerController {
         var data = await this.MediastikerService.listingapp(keyword, tipesticker);
 
         if (keyword != null && keyword != undefined) {
-
-            this.updateused(data[0].data);
+            try
+            {
+                this.updateused(data[0].data);
+            }
+            catch(e)
+            {
+                //emang kosong
+            }
         }
 
         // if(keyword != null && keyword != undefined)
