@@ -3081,7 +3081,7 @@ export class UserAdsService {
         if (start_date != undefined && end_date != undefined) {
             viewedFacet.push({
                 $match: {
-                    viewTime: {
+                    updateAt: {
                         $elemMatch: {
                             $gte: start_date.toISOString(),
                             $lte: end_date.toISOString()
@@ -3093,14 +3093,14 @@ export class UserAdsService {
         viewedFacet.push({
             $unwind:
             {
-                path: "$viewTime",
-                includeArrayIndex: 'viewTime_index',
+                path: "$updateAt",
+                includeArrayIndex: 'updateAt_index',
             }
         });
         if (start_date != undefined && end_date != undefined) {
             viewedFacet.push({
                 $match: {
-                    viewTime: {
+                    updateAt: {
                         $gte: start_date.toISOString(),
                         $lte: end_date.toISOString()
                     }
@@ -3133,7 +3133,7 @@ export class UserAdsService {
         if (start_date != undefined && end_date != undefined) {
             reachFacet.push({
                 $match: {
-                    viewTime: {
+                    updateAt: {
                         $elemMatch: {
                             $gte: start_date.toISOString(),
                             $lte: end_date.toISOString()
@@ -3145,14 +3145,14 @@ export class UserAdsService {
         reachFacet.push({
             $unwind:
             {
-                path: "$viewTime",
-                includeArrayIndex: 'viewTime_index',
+                path: "$updateAt",
+                includeArrayIndex: 'updateAt_index',
             }
         });
         if (start_date != undefined && end_date != undefined) {
             reachFacet.push({
                 $match: {
-                    viewTime: {
+                    updateAt: {
                         $gte: start_date.toISOString(),
                         $lte: end_date.toISOString()
                     }
@@ -3165,7 +3165,7 @@ export class UserAdsService {
                 viewTime: {
                     $substr:
                         [
-                            "$viewTime", 0, 10
+                            "$updateAt", 0, 10
                         ]
                 }
             }
@@ -3203,7 +3203,7 @@ export class UserAdsService {
         if (start_date != undefined && end_date != undefined) {
             impresiFacet.push({
                 $match: {
-                    viewTime: {
+                    updateAt: {
                         $elemMatch: {
                             $gte: start_date.toISOString(),
                             $lte: end_date.toISOString()
@@ -3215,14 +3215,14 @@ export class UserAdsService {
         impresiFacet.push({
             $unwind:
             {
-                path: "$viewTime",
-                includeArrayIndex: 'viewTime_index',
+                path: "$updateAt",
+                includeArrayIndex: 'updateAt_index',
             }
         });
         if (start_date != undefined && end_date != undefined) {
             impresiFacet.push({
                 $match: {
-                    viewTime: {
+                    updateAt: {
                         $gte: start_date.toISOString(),
                         $lte: end_date.toISOString()
                     }
@@ -3234,7 +3234,7 @@ export class UserAdsService {
                 viewTime: {
                     $substr:
                         [
-                            "$viewTime", 0, 10
+                            "$updateAt", 0, 10
                         ]
                 }
             }
@@ -3369,7 +3369,7 @@ export class UserAdsService {
         if (start_date != undefined && end_date != undefined) {
             viewTimeFacet.push({
                 $match: {
-                    viewTime: {
+                    updateAt: {
                         $elemMatch: {
                             $gte: start_date.toISOString(),
                             $lte: end_date.toISOString()
