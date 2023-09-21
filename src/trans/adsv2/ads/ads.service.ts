@@ -4787,7 +4787,6 @@ export class AdsService {
                                 typeAdsID: new mongoose.Types.ObjectId(idTypeAds),
 
                             }
-
                         ]
                     },
 
@@ -5321,7 +5320,6 @@ export class AdsService {
                         }
                     }
                 },
-
                 {
                     "$lookup": {
                         from: "userads",
@@ -5349,14 +5347,19 @@ export class AdsService {
                                             }
                                         },
                                         {
-                                            isActive: true
-                                        },
-                                        {
                                             $expr: {
-                                                $ne: ["$viewed", "$frekwensi"]
+                                                $eq: ['$adsID', '$$idAds']
                                             }
-
-                                        }
+                                        },
+                                        //{
+                                        //    isActive: true
+                                        //},
+                                        //{
+                                        //		$expr:{
+                                        //				$ne:["$viewed","$frekwensi"]
+                                        //		}
+                                        //		
+                                        //}
                                     ]
                                 },
 
@@ -5378,29 +5381,22 @@ export class AdsService {
 
                     }
                 },
-                //{
-                //    $addFields: {
-                //        isValid: 
-                //        {
-                //            $and: [
-                //                {
-                //                    $in: [
-                //                        "$_id",
-                //                        "$adsUser.adsID"
-                //                    ]
-                //                },
-                //                //{
-                //                //    $lte: ['$adsUser.viewed', '$audiensFrekuensi']
-                //                //},
-                //                {
-                //                    "adsUser.isActive": true,
-                //                    
-                //                },
-                //                
-                //            ]
-                //        }
-                //    }
-                //},
+                {
+                    $addFields: {
+                        isValid:
+                        {
+                            $and: [
+                                {
+                                    $in: [
+                                        "$_id",
+                                        "$adsUser.adsID"
+                                    ]
+                                },
+
+                            ]
+                        }
+                    }
+                },
                 {
                     "$lookup": {
                         from: "adsobjectivitas",
@@ -5475,18 +5471,27 @@ export class AdsService {
                     $limit: 1
                 },
                 {
+                    $set: {
+                        validasi: {
+                            $ifNull: [{
+                                $arrayElemAt: ["$adsUser.isActive", 0]
+                            }, true]
+                        }
+                    }
+                },
+                {
                     $match: {
                         $or: [
                             {
                                 $and: [
-                                    //{
-                                    //		$expr: {
-                                    //				$eq: ['$isValid', false]
-                                    //		}
-                                    //},
                                     {
                                         $expr: {
-                                            $eq: [{ $arrayElemAt: ["$adsUser.isActive", 0] }, true]
+                                            $eq: ['$isValid', true]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ["$validasi", true]
                                         }
                                     },
                                     {
@@ -5503,7 +5508,8 @@ export class AdsService {
                                                 {
                                                     $arrayElemAt: ["$balances.total", 0]
                                                 },
-                                                49000]
+                                                49000
+                                            ]
                                         }
                                     },
 
@@ -5511,14 +5517,14 @@ export class AdsService {
                             },
                             {
                                 $and: [
-                                    //{
-                                    //		$expr: {
-                                    //				$eq: ['$isValid', false]
-                                    //		}
-                                    //},
                                     {
                                         $expr: {
-                                            $eq: [{ $arrayElemAt: ["$adsUser.isActive", 0] }, true]
+                                            $eq: ['$isValid', true]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ["$validasi", true]
                                         }
                                     },
                                     {
@@ -5526,9 +5532,39 @@ export class AdsService {
                                             $eq: ['$sorts', true]
                                         }
                                     },
+                                    {
+                                        "userID": {
+                                            $ne: new mongoose.Types.ObjectId(idUser)
+                                        }
+                                    },
+                                ]
+                            },
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$isValid', false]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ["$validasi", true]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$sorts', true]
+                                        }
+                                    },
+                                    {
+                                        "userID": {
+                                            $ne: new mongoose.Types.ObjectId(idUser)
+                                        }
+                                    },
 
                                 ]
                             },
+
                         ]
                     }
                 },
@@ -5611,9 +5647,13 @@ export class AdsService {
                         test: 1,
                         sekarang: 1,
                         ctaButton: 1,
-                        viewed: { $arrayElemAt: ["$adsUser.viewed", 0] },
+                        viewed: {
+                            $arrayElemAt: ["$adsUser.viewed", 0]
+                        },
                         //tester:"$adsUser",
-                        isAdsActive: { $arrayElemAt: ["$adsUser.isActive", 0] },
+                        isAdsActive: {
+                            $arrayElemAt: ["$adsUser.isActive", 0]
+                        },
                         placingID: 1,
                         placingName: 1,
                         timestamps: 1,
@@ -5649,10 +5689,6 @@ export class AdsService {
                         isValid: 1,
                         objectivitasId: "$objectivitas.name_id",
                         objectivitasEn: "$objectivitas.name_en",
-                        mediaBasePath: 1,
-                        mediaUri: 1,
-                        mediaThumBasePath: 1,
-                        mediaThumUri: 1
 
                     }
                 },
