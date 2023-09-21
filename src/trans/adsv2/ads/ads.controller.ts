@@ -1121,61 +1121,61 @@ export class AdsController {
                 }
             }
 
-            // if (ads_campaign_detail.summary.CTR == null) {
-            //     ads_campaign_detail.summary.CTR = "0%"
-            // }
-            // for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {
-            //     var DateFormat = await this.utilsService.consvertDateTimeString(new Date(d));
-            //     const isFoundreach = ads_campaign_detail.summary.reach.some(element => {
-            //         if (element._id === DateFormat) {
-            //             return true;
-            //         }
-            //         return false;
-            //     });
-            //     if (!isFoundreach) {
-            //         ads_campaign_detail.summary.reach.push({
-            //             "_id": DateFormat,
-            //             "reachView": 0
-            //         })
-            //     }
-            //     const isFoundimpresi = ads_campaign_detail.summary.impresi.some(element => {
-            //         if (element._id === DateFormat) {
-            //             return true;
-            //         }
-            //         return false;
-            //     });
-            //     if (!isFoundimpresi) {
-            //         ads_campaign_detail.summary.impresi.push({
-            //             "_id": DateFormat,
-            //             "impresiView": 0
-            //         })
-            //     }
-            //     const isFoundCTA = ads_campaign_detail.summary.CTA.some(element => {
-            //         if (element._id === DateFormat) {
-            //             return true;
-            //         }
-            //         return false;
-            //     });
-            //     if (!isFoundCTA) {
-            //         ads_campaign_detail.summary.CTA.push({
-            //             "_id": DateFormat,
-            //             "CTACount": 0
-            //         })
-            //     }
-            // }
+            if (ads_campaign_detail.summary.CTR == null) {
+                ads_campaign_detail.summary.CTR = "0%"
+            }
+            for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {
+                var DateFormat = await this.utilsService.consvertDateTimeString(new Date(d));
+                const isFoundreach = ads_campaign_detail.summary.reach.some(element => {
+                    if (element._id === DateFormat) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (!isFoundreach) {
+                    ads_campaign_detail.summary.reach.push({
+                        "_id": DateFormat,
+                        "reachView": 0
+                    })
+                }
+                const isFoundimpresi = ads_campaign_detail.summary.impresi.some(element => {
+                    if (element._id === DateFormat) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (!isFoundimpresi) {
+                    ads_campaign_detail.summary.impresi.push({
+                        "_id": DateFormat,
+                        "impresiView": 0
+                    })
+                }
+                const isFoundCTA = ads_campaign_detail.summary.CTA.some(element => {
+                    if (element._id === DateFormat) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (!isFoundCTA) {
+                    ads_campaign_detail.summary.CTA.push({
+                        "_id": DateFormat,
+                        "CTACount": 0
+                    })
+                }
+            }
 
-            // var listdata = [];
-            // if (ads_campaign_detail.adsDetail.idApsara != undefined) {
-            //     listdata.push(ads_campaign_detail.adsDetail.idApsara);
-            // }
-            // if (listdata.length > 0) {
-            //     var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
-            //     if (apsaravideodata.VideoList.length > 0) {
-            //         if (apsaravideodata.VideoList[0] != undefined) {
-            //             ads_campaign_detail.adsDetail.media = apsaravideodata.VideoList[0];
-            //         }
-            //     }
-            // }
+            var listdata = [];
+            if (ads_campaign_detail.adsDetail.idApsara != undefined) {
+                listdata.push(ads_campaign_detail.adsDetail.idApsara);
+            }
+            if (listdata.length > 0) {
+                var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
+                if (apsaravideodata.VideoList.length > 0) {
+                    if (apsaravideodata.VideoList[0] != undefined) {
+                        ads_campaign_detail.adsDetail.media = apsaravideodata.VideoList[0];
+                    }
+                }
+            }
 
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
