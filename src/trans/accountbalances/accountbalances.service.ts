@@ -1952,7 +1952,7 @@ export class AccountbalancesService {
                     idapsaradefine = "konak";
                     datanew = {
                         "ImageInfo": [{
-                            url: dataquery[i].mediaThumUri
+                            URL: dataquery[i].mediaThumUri
                         }]
                     }
                 }
