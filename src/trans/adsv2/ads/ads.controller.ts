@@ -29,6 +29,7 @@ import { CreateAccountbalancesDto } from '../../../trans/accountbalances/dto/cre
 import { AdsBalaceCreditService } from '../adsbalacecredit/adsbalacecredit.service';
 import { AdsPriceCreditsService } from '../adspricecredits/adspricecredits.service';
 import { UservouchersService } from 'src/trans/uservouchers/uservouchers.service';
+import { CreateUservouchersDto } from 'src/trans/uservouchers/dto/create-uservouchers.dto';
 const sharp = require('sharp');
 
 @Controller('api/adsv2/ads')
@@ -767,16 +768,25 @@ export class AdsController {
                     AdsBalaceCreditDto_.type = "USE";
                     AdsBalaceCreditDto_.description = "ADS CREATION";
 
-                    // const getUserVoucher = await this.uservouchersService.findUserVouchers(ads.userID.toString());
-                    // let creditBayar = 0;
-                    // if (await this.utilsService.ceckData(getUserVoucher)){
-                    //     for (let i = 0; i < getUserVoucher.length;i++){
-                    //         let sisaKredit = Number(getUserVoucher[i].totalCredit) - Number(getUserVoucher[i].usedCredit);
-                    //         if (ads.credit <= sisaKredit){
-
-                    //         }
-                    //     }
-                    // }
+                    const getUserVoucher = await this.uservouchersService.findUserVouchers(ads.userID.toString());
+                    
+                    let buyAds = ads.credit;
+                    if (await this.utilsService.ceckData(getUserVoucher)){
+                        for (let i = 0; i < getUserVoucher.length;i++){
+                            let sisaKredit = Number(getUserVoucher[i].totalCredit) - Number(getUserVoucher[i].usedCredit);
+                            if (buyAds <= sisaKredit){
+                                let CreateUservouchersDto_ = new CreateUservouchersDto();
+                                CreateUservouchersDto_.usedCredit = Number(getUserVoucher[i].usedCredit) + Number(buyAds);
+                                await this.uservouchersService.update(getUserVoucher[i]._id.toString(), CreateUservouchersDto_);
+                                break;
+                            }else{
+                                buyAds = buyAds - sisaKredit;
+                                let CreateUservouchersDto_ = new CreateUservouchersDto();
+                                CreateUservouchersDto_.usedCredit = Number(getUserVoucher[i].usedCredit) + Number(sisaKredit);
+                                await this.uservouchersService.update(getUserVoucher[i]._id.toString(), CreateUservouchersDto_);
+                            }
+                        }
+                    }
                 }
                 if ((ads.status == "UNDER_REVIEW") && (AdsDto_.status == "IN_ACTIVE")) {
                     //--------------------INSERT BALANCE KREDIT--------------------
