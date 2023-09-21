@@ -342,11 +342,23 @@ export class MediastikerService {
         var firstmatch = [];
         if (setname != null) {
             firstmatch.push({
-                name:
-                {
-                    "$regex": setname,
-                    "$options": "i"
-                }
+                "$or":
+                [
+                    {
+                        "name":
+                        {
+                            "$regex": setname,
+                            "$options": "i"
+                        }
+                    },
+                    {
+                        "nameEn":
+                        {
+                            "$regex": setname,
+                            "$options": "i"
+                        }
+                    },
+                ]
             })
         }
 
@@ -1198,11 +1210,23 @@ export class MediastikerService {
                 {
                     "$match":
                     {
-                        "name":
-                        {
-                            "$regex": keyword,
-                            "$options": "i"
-                        }
+                        "$or":
+                        [
+                            {
+                                "name":
+                                {
+                                    "$regex": keyword,
+                                    "$options": "i"
+                                }
+                            },
+                            {
+                                "nameEn":
+                                {
+                                    "$regex": keyword,
+                                    "$options": "i"
+                                }
+                            },
+                        ]
                     }
                 },
                 {

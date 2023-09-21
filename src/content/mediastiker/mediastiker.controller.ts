@@ -65,11 +65,11 @@ export class MediastikerController {
         } else {
             throw new BadRequestException("name required");
         }
-        if (request_json["nameEn"] !== undefined) {
-            nameEn = request_json["nameEn"];
-        } else {
-            throw new BadRequestException("nameEn required");
-        }
+        // if (request_json["nameEn"] !== undefined) {
+        //     nameEn = request_json["nameEn"];
+        // } else {
+        //     throw new BadRequestException("nameEn required");
+        // }
 
 
         if (request_json["status"] !== undefined) {
@@ -147,7 +147,7 @@ export class MediastikerController {
                 insertdata.name = name;
             }
 
-            insertdata.nameEn = nameEn;
+            // insertdata.nameEn = nameEn;
             insertdata.createdAt = timedate;
             insertdata.updatedAt = timedate;
             insertdata.isDelete = false;
@@ -207,7 +207,7 @@ export class MediastikerController {
                 insertdata.name = name;
             }
 
-            insertdata.nameEn = nameEn;
+            // insertdata.nameEn = nameEn;
             insertdata.createdAt = timedate;
             insertdata.updatedAt = timedate;
             insertdata.isDelete = false;
@@ -297,10 +297,10 @@ export class MediastikerController {
                 insertdata.name = name;
             }
         }
-        if (request_json["nameEn"] !== undefined) {
-            nameEn = request_json["nameEn"];
-            insertdata.nameEn = nameEn;
-        }
+        // if (request_json["nameEn"] !== undefined) {
+        //     nameEn = request_json["nameEn"];
+        //     insertdata.nameEn = nameEn;
+        // }
         if (request_json["kategori"] !== undefined) {
             kategori = request_json["kategori"];
         }
@@ -507,10 +507,10 @@ export class MediastikerController {
                 insertdata.name = name;
             }
         }
-        if (request_json["nameEn"] !== undefined) {
-            nameEn = request_json["nameEn"];
-            insertdata.nameEn = nameEn;
-        }
+        // if (request_json["nameEn"] !== undefined) {
+        //     nameEn = request_json["nameEn"];
+        //     insertdata.nameEn = nameEn;
+        // }
         if (request_json["kategori"] !== undefined) {
             kategori = request_json["kategori"];
 
