@@ -5635,10 +5635,46 @@ export class AdsService {
                     }
                 },
                 {
+                    "$lookup":
+                    {
+                        from: "userauths",
+                        let:
+                        {
+                            basic_fk: "$email"
+                        },
+                        as: 'auth',
+                        pipeline:
+                            [
+                                {
+                                    "$match":
+                                    {
+                                        "$and":
+                                            [
+                                                {
+                                                    "$expr":
+                                                    {
+                                                        "$eq":
+                                                            [
+                                                                "$email",
+                                                                "$$basic_fk"
+                                                            ]
+                                                    },
+
+                                                },
+
+                                            ]
+                                    }
+                                },
+
+                            ]
+                    }
+                },
+                {
                     $project: {
                         balances: "$userBasic.balances",
                         totalSaldo: "$userBasic.balances.total",
-                        username: "$userBasic.userName",
+                        username2: "$userBasic.userName",
+                        username: { $arrayElemAt: ["$auth.userName", 0] },
                         avatar: "$userBasic.avatar",
                         email: "$userBasic.email",
                         ctaNames: {
