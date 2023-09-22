@@ -4796,14 +4796,14 @@ export class AdsService {
                         from: "userbasics",
                         as: "userBasic",
                         let: {
-                            localID: '$email'
+                            localID: '$userID'
                         },
                         pipeline: [
                             {
                                 $match:
                                 {
                                     $expr: {
-                                        $eq: ['$email', '$$localID']
+                                        $eq: ['$_id', '$$localID']
                                     }
                                 }
                             },
@@ -4812,7 +4812,7 @@ export class AdsService {
                                     from: "accountbalances",
                                     as: "balances",
                                     let: {
-                                        localID: "$_id"
+                                        localID: new mongoose.Types.ObjectId(idUser)
                                     },
                                     pipeline: [
                                         {
@@ -4935,8 +4935,7 @@ export class AdsService {
                                                 0
                                             ]
                                     },
-                                    avatar:
-                                    {
+                                    avatar:{
                                         mediaEndpoint:
                                         {
                                             "$concat":
@@ -4945,7 +4944,7 @@ export class AdsService {
                                                     "$profilePict.$id",
 
                                                 ]
-                                        }
+                                        },
                                     },
                                     "userInterests": 1,
                                     "states": ["$states"],
@@ -5635,46 +5634,10 @@ export class AdsService {
                     }
                 },
                 {
-                    "$lookup":
-                    {
-                        from: "userauths",
-                        let:
-                        {
-                            basic_fk: "$email"
-                        },
-                        as: 'auth',
-                        pipeline:
-                            [
-                                {
-                                    "$match":
-                                    {
-                                        "$and":
-                                            [
-                                                {
-                                                    "$expr":
-                                                    {
-                                                        "$eq":
-                                                            [
-                                                                "$email",
-                                                                "$$basic_fk"
-                                                            ]
-                                                    },
-
-                                                },
-
-                                            ]
-                                    }
-                                },
-
-                            ]
-                    }
-                },
-                {
                     $project: {
                         balances: "$userBasic.balances",
                         totalSaldo: "$userBasic.balances.total",
-                        username2: "$userBasic.userName",
-                        username: { $arrayElemAt: ["$auth.userName", 0] },
+                        username: "$userBasic.userName",
                         avatar: "$userBasic.avatar",
                         email: "$userBasic.email",
                         ctaNames: {
