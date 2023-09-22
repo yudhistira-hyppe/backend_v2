@@ -1880,6 +1880,7 @@ export class AccountbalancesService {
                     kredit: 1,
                     idtrans: 1,
                     adsId: '$adsdata._id',
+                    skipTime: '$adsdata.skipTime',
                     type: '$adsdata.type',
                     idApsara: '$adsdata.idApsara',
                     duration: '$adsdata.duration',
@@ -1899,6 +1900,7 @@ export class AccountbalancesService {
                     adsId: 1,
                     kredit: 1,
                     idtrans: 1,
+                    skipTime: 1,
                     type: 1,
                     idApsara: 1,
                     duration: 1,
@@ -1975,6 +1977,7 @@ export class AccountbalancesService {
                     "from": dataquery[i].from,
                     "status": dataquery[i].status,
                     "apsaraId": idapsaradefine,
+                    "skipTime": dataquery[i].skipTime,
                     "media": datanew
 
                 };

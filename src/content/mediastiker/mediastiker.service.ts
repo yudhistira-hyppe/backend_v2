@@ -484,7 +484,8 @@ export class MediastikerService {
                 pipeline.push({
                     "$sort":
                     {
-                        index:1
+                        index:1,
+                        createdAt:1
                     }
                 });
             }
@@ -1311,7 +1312,8 @@ export class MediastikerService {
                 {
                     "$sort":
                     {
-                        "index": 1
+                        "index": 1,
+                        "createdAt":1
                     }
                 },
                 {
