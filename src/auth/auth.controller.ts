@@ -67,6 +67,7 @@ import { CreateUserauthDto } from 'src/trans/userauths/dto/create-userauth.dto';
 import { ConfigService } from '@nestjs/config';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { CreateuserbasicnewDto } from 'src/trans/userbasicnew/dto/Createuserbasicnew-dto';
+import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema';
 import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 const sharp = require('sharp');
 const convert = require('heic-convert');
@@ -1131,7 +1132,7 @@ export class AuthController {
             Activityevents_child.userbasic =
               mongo.Types.ObjectId(data_userbasics._id);
 
-            var updateactivityevent = new CreateuserbasicnewDto();
+            var updateactivityevent = new Userbasicnew();
             updateactivityevent.userEvent = "LOGIN";
             updateactivityevent.event = "LOGIN";
             var konvert = data_userbasics._id;
@@ -1245,7 +1246,7 @@ export class AuthController {
             let idevent = event._id;
             let eventType = event.event.toString();
 
-            var updateactivityevent = new CreateuserbasicnewDto();
+            var updateactivityevent = new Userbasicnew();
             updateactivityevent.userEvent = "LOGIN";
             updateactivityevent.event = "LOGIN";
             var konvert = data_userbasics._id;
@@ -1389,7 +1390,7 @@ export class AuthController {
                 $db: 'hyppe_trans_db',
               });
 
-              var insertdevice = new CreateuserbasicnewDto();
+              var insertdevice = new Userbasicnew();
               insertdevice.authUsers = {
                 "devices":data_userauths_devices_list
               };
@@ -1412,7 +1413,7 @@ export class AuthController {
         messages_response = 'Login successful';
         var datasetting = await this.settingsService.findAll();
 
-        var insertSource = new CreateuserbasicnewDto();
+        var insertSource = new Userbasicnew();
         if (LoginRequest_.regSrc == undefined) {
           if (await this.utilsService.ceckData(data_userbasics)) {
             if (data_userbasics.regSrc != undefined) {
@@ -2061,7 +2062,7 @@ export class AuthController {
   @Post('api/user/signup/v2')
   @HttpCode(HttpStatus.ACCEPTED)
   async signupv2(@Req() request: any) {
-    return await this.authService.signup2(request);
+    return await this.authService.signup3(request);
   }
 
   @Post('api/user/signuploop')

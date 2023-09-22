@@ -156,7 +156,33 @@ export class UserbasicnewService {
                     "otpToken":1,
                     "isEmailVerified":1,
                     "authUsers":1,
-                    "roles":1
+                    "roles":1,
+                    "otpNextAttemptAllow":1,
+                    "follower":1,
+                    "following":1,
+                    "userEvent":1,
+                    "languagesLang":1,
+                    "password":1,
+                    "userID":1,
+                    "isExpiryPass":1,
+                    "otpRequestTime":1,
+                    "otpAttempt":1,
+                    "location":1,
+                    "isEnabled":1,
+                    "isAccountNonExpired":1,
+                    "isAccountNonLocked":1,
+                    "isCredentialsNonExpired":1,
+                    "_idAvatar":1,
+                    "originalName":1,
+                    "fsSourceUri":1,
+                    "fsSourceName":1,
+                    "fsTargetUri":1,
+                    "ktpMediaBasePath":1,
+                    "ktpMediaUri":1,
+                    "ktpOriginalName":1,
+                    "ktpFsSourceUri":1,
+                    "ktpFsSourceName":1,
+                    "ktpFsTargetUri":1,
                 }
             }
         ]);
@@ -169,6 +195,22 @@ export class UserbasicnewService {
         if (!data) {
             throw new Error('Data is not found!');
         }
+        return data;
+    }
+
+    async updatebyemail(email: string, Userbasicnew_: Userbasicnew) {
+        let data = await this.UserbasicnewModel.updateOne(
+            {
+                email:email
+            }, 
+            Userbasicnew_, 
+            { new: true }
+        );
+        
+        if (!data) {
+            throw new Error('Data is not found!');
+        }
+        
         return data;
     }
 

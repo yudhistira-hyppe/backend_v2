@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import { Long } from "mongodb";
 export class CreateuserbasicnewDto {
   _id: mongoose.Types.ObjectId;
   profileID: string;
@@ -95,9 +95,10 @@ export class CreateuserbasicnewDto {
   userID: string;
   isExpiryPass: boolean;
   isEmailVerified: boolean;
-  otpRequestTime: number;
-  otpAttempt: number;
-  otpNextAttemptAllow: number;
+  otpRequestTime: Long;
+  otpAttempt: Long;
+  otpNextAttemptAllow: Long;
+  oneTimePassword:string;
   location: any;
   isEnabled: boolean;
   isAccountNonExpired: boolean;

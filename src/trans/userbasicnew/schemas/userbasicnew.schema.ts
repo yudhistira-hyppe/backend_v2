@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { Long } from "mongodb"
 
 export type UserbasicnewDocument = Userbasicnew & Document;
 
@@ -164,12 +165,26 @@ export class Userbasicnew {
     isExpiryPass: boolean;
     @Prop()
     isEmailVerified: boolean;
+    // @Prop({ type: Object })
+    // otpRequestTime: {
+    //     numberLong: String;
+    // };
+    // @Prop({ type: Object })
+    // otpAttempt: {
+    //     numberLong: String;
+    // };
+    // @Prop({ type: Object })
+    // otpNextAttemptAllow: {
+    //     numberLong: String;
+    // };
     @Prop()
-    otpRequestTime: number;
+    otpRequestTime: Long;
     @Prop()
-    otpAttempt: number;
+    otpAttempt: Long;
     @Prop()
-    otpNextAttemptAllow: number;
+    otpNextAttemptAllow: Long;
+    @Prop()
+    oneTimePassword: string;
     @Prop({ type: Object })
     location: any;
     @Prop()
