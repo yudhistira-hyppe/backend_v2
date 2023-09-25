@@ -1001,7 +1001,7 @@ export class AuthController {
             info: [messages],
           },
         }
-        
+
         var fullurl = req.get("Host") + req.originalUrl;
         var timestamps_end = await this.utilsService.getDateTimeString();
         var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
@@ -1027,7 +1027,7 @@ export class AuthController {
     }
   }
 
-  
+
   @UseGuards(LocalAuthGuard)
   @Post('api/user/login/v2')
   @HttpCode(HttpStatus.ACCEPTED)
@@ -1392,7 +1392,7 @@ export class AuthController {
 
               var insertdevice = new Userbasicnew();
               insertdevice.authUsers = {
-                "devices":data_userauths_devices_list
+                "devices": data_userauths_devices_list
               };
 
               var konvert = data_userbasics._id;
@@ -1511,7 +1511,7 @@ export class AuthController {
             info: [messages],
           },
         }
-        
+
         var fullurl = req.get("Host") + req.originalUrl;
         var timestamps_end = await this.utilsService.getDateTimeString();
         var reqbody = JSON.parse(JSON.stringify(LoginRequest_));
@@ -2039,6 +2039,11 @@ export class AuthController {
   async recoverpassword(@Req() request: any) {
     return await this.authService.recoverpasswordV2(request);
   }
+  @Post('api/user/recoverpassword/v2')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async recoverpasswordv2(@Req() request: any) {
+    return await this.authService.recoverpasswordV2new(request);
+  }
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
@@ -2051,6 +2056,12 @@ export class AuthController {
   @HttpCode(HttpStatus.ACCEPTED)
   async changepassword(@Req() request: any, @Headers() headers) {
     return await this.authService.changepassword(request, headers);
+  }
+
+  @Post('api/user/changepassword/v2')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async changepassword2(@Req() request: any, @Headers() headers) {
+    return await this.authService.changepasswordV2(request, headers);
   }
 
   @Post('api/user/signup')
@@ -2169,8 +2180,8 @@ export class AuthController {
               }
             } else {
               var fullurl = req.get("Host") + req.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
 
               response.send(null);
             }
@@ -2904,8 +2915,7 @@ export class AuthController {
         'Unabled to proceed email header dan token not match',
       );
     }
-    if (request.body.email != headers['x-auth-user']) 
-    {
+    if (request.body.email != headers['x-auth-user']) {
       console.log('email beda ama tokennya');
 
       var fullurl = request.get("Host") + request.originalUrl;
@@ -3038,7 +3048,7 @@ export class AuthController {
   @FormDataRequest()
   async getUserProfileByUsername(@Body() SearchUserbasicDto_: SearchUserbasicDto, @Headers() headers, @Req() request) {
     var timestamps_start = await this.utilsService.getDateTimeString();
-    
+
     if (headers['x-auth-user'] == undefined) {
       var fullurl = request.get("Host") + request.originalUrl;
       var timestamps_end = await this.utilsService.getDateTimeString();
@@ -3621,7 +3631,7 @@ export class AuthController {
                     var timestamps_end = await this.utilsService.getDateTimeString();
                     var reqbody = JSON.parse(JSON.stringify(body_));
                     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-                    
+
                     await this.errorHandler.generateNotAcceptableException(
                       messages,
                     );
@@ -4828,7 +4838,7 @@ export class AuthController {
               var timestamps_end = await this.utilsService.getDateTimeString();
               var reqbody = JSON.parse(JSON.stringify(body_));
               this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-              
+
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Gnerate OTP. Error: ' + error,
               );
@@ -5993,7 +6003,7 @@ export class AuthController {
     }
     await this.userbasicsService.updateTutor(headers['x-auth-user'], body.key, body.value);
     return await this.errorHandler.generateAcceptResponseCode(
-      "Update tutor succesfully", 
+      "Update tutor succesfully",
     );
   }
 

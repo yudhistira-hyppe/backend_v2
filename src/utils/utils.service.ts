@@ -1511,6 +1511,21 @@ export class UtilsService {
       return 'id';
     }
   }
+  async getUserlanguagesv2(email: string): Promise<String> {
+    var get_userbasic = await this.basic2SS.findOne(email);
+    var get_languages = null;
+    if (await this.ceckData(get_userbasic)) {
+      if (get_userbasic.languages != undefined) {
+        var languages_json = JSON.parse(JSON.stringify(get_userbasic.languages));
+        get_languages = await this.languagesService.findOne(languages_json.$id);
+        return get_languages.langIso.toString();
+      } else {
+        return 'id';
+      }
+    } else {
+      return 'id';
+    }
+  }
 
   async getAvatarUser(email: string) {
     var AvatarDTO_ = new AvatarDTO();
@@ -1756,7 +1771,7 @@ export class UtilsService {
           const SETTING_TUTOR = this.configService.get("SETTING_TUTOR");
           const getSettingTutor = await this.getSettingMixed(SETTING_TUTOR);
           if (await this.ceckData(getSettingTutor)) {
-            if (Array.isArray(getSettingTutor.value) && Array.isArray(get_userbasic.tutor)){
+            if (Array.isArray(getSettingTutor.value) && Array.isArray(get_userbasic.tutor)) {
               if (getSettingTutor.value.length == get_userbasic.tutor.length) {
                 let arrayTutor = get_userbasic.tutor;
                 let arraySetting = getSettingTutor.value;
@@ -1806,8 +1821,7 @@ export class UtilsService {
 
     var AvatarDTO_ = new AvatarDTO();
 
-    if(get_userbasic.mediaBasePath != null || get_userbasic.mediaUri != null || get_userbasic.mediaType != null || get_userbasic.mediaEndpoint != null)
-    {
+    if (get_userbasic.mediaBasePath != null || get_userbasic.mediaUri != null || get_userbasic.mediaType != null || get_userbasic.mediaEndpoint != null) {
       AvatarDTO_.mediaBasePath = get_profilePict.mediaBasePath;
       AvatarDTO_.mediaUri = get_profilePict.mediaUri;
       AvatarDTO_.mediaType = get_profilePict.mediaType;
@@ -1981,7 +1995,7 @@ export class UtilsService {
           const SETTING_TUTOR = this.configService.get("SETTING_TUTOR");
           const getSettingTutor = await this.getSettingMixed(SETTING_TUTOR);
           if (await this.ceckData(getSettingTutor)) {
-            if (Array.isArray(getSettingTutor.value) && Array.isArray(get_userbasic.tutor)){
+            if (Array.isArray(getSettingTutor.value) && Array.isArray(get_userbasic.tutor)) {
               if (getSettingTutor.value.length == get_userbasic.tutor.length) {
                 let arrayTutor = get_userbasic.tutor;
                 let arraySetting = getSettingTutor.value;
@@ -2752,7 +2766,7 @@ export class UtilsService {
       if (data['email'] != undefined) {
         const Userbasic_: Userbasic = await this.userbasicsService.findOne(data['email'])
         return Userbasic_;
-      }else{
+      } else {
         return null;
       }
     } else {
