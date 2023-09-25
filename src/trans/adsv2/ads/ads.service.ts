@@ -1733,12 +1733,12 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$clickTime",
-                                            "includeArrayIndex": "clickTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "clickTime": {
+                                            "updateAt": {
                                                 "$gte": start_date.toISOString(),
                                                 "$lte": end_date.toISOString()
                                             }
@@ -2092,12 +2092,12 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$clickTime",
-                                            "includeArrayIndex": "clickTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "clickTime": {
+                                            "updateAt": {
                                                 "$gte": start_date.toISOString(),
                                                 "$lte": end_date.toISOString()
                                             }
@@ -2451,12 +2451,12 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$clickTime",
-                                            "includeArrayIndex": "clickTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "clickTime": {
+                                            "updateAt": {
                                                 "$gte": start_date.toISOString(),
                                                 "$lte": end_date.toISOString()
                                             }
@@ -2812,12 +2812,12 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$clickTime",
-                                            "includeArrayIndex": "clickTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "clickTime": {
+                                            "updateAt": {
                                                 "$gte": start_date.toISOString(),
                                                 "$lte": end_date.toISOString()
                                             }
