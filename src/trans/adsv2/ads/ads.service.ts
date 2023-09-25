@@ -989,12 +989,12 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$viewTime",
-                                            "includeArrayIndex": "viewTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "viewTime": {
+                                            "updateAt": {
                                                 "$gte": start_date.toISOString(),
                                                 "$lte": end_date.toISOString()
                                             }
