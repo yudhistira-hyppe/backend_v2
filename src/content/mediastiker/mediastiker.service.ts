@@ -1398,10 +1398,19 @@ export class MediastikerService {
         else if (jenis == "STICKER" || jenis == "EMOJI") {
             pipeline.push(
                 {
+                    "$addFields":
+                    {
+                        "lowername":
+                        {
+                            "$toLower": "$name"
+                        }
+                    }
+                },
+                {
                     "$sort":
                     {
                         "index": 1,
-                        "createdAt": 1
+                        "lowername": 1
                     }
                 },
                 {
