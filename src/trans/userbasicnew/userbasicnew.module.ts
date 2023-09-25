@@ -3,7 +3,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserbasicnewController } from './userbasicnew.controller';
 import { UserbasicnewService } from './userbasicnew.service';
 import { ConfigModule } from '@nestjs/config';
-import { UtilsModule } from '../../utils/utils.module';
 import { Userbasicnew, UserbasicnewSchema } from './schemas/userbasicnew.schema';
 
 
@@ -11,7 +10,7 @@ import { Userbasicnew, UserbasicnewSchema } from './schemas/userbasicnew.schema'
 
     imports: [
 
-        ConfigModule.forRoot(), UtilsModule,
+        ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Userbasicnew.name, schema: UserbasicnewSchema }], 'SERVER_FULL')
     ],
     controllers: [UserbasicnewController],

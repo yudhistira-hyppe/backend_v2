@@ -60,9 +60,14 @@ export class CreateUserbasicDto {
     $id: { oid: String };
     $db: String;
   };
+  // languages: {
+  //   $ref: String;
+  //   $id: { oid: String };
+  //   $db: String;
+  // };
   languages: {
     $ref: String;
-    $id: { oid: String };
+    $id: ObjectId;
     $db: String;
   };
   _class: String;

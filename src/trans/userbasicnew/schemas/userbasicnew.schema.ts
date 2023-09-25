@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { Long } from "mongodb"
 
 export type UserbasicnewDocument = Userbasicnew & Document;
 
@@ -56,51 +57,51 @@ export class Userbasicnew {
     profilePict: any;
     @Prop({ type: Object })
     proofPict: {
-        ref: String;
-        id: String;
-        db: String;
+        $ref: String;
+        $id: String;
+        $db: String;
     };
     @Prop({ type: Object })
     insight: {
-        ref: String;
-        id: {
+        $ref: String;
+        $id: {
             oid: String;
         };
-        db: String;
+        $db: String;
     };
     @Prop()
     userInterests: any[];
     @Prop({ type: Object })
     cities: {
-        ref: String;
-        id: {
+        $ref: String;
+        $id: {
             oid: String;
         };
-        db: String;
+        $db: String;
     };
     @Prop({ type: Object })
     states: {
-        ref: String;
-        id: {
+        $ref: String;
+        $id: {
             oid: String;
         };
-        db: String;
+        $db: String;
     };
     @Prop({ type: Object })
     countries: {
-        ref: String;
-        id: {
+        $ref: String;
+        $id: {
             oid: String;
         };
-        db: String;
+        $db: String;
     };
     @Prop({ type: Object })
     languages: {
-        ref: String;
-        id: {
+        $ref: String;
+        $id: {
             oid: String;
         };
-        db: String;
+        $db: String;
     };
     @Prop()
     _class: String;
@@ -108,7 +109,8 @@ export class Userbasicnew {
     pin: String;
     @Prop()
     otp_pin: String;
-
+    @Prop()
+    otpToken: String;
     @Prop()
     otp_expired_time: String;
     @Prop()
@@ -160,16 +162,30 @@ export class Userbasicnew {
     @Prop()
     userID: string;
     @Prop()
-    isExpiryPass: string;
+    isExpiryPass: boolean;
     @Prop()
     isEmailVerified: boolean;
+    // @Prop({ type: Object })
+    // otpRequestTime: {
+    //     numberLong: String;
+    // };
+    // @Prop({ type: Object })
+    // otpAttempt: {
+    //     numberLong: String;
+    // };
+    // @Prop({ type: Object })
+    // otpNextAttemptAllow: {
+    //     numberLong: String;
+    // };
     @Prop()
-    otpRequestTime: number;
+    otpRequestTime: Long;
     @Prop()
-    otpAttempt: number;
+    otpAttempt: Long;
     @Prop()
-    otpNextAttemptAllow: number;
+    otpNextAttemptAllow: Long;
     @Prop()
+    oneTimePassword: string;
+    @Prop({ type: Object })
     location: any;
     @Prop()
     isEnabled: boolean;
@@ -181,7 +197,7 @@ export class Userbasicnew {
     isCredentialsNonExpired: boolean;
     @Prop()
     roles: any[]
-    @Prop()
+    @Prop({ type: Object })
     authUsers: any;
     @Prop()
     _idAvatar: string;

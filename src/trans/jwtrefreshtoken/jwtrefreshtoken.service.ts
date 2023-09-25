@@ -6,6 +6,7 @@ import { Jwtrefreshtoken, JwtrefreshtokenDocument } from './schemas/jwtrefreshto
 import { UserbasicsService } from '../userbasics/userbasics.service';
 import { UserauthsService } from '../userauths/userauths.service';
 import { Userbasic } from '../userbasics/schemas/userbasic.schema';
+import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
 
 @Injectable()
 export class JwtrefreshtokenService {
@@ -13,6 +14,7 @@ export class JwtrefreshtokenService {
     @InjectModel(Jwtrefreshtoken.name, 'SERVER_FULL')
     private readonly jwtrefreshtokenModel: Model<JwtrefreshtokenDocument>,
     private userauthsService: UserauthsService,
+    private basic2SS: UserbasicnewService,
   ) { }
 
   async create(
@@ -69,6 +71,40 @@ export class JwtrefreshtokenService {
         $ref: 'userauths',
         $id: Object(data_user._id),
       };
+      await this.jwtrefreshtokenModel.create(data);
+    } else {
+      await this.jwtrefreshtokenModel.updateOne(
+        { email: email },
+        {
+          refresh_token_id: refresh_token_id,
+          exp: exp,
+          iat: iat,
+        },
+      );
+    }
+  }
+
+  async saveorupdateRefreshToken2(
+    refresh_token_id: string,
+    email: string,
+    exp,
+    iat,
+  ) {
+    var user = await this.findOne(email);
+    if (!user) {
+      var data_user = await this.basic2SS.findbyemail(email);
+      var mongo = require('mongoose');
+      var data = new CreateJwtrefreshtokenDto();
+      data.refresh_token_id = refresh_token_id;
+      data.email = email;
+      data.exp = exp;
+      data.iat = iat;
+      data._class = 'io.melody.core.domain.JwtRefreshToken';
+      data.userAuth = {
+        $ref: 'newUserBasics',
+        $id: Object(data_user._id),
+      };
+      console.log(data);
       await this.jwtrefreshtokenModel.create(data);
     } else {
       await this.jwtrefreshtokenModel.updateOne(

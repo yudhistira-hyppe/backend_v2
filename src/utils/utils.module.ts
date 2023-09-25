@@ -38,7 +38,7 @@ import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { Settings2Schema, SettingsMixed } from 'src/trans/settings2/schemas/settings2.schema';
 import { MongooseModule } from '@nestjs/mongoose';
-
+import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
 @Module({
   imports: [
     LogapisModule,
@@ -73,6 +73,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     TemplatesModule,
     UserauthsModule,
     JwtrefreshtokenModule,
+    UserbasicnewModule,
     JwtModule.register({
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },

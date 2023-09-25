@@ -6,13 +6,14 @@ import { ConfigModule } from '@nestjs/config';
 import { Jwtrefreshtoken, JwtrefreshtokenSchema } from './schemas/jwtrefreshtoken.schema';
 import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { UserauthsModule } from '../userauths/userauths.module';
+import { UserbasicnewModule } from '../userbasicnew/userbasicnew.module';
 
 @Module({
 
   imports: [
     UserauthsModule,
     UserbasicsModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot(), UserbasicnewModule,
     MongooseModule.forFeature([{ name: Jwtrefreshtoken.name, schema: JwtrefreshtokenSchema }], 'SERVER_FULL')
   ],
   controllers: [JwtrefreshtokenController],

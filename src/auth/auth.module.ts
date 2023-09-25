@@ -41,6 +41,7 @@ import { ChallengeModule } from '../trans/challenge/challenge.module';
 import { UserchallengesModule } from '../trans/userchallenges/userchallenges.module';
 import { ConfigModule } from '@nestjs/config';
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
+import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -77,6 +78,7 @@ import { LogapisModule } from 'src/trans/logapis/logapis.module';
     UserticketsModule,
     FriendListModule,
     LogapisModule,
+    UserbasicnewModule,
     ActivityeventsModule, JwtModule.register({
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },
