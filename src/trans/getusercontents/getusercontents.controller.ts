@@ -6322,6 +6322,9 @@ export class GetusercontentsController {
                         //         }
                         //     }
                         // }
+                    } else {
+                        data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
+
                     }
                     // emailreceiver = data[i].email;
                     // boosted = data[i].boosted;
