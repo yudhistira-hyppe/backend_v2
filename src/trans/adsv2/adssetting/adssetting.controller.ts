@@ -400,7 +400,7 @@ export class AdsSettingController {
                 },
                 {
                     Jenis: "ConsiderationSimiliarityAudienceMin",
-                    Nilai: (getSetting_Objectivitas_Awareness.percentageMin != undefined) ? getSetting_Objectivitas_Awareness.percentageMin : 0,
+                    Nilai: (getSetting_Objectivitas_Consideration.percentageMin != undefined) ? getSetting_Objectivitas_Consideration.percentageMin : 0,
                     Unit: "Persen",
                     Aktifitas: (ConsiderationSimiliarityAudienceMin.length > 0) ? ConsiderationSimiliarityAudienceMin[0].userbasics_data[0].fullName : "",
                     Date: (ConsiderationSimiliarityAudienceMin.length > 0) ? ConsiderationSimiliarityAudienceMin[0].dateTime : "-",
@@ -1726,7 +1726,7 @@ export class AdsSettingController {
                     },
                     {
                         Jenis: "ConsiderationSimiliarityAudienceMin",
-                        Nilai: (getSetting_Objectivitas_Awareness.percentageMin != undefined) ? getSetting_Objectivitas_Awareness.percentageMin : 0,
+                        Nilai: (getSetting_Objectivitas_Consideration.percentageMin != undefined) ? getSetting_Objectivitas_Consideration.percentageMin : 0,
                         Unit: "Persen",
                         Aktifitas: (ConsiderationSimiliarityAudienceMin.length > 0) ? ConsiderationSimiliarityAudienceMin[0].userbasics_data[0].fullName : "",
                         Date: (ConsiderationSimiliarityAudienceMin.length > 0) ? ConsiderationSimiliarityAudienceMin[0].dateTime : "-",
