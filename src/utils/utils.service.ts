@@ -1813,8 +1813,8 @@ export class UtilsService {
       noCampaignID += "-01";
     } else if (typeAdsID == this.configService.get("ID_ADS_IN_BETWEEN")) {
       noCampaignID += "-02";
-    } else if (typeAdsID == this.configService.get("ID_ADS_IN_POPUP")) {
-      noCampaignID += "-003";
+    } else if (typeAdsID == this.configService.get("ID_ADS_IN_CONTENT")) {
+      noCampaignID += "-03";
     }
 
     if (ObjectivitasId == this.configService.get("ID_ADS_OBJECTTIVITAS_AWARENESS")) {
