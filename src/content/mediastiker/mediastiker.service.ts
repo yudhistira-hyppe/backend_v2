@@ -24,6 +24,9 @@ export class MediastikerService {
     async findByname(name: string): Promise<Mediastiker> {
         return this.MediastikerModel.findOne({ name: name, isDelete: false }).exec();
     }
+    async findBynameTes(name: string): Promise<Mediastiker> {
+        return this.MediastikerModel.findOne({ name: name, isDelete: true }).exec();
+    }
     async findBynamekategori(type: string, kategori: string): Promise<Mediastiker> {
         return this.MediastikerModel.findOne({ type: type, kategori: kategori, isDelete: false }).exec();
     }
@@ -121,6 +124,20 @@ export class MediastikerService {
         ]);
         return query;
     }
+    async findByNourutTest(nourut: number, type: string, kategori: string) {
+        var query = this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    'index': { $gte: nourut }, 'type': type, 'kategori': kategori, isDelete: true
+                }
+            },
+            {
+                $sort: { 'index': 1 }
+            }
+        ]);
+        return query;
+    }
     async findByTypekategori(type: string, kategori: string) {
         var query = this.MediastikerModel.aggregate([
             {
@@ -135,7 +152,38 @@ export class MediastikerService {
         ]);
         return query;
     }
+
+    async findByTypekategoriTes(type: string, kategori: string) {
+        var query = this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    'type': type, 'kategori': kategori, isDelete: true
+                }
+            },
+            {
+                $sort: { 'index': -1 }
+            }
+        ]);
+        return query;
+    }
     async findByNourutLebihkecil(nourutStart: number, nourutEnd: number, type: string, kategori: string) {
+        var query = this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    'index': { $gte: nourutStart, $lte: nourutEnd }, 'type': type, 'kategori': kategori, isDelete: false
+                }
+            },
+            {
+                $sort: { 'index': -1 }
+            }
+
+        ]);
+        return query;
+    }
+
+    async findByNourutLebihkecilTes(nourutStart: number, nourutEnd: number, type: string, kategori: string) {
         var query = this.MediastikerModel.aggregate([
             {
                 "$match":
@@ -166,12 +214,52 @@ export class MediastikerService {
         ]);
         return query;
     }
+
+    async findByNourutLebihbesarTest(nourutStart: number, nourutEnd: number, type: string, kategori: string) {
+        var query = this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    'index': { $lte: nourutStart, $gte: nourutEnd }, 'type': type, 'kategori': kategori, isDelete: true
+
+                }
+            },
+            {
+                $sort: { 'index': 1 }
+            }
+
+        ]);
+        return query;
+    }
     async updateIndex(id: string, index: number, updatedAt: string) {
         let data = await this.MediastikerModel.updateOne({ "_id": new Types.ObjectId(id) },
             { $set: { "index": index, "updatedAt": updatedAt, } });
         return data;
     }
-
+    async findByKategoriTes(target: string): Promise<Mediastiker[]> {
+        return this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+                            {
+                                kategori: target
+                            },
+                            {
+                                isDelete: true
+                            }
+                        ]
+                }
+            },
+            {
+                "$sort":
+                {
+                    index: 1
+                }
+            }
+        ]);
+    }
     async trend() {
         var data = await this.MediastikerModel.aggregate([
             {
@@ -207,7 +295,7 @@ export class MediastikerService {
                                 {
                                     "lowername":
                                     {
-                                        "$toLower":"$name"
+                                        "$toLower": "$name"
                                     }
                                 }
                             },
@@ -215,7 +303,7 @@ export class MediastikerService {
                                 "$sort":
                                 {
                                     countused: -1,
-                                    lowername:1
+                                    lowername: 1
                                 }
                             },
                             {
@@ -252,7 +340,7 @@ export class MediastikerService {
                                 {
                                     "lowername":
                                     {
-                                        "$toLower":"$name"
+                                        "$toLower": "$name"
                                     }
                                 }
                             },
@@ -260,7 +348,7 @@ export class MediastikerService {
                                 "$sort":
                                 {
                                     countused: -1,
-                                    lowername:1
+                                    lowername: 1
                                 }
                             },
                             {
@@ -297,7 +385,7 @@ export class MediastikerService {
                                 {
                                     "lowername":
                                     {
-                                        "$toLower":"$name"
+                                        "$toLower": "$name"
                                     }
                                 }
                             },
@@ -305,7 +393,7 @@ export class MediastikerService {
                                 "$sort":
                                 {
                                     countused: -1,
-                                    lowername:1
+                                    lowername: 1
                                 }
                             },
                             {
@@ -343,22 +431,22 @@ export class MediastikerService {
         if (setname != null) {
             firstmatch.push({
                 "$or":
-                [
-                    {
-                        "name":
+                    [
                         {
-                            "$regex": setname,
-                            "$options": "i"
-                        }
-                    },
-                    {
-                        "nameEn":
+                            "name":
+                            {
+                                "$regex": setname,
+                                "$options": "i"
+                            }
+                        },
                         {
-                            "$regex": setname,
-                            "$options": "i"
-                        }
-                    },
-                ]
+                            "nameEn":
+                            {
+                                "$regex": setname,
+                                "$options": "i"
+                            }
+                        },
+                    ]
             })
         }
 
@@ -480,11 +568,11 @@ export class MediastikerService {
                     }
                 })
             }
-            else if(sorting == "index"){
+            else if (sorting == "index") {
                 pipeline.push({
                     "$sort":
                     {
-                        index:1
+                        index: 1
                     }
                 });
             }
@@ -493,7 +581,7 @@ export class MediastikerService {
                     "$sort":
                     {
                         countused: -1,
-                        lowername:1
+                        lowername: 1
                     }
                 })
             }
@@ -1211,22 +1299,22 @@ export class MediastikerService {
                     "$match":
                     {
                         "$or":
-                        [
-                            {
-                                "name":
+                            [
                                 {
-                                    "$regex": keyword,
-                                    "$options": "i"
-                                }
-                            },
-                            {
-                                "nameEn":
+                                    "name":
+                                    {
+                                        "$regex": keyword,
+                                        "$options": "i"
+                                    }
+                                },
                                 {
-                                    "$regex": keyword,
-                                    "$options": "i"
-                                }
-                            },
-                        ]
+                                    "nameEn":
+                                    {
+                                        "$regex": keyword,
+                                        "$options": "i"
+                                    }
+                                },
+                            ]
                     }
                 },
                 {
@@ -1234,7 +1322,7 @@ export class MediastikerService {
                     {
                         "lowername":
                         {
-                            "$toLower":"$name"
+                            "$toLower": "$name"
                         }
                     }
                 },
@@ -1242,7 +1330,7 @@ export class MediastikerService {
                     "$sort":
                     {
                         countused: -1,
-                        lowername:1
+                        lowername: 1
                     }
                 },
                 {
