@@ -6308,19 +6308,20 @@ export class GetusercontentsController {
                         for (var j = 0; j < gettempresultpictapsara_tempapsaraId.length; j++) {
                             if (gettempresultpictapsara_tempapsaraId[j].ImageId == data[i].apsaraId) {
                                 data[i].mediaEndpoint = gettempresultpictapsara_tempapsaraId[j].URL;
-                                if (!dataUpsaraThum) {
+                                if (!dataUpsara) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara_tempapsaraId[j].URL;
                                     data[i].mediaThumbEndpoint = gettempresultpictapsara_tempapsaraId[j].URL;
                                 }
                             }
                         }
-                        for (var j = 0; j < gettempresultpictapsara_tempapsaraThumbId.length; j++) {
-                            if (gettempresultpictapsara_tempapsaraThumbId[j].ImageId == data[i].apsaraThumbId) {
-                                data[i].mediaThumbEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
-                                if (!dataUpsara) {
-                                    data[i].mediaEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
-                                }
-                            }
-                        }
+                        // for (var j = 0; j < gettempresultpictapsara_tempapsaraThumbId.length; j++) {
+                        //     if (gettempresultpictapsara_tempapsaraThumbId[j].ImageId == data[i].apsaraThumbId) {
+                        //         data[i].mediaThumbEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
+                        //         if (!dataUpsara) {
+                        //             data[i].mediaThumbEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
+                        //         }
+                        //     }
+                        // }
                     }
                     // emailreceiver = data[i].email;
                     // boosted = data[i].boosted;
