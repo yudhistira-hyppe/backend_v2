@@ -121,7 +121,7 @@ export class UtilsController {
         @Query('search') search: string,
         @Req() req,
         @Headers() headers
-        ) {
+    ) {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
         var token = headers['x-auth-token'];
@@ -168,7 +168,7 @@ export class UtilsController {
         @Query('search') search: string,
         @Headers() headers,
         @Req() req
-        ) {
+    ) {
 
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
@@ -215,13 +215,13 @@ export class UtilsController {
         @Query('search') search: string,
         @Headers() headers,
         @Req() req) {
-        
+
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
-        
+
         var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
         var pageRow_ = (pageRow != undefined) ? pageRow : 3;
         var search_ = search;
@@ -258,7 +258,7 @@ export class UtilsController {
         @Query('pageNumber') pageNumber: number,
         @Query('pageRow') pageRow: number,
         @Query('langIso') langIso: string,
-        @Req() req, 
+        @Req() req,
         @Headers() headers) {
 
         var timestamps_start = await this.utilsService.getDateTimeString();
@@ -354,13 +354,13 @@ export class UtilsController {
         @Query('search') search: string,
         @Headers() headers,
         @Req() req) {
-        
+
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
-        
+
         var langIso_ = langIso;
         var search_ = search;
 
@@ -458,7 +458,7 @@ export class UtilsController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
-        
+
         var langIso_ = langIso;
         var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
         var pageRow_ = (pageRow != undefined) ? pageRow : 3;
@@ -722,6 +722,25 @@ export class UtilsController {
         // return await this.utilsService.generateProfile(request.body.email, 'LOGIN');
     }
 
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Post('generateProfile/v2')
+    async generateProfile2(@Req() request: any, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var reqbody = JSON.parse(JSON.stringify(request.body));
+
+        var data = await this.utilsService.generateProfile2(request.body.email, 'LOGIN');
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+        return data;
+
+        // return await this.utilsService.generateProfile(request.body.email, 'LOGIN');
+    }
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Get('getSetting')

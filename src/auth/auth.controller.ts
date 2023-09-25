@@ -1607,6 +1607,75 @@ export class AuthController {
     }
   }
 
+  @UseGuards(JwtRefreshAuthGuard)
+  @Post('api/user/refreshtoken/v2')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async refreshToken2(@Body() RefreshTokenRequest_: RefreshTokenRequest, @Headers() headers, @Req() req) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
+    //Ceck User Jwtrefreshtoken
+    const data_jwtrefreshtokenService =
+      await this.jwtrefreshtokenService.findByEmailRefreshToken(RefreshTokenRequest_.email, RefreshTokenRequest_.refreshToken);
+
+    //Ceck User Userbasics
+    const data_userbasicsService = await this.basic2SS.findbyemail(RefreshTokenRequest_.email);
+
+    if (await this.utilsService.ceckData(data_jwtrefreshtokenService)) {
+      var date_exp = await data_jwtrefreshtokenService.exp;
+      //Ceck Time Refresh Token Expired
+      // if (new Date().getTime() < Number(await date_exp)) {
+      //   await this.errorHandler.generateNotAcceptableException(
+      //     'Refesh token still valid',
+      //   );
+      // } else {
+      //Ceck User Userauths
+      // const datauserauthsService = await this.userauthsService.findOneByEmail(RefreshTokenRequest_.email);
+
+      //Get Id Userdevices
+      const datauserauthsService_devices = data_userbasicsService.authUsers.devices[data_userbasicsService.authUsers.devices.length - 1];
+
+      //Descrip Token
+      var data_token = await this.utilsService.descripToken(headers);
+
+      //Generate Token
+      var Token = 'Bearer ' + (await this.utilsService.generateToken(data_userbasicsService.email.toString(), data_token.deviceId));
+
+      //Generate Refresh Token
+      var RefreshToken = await this.authService.updateRefreshToken(data_userbasicsService.email.toString());
+
+      var GlobalResponse_ = new GlobalResponse();
+      var GlobalMessages_ = new GlobalMessages();
+      var ProfileDTO_ = new ProfileDTO();
+
+      ProfileDTO_.token = Token;
+      ProfileDTO_.refreshToken = RefreshToken;
+
+      GlobalMessages_.info = ['Refresh Token successful'];
+
+      GlobalResponse_.response_code = 202;
+      GlobalResponse_.data = ProfileDTO_;
+      GlobalResponse_.messages = GlobalMessages_;
+
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(RefreshTokenRequest_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
+      return GlobalResponse_;
+      //}
+    } else {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(RefreshTokenRequest_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+  }
   @UseGuards(JwtAuthGuard)
   @Post('api/user/logout')
   @HttpCode(HttpStatus.ACCEPTED)
