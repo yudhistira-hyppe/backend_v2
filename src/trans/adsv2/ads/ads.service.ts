@@ -5461,6 +5461,7 @@ export class AdsService {
                 },
                 {
                     $sort: {
+                        isValid: 1,
                         sorts: - 1,
                         priority: 1,
                         scoreTotal: - 1
