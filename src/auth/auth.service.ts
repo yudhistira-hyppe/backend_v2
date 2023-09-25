@@ -12876,7 +12876,7 @@ export class AuthService {
                     otpNextAttemptAllow: new Long(0),
                   });
 
-                  await this.sendemailOTP(
+                  await this.sendemailOTP2(
                     datauserbasicsService.email.toString(),
                     OTP.toString(),
                     'RECOVER_PASS', lang
@@ -13208,7 +13208,7 @@ export class AuthService {
               otpNextAttemptAllow: new Long(0),
             });
 
-            await this.sendemailOTP(
+            await this.sendemailOTP2(
               datauserbasicsService.email.toString(),
               OTP.toString(),
               'RECOVER_PASS', lang
@@ -13324,7 +13324,7 @@ export class AuthService {
               otpNextAttemptAllow: new Long(0),
             });
 
-            await this.sendemailOTP(
+            await this.sendemailOTP2(
               datauserbasicsService.email.toString(),
               OTP.toString(),
               'RECOVER_PASS', lang
@@ -13470,7 +13470,7 @@ export class AuthService {
               otpNextAttemptAllow: new Long(0),
             });
 
-            await this.sendemailOTP(
+            await this.sendemailOTP2(
               datauserbasicsService.email.toString(),
               OTP.toString(),
               'RECOVER_PASS', lang
