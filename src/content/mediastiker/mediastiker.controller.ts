@@ -928,15 +928,6 @@ export class MediastikerController {
 
         var data = await this.MediastikerService.listingapp(keyword, tipesticker);
 
-        if (keyword != null && keyword != undefined) {
-            try {
-                this.updateused(data[0].data);
-            }
-            catch (e) {
-                //emang kosong
-            }
-        }
-
         // if(keyword != null && keyword != undefined)
         // {
         //     this.countstick.updatedata(data, "search", "penjumlahan");
@@ -944,6 +935,55 @@ export class MediastikerController {
         return {
             response_code: 202,
             data: data
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('listingapp/count')
+    async countlistingapp(@Req() request) {
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        // var page = request_json['page'];
+        // var limit = request_json['limit'];
+        var keyword = request_json['keyword'];
+        var tipesticker = request_json['tipestiker'];
+        // if (page == null || page == undefined) {
+        //     throw new BadRequestException("Unabled to proceed, page field is required");
+        // }
+
+        // if (limit == null || limit == undefined) {
+        //     throw new BadRequestException("Unabled to proceed, limit field is required");
+        // }
+
+        if (keyword == null || keyword == undefined) {
+            throw new BadRequestException("Unabled to proceed, keyword field is required");
+        }
+
+        if (tipesticker == null || tipesticker == undefined) {
+            throw new BadRequestException("Unabled to proceed, tipestiker field is required");
+        }
+
+        var data = await this.MediastikerService.listingapp(keyword, tipesticker);
+
+        try {
+            this.updateused(data[0].data);
+        }
+        catch (e) {
+            //emang kosong
+        }
+
+        // if(keyword != null && keyword != undefined)
+        // {
+        //     this.countstick.updatedata(data, "search", "penjumlahan");
+        // }
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        return {
+            response_code: 202,
+            message: messages
         }
     }
 
