@@ -494,7 +494,7 @@ export class MediastikerController {
             name = request_json["name"];
 
             try {
-                datastiker = await this.MediastikerService.findByname(name);
+                datastiker = await this.MediastikerService.findBynameTes(name);
 
             } catch (e) {
                 datastiker = null;
@@ -532,7 +532,7 @@ export class MediastikerController {
         }
 
         try {
-            dataindex = await this.MediastikerService.findByTypekategori(type, kategori);
+            dataindex = await this.MediastikerService.findByTypekategoriTes(type, kategori);
 
         } catch (e) {
             dataindex = null;
@@ -624,7 +624,7 @@ export class MediastikerController {
         if (kategoriold == kategori) {
             if (indexold < indexoldganti) {
                 try {
-                    dataurut = await this.MediastikerService.findByNourutLebihkecil(parseInt(indexold), parseInt(indexoldganti), type, kategori);
+                    dataurut = await this.MediastikerService.findByNourutLebihkecilTes(parseInt(indexold), parseInt(indexoldganti), type, kategori);
 
                 } catch (e) {
                     dataurut = null;
@@ -640,7 +640,7 @@ export class MediastikerController {
                 }
             } else if (indexold > indexoldganti) {
                 try {
-                    dataurut = await this.MediastikerService.findByNourutLebihbesar(parseInt(indexold), parseInt(indexoldganti), type, kategori);
+                    dataurut = await this.MediastikerService.findByNourutLebihbesarTest(parseInt(indexold), parseInt(indexoldganti), type, kategori);
 
                 } catch (e) {
                     dataurut = null;
@@ -670,7 +670,8 @@ export class MediastikerController {
                 });
             }
 
-        } else {
+        }
+        else {
 
         }
 
@@ -964,12 +965,10 @@ export class MediastikerController {
 
         var data = await this.MediastikerService.listingapp(keyword, tipesticker);
 
-        try
-        {
+        try {
             this.updateused(data[0].data);
         }
-        catch(e)
-        {
+        catch (e) {
             //emang kosong
         }
 
