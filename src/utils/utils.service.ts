@@ -1795,7 +1795,7 @@ export class UtilsService {
   }
 
   async generateProfile2(email: string, datafor: string): Promise<ProfileDTO> {
-    var get_userbasic = await this.basic2SS.finddetail(email)
+    var get_userbasic = await this.basic2SS.finddetail(email);
 
     var get_languages = null;
     var get_insight = null;
@@ -1821,11 +1821,19 @@ export class UtilsService {
 
     var AvatarDTO_ = new AvatarDTO();
 
-    if (get_userbasic.mediaBasePath != null || get_userbasic.mediaUri != null || get_userbasic.mediaType != null || get_userbasic.mediaEndpoint != null) {
-      AvatarDTO_.mediaBasePath = get_profilePict.mediaBasePath;
-      AvatarDTO_.mediaUri = get_profilePict.mediaUri;
-      AvatarDTO_.mediaType = get_profilePict.mediaType;
-      AvatarDTO_.mediaEndpoint = get_profilePict.mediaEndpoint;
+    try
+    {
+      if(get_userbasic.mediaBasePath != null || get_userbasic.mediaUri != null || get_userbasic.mediaType != null || get_userbasic.mediaEndpoint != null)
+      {
+        AvatarDTO_.mediaBasePath = get_userbasic.mediaBasePath;
+        AvatarDTO_.mediaUri = get_userbasic.mediaUri;
+        AvatarDTO_.mediaType = get_userbasic.mediaType;
+        AvatarDTO_.mediaEndpoint = get_userbasic.mediaEndpoint;
+      }
+    }
+    catch(e)
+    {
+
     }
 
     var CreateInsightsDto_ = new CreateInsightsDto();
@@ -1950,7 +1958,7 @@ export class UtilsService {
           if (get_userbasic.fullName != undefined) { ProfileDTO_.fullName = get_userbasic.fullName; }
           if (get_userbasic.bio != undefined) { ProfileDTO_.bio = get_userbasic.bio; }
         }
-        if (await this.ceckData(get_profilePict)) {
+        if (await this.ceckData(AvatarDTO_)) {
           ProfileDTO_.avatar = AvatarDTO_;
         }
         if (await this.ceckData(get_userbasic)) {

@@ -11453,7 +11453,7 @@ export class AuthService {
                 }
 
                 try {
-                  await this.sendemailOTP(user_email, OTP.toString(), 'ENROL', "id");
+                  await this.sendemailOTP2(user_email, OTP.toString(), 'ENROL', "id");
                 } catch (error) {
                   await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed Failed Send Email. Error:' +
@@ -11878,7 +11878,7 @@ export class AuthService {
           }
 
           try {
-            await this.sendemailOTP(user_email, OTP.toString(), 'ENROL', "id");
+            await this.sendemailOTP2(user_email, OTP.toString(), 'ENROL', "id");
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Failed Send Email. Error:' +

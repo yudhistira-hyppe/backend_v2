@@ -17,12 +17,14 @@ import { DivisionModule } from '../usermanagement/division/division.module';
 import { UtilsModule } from '../../utils/utils.module';
 import { UserbankaccountsModule } from '../userbankaccounts/userbankaccounts.module';
 import { ContenteventsModule } from '../../content/contentevents/contentevents.module';
+import { UserbasicnewModule } from '../userbasicnew/userbasicnew.module';
 
 @Module({
   imports: [
     UtilsModule,
     DivisionModule,
     GroupModule,
+    UserbasicnewModule,
     ConfigModule.forRoot(), UserbasicsModule, NestjsFormDataModule, CountriesModule, AreasModule, UserauthsModule, CitiesModule, MediaprofilepictsModule, InsightsModule, LanguagesModule,
     InterestsModule, UserbankaccountsModule, ContenteventsModule,
 

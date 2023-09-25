@@ -47,9 +47,11 @@ import { ChallengeModule } from 'src/trans/challenge/challenge.module';
 import { PostchallengeModule } from 'src/trans/postchallenge/postchallenge.module';
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { MediastikerModule } from '../mediastiker/mediastiker.module';
+import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
 @Module({
 
     imports: [
+        UserbasicnewModule,
         MediastikerModule,
         LogapisModule,
         PostchallengeModule,

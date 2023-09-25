@@ -1434,7 +1434,7 @@ export class AuthController {
         this.basic2SS.update(data_userbasics._id.toString(), insertSource);
 
         var ProfileDTO_ = new ProfileDTO();
-        ProfileDTO_ = await this.utilsService.generateProfile(LoginRequest_.email, 'LOGIN');
+        ProfileDTO_ = await this.utilsService.generateProfile2(LoginRequest_.email, 'LOGIN');
         ProfileDTO_.token = 'Bearer ' + (await this.utilsService.generateToken(LoginRequest_.email, LoginRequest_.deviceId)).toString();
         ProfileDTO_.refreshToken = data_jwtrefreshtoken.refresh_token_id;
         // ProfileDTO_.devicetype = getdevicedata;
@@ -3248,6 +3248,92 @@ export class AuthController {
         var user_view = headers['x-auth-user'];
         await this.authService.viewProfile(SearchUserbasicDto_.search.toString(), user_view);
         var Data = await this.utilsService.generateProfile(SearchUserbasicDto_.search.toString(), 'PROFILE');
+
+        var numPost = await this.postsService.findUserPost(SearchUserbasicDto_.search.toString());
+        let aNumPost = <any>numPost;
+        Data.insight.posts = <Long>aNumPost;
+
+        var fullurl = request.get("Host") + request.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(SearchUserbasicDto_));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_view, null, null, reqbody);
+
+        return {
+          "response_code": 202,
+          "data": [Data],
+          "messages": {
+            "info": [
+              "The process successful"
+            ]
+          }
+        };
+      } else {
+        var fullurl = request.get("Host") + request.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(SearchUserbasicDto_));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_view, null, null, reqbody);
+
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed user not found',
+        );
+      }
+    } else {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(SearchUserbasicDto_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_view, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed wrong format email',
+      );
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/user/getuserprofile/v2')
+  @FormDataRequest()
+  async getuserprofile2(@Body() SearchUserbasicDto_: SearchUserbasicDto, @Headers() headers, @Req() request) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
+    if (headers['x-auth-user'] == undefined) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(SearchUserbasicDto_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(SearchUserbasicDto_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers["x-auth-user"], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
+    if (SearchUserbasicDto_.search == undefined) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(SearchUserbasicDto_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    if (await this.utilsService.validasiEmail(SearchUserbasicDto_.search.toString())) {
+      //Ceck User Userbasics
+      const data_userbasics = await this.basic2SS.findbyemail(SearchUserbasicDto_.search.toString());
+      if (await this.utilsService.ceckData(data_userbasics)) {
+
+        var user_view = headers['x-auth-user'];
+        await this.authService.viewProfile(SearchUserbasicDto_.search.toString(), user_view);
+        var Data = await this.utilsService.generateProfile2(SearchUserbasicDto_.search.toString(), 'PROFILE');
 
         var numPost = await this.postsService.findUserPost(SearchUserbasicDto_.search.toString());
         let aNumPost = <any>numPost;
@@ -5344,7 +5430,7 @@ export class AuthController {
       datauserdetail = null;
     }
 
-
+    console.log(JSON.stringify(datauserdetail));
 
     if (datauserdetail !== null) {
       email = datauserdetail[0].email;
@@ -5456,6 +5542,166 @@ export class AuthController {
         "cities": datauserdetail[0].cities,
         "countries": datauserdetail[0].countries,
         "interests": datauserdetail[0].interests,
+        "dokument": arrsuport,
+        "avatar": datauserdetail[0].avatar,
+        "mobileNumber": datauserdetail[0].mobileNumber,
+        "tempatLahir": tempatLahir,
+        "statusUser": datauserdetail[0].statusUser,
+        "friend": lengfrend,
+        "userbankaccounts": bankacount,
+      };
+
+      data.push(obj);
+    } else {
+      data = [];
+    }
+
+    return data;
+  }
+
+  @Get('api/user/userdetail/v2/:id')
+  @HttpCode(HttpStatus.ACCEPTED)
+  @UseGuards(JwtAuthGuard)
+  async userdetail2(@Param('id') id: string): Promise<any> {
+
+    var datauserdetail = null;
+    var data = [];
+    var dokumen = [];
+    var filesupport = null;
+    var lengsupport = null;
+    var arrsuport = [];
+    var newsupport = null;
+    var mediaId = null;
+    var fileselfiepict = null;
+    var fileproofpict = null;
+    var bankacount = [];
+    var datafrend = null;
+    var lengfrend = null;
+    var email = null;
+    var emailfrend = null;
+    var tempatLahir = null;
+
+    try {
+      datauserdetail = await this.basic2SS.detailDenganlookupLain(id, "id");
+
+    } catch (e) {
+      datauserdetail = null;
+    }
+
+    console.log(JSON.stringify(datauserdetail));
+
+    if (datauserdetail !== null) {
+      email = datauserdetail[0].email;
+
+      console.log(email);
+
+      try {
+
+        mediaId = datauserdetail[0].mediaId;
+      } catch (e) {
+        mediaId = "";
+      }
+
+      try {
+
+        tempatLahir = datauserdetail[0].dokumen.tempatLahir
+      } catch (e) {
+        tempatLahir = "";
+      }
+
+      try {
+        fileselfiepict = "/" + datauserdetail[0].dokumen.dokumen[0].mediaSelfiepicts.mediaEndpoint;
+
+        if (datauserdetail[0].dokument[0].mediaSelfiepicts.mediaEndpoint != null) {
+          arrsuport.push(fileproofpict);
+        }
+
+      } catch (e) {
+        fileselfiepict = "";
+
+      }
+      try {
+
+        fileproofpict = "/" + datauserdetail[0].dokumen.dokumen[0].mediaproofpicts.mediaEndpoint;
+
+        if (datauserdetail[0].dokument[0].mediaproofpicts.mediaEndpoint != null) {
+          arrsuport.push(fileproofpict);
+        }
+
+      } catch (e) {
+        fileproofpict = "";
+
+      }
+      try {
+
+        filesupport = datauserdetail[0].dokumen.dokumen[0].mediaSupportfile.mediaEndpoint;
+        lengsupport = filesupport.length;
+      } catch (e) {
+        filesupport = [];
+        lengsupport = 0;
+      }
+
+
+      if (lengsupport > 0) {
+        for (let i = 0; i < lengsupport; i++) {
+
+          newsupport = "/supportfile/" + mediaId + "/" + i;
+          arrsuport.push(newsupport);
+
+        }
+      }
+
+      try {
+        bankacount = datauserdetail[0].userbankaccounts;
+
+        if (bankacount[0]._id === undefined) {
+          bankacount = [];
+        } else {
+          bankacount = bankacount;
+        }
+      } catch (e) {
+        bankacount = [];
+      }
+
+      try {
+        //versi lama
+        // datafrend = await this.contenteventsService.findfriend(email);
+        // console.log(datafrend);
+        // lengfrend = datafrend.length;
+        // for (var i = 0; i < lengfrend; i++) {
+        //   emailfrend = datafrend[i]._id.email;
+
+        //   if (email === emailfrend) {
+        //     lengfrend = lengfrend - 1;
+        //   }
+        // }
+
+        //versi baru
+        const mongoose = require('mongoose');
+        let getid = mongoose.Types.ObjectId(id);
+        datafrend = await this.friendListService.findOne(getid);
+        lengfrend = datafrend.totalfriend;
+        datafrend = datafrend.friendlist;
+        // console.log(lengfrend);
+      } catch (e) {
+        datafrend = null;
+      }
+
+      let obj = {
+
+        "_id": datauserdetail[0]._id,
+        "fullName": datauserdetail[0].fullName,
+        "username": datauserdetail[0].username,
+        "email": datauserdetail[0].email,
+        "createdAt": datauserdetail[0].createdAt,
+        "status": datauserdetail[0].status,
+        "dob": datauserdetail[0].dob,
+        "gender": datauserdetail[0].gender,
+        "insights": datauserdetail[0].insight,
+        "states": datauserdetail[0].areas,
+        "cities": datauserdetail[0].city,
+        "countries": datauserdetail[0].country,
+        "interests": datauserdetail[0].interest,
         "dokument": arrsuport,
         "avatar": datauserdetail[0].avatar,
         "mobileNumber": datauserdetail[0].mobileNumber,

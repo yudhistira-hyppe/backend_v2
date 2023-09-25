@@ -19,12 +19,14 @@ import { ProfileDTO } from '../../utils/data/Profile';
 import { UtilsService } from '../../utils/utils.service';
 import { ContenteventsService } from '../../content/contentevents/contentevents.service';
 import { UserbankaccountsService } from '../userbankaccounts/userbankaccounts.service';
+import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
 import mongoose from 'mongoose';
 
 @Controller('api/profile')
 export class ProfileController {
   constructor(
     private userbasicsService: UserbasicsService,
+    private basic2SS: UserbasicnewService,
     private countriesService: CountriesService,
     private areasService: AreasService,
     private userauthsService: UserauthsService,
@@ -461,6 +463,70 @@ export class ProfileController {
       return {
         response_code: 202,
         data,
+        messages
+      };
+    }
+  }
+
+  @Post('v2')
+  @UseGuards(JwtAuthGuard)
+  async profileuser2(@Req() request: Request): Promise<any> {
+
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+    var emails = null;
+    var interest = [];
+    var countries = null;
+    var countries_json = null;
+    var countri = null;
+    var cities_json = null;
+    var cities = null;
+    var citi = null;
+    var mediaprofilepicts_json = null;
+    var mediaprofilepicts = null;
+    var mediaprofilepicts_res = null;
+    var areas = null;
+    var insights_json = null;
+    var insights_res = null;
+    var iduser = null;
+    var dataakunbank = null;
+    var datauserbasicsService = null;
+    var isIdVerified = null;
+    var statusUser = null;
+    var datafrend = null;
+    var emailfrend = null;
+    var lengfrend = null;
+    var langiso = null;
+    if (request_json["email"] !== undefined) {
+      emails = request_json["email"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    try {
+      datauserbasicsService = await this.basic2SS.detailDenganlookupLain(emails, "email");
+    } catch (e) {
+      datauserbasicsService = null;
+    }
+
+    if (datauserbasicsService == null) {
+      throw new BadRequestException("User not found");
+    }
+    else {
+      var data = datauserbasicsService[0];
+      var dataGroup = await this.groupService.findbyuser(data._id);
+      if (dataGroup != null){
+        data['groupId'] = dataGroup._id;
+        data['group'] = dataGroup.nameGroup;
+      }
+      return {
+        response_code: 202,
+        data:[data],
         messages
       };
     }
