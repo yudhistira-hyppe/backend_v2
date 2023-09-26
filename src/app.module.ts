@@ -117,6 +117,7 @@ import { BannerModule } from './trans/banner/banner.module';
 import { MediastikerModule } from './content/mediastiker/mediastiker.module';
 import { StickerCategoryModule } from './trans/stickercategory/stickercategory.module';
 import { AdsPriceCreditsModule } from './trans/adsv2/adspricecredits/adspricecredits.module';
+import { NewPostModule } from './content/new_post/new_post.module';
 @Module({
   imports: [
     BannerModule,
@@ -256,6 +257,7 @@ import { AdsPriceCreditsModule } from './trans/adsv2/adspricecredits/adspricecre
     JenischallengeModule,
     BadgeModule,
     StickerCategoryModule,
+    NewPostModule,
     //  ChallengeModule
   ], providers: [],
 })
