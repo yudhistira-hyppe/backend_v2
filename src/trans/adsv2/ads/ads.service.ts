@@ -92,13 +92,13 @@ export class AdsService {
             paramaggregate.push(ObjectMatch)
         }
         paramaggregate.push({
-                $lookup: {
-                    from: "userbasics",
-                    localField: "userID",
-                    foreignField: "_id",
-                    as: "userbasics_data"
-                }
-            },
+            $lookup: {
+                from: "userbasics",
+                localField: "userID",
+                foreignField: "_id",
+                as: "userbasics_data"
+            }
+        },
             {
                 $lookup: {
                     from: "adstypes",
@@ -3122,7 +3122,7 @@ export class AdsService {
                                                     $ifNull: [
                                                         { "$arrayElemAt": ["$userAdsArea._id", "$$this"] },
                                                         "Lainnya"
-                                                    ] 
+                                                    ]
                                                 },
                                                 "count": {
                                                     "$arrayElemAt": ["$userAdsArea.areasCount", "$$this"]
@@ -3412,60 +3412,60 @@ export class AdsService {
         var query = await this.adsModel.aggregate(
             [{
                 $match
-        }, {
-            "$project": {
-                "status": {
-                    "$switch": {
-                        "branches": [{
-                            "case": {
-                                "$eq": ["$status", "DRAFT"]
-                            },
-                            "then": "DRAFT"
-                        }, {
-                            "case": {
-                                "$or": [{
-                                    "$eq": ["$status", "FINISH"]
-                                }, {
-                                    "$eq": ["$status", "IN_ACTIVE"]
-                                }, {
-                                    "$eq": ["$status", "REPORTED"]
-                                }]
-                            },
-                            "then": "IN_ACTIVE"
-                        }, {
-                            "case": {
-                                "$or": [{
-                                    "$eq": ["$status", "APPROVE"]
-                                }, {
-                                    "$eq": ["$status", "ACTIVE"]
-                                }]
-                            },
-                            "then": "ACTIVE"
-                        }, {
-                            "case": {
-                                "$eq": ["$status", "UNDER_REVIEW"]
-                            },
-                            "then": "UNDER_REVIEW"
-                        }],
-                        "default": "OTHER"
-                    }
-                }
-            }
-        }, {
-            "$facet": {
-                "status": [{
-                    "$group": {
-                        "_id": "$status",
-                        "status": {
-                            "$first": "$status"
-                        },
-                        "count": {
-                            "$sum": 1
+            }, {
+                "$project": {
+                    "status": {
+                        "$switch": {
+                            "branches": [{
+                                "case": {
+                                    "$eq": ["$status", "DRAFT"]
+                                },
+                                "then": "DRAFT"
+                            }, {
+                                "case": {
+                                    "$or": [{
+                                        "$eq": ["$status", "FINISH"]
+                                    }, {
+                                        "$eq": ["$status", "IN_ACTIVE"]
+                                    }, {
+                                        "$eq": ["$status", "REPORTED"]
+                                    }]
+                                },
+                                "then": "IN_ACTIVE"
+                            }, {
+                                "case": {
+                                    "$or": [{
+                                        "$eq": ["$status", "APPROVE"]
+                                    }, {
+                                        "$eq": ["$status", "ACTIVE"]
+                                    }]
+                                },
+                                "then": "ACTIVE"
+                            }, {
+                                "case": {
+                                    "$eq": ["$status", "UNDER_REVIEW"]
+                                },
+                                "then": "UNDER_REVIEW"
+                            }],
+                            "default": "OTHER"
                         }
                     }
-                }]
-            }
-        }]
+                }
+            }, {
+                "$facet": {
+                    "status": [{
+                        "$group": {
+                            "_id": "$status",
+                            "status": {
+                                "$first": "$status"
+                            },
+                            "count": {
+                                "$sum": 1
+                            }
+                        }
+                    }]
+                }
+            }]
         );
         console.log(JSON.stringify([{
             $match
@@ -4796,14 +4796,14 @@ export class AdsService {
                         from: "userbasics",
                         as: "userBasic",
                         let: {
-                            localID: '$userID'
+                            localID: '$email'
                         },
                         pipeline: [
                             {
                                 $match:
                                 {
                                     $expr: {
-                                        $eq: ['$_id', '$$localID']
+                                        $eq: ['$email', '$$localID']
                                     }
                                 }
                             },
