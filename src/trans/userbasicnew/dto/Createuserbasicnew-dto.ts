@@ -114,10 +114,5 @@ export class CreateuserbasicnewDto {
   fsSourceName: string;
   fsTargetUri: string;
   mediaEndpoint: string;
-  ktpMediaBasePath: string;
-  ktpMediaUri: string;
-  ktpOriginalName: string;
-  ktpFsSourceUri: string;
-  ktpFsSourceName: string;
-  ktpFsTargetUri: string;
+  kyc:any[];
 }

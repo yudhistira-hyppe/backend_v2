@@ -5430,8 +5430,6 @@ export class AuthController {
       datauserdetail = null;
     }
 
-    console.log(JSON.stringify(datauserdetail));
-
     if (datauserdetail !== null) {
       email = datauserdetail[0].email;
 
@@ -5588,12 +5586,10 @@ export class AuthController {
       datauserdetail = null;
     }
 
-    console.log(JSON.stringify(datauserdetail));
+    // console.log(JSON.stringify(datauserdetail));
 
     if (datauserdetail !== null) {
       email = datauserdetail[0].email;
-
-      console.log(email);
 
       try {
 

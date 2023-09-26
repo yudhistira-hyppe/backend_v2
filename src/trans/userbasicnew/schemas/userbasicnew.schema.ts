@@ -218,18 +218,7 @@ export class Userbasicnew {
     @Prop()
     mediaEndpoint: string;
     @Prop()
-    ktpMediaBasePath: string;
-    @Prop()
-    ktpMediaUri: string;
-    @Prop()
-    ktpOriginalName: string;
-    @Prop()
-    ktpFsSourceUri: string;
-    @Prop()
-    ktpFsSourceName: string;
-    @Prop()
-    ktpFsTargetUri: string;
-
+    kyc: any[]
 }
 
 export const UserbasicnewSchema = SchemaFactory.createForClass(Userbasicnew);
