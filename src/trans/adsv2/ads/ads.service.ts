@@ -4878,6 +4878,68 @@ export class AdsService {
                                 }
                             },
                             {
+                                $project: {
+                                    balances: {
+                                        $arrayElemAt: ["$balances", 0]
+                                    },
+                                    debet: {
+                                        $arrayElemAt: ["$balances.debet", 0]
+                                    },
+                                    kredit: {
+                                        $arrayElemAt: ["$balances.kredit", 0]
+                                    },
+                                    total: {
+                                        $arrayElemAt: ["$balances.total", 0]
+                                    },
+                                    "email": 1,
+
+                                    "userInterests": 1,
+                                    "states": ["$states"],
+                                    "gender": ["$gender"],
+                                    "age":
+                                    {
+                                        $cond: {
+                                            if: {
+                                                $and: ['$dob', {
+                                                    $ne: ["$dob", ""]
+                                                }]
+                                            },
+                                            then: {
+                                                $toInt: {
+                                                    $divide: [{
+                                                        $subtract: [new Date(), {
+                                                            $toDate: "$dob"
+                                                        }]
+                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                }
+                                            },
+                                            else: 0
+                                        }
+                                    },
+
+                                }
+                            }
+                        ],
+
+                    }
+                },
+                {
+                    "$lookup": {
+                        from: "userbasics",
+                        as: "userBasicAds",
+                        let: {
+                            localID: '$userID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $expr: {
+                                        $eq: ['$_id', '$$localID']
+                                    }
+                                }
+                            },
+                            {
                                 "$lookup":
                                 {
                                     from: "userauths",
@@ -4914,18 +4976,7 @@ export class AdsService {
                             },
                             {
                                 $project: {
-                                    balances: {
-                                        $arrayElemAt: ["$balances", 0]
-                                    },
-                                    debet: {
-                                        $arrayElemAt: ["$balances.debet", 0]
-                                    },
-                                    kredit: {
-                                        $arrayElemAt: ["$balances.kredit", 0]
-                                    },
-                                    total: {
-                                        $arrayElemAt: ["$balances.total", 0]
-                                    },
+
                                     "email": 1,
                                     "userName":
                                     {
@@ -4947,29 +4998,6 @@ export class AdsService {
                                                 ]
                                         }
                                     },
-                                    "userInterests": 1,
-                                    "states": ["$states"],
-                                    "gender": ["$gender"],
-                                    "age":
-                                    {
-                                        $cond: {
-                                            if: {
-                                                $and: ['$dob', {
-                                                    $ne: ["$dob", ""]
-                                                }]
-                                            },
-                                            then: {
-                                                $toInt: {
-                                                    $divide: [{
-                                                        $subtract: [new Date(), {
-                                                            $toDate: "$dob"
-                                                        }]
-                                                    }, (365 * 24 * 60 * 60 * 1000)]
-                                                }
-                                            },
-                                            else: 0
-                                        }
-                                    },
 
                                 }
                             }
@@ -4980,6 +5008,12 @@ export class AdsService {
                 {
                     $unwind: {
                         path: "$userBasic",
+                        "preserveNullAndEmptyArrays": true
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$userBasicAds",
                         "preserveNullAndEmptyArrays": true
                     }
                 },
@@ -5632,9 +5666,9 @@ export class AdsService {
                     $project: {
                         balances: "$userBasic.balances",
                         totalSaldo: "$userBasic.balances.total",
-                        username: "$userBasic.userName",
-                        avatar: "$userBasic.avatar",
-                        email: "$userBasic.email",
+                        username: "$userBasicAds.userName",
+                        avatar: "$userBasicAds.avatar",
+                        email: "$userBasicAds.email",
                         ctaNames: {
                             $arrayElemAt: ["$cta.value", "$ctaButton"]
                         },
