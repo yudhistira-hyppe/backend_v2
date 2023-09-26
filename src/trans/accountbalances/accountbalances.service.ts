@@ -1930,6 +1930,7 @@ export class AccountbalancesService {
         var apsara = null;
         var idapsaradefine = null;
         var apsaradefine = null;
+        var skipTime = null;
         for (var i = 0; i < dataquery.length; i++) {
             try {
                 idapsara = dataquery[i].idApsara;
@@ -1937,6 +1938,15 @@ export class AccountbalancesService {
                 idapsara = "";
             }
 
+            try {
+                skipTime = dataquery[i].skipTime;
+            } catch (e) {
+                skipTime = null;
+            }
+
+            if (skipTime == null && skipTime == undefined) {
+                skipTime = 0;
+            }
 
             if (idapsara === undefined || idapsara === "" || idapsara === null || idapsara === "other") {
                 idapsaradefine = "";
@@ -1977,7 +1987,7 @@ export class AccountbalancesService {
                     "from": dataquery[i].from,
                     "status": dataquery[i].status,
                     "apsaraId": idapsaradefine,
-                    "skipTime": dataquery[i].skipTime,
+                    "skipTime": skipTime,
                     "media": datanew
 
                 };
