@@ -5486,8 +5486,14 @@ export class AdsService {
                     }
                 },
                 {
+                    $set: {
+                        priorityViewed: "$adsUser.viewed"
+                    }
+                },
+                {
                     $sort: {
                         isValid: 1,
+                        priorityViewed: 1,
                         sorts: - 1,
                         priority: 1,
                         scoreTotal: - 1
