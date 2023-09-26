@@ -176,7 +176,7 @@ export class UserbasicnewService {
                     "fsSourceUri": 1,
                     "fsSourceName": 1,
                     "fsTargetUri": 1,
-                    "kyc":1
+                    "kyc": 1
                 }
             }
         ]);
@@ -184,11 +184,9 @@ export class UserbasicnewService {
         return result[0];
     }
 
-    async detailDenganlookupLain(target:string, tipe:string)
-    {
+    async detailDenganlookupLain(target: string, tipe: string) {
         var pipeline = [];
-        if(tipe == 'id')
-        {
+        if (tipe == 'id') {
             var mongo = require('mongoose');
             pipeline.push(
                 {
@@ -199,8 +197,7 @@ export class UserbasicnewService {
                 }
             );
         }
-        else
-        {
+        else {
             pipeline.push(
                 {
                     "$match":
@@ -212,7 +209,7 @@ export class UserbasicnewService {
         }
 
         pipeline.push({
-            $lookup: 
+            $lookup:
             {
                 from: 'insights',
                 localField: 'insight.$id',
@@ -220,662 +217,662 @@ export class UserbasicnewService {
                 as: 'insight_data',
             },
         },
-        {
-            $lookup: 
             {
-                from: 'insights',
-                let: 
+                $lookup:
                 {
-                    "id": "$insight.$id"
-                },
-                as:"insight_data",
-                pipeline: 
-                [
+                    from: 'insights',
+                    let:
                     {
-                        "$match":
-                        {
-                            
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            $lookup: 
-            {
-                from: 'friend_list',
-                localField: 'email',
-                foreignField: 'email',
-                as: 'friend_data',
-            },
-        },
-        {
-            $lookup: 
-            {
-                from: 'userbankaccounts',
-                let: 
-                {
-                    "id": "$_id"
-                },
-                pipeline: [
-                    {
-                        $match: 
-                        {
-                            $expr: 
+                        "id": "$insight.$id"
+                    },
+                    as: "insight_data",
+                    pipeline:
+                        [
                             {
-                                $eq: ["$userId", "$$id"]
+                                "$match":
+                                {
+
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                $lookup:
+                {
+                    from: 'friend_list',
+                    localField: 'email',
+                    foreignField: 'email',
+                    as: 'friend_data',
+                },
+            },
+            {
+                $lookup:
+                {
+                    from: 'userbankaccounts',
+                    let:
+                    {
+                        "id": "$_id"
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr:
+                                {
+                                    $eq: ["$userId", "$$id"]
+                                }
+                            }
+                        },
+                        {
+                            $lookup:
+                            {
+                                from: "banks",
+                                localField: "idBank",
+                                foreignField: "_id",
+                                as: "bankName",
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                userId: 1,
+                                noRek: 1,
+                                nama: 1,
+                                statusInquiry: 1,
+                                active: 1,
+                                bankId:
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$bankName._id", 0
+                                        ]
+                                },
+                                bankcode:
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$bankName.bankcode", 0
+                                        ]
+                                },
+                                bankname:
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$bankName.bankname", 0
+                                        ]
+                                },
+                                urlEbanking:
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$bankName.urlEbanking", 0
+                                        ]
+                                },
+                                bankIcon:
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$bankName.bankIcon", 0
+                                        ]
+                                },
+                            }
+                        }
+                    ],
+                    as: 'userbankaccounts_data'
+                }
+            },
+            {
+                "$facet":
+                {
+                    "detail":
+                        [
+                            {
+                                "$project":
+                                {
+                                    _id: 1,
+                                    email: 1,
+                                    areas: "$statesName",
+                                    country: "$countriesName",
+                                    city: "$citiesName",
+                                    gender: 1,
+                                    createdAt: 1,
+                                    idProofNumber: 1,
+                                    mobileNumber: 1,
+                                    roles: 1,
+                                    fullName: 1,
+                                    bio: 1,
+                                    avatar:
+                                    {
+                                        mediaBasePath:
+                                        {
+                                            "$ifNull":
+                                                [
+                                                    "$mediaBasePath",
+                                                    null
+                                                ]
+                                        },
+                                        mediaUri:
+                                        {
+                                            "$ifNull":
+                                                [
+                                                    "$mediaUri",
+                                                    null
+                                                ]
+                                        },
+                                        mediaType:
+                                        {
+                                            "$ifNull":
+                                                [
+                                                    "$mediaType",
+                                                    null
+                                                ]
+                                        },
+                                        mediaEndpoint:
+                                        {
+                                            "$ifNull":
+                                                [
+                                                    "$mediaEndpoint",
+                                                    null
+                                                ]
+                                        },
+                                    },
+                                    isIdVerified: 1,
+                                    isEmailVerified: 1,
+                                    idProofStatus: 1,
+                                    insight:
+                                    {
+                                        shares:
+                                        {
+                                            "$arrayElemAt":
+                                                [
+                                                    "$insight_data.shares", 0
+                                                ]
+                                        },
+                                        followers:
+                                        {
+                                            "$arrayElemAt":
+                                                [
+                                                    "$insight_data.followers", 0
+                                                ]
+                                        },
+                                        comments:
+                                        {
+                                            "$arrayElemAt":
+                                                [
+                                                    "$insight_data.comments", 0
+                                                ]
+                                        },
+                                        followings:
+                                        {
+                                            "$arrayElemAt":
+                                                [
+                                                    "$insight_data.followings", 0
+                                                ]
+                                        },
+                                        reactions:
+                                        {
+                                            "$arrayElemAt":
+                                                [
+                                                    "$insight_data.reactions", 0
+                                                ]
+                                        },
+                                        posts:
+                                        {
+                                            "$arrayElemAt":
+                                                [
+                                                    "$insight_data.posts", 0
+                                                ]
+                                        },
+                                        views:
+                                        {
+                                            "$arrayElemAt":
+                                                [
+                                                    "$insight_data.views", 0
+                                                ]
+                                        },
+                                        likes:
+                                        {
+                                            "$arrayElemAt":
+                                                [
+                                                    "$insight_data.likes", 0
+                                                ]
+                                        },
+                                        friend:
+                                        {
+                                            "$arrayElemAt":
+                                                [
+                                                    "$friend_data.totalfriend", 0
+                                                ]
+                                        }
+                                    },
+                                    langIso: "$languagesLangIso",
+                                    interest: "$interests_repo_data",
+                                    dob: 1,
+                                    event: 1,
+                                    username: 1,
+                                    isComplete: 1,
+                                    status: 1,
+                                    statusUser:
+                                    {
+                                        "$cond":
+                                        {
+                                            if:
+                                            {
+                                                "$eq": ["$isIdVerified", true]
+                                            },
+                                            then: "PREMIUM",
+                                            else: "BASIC"
+                                        }
+                                    },
+                                    loginSource:
+                                    {
+                                        "$cond":
+                                        {
+                                            if:
+                                            {
+                                                "$eq":
+                                                    [
+                                                        "$password", "$2a$10$GTQLm6mRlZVoBhR8LSm8T.CDI3TG6CViPdiTAt2tfRY3dNwOk7s1G"
+                                                    ]
+                                            },
+                                            then: "socmed",
+                                            else: "manual"
+
+                                        }
+                                    },
+                                    databank: "$userbankaccounts_data",
+                                    mediaId: "$proofPict.$id"
+                                }
+                            }
+                        ],
+                    "interests":
+                        [
+                            {
+                                "$lookup":
+                                {
+                                    from: 'interests',
+                                    localField: 'userInterests.$id',
+                                    foreignField: '_id',
+                                    as: 'interest_data',
+                                },
+                            },
+                            {
+                                "$unwind":
+                                {
+                                    path: "$interest_data",
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    _id: 0,
+                                    interestName: "$interest_data.interestName",
+                                    icon: "$interest_data.icon",
+                                    createdAt: "$interest_data.createdAt",
+                                    updatedAt: "$interest_data.updatedAt",
+                                    _class: "$interest_data._class",
+                                }
+                            }
+                        ],
+                    "dokumen":
+                        [
+                            {
+                                "$unwind":
+                                {
+                                    path: "$kyc",
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    valid: "$kyc.valid",
+                                    idcardnumber: "$kyc.idcardnumber",
+                                    postType: "$kyc.postType",
+                                    proofpictUploadSource: "$kyc.proofpictUploadSource",
+                                    nama: "$kyc.nama",
+                                    tempatLahir: "$kyc.tempatLahir",
+                                    jenisKelamin: "$kyc.jenisKelamin",
+                                    alamat: "$kyc.alamat",
+                                    agama: "$kyc.agama",
+                                    statusPerkawinan: "$kyc.statusPerkawinan",
+                                    pekerjaan: "$kyc.pekerjaan",
+                                    kewarganegaraan: "$kyc.kewarganegaraan",
+                                    dokumen:
+                                        [
+                                            {
+                                                mediaproofpicts:
+                                                {
+                                                    mediaId: "$proofPict.$id",
+                                                    mediaBasePath: "$kyc.mediaBasePath",
+                                                    mediaUri: "$kyc.mediaUri",
+                                                    postType: "$kyc.mediaType",
+                                                    mediaEndpoint:
+                                                    {
+                                                        "$concat":
+                                                            [
+                                                                "proofpict",
+                                                                "/",
+                                                                "$proofPict.$id"
+                                                            ]
+                                                    }
+                                                },
+                                                mediaSelfiepicts:
+                                                {
+                                                    mediaId: "$proofPict.$id",
+                                                    mediaBasePath: "$kyc.mediaSelfieBasePath",
+                                                    mediaUri: "$kyc.mediaSelfieUri",
+                                                    postType: "$kyc.mediaSelfieType",
+                                                    mediaEndpoint:
+                                                    {
+                                                        "$concat":
+                                                            [
+                                                                "proofpict",
+                                                                "/",
+                                                                "$proofPict.$id"
+                                                            ]
+                                                    }
+                                                },
+                                                mediaSupportfile:
+                                                {
+                                                    mediaEndpoint:
+                                                    {
+                                                        $cond: {
+                                                            if: {
+                                                                $or: [{
+                                                                    $eq: ['$kyc.SupportfsSourceUri', null]
+                                                                }, {
+                                                                    $eq: ['$kyc.SupportfsSourceUri', ""]
+                                                                }, {
+                                                                    $eq: ['$kyc.SupportfsSourceUri', []]
+                                                                }, {
+                                                                    $eq: ['$kyc.SupportfsSourceUri', {}]
+                                                                }]
+                                                            },
+                                                            then: [],
+                                                            else: '$kyc.SupportfsSourceUri'
+                                                        },
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                "$project":
+                {
+                    _id:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail._id", 0
+                            ]
+                    },
+                    email:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.email", 0
+                            ]
+                    },
+                    fullName:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.fullName", 0
+                            ]
+                    },
+                    dob:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.dob", 0
+                            ]
+                    },
+                    mobileNumber:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.mobileNumber", 0
+                            ]
+                    },
+                    status:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.status", 0
+                            ]
+                    },
+                    event:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.event", 0
+                            ]
+                    },
+                    idProofNumber:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.idProofNumber", 0
+                            ]
+                    },
+                    idProofStatus:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.idProofStatus", 0
+                            ]
+                    },
+                    isComplete:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.isComplete", 0
+                            ]
+                    },
+                    isIdVerified:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.isIdVerified", 0
+                            ]
+                    },
+                    createdAt:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.createdAt", 0
+                            ]
+                    },
+                    bio:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.bio", 0
+                            ]
+                    },
+                    insight:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.insight", 0
+                            ]
+                    },
+                    gender:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.gender", 0
+                            ]
+                    },
+                    username:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.username", 0
+                            ]
+                    },
+                    isEmailVerified:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.isEmailVerified", 0
+                            ]
+                    },
+                    roles:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.roles", 0
+                            ]
+                    },
+                    areas:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.areas", 0
+                            ]
+                    },
+                    country:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.country", 0
+                            ]
+                    },
+                    city:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.city", 0
+                            ]
+                    },
+                    avatar:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.avatar", 0
+                            ]
+                    },
+                    langIso:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.langIso", 0
+                            ]
+                    },
+                    statusUser:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.statusUser", 0
+                            ]
+                    },
+                    databank:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.databank", 0
+                            ]
+                    },
+                    mediaId:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.mediaId", 0
+                            ]
+                    },
+                    loginSource:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.loginSource", 0
+                            ]
+                    },
+                    interest:
+                    {
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$and":
+                                    [
+                                        {
+                                            "$eq":
+                                                [
+                                                    {
+                                                        "$size": "$interests"
+                                                    },
+                                                    0
+                                                ]
+                                        },
+                                        {
+                                            "$eq":
+                                                [
+                                                    {
+                                                        "$arrayElemAt":
+                                                            [
+                                                                "$detail._id", 0
+                                                            ]
+                                                    },
+                                                    null
+                                                ]
+                                        }
+                                    ]
+                            },
+                            then: "$$REMOVE",
+                            else: "$interests"
+                        }
+                    },
+                    dokumen:
+                    {
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$and":
+                                    [
+                                        {
+                                            "$eq":
+                                                [
+                                                    {
+                                                        "$size": "$dokumen"
+                                                    },
+                                                    0
+                                                ]
+                                        },
+                                        {
+                                            "$eq":
+                                                [
+                                                    {
+                                                        "$arrayElemAt":
+                                                            [
+                                                                "$detail._id", 0
+                                                            ]
+                                                    },
+                                                    null
+                                                ]
+                                        }
+                                    ]
+                            },
+                            then: "$$REMOVE",
+                            else:
+                            {
+                                "$arrayElemAt":
+                                    [
+                                        "$dokumen", 0
+                                    ]
                             }
                         }
                     },
-                    {
-                        $lookup: 
-                        {
-                            from: "banks",
-                            localField: "idBank",
-                            foreignField: "_id",
-                            as: "bankName",
-                        }
-                    },
-                    {
-                        "$project":
-                        {
-                            userId: 1,
-                            noRek: 1,
-                            nama: 1,
-                            statusInquiry: 1,
-                            active: 1,
-                            bankId:
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$bankName._id", 0
-                                ]
-                            },
-                            bankcode:
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$bankName.bankcode", 0
-                                ]
-                            },
-                            bankname:
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$bankName.bankname", 0
-                                ]
-                            },
-                            urlEbanking:
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$bankName.urlEbanking", 0
-                                ]
-                            },
-                            bankIcon:
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$bankName.bankIcon", 0
-                                ]
-                            },
-                        }
-                    }
-                ],
-                as: 'userbankaccounts_data'
+                }
             }
-        },
-        {
-            "$facet":
-            {
-                "detail":
-                [
-                    {
-                        "$project":
-                        {
-                            _id:1,
-                            email:1,
-                            areas:"$statesName",
-                            country:"$countriesName",
-                            city:"$citiesName",
-                            gender:1,
-                            createdAt:1,
-                            idProofNumber:1,
-                            mobileNumber:1,
-                            roles:1,
-                            fullName:1,
-                            bio:1,
-                            avatar:
-                            {
-                                mediaBasePath:
-                                {
-                                    "$ifNull":
-                                    [
-                                        "$mediaBasePath",
-                                        null
-                                    ]
-                                },
-                                mediaUri:
-                                {
-                                    "$ifNull":
-                                    [
-                                        "$mediaUri",
-                                        null
-                                    ]
-                                },
-                                mediaType:
-                                {
-                                    "$ifNull":
-                                    [
-                                        "$mediaType",
-                                        null
-                                    ]
-                                },
-                                mediaEndpoint:
-                                {
-                                    "$ifNull":
-                                    [
-                                        "$mediaEndpoint",
-                                        null
-                                    ]
-                                },
-                            },
-                            isIdVerified:1,
-                            isEmailVerified:1,
-                            idProofStatus:1,
-                            insight:
-                            {
-                                shares: 
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$insight_data.shares", 0
-                                    ]
-                                },
-                                followers: 
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$insight_data.followers", 0
-                                    ]
-                                },
-                                comments: 
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$insight_data.comments", 0
-                                    ]
-                                },
-                                followings: 
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$insight_data.followings", 0
-                                    ]
-                                },
-                                reactions: 
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$insight_data.reactions", 0
-                                    ]
-                                },
-                                posts: 
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$insight_data.posts", 0
-                                    ]
-                                },
-                                views: 
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$insight_data.views", 0
-                                    ]
-                                },
-                                likes: 
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$insight_data.likes", 0
-                                    ]
-                                },
-                                friend:
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$friend_data.totalfriend", 0
-                                    ]
-                                }
-                            },
-                            langIso:"$languagesLangIso",
-                            interest:"$interests_repo_data",
-                            dob:1,
-                            event:1,
-                            username:1,
-                            isComplete:1,
-                            status:1,
-                            statusUser:
-                            {
-                                "$cond":
-                                {
-                                    if:
-                                    {
-                                        "$eq":["$isIdVerified", true]
-                                    },
-                                    then:"PREMIUM",
-                                    else:"BASIC"
-                                }
-                            },
-                            loginSource:
-                            {
-                                "$cond":
-                                {
-                                    if:
-                                    {
-                                        "$eq":
-                                        [
-                                            "$password", "$2a$10$GTQLm6mRlZVoBhR8LSm8T.CDI3TG6CViPdiTAt2tfRY3dNwOk7s1G"
-                                        ]
-                                    },
-                                    then:"socmed",
-                                    else:"manual"
-    
-                                }
-                            },
-                            databank:"$userbankaccounts_data",
-                            mediaId:"$proofPict.$id"
-                        }
-                    }
-                ],
-                "interests":
-                [
-                    {
-                        "$lookup": 
-                        {
-                            from: 'interests',
-                            localField: 'userInterests.$id',
-                            foreignField: '_id',
-                            as: 'interest_data',
-                        },
-                    },
-                    {
-                        "$unwind":
-                        {
-                            path:"$interest_data",
-                            preserveNullAndEmptyArrays:true
-                        }
-                    },
-                    {
-                        "$project":
-                        {
-                            _id:0,
-                            interestName:"$interest_data.interestName",
-                            icon:"$interest_data.icon",
-                            createdAt:"$interest_data.createdAt",
-                            updatedAt:"$interest_data.updatedAt",
-                            _class:"$interest_data._class",
-                        }
-                    }
-                ],
-                "dokumen":
-                [
-                    {
-                        "$unwind":
-                        {
-                            path:"$kyc",
-                            preserveNullAndEmptyArrays:true
-                        }
-                    },
-                    {
-                        "$project":
-                        {
-                            valid: "$kyc.valid",
-                            idcardnumber: "$kyc.idcardnumber",
-                            postType: "$kyc.postType",
-                            proofpictUploadSource: "$kyc.proofpictUploadSource",
-                            nama: "$kyc.nama",
-                            tempatLahir: "$kyc.tempatLahir",
-                            jenisKelamin: "$kyc.jenisKelamin",
-                            alamat: "$kyc.alamat",
-                            agama: "$kyc.agama",
-                            statusPerkawinan: "$kyc.statusPerkawinan",
-                            pekerjaan: "$kyc.pekerjaan",
-                            kewarganegaraan: "$kyc.kewarganegaraan",
-                            dokumen:
-                            [
-                                {
-                                    mediaproofpicts:
-                                    {
-                                        mediaId:"$proofPict.$id",
-                                        mediaBasePath:"$kyc.mediaBasePath",
-                                        mediaUri:"$kyc.mediaUri",
-                                        postType:"$kyc.mediaType",
-                                        mediaEndpoint:
-                                        {
-                                            "$concat":
-                                            [
-                                                "proofpict",
-                                                "/",
-                                                "$proofPict.$id"
-                                            ]
-                                        }
-                                    },
-                                    mediaSelfiepicts:
-                                    {
-                                        mediaId:"$proofPict.$id",
-                                        mediaBasePath:"$kyc.mediaSelfieBasePath",
-                                        mediaUri:"$kyc.mediaSelfieUri",
-                                        postType:"$kyc.mediaSelfieType",
-                                        mediaEndpoint:
-                                        {
-                                            "$concat":
-                                            [
-                                                "proofpict",
-                                                "/",
-                                                "$proofPict.$id"
-                                            ]
-                                        }
-                                    },
-                                    mediaSupportfile:
-                                    {
-                                        mediaEndpoint: 
-                                        {
-                                            $cond: {
-                                                if: {
-                                                $or: [{
-                                                    $eq: ['$kyc.SupportfsSourceUri', null]
-                                                }, {
-                                                    $eq: ['$kyc.SupportfsSourceUri', ""]
-                                                }, {
-                                                    $eq: ['$kyc.SupportfsSourceUri', []]
-                                                }, {
-                                                    $eq: ['$kyc.SupportfsSourceUri', {}]
-                                                }]
-                                                },
-                                                then: [],
-                                                else: '$kyc.SupportfsSourceUri'
-                                            },
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "$project":
-            {
-                _id:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail._id", 0
-                    ]
-                },
-                email:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.email", 0
-                    ]
-                },
-                fullName:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.fullName", 0
-                    ]
-                },
-                dob:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.dob", 0
-                    ]
-                },
-                mobileNumber:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.mobileNumber", 0
-                    ]
-                },
-                status:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.status", 0
-                    ]
-                },
-                event:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.event", 0
-                    ]
-                },
-                idProofNumber:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.idProofNumber", 0
-                    ]
-                },
-                idProofStatus:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.idProofStatus", 0
-                    ]
-                },
-                isComplete:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.isComplete", 0
-                    ]
-                },
-                isIdVerified:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.isIdVerified", 0
-                    ]
-                },
-                createdAt:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.createdAt", 0
-                    ]
-                },
-                bio:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.bio", 0
-                    ]
-                },
-                insight:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.insight", 0
-                    ]
-                },
-                gender:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.gender", 0
-                    ]
-                },
-                username:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.username", 0
-                    ]
-                },
-                isEmailVerified:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.isEmailVerified", 0
-                    ]
-                },
-                roles:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.roles", 0
-                    ]
-                },
-                areas:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.areas", 0
-                    ]
-                },
-                country:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.country", 0
-                    ]
-                },
-                city:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.city", 0
-                    ]
-                },
-                avatar:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.avatar", 0
-                    ]
-                },
-                langIso:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.langIso", 0
-                    ]
-                },
-                statusUser:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.statusUser", 0
-                    ]
-                },
-                databank:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.databank", 0
-                    ]
-                },
-                mediaId:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.mediaId", 0
-                    ]
-                },
-                loginSource:
-                {
-                    "$arrayElemAt":
-                    [
-                        "$detail.loginSource", 0
-                    ]
-                },
-                interest:
-                {
-                    "$cond":
-                    {
-                        if:
-                        {
-                            "$and":
-                            [
-                                {
-                                    "$eq":
-                                    [
-                                        {
-                                            "$size":"$interests"
-                                        },
-                                        0
-                                    ]
-                                },
-                                {
-                                    "$eq":
-                                    [
-                                        {
-                                            "$arrayElemAt":
-                                            [
-                                                "$detail._id", 0
-                                            ]
-                                        },
-                                        null
-                                    ]
-                                }
-                            ]
-                        },
-                        then:"$$REMOVE",
-                        else:"$interests"
-                    }
-                },
-                dokumen:
-                {
-                    "$cond":
-                    {
-                        if:
-                        {
-                            "$and":
-                            [
-                                {
-                                    "$eq":
-                                    [
-                                        {
-                                            "$size":"$dokumen"
-                                        },
-                                        0
-                                    ]
-                                },
-                                {
-                                    "$eq":
-                                    [
-                                        {
-                                            "$arrayElemAt":
-                                            [
-                                                "$detail._id", 0
-                                            ]
-                                        },
-                                        null
-                                    ]
-                                }
-                            ]
-                        },
-                        then:"$$REMOVE",
-                        else:
-                        {
-                            "$arrayElemAt":
-                            [
-                                "$dokumen", 0
-                            ]
-                        }
-                    }
-                },
-            }
-        }
         );
 
         // console.log(JSON.stringify(pipeline));
