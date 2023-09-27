@@ -25,6 +25,10 @@ export class UserbasicnewService {
         return this.UserbasicnewModel.findOne({ email: email }).exec();
     }
 
+    async findbyusername(username: string): Promise<Userbasicnew> {
+        return this.UserbasicnewModel.findOne({ username: username }).exec();
+    }
+
     async finddetail(email: string) {
         var result = await this.UserbasicnewModel.aggregate([
             {
@@ -970,6 +974,105 @@ export class UserbasicnewService {
                 }
             },
         ).clone().exec();
+    }
+
+    async getUserActiveByDate(startdate: string) {
+        var convertstart = startdate.split(" ")[0];
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var convertend = DateTime.substring(0, DateTime.lastIndexOf('.')).split(" ")[0];
+
+        //kalo error, coba ganti jadi set dan jadi object
+        var query = await this.UserbasicnewModel.aggregate([
+          {
+            "$match":
+            {
+              createdAt:
+              {
+                "$gte": convertstart,
+                "$lte": convertend
+              },
+              isEnabled: true
+            }
+          },
+          {
+            "$project":
+            {
+              createdAt:
+              {
+                "$substr":
+                  [
+                    "$createdAt", 0, 10
+                  ]
+              }
+            }
+          },
+          {
+            "$group":
+            {
+              _id:
+              {
+                "$dateFromString":
+                {
+                  "format": "%Y-%m-%d",
+                  "dateString": "$createdAt"
+    
+                }
+              },
+              totalperhari:
+              {
+                "$sum": 1
+              }
+            }
+          },
+          {
+            "$project":
+            {
+              _id: 1,
+              totalperhari: 1
+            }
+          },
+          {
+            "$unwind":
+            {
+              path: "$_id"
+            }
+          },
+          {
+            "$sort":
+            {
+              _id: 1
+            }
+          },
+          {
+            "$group":
+            {
+              _id: null,
+              total:
+              {
+                "$sum": "$totalperhari"
+              },
+              resultdata:
+              {
+                "$push":
+                {
+                  _id:
+                  {
+                    "$substr":
+                      [
+                        {
+                          "$toString": "$_id"
+                        }, 0, 10
+                      ]
+                  },
+                  totaldata: "$totalperhari"
+                }
+              }
+            }
+          }
+        ]);
+    
+        return query;
     }
 
 }

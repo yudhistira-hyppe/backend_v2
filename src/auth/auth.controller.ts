@@ -3205,6 +3205,91 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/user/getuserprofile/byusername/v2')
+  @FormDataRequest()
+  async getUserProfileByUsername2(@Body() SearchUserbasicDto_: SearchUserbasicDto, @Headers() headers, @Req() request) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
+    if (headers['x-auth-user'] == undefined) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(SearchUserbasicDto_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(SearchUserbasicDto_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
+    if (SearchUserbasicDto_.search == undefined) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(SearchUserbasicDto_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    //Ceck User Userbasics
+    const tmp = await this.basic2SS.findbyusername(SearchUserbasicDto_.search.toString());
+    if (tmp === undefined || tmp === null) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(SearchUserbasicDto_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      // return {
+      //   "response_code": 202,
+      //   "data": [],
+      //   "messages": {
+      //     "info": [
+      //       "The process successful"
+      //     ]
+      //   }
+      // };
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed user not found',
+      );
+    }
+    else
+    {
+      var user_view = headers['x-auth-user'];
+      await this.authService.viewProfile(tmp.email.toString(), user_view);
+      var Data = await this.utilsService.generateProfile2(tmp.email.toString(), 'PROFILE');
+      var numPost = await this.postsService.findUserPost(tmp.email.toString());
+      let aNumPost = <any>numPost;
+      Data.insight.posts = <Long>aNumPost;
+
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(SearchUserbasicDto_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_view, null, null, reqbody);
+
+      return {
+        "response_code": 202,
+        "data": [Data],
+        "messages": {
+          "info": [
+            "The process successful"
+          ]
+        }
+      }; 
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/user/getuserprofile')
   @FormDataRequest()
   async getuserprofile(@Body() SearchUserbasicDto_: SearchUserbasicDto, @Headers() headers, @Req() request) {
