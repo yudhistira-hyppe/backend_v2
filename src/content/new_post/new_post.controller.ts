@@ -8,6 +8,9 @@ import { ErrorHandler } from 'src/utils/error.handler';
 import { AvatarDTO, ProfileDTO } from 'src/utils/data/Profile';
 import { ContenteventsService } from '../contentevents/contentevents.service';
 import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { TagPeople } from '../posts/dto/create-posts.dto'; 
+import { PostContentService } from '../posts/postcontent.service';
 
 @Controller('api/post/v3')
 export class NewPostController {
@@ -15,7 +18,10 @@ export class NewPostController {
     private readonly utilsService:UtilsService,
     private readonly basic2SS:UserbasicnewService,
     private readonly errorHandler:ErrorHandler,
-    private readonly getcontenteventsService:ContenteventsService) { }
+    private readonly getcontenteventsService:ContenteventsService,
+    private readonly logapiSS:LogapisService,
+    private readonly postContentService:PostContentService,
+    ) { }
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
@@ -110,5 +116,126 @@ export class NewPostController {
               'Unabled to proceed postID not found',
           );
       }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Post('tagpeople')
+  async tagpeople(@Headers() headers, @Body() body) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/post/v3/tagpeople";
+    var reqbody = JSON.parse(JSON.stringify(body));
+
+    //CECK BAEARER TOKEN
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed token and email not match',
+      );
+    }
+
+    //CECK DATA USER
+    const data_userbasic = await this.basic2SS.findbyemail(headers['x-auth-user']);
+    if (!(await this.utilsService.ceckData(data_userbasic))) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed User not found'
+      );
+    }
+
+    if (body.postId == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, Param PostID required'
+      );
+    }
+
+    var userEmail = headers['x-auth-user'];
+    var post = await this.newPostService.findOne(body.postId.toString());
+    // let following = await this.getcontenteventsService.findFollowing(userEmail);
+    if (await this.utilsService.ceckData(post)) {
+      if (post.tagPeople != undefined && post.tagPeople.length > 0) {
+        let atp = post.tagPeople;
+        let atp1 = Array<TagPeople>();
+
+        for (let x = 0; x < atp.length; x++) {
+          let tp = atp[x];
+          if (tp?.namespace) {
+            let oid = tp.oid;
+            let ua = await this.basic2SS.findbyidauth(oid.toString());
+            if (ua != undefined) {
+              let tp1 = new TagPeople();
+              tp1.email = String(ua.email);
+              tp1.username = String(ua.username);
+
+              let ub = await this.basic2SS.finddetail(String(ua.email));
+              if (ub != undefined) {
+                var tempprofile = tp1.avatar;
+                try
+                {
+                    if(ub.mediaBasePath != null || ub.mediaUri != null || ub.mediaType != null || ub.mediaEndpoint != null)
+                    {
+                        tempprofile.mediaBasePath = ub.mediaBasePath;
+                        tempprofile.mediaUri = ub.mediaUri;
+                        tempprofile.mediaType = ub.mediaType;
+                        tempprofile.mediaEndpoint = ub.mediaEndpoint;
+                    }
+
+                    tp1.avatar = tempprofile;
+                }
+                catch(e)
+                {
+
+                }
+
+                if (await this.utilsService.ceckData(ub.urluserBadge)) {
+                  tp1.urluserBadge = ub.urluserBadge;
+                }
+                else {
+                  tp1.urluserBadge = null;
+                }
+              }
+
+              tp1.status = 'TOFOLLOW';
+              if (tp1.email == userEmail) {
+                tp1.status = "UNLINK";
+              } else {
+                var ceck_data_FOLLOWER = await this.getcontenteventsService.ceckData(tp1.email, "FOLLOWER", "ACCEPT", userEmail, "", "");
+                if (await this.utilsService.ceckData(ceck_data_FOLLOWER)) {
+                  if (ceck_data_FOLLOWER.active) {
+                    tp1.status = "FOLLOWING";
+                  }
+                }
+              }
+              atp1.push(tp1);
+            }
+          }
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+        return {
+          response_code: 202,
+          data: atp1,
+          messages: {
+            info: ['successfuly'],
+          },
+        };
+      }
+    } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, Data Post not found'
+      );
+    }
   }
 }

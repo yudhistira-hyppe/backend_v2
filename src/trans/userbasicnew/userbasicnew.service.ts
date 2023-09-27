@@ -29,6 +29,11 @@ export class UserbasicnewService {
         return this.UserbasicnewModel.findOne({ username: username }).exec();
     }
 
+    async findbyidauth(id: string): Promise<Userbasicnew> {
+        var mongo = require('mongoose');
+        return this.UserbasicnewModel.findOne({ _idAuth: new mongo.Types.ObjectId(id) }).exec();
+    }
+
     async finddetail(email: string) {
         var result = await this.UserbasicnewModel.aggregate([
             {

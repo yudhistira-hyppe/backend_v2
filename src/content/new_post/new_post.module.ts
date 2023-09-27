@@ -7,6 +7,8 @@ import { NewpostsSchema, newPosts } from './schemas/newPost.schema';
 import { UtilsModule } from 'src/utils/utils.module';
 import { ContenteventsModule } from '../contentevents/contentevents.module';
 import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
+import { LogapisModule } from 'src/trans/logapis/logapis.module';
+import { PostsModule } from '../posts/posts.module';
 
 @Module({
   imports:[
@@ -14,6 +16,8 @@ import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
     UtilsModule,
     ContenteventsModule,
     UserbasicnewModule,
+    LogapisModule,
+    PostsModule,
     MongooseModule.forFeature([{ name: newPosts.name, schema: NewpostsSchema }], 'SERVER_FULL')
   ],
   controllers: [NewPostController],
