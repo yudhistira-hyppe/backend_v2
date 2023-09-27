@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
 import mongoose, { Document } from 'mongoose';
 
 export type AdsDocument = Ads & Document;
