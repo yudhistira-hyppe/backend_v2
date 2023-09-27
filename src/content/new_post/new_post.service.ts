@@ -9,4 +9,11 @@ export class NewPostService {
         @InjectModel(newPosts.name, 'SERVER_FULL')
         private readonly loaddata: Model<NewpostsDocument>,
     ) { }
+
+    async findOne(id:string)
+    {
+        var data = await this.loaddata.findOne({ postID:id }).exec();
+
+        return data;
+    }
 }
