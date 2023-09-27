@@ -177,6 +177,8 @@ export class Ads {
     width: number;
     @Prop()
     height: number;
+    @Prop()
+    idAdspricecredits: mongoose.Types.ObjectId;
 }
 
 export const AdsSchema = SchemaFactory.createForClass(Ads);
