@@ -3834,8 +3834,8 @@ export class UserAdsService {
         var pipelineMatch = [];
         if (start_date != null && end_date != null) {
             var andExpr = [];
-            andExpr.push({ $gte: ["$timestamp", start_date] });
-            andExpr.push({ $lte: ["$timestamp", end_date] });
+            andExpr.push({ $gte: ["$timestamp", start_date.toISOString()] });
+            andExpr.push({ $lte: ["$timestamp", end_date.toISOString()] });
             pipelineMatch.push({
                 $match:
                 {
@@ -4566,11 +4566,6 @@ export class UserAdsService {
                 {
                     from: "ads",
                     as: "ads_data",
-                    let:
-                    {
-                        dateStart_: "$dateStart",
-                        dateEnd_: "$dateEnd"
-                    },
                     pipeline: pipelineMatch
                 }
             },);
@@ -4793,6 +4788,7 @@ export class UserAdsService {
                 }
             }
         );
+
         //console.log(JSON.stringify(aggregateData));
         let query = await this.userAdsModel.aggregate(aggregateData);
         return query;
