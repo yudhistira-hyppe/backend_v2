@@ -53,7 +53,7 @@ export class AdsController {
         private accountbalancesService: AccountbalancesService,
         private readonly logapiSS: LogapisService,
         private adsBalaceCreditService: AdsBalaceCreditService,
-        private readonly adsPriceCreditsService: AdsPriceCreditsService, 
+        private readonly adsPriceCreditsService: AdsPriceCreditsService,
         private readonly uservouchersService: UservouchersService,
         private readonly adsService: AdsService) {
         this.locks = new Map();
@@ -187,7 +187,7 @@ export class AdsController {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
         var reqbody = JSON.parse(JSON.stringify(AdsDto_));
-        
+
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
@@ -216,7 +216,7 @@ export class AdsController {
         if (!(await this.utilsService.ceckData(ubasic))) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
-            
+
             await this.errorHandler.generateBadRequestException(
                 'Unabled to proceed, user not found',
             );
@@ -419,8 +419,8 @@ export class AdsController {
         var getSetting_AdsDurationMax = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsDurationMax));
         var getSetting_AdsPlanMin = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsPlanMin));
         var getSetting_AdsPlanMax = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsPlanMax));
-    
-        if (!((Number(getSetting_AdsDurationMax.value) >= Number(dayCount)) && (Number(dayCount) >= Number(getSetting_AdsDurationMin.value)))){
+
+        if (!((Number(getSetting_AdsDurationMax.value) >= Number(dayCount)) && (Number(dayCount) >= Number(getSetting_AdsDurationMin.value)))) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
 
@@ -598,7 +598,7 @@ export class AdsController {
                 ceck_ctaButton,
             );
         }
-        
+
         //VALIDASI PARAM status
         var ceck_status = await this.utilsService.validateParam("status", AdsDto_.status, "string")
         if (ceck_status != "") {
@@ -769,17 +769,17 @@ export class AdsController {
                     AdsBalaceCreditDto_.description = "ADS CREATION";
 
                     const getUserVoucher = await this.uservouchersService.findUserVouchers(ads.userID.toString());
-                    
+
                     let buyAds = ads.credit;
-                    if (await this.utilsService.ceckData(getUserVoucher)){
-                        for (let i = 0; i < getUserVoucher.length;i++){
+                    if (await this.utilsService.ceckData(getUserVoucher)) {
+                        for (let i = 0; i < getUserVoucher.length; i++) {
                             let sisaKredit = Number(getUserVoucher[i].totalCredit) - Number(getUserVoucher[i].usedCredit);
-                            if (buyAds <= sisaKredit){
+                            if (buyAds <= sisaKredit) {
                                 let CreateUservouchersDto_ = new CreateUservouchersDto();
                                 CreateUservouchersDto_.usedCredit = Number(getUserVoucher[i].usedCredit) + Number(buyAds);
                                 await this.uservouchersService.update(getUserVoucher[i]._id.toString(), CreateUservouchersDto_);
                                 break;
-                            }else{
+                            } else {
                                 buyAds = buyAds - sisaKredit;
                                 let CreateUservouchersDto_ = new CreateUservouchersDto();
                                 CreateUservouchersDto_.usedCredit = Number(getUserVoucher[i].usedCredit) + Number(sisaKredit);
@@ -839,7 +839,7 @@ export class AdsController {
     async getOne(@Param('id') id: string, @Headers() headers, @Request() req): Promise<any> {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
-        
+
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
@@ -920,7 +920,7 @@ export class AdsController {
     @UseGuards(JwtAuthGuard)
     @Post('/dashboard')
     @HttpCode(HttpStatus.ACCEPTED)
-    async dashboard(@Body() body: any,@Headers() headers, @Request() req) {
+    async dashboard(@Body() body: any, @Headers() headers, @Request() req) {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
         var reqbody = JSON.parse(JSON.stringify(body));
@@ -981,7 +981,7 @@ export class AdsController {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
         var reqbody = JSON.parse(JSON.stringify(body));
-        
+
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
@@ -1224,7 +1224,7 @@ export class AdsController {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
         var reqbody = JSON.parse(JSON.stringify(body));
-        
+
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
@@ -1370,7 +1370,7 @@ export class AdsController {
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
-            
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
@@ -1440,7 +1440,7 @@ export class AdsController {
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
-            
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
@@ -1448,7 +1448,7 @@ export class AdsController {
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
-            
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed email header dan token not match',
             );
@@ -1629,6 +1629,11 @@ export class AdsController {
             data_response['email'] = data_userbasic_ads.email;
             data_response['username'] = data_ads[0].username;
             data_response['avartar'] = data_ads[0].avatar;
+            data_response['scoreUmur'] = data_ads[0].scoreUmur;
+            data_response['scoreKelamin'] = data_ads[0].scoreKelamin;
+            data_response['scoreMinat'] = data_ads[0].scoreMinat;
+            data_response['scoreGeografis'] = data_ads[0].scoreGeografis;
+            data_response['scoreTotal'] = data_ads[0].scoreTotal;
             // if (await this.utilsService.ceckData(get_profilePict)) {
             //     data_response['avartar'] = {
             //         mediaBasePath: (get_profilePict.mediaBasePath != undefined) ? get_profilePict.mediaBasePath : null,
@@ -1682,7 +1687,7 @@ export class AdsController {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Ads not found'
             );
-        } 
+        }
     }
 
     @UseGuards(JwtAuthGuard)
@@ -1692,7 +1697,7 @@ export class AdsController {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
         var reqbody = JSON.parse(JSON.stringify(AdsAction_));
-        
+
         //Current Date
         var current_date = await this.utilsService.getDateTimeString();
 
@@ -1881,7 +1886,7 @@ export class AdsController {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
         var reqbody = JSON.parse(JSON.stringify(AdsAction_));
-        
+
         //Current Date
         var current_date_string = await this.utilsService.getDateTimeString();
         var current_date = await this.utilsService.getDateTime();
@@ -2103,7 +2108,7 @@ export class AdsController {
         @Query('x-auth-user') email: string, @Res() response, @Request() req) {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
-        
+
         if ((id != undefined) && (token != undefined) && (email != undefined)) {
             if (await this.utilsService.validasiTokenEmailParam(token, email)) {
                 var dataAds = await this.adsService.findOne(id);
@@ -2252,7 +2257,7 @@ export class AdsController {
     async getLocation(@Headers() headers, @Request() req): Promise<any> {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
-        
+
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
@@ -2282,7 +2287,7 @@ export class AdsController {
         } catch (e) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
-            
+
             await this.errorHandler.generateInternalServerErrorException(
                 'Unabled to proceed, ERROR ' + e,
             );

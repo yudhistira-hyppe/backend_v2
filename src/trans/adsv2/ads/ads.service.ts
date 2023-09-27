@@ -92,13 +92,13 @@ export class AdsService {
             paramaggregate.push(ObjectMatch)
         }
         paramaggregate.push({
-                $lookup: {
-                    from: "userbasics",
-                    localField: "userID",
-                    foreignField: "_id",
-                    as: "userbasics_data"
-                }
-            },
+            $lookup: {
+                from: "userbasics",
+                localField: "userID",
+                foreignField: "_id",
+                as: "userbasics_data"
+            }
+        },
             {
                 $lookup: {
                     from: "adstypes",
@@ -3111,7 +3111,7 @@ export class AdsService {
                                                     $ifNull: [
                                                         { "$arrayElemAt": ["$userAdsArea._id", "$$this"] },
                                                         "Lainnya"
-                                                    ] 
+                                                    ]
                                                 },
                                                 "count": {
                                                     "$arrayElemAt": ["$userAdsArea.areasCount", "$$this"]
@@ -3401,60 +3401,60 @@ export class AdsService {
         var query = await this.adsModel.aggregate(
             [{
                 $match
-        }, {
-            "$project": {
-                "status": {
-                    "$switch": {
-                        "branches": [{
-                            "case": {
-                                "$eq": ["$status", "DRAFT"]
-                            },
-                            "then": "DRAFT"
-                        }, {
-                            "case": {
-                                "$or": [{
-                                    "$eq": ["$status", "FINISH"]
-                                }, {
-                                    "$eq": ["$status", "IN_ACTIVE"]
-                                }, {
-                                    "$eq": ["$status", "REPORTED"]
-                                }]
-                            },
-                            "then": "IN_ACTIVE"
-                        }, {
-                            "case": {
-                                "$or": [{
-                                    "$eq": ["$status", "APPROVE"]
-                                }, {
-                                    "$eq": ["$status", "ACTIVE"]
-                                }]
-                            },
-                            "then": "ACTIVE"
-                        }, {
-                            "case": {
-                                "$eq": ["$status", "UNDER_REVIEW"]
-                            },
-                            "then": "UNDER_REVIEW"
-                        }],
-                        "default": "OTHER"
-                    }
-                }
-            }
-        }, {
-            "$facet": {
-                "status": [{
-                    "$group": {
-                        "_id": "$status",
-                        "status": {
-                            "$first": "$status"
-                        },
-                        "count": {
-                            "$sum": 1
+            }, {
+                "$project": {
+                    "status": {
+                        "$switch": {
+                            "branches": [{
+                                "case": {
+                                    "$eq": ["$status", "DRAFT"]
+                                },
+                                "then": "DRAFT"
+                            }, {
+                                "case": {
+                                    "$or": [{
+                                        "$eq": ["$status", "FINISH"]
+                                    }, {
+                                        "$eq": ["$status", "IN_ACTIVE"]
+                                    }, {
+                                        "$eq": ["$status", "REPORTED"]
+                                    }]
+                                },
+                                "then": "IN_ACTIVE"
+                            }, {
+                                "case": {
+                                    "$or": [{
+                                        "$eq": ["$status", "APPROVE"]
+                                    }, {
+                                        "$eq": ["$status", "ACTIVE"]
+                                    }]
+                                },
+                                "then": "ACTIVE"
+                            }, {
+                                "case": {
+                                    "$eq": ["$status", "UNDER_REVIEW"]
+                                },
+                                "then": "UNDER_REVIEW"
+                            }],
+                            "default": "OTHER"
                         }
                     }
-                }]
-            }
-        }]
+                }
+            }, {
+                "$facet": {
+                    "status": [{
+                        "$group": {
+                            "_id": "$status",
+                            "status": {
+                                "$first": "$status"
+                            },
+                            "count": {
+                                "$sum": 1
+                            }
+                        }
+                    }]
+                }
+            }]
         );
         console.log(JSON.stringify([{
             $match
@@ -4782,14 +4782,14 @@ export class AdsService {
                         from: "userbasics",
                         as: "userBasic",
                         let: {
-                            localID: '$userID'
+                            localID: '$email'
                         },
                         pipeline: [
                             {
                                 $match:
                                 {
                                     $expr: {
-                                        $eq: ['$_id', '$$localID']
+                                        $eq: ['$email', '$$localID']
                                     }
                                 }
                             },
@@ -4864,6 +4864,68 @@ export class AdsService {
                                 }
                             },
                             {
+                                $project: {
+                                    balances: {
+                                        $arrayElemAt: ["$balances", 0]
+                                    },
+                                    debet: {
+                                        $arrayElemAt: ["$balances.debet", 0]
+                                    },
+                                    kredit: {
+                                        $arrayElemAt: ["$balances.kredit", 0]
+                                    },
+                                    total: {
+                                        $arrayElemAt: ["$balances.total", 0]
+                                    },
+                                    "email": 1,
+
+                                    "userInterests": 1,
+                                    "states": ["$states"],
+                                    "gender": ["$gender"],
+                                    "age":
+                                    {
+                                        $cond: {
+                                            if: {
+                                                $and: ['$dob', {
+                                                    $ne: ["$dob", ""]
+                                                }]
+                                            },
+                                            then: {
+                                                $toInt: {
+                                                    $divide: [{
+                                                        $subtract: [new Date(), {
+                                                            $toDate: "$dob"
+                                                        }]
+                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                }
+                                            },
+                                            else: 0
+                                        }
+                                    },
+
+                                }
+                            }
+                        ],
+
+                    }
+                },
+                {
+                    "$lookup": {
+                        from: "userbasics",
+                        as: "userBasicAds",
+                        let: {
+                            localID: '$userID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $expr: {
+                                        $eq: ['$_id', '$$localID']
+                                    }
+                                }
+                            },
+                            {
                                 "$lookup":
                                 {
                                     from: "userauths",
@@ -4900,18 +4962,7 @@ export class AdsService {
                             },
                             {
                                 $project: {
-                                    balances: {
-                                        $arrayElemAt: ["$balances", 0]
-                                    },
-                                    debet: {
-                                        $arrayElemAt: ["$balances.debet", 0]
-                                    },
-                                    kredit: {
-                                        $arrayElemAt: ["$balances.kredit", 0]
-                                    },
-                                    total: {
-                                        $arrayElemAt: ["$balances.total", 0]
-                                    },
+
                                     "email": 1,
                                     "userName":
                                     {
@@ -4933,29 +4984,6 @@ export class AdsService {
                                                 ]
                                         }
                                     },
-                                    "userInterests": 1,
-                                    "states": ["$states"],
-                                    "gender": ["$gender"],
-                                    "age":
-                                    {
-                                        $cond: {
-                                            if: {
-                                                $and: ['$dob', {
-                                                    $ne: ["$dob", ""]
-                                                }]
-                                            },
-                                            then: {
-                                                $toInt: {
-                                                    $divide: [{
-                                                        $subtract: [new Date(), {
-                                                            $toDate: "$dob"
-                                                        }]
-                                                    }, (365 * 24 * 60 * 60 * 1000)]
-                                                }
-                                            },
-                                            else: 0
-                                        }
-                                    },
 
                                 }
                             }
@@ -4966,6 +4994,12 @@ export class AdsService {
                 {
                     $unwind: {
                         path: "$userBasic",
+                        "preserveNullAndEmptyArrays": true
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$userBasicAds",
                         "preserveNullAndEmptyArrays": true
                     }
                 },
@@ -5438,8 +5472,14 @@ export class AdsService {
                     }
                 },
                 {
+                    $set: {
+                        priorityViewed: "$adsUser.viewed"
+                    }
+                },
+                {
                     $sort: {
                         isValid: 1,
+                        priorityViewed: 1,
                         sorts: - 1,
                         priority: 1,
                         scoreTotal: - 1
@@ -5618,9 +5658,9 @@ export class AdsService {
                     $project: {
                         balances: "$userBasic.balances",
                         totalSaldo: "$userBasic.balances.total",
-                        username: "$userBasic.userName",
-                        avatar: "$userBasic.avatar",
-                        email: "$userBasic.email",
+                        username: "$userBasicAds.userName",
+                        avatar: "$userBasicAds.avatar",
+                        email: "$userBasicAds.email",
                         ctaNames: {
                             $arrayElemAt: ["$cta.value", "$ctaButton"]
                         },
@@ -5669,7 +5709,10 @@ export class AdsService {
                         isValid: 1,
                         objectivitasId: "$objectivitas.name_id",
                         objectivitasEn: "$objectivitas.name_en",
-
+                        "mediaBasePath": 1,
+                        "mediaUri": 1,
+                        "mediaThumBasePath": 1,
+                        "mediaThumUri": 1
                     }
                 },
 
