@@ -30,7 +30,7 @@ import { ChallengeService } from 'src/trans/challenge/challenge.service';
 import { TagCountService } from 'src/content/tag_count/tag_count.service';
 import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
 import { Postchallenge } from 'src/trans/postchallenge/schemas/postchallenge.schema';
-import { LogapisService } from 'src/trans/logapis/logapis.service'; 
+import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { logApis } from 'src/trans/logapis/schema/logapis.schema';
 @Controller()
 export class ContenteventsController {
@@ -54,7 +54,7 @@ export class ContenteventsController {
     private readonly tagCountService: TagCountService,
     private readonly postchallengeService: PostchallengeService,
     private readonly errorHandler: ErrorHandler,
-    private readonly logapiSS : LogapisService) { }
+    private readonly logapiSS: LogapisService) { }
 
   @Post('api/contentevents')
   async create(@Body() CreateContenteventsDto: CreateContenteventsDto) {
@@ -176,9 +176,9 @@ export class ContenteventsController {
   @Get('api/friend/:email')
   async friend(@Param('email') email: string, @Headers() headers, @Req() req) {
     var timestamps_start = await this.utilsService.getDateTimeString();
-    
+
     var data = await this.contenteventsService.friend(email, headers);
-    
+
     var fullurl = req.get("Host") + req.originalUrl;
     var timestamps_end = await this.utilsService.getDateTimeString();
     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
@@ -1031,14 +1031,14 @@ export class ContenteventsController {
           await this.insightsService.updateFollowing(email_user);
           this.sendInteractiveFCM(email_receiverParty, "FOLLOWER", "", email_user);
           //  this.sendInteractiveFCM(email_user, "FOLLOWING", "", email_receiverParty);
-          // const databasic = await this.userbasicsService.findOne(
-          //   email_user
-          // );
-          // var iduser = null;
-          // if (databasic !== null) {
-          //   iduser = databasic._id;
-          //   this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
-          // }
+          const databasic = await this.userbasicsService.findOne(
+            email_user
+          );
+          var iduser = null;
+          if (databasic !== null) {
+            iduser = databasic._id;
+            this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
+          }
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
@@ -1061,14 +1061,14 @@ export class ContenteventsController {
           let event1 = ceck_data_FOLLOWING.eventType.toString();
           //  await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
 
-          // const databasic = await this.userbasicsService.findOne(
-          //   email_user
-          // );
-          // var iduser = null;
-          // if (databasic !== null) {
-          //   iduser = databasic._id;
-          //   this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
-          // }
+          const databasic = await this.userbasicsService.findOne(
+            email_user
+          );
+          var iduser = null;
+          if (databasic !== null) {
+            iduser = databasic._id;
+            this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
+          }
 
 
         }
