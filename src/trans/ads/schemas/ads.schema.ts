@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
 import mongoose, { Document } from 'mongoose';
 
 export type AdsDocument = Ads & Document;
@@ -177,6 +176,8 @@ export class Ads {
     width: number;
     @Prop()
     height: number;
+    @Prop()
+    idAdspricecredits: mongoose.Types.ObjectId;
 }
 
 export const AdsSchema = SchemaFactory.createForClass(Ads);
