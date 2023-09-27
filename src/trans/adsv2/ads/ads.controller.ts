@@ -955,7 +955,7 @@ export class AdsController {
         }
 
         try {
-            const ads_dashboard = await this.adsService.dashboard(start_date, end_date);
+            const ads_dashboard = await this.adsService.dashboard2(start_date, end_date);
 
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
@@ -1014,55 +1014,55 @@ export class AdsController {
 
         try {
             let ads_campaign_dashboard = await this.adsService.campaignDashboard(body.userId, start_date, end_date);
-            let ads_status_campaign_dashboard = await this.adsService.getAdsSatus(body.userId, start_date, end_date);
-            if (await this.utilsService.ceckData(ads_campaign_dashboard)) {
-                if (ads_campaign_dashboard.length > 0) {
-                    ads_campaign_dashboard = ads_campaign_dashboard[0];
-                    ads_campaign_dashboard.statusIklan = ads_status_campaign_dashboard[0].status;
-                }
-            }
-            for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {
-                var DateFormat = await this.utilsService.consvertDateTimeString(new Date(d));
-                const isFoundreach = ads_campaign_dashboard.reach.some(element => {
-                    if (element._id === DateFormat) {
-                        return true;
-                    }
-                    return false;
-                });
-                if (!isFoundreach) {
-                    ads_campaign_dashboard.reach.push({
-                        "_id": DateFormat,
-                        "reachView": 0
-                    })
-                }
-                const isFoundimpresi = ads_campaign_dashboard.impresi.some(element => {
-                    if (element._id === DateFormat) {
-                        return true;
-                    }
-                    return false;
-                });
-                if (!isFoundimpresi) {
-                    ads_campaign_dashboard.impresi.push({
-                        "_id": DateFormat,
-                        "impresiView": 0
-                    })
-                }
-                const isFoundCTA = ads_campaign_dashboard.CTA.some(element => {
-                    if (element._id === DateFormat) {
-                        return true;
-                    }
-                    return false;
-                });
-                if (!isFoundCTA) {
-                    ads_campaign_dashboard.CTA.push({
-                        "_id": DateFormat,
-                        "CTACount": 0
-                    })
-                }
-            }
+            //let ads_status_campaign_dashboard = await this.adsService.getAdsSatus(body.userId, start_date, end_date);
+            // if (await this.utilsService.ceckData(ads_campaign_dashboard)) {
+            //     if (ads_campaign_dashboard.length > 0) {
+            //         ads_campaign_dashboard = ads_campaign_dashboard[0];
+            //         ads_campaign_dashboard.statusIklan = ads_status_campaign_dashboard[0].status;
+            //     }
+            // }
+            // for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {
+            //     var DateFormat = await this.utilsService.consvertDateTimeString(new Date(d));
+            //     const isFoundreach = ads_campaign_dashboard.reach.some(element => {
+            //         if (element._id === DateFormat) {
+            //             return true;
+            //         }
+            //         return false;
+            //     });
+            //     if (!isFoundreach) {
+            //         ads_campaign_dashboard.reach.push({
+            //             "_id": DateFormat,
+            //             "reachView": 0
+            //         })
+            //     }
+            //     const isFoundimpresi = ads_campaign_dashboard.impresi.some(element => {
+            //         if (element._id === DateFormat) {
+            //             return true;
+            //         }
+            //         return false;
+            //     });
+            //     if (!isFoundimpresi) {
+            //         ads_campaign_dashboard.impresi.push({
+            //             "_id": DateFormat,
+            //             "impresiView": 0
+            //         })
+            //     }
+            //     const isFoundCTA = ads_campaign_dashboard.CTA.some(element => {
+            //         if (element._id === DateFormat) {
+            //             return true;
+            //         }
+            //         return false;
+            //     });
+            //     if (!isFoundCTA) {
+            //         ads_campaign_dashboard.CTA.push({
+            //             "_id": DateFormat,
+            //             "CTACount": 0
+            //         })
+            //     }
+            // }
 
-            var timestamps_end = await this.utilsService.getDateTimeString();
-            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+            // var timestamps_end = await this.utilsService.getDateTimeString();
+            // this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
 
             return await this.errorHandler.generateAcceptResponseCodeWithData(
                 "Get Ads Campaign Dashboard succesfully", ads_campaign_dashboard,
@@ -1396,8 +1396,21 @@ export class AdsController {
         }
         body.type_ads = array_type_ads;
 
+        //----------------START DATE----------------
+        var start_date = null;
+        if (body.start_date != undefined) {
+            start_date = new Date(body.start_date);
+        }
+
+        //----------------END DATE----------------
+        var end_date = null;
+        if (body.end_date != undefined) {
+            end_date = new Date(body.end_date);
+            end_date = new Date(end_date.setDate(end_date.getDate() + 1));
+        }
+
         try {
-            const ads_dashboard = await this.adsService.list(body.userId, body.name_ads, body.start_date, body.end_date, body.type_ads, body.plan_ads, body.status_list, body.page, body.limit, body.sorting);
+            const ads_dashboard = await this.adsService.list(body.userId, body.name_ads, start_date, end_date, body.type_ads, body.plan_ads, body.status_list, body.page, body.limit, body.sorting);
 
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);

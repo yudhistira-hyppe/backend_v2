@@ -333,22 +333,6 @@ export class AdsService {
                     totCredit: 1,
                     adsObjectivitas: "$adsObjectivitasId",
                     adsPlanShows: "$tayangQualication",
-                    // totalCredit: {
-                    //     "$let": {
-                    //         "vars": {
-                    //             "tmp": { "$arrayElemAt": ["$totalCredit", 0] },
-                    //         },
-                    //         "in": "$$tmp.sum_val"
-                    //     }
-                    // },
-                    // creditPrice: {
-                    //     "$let": {
-                    //         "vars": {
-                    //             "tmp": { "$arrayElemAt": ["$creditPrice", 0] },
-                    //         },
-                    //         "in": "$$tmp._id"
-                    //     }
-                    // },
                 }
             },
             {
@@ -487,7 +471,8 @@ export class AdsService {
                         }
                     }
                 }
-            },);
+            },
+            );
         let query = await this.adsModel.aggregate(paramaggregate);
         return query;
 
@@ -495,6 +480,10 @@ export class AdsService {
 
     async campaignDashboard(userId: string, start_date: any, end_date: any): Promise<any> {
         return await this.userAdsService.campaignDashboard(userId, start_date, end_date);
+    }
+
+    async dashboard2(start_date: any, end_date: any): Promise<any> {
+        return await this.userAdsService.Dashboard(start_date, end_date);
     }
 
     async campaignDetail(adsId: string): Promise<any> {
@@ -3543,9 +3532,6 @@ export class AdsService {
         });
         //------------FILTER DATE START END------------
         if (start_date != undefined && end_date != undefined) {
-            start_date = new Date(start_date);
-            end_date = new Date(end_date);
-            end_date.setDate(end_date.getDate() + 1);
             // $match["liveAt"] = {
             //     $gte: start_date.toISOString(),
             //     $lte: end_date.toISOString()
@@ -3646,35 +3632,35 @@ export class AdsService {
         paramaggregate.push({ $match });
         //------------FACET VIEWED------------
         var viewedFacet = [];
-        if (start_date != undefined && end_date != undefined) {
-            viewedFacet.push({
-                $match: {
-                    viewTime: {
-                        $elemMatch: {
-                            $gte: start_date.toISOString(),
-                            $lte: end_date.toISOString()
-                        }
-                    }
-                }
-            });
-        }
+        // if (start_date != undefined && end_date != undefined) {
+        //     viewedFacet.push({
+        //         $match: {
+        //             updateAt: {
+        //                 $elemMatch: {
+        //                     $gte: start_date.toISOString(),
+        //                     $lte: end_date.toISOString()
+        //                 }
+        //             }
+        //         }
+        //     });
+        // }
         viewedFacet.push({
             $unwind:
             {
-                path: "$viewTime",
-                includeArrayIndex: 'viewTime_index',
+                path: "$updateAt",
+                includeArrayIndex: 'updateAt_index',
             }
         });
-        if (start_date != undefined && end_date != undefined) {
-            viewedFacet.push({
-                $match: {
-                    viewTime: {
-                        $gte: start_date.toISOString(),
-                        $lte: end_date.toISOString()
-                    }
-                }
-            });
-        }
+        // if (start_date != undefined && end_date != undefined) {
+        //     viewedFacet.push({
+        //         $match: {
+        //             updateAt: {
+        //                 $gte: start_date.toISOString(),
+        //                 $lte: end_date.toISOString()
+        //             }
+        //         }
+        //     });
+        // }
         viewedFacet.push({
             $group: {
                 _id: "$userID",
@@ -3697,18 +3683,18 @@ export class AdsService {
             });
         //------------FACET CTA------------
         var CTACountFacet = [];
-        if (start_date != undefined && end_date != undefined) {
-            CTACountFacet.push({
-                $match: {
-                    clickTime: {
-                        $elemMatch: {
-                            $gte: start_date.toISOString(),
-                            $lte: end_date.toISOString()
-                        }
-                    }
-                }
-            });
-        }
+        // if (start_date != undefined && end_date != undefined) {
+        //     CTACountFacet.push({
+        //         $match: {
+        //             clickTime: {
+        //                 $elemMatch: {
+        //                     $gte: start_date.toISOString(),
+        //                     $lte: end_date.toISOString()
+        //                 }
+        //             }
+        //         }
+        //     });
+        // }
         CTACountFacet.push({
             $unwind:
             {
@@ -3716,16 +3702,16 @@ export class AdsService {
                 includeArrayIndex: 'clickTime_index',
             }
         });
-        if (start_date != undefined && end_date != undefined) {
-            CTACountFacet.push({
-                $match: {
-                    clickTime: {
-                        $gte: start_date.toISOString(),
-                        $lte: end_date.toISOString()
-                    }
-                }
-            });
-        }
+        // if (start_date != undefined && end_date != undefined) {
+        //     CTACountFacet.push({
+        //         $match: {
+        //             clickTime: {
+        //                 $gte: start_date.toISOString(),
+        //                 $lte: end_date.toISOString()
+        //             }
+        //         }
+        //     });
+        // }
         CTACountFacet.push({
             $project: {
                 clickTime: {
@@ -4067,7 +4053,7 @@ export class AdsService {
                 "$limit": limit
             });
         }
-        console.log(paramaggregate);
+        console.log(JSON.stringify(paramaggregate));
         var query = await this.adsModel.aggregate(paramaggregate);
 
         var listdata = [];

@@ -3196,7 +3196,8 @@ export class UserAdsService {
                     _id: "$_id",
                     reachView: { $size: "$viewTime" }
                 }
-            });
+            }
+        );
 
         //------------FACET IMPRESI------------
         var impresiFacet = [];
@@ -3430,14 +3431,14 @@ export class UserAdsService {
             {
             $unwind:
             {
-                    path: "$viewTime",
-                    includeArrayIndex: 'viewTime_index',
+                    path: "$updateAt",
+                    includeArrayIndex: 'updateAt_index',
             }
         });
         if (start_date != undefined && end_date != undefined) {
             viewTimeFacet.push({
                 $match: {
-                    viewTime: {
+                    updateAt: {
                         $gte: start_date.toISOString(),
                         $lte: end_date.toISOString()
                     }
@@ -3762,18 +3763,838 @@ export class UserAdsService {
                 ],
             }
         },
+        {
+            $project: {
+                // statusIklan: {
+                //     "$arrayElemAt": [{
+                //         "$let": {
+                //             "vars": {
+                //                 "tmp": { "$arrayElemAt": ["$status", 0] },
+                //             },
+                //             "in": "$$tmp.data.status"
+                //         }
+                //     }, 0]
+                // },
+                saldoKredit: {
+                    $sum: [
+                        {
+                            $convert: {
+                                input: { "$arrayElemAt": ['$viewTime.count', 0] },
+                                to: "int",
+                                onError: 0,
+                                onNull: 0
+                            }
+                        },
+                        {
+                            $convert: {
+                                input: { "$arrayElemAt": ['$clickTime.count', 0] },
+                                to: "int",
+                                onError: 0,
+                                onNull: 0
+                            }
+                        }
+                    ]
+                },
+                Totalimpresi: {
+                    "$let": {
+                        "vars": {
+                            "tmp": { "$arrayElemAt": ["$viewed", 0] },
+                        },
+                        "in": "$$tmp.impresi"
+                    }
+                },
+                Totalreach: {
+                    "$let": {
+                        "vars": {
+                            "tmp": { "$arrayElemAt": ["$viewed", 0] },
+                        },
+                        "in": "$$tmp.reach"
+                    }
+                },
+                TotalCTA: {
+                    "$let": {
+                        "vars": {
+                            "tmp": { "$arrayElemAt": ["$CTACount", 0] },
+                        },
+                        "in": "$$tmp.CTACount"
+                    }
+                },
+                impresi: 1,
+                reach: 1,
+                CTA: 1
+            }
+        }
+        );
+        //console.log(JSON.stringify(aggregateData));
+        let query = await this.userAdsModel.aggregate(aggregateData);
+        return query;
+    }
+
+    async Dashboard(start_date: any, end_date: any) {
+        var pipelineMatch = [];
+        if (start_date != null && end_date != null) {
+            var andExpr = [];
+            andExpr.push({ $gte: ["$timestamp", start_date] });
+            andExpr.push({ $lte: ["$timestamp", end_date] });
+            pipelineMatch.push({
+                $match:
+                {
+                    $expr: {
+                        $and: andExpr
+                    }
+                },
+            })
+        }
+        pipelineMatch.push(
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "userID",
+                    foreignField: "_id",
+                    as: "userbasics_data"
+                }
+            },
+            {
+                $lookup: {
+                    from: "adstypes",
+                    localField: "typeAdsID",
+                    foreignField: "_id",
+                    as: "adstypes_data"
+                }
+            },
+            {
+                $lookup: {
+                    from: "adsobjectivitas",
+                    localField: "adsObjectivitasId",
+                    foreignField: "_id",
+                    as: "adsobjectivitas_data"
+                }
+            },
+            {
+                $lookup: {
+                    from: "adspricecredits",
+                    localField: "idAdspricecredits",
+                    foreignField: "_id",
+                    as: "adspricecredits_data"
+                }
+            },
             {
                 $project: {
-                    // statusIklan: {
-                    //     "$arrayElemAt": [{
-                    //         "$let": {
-                    //             "vars": {
-                    //                 "tmp": { "$arrayElemAt": ["$status", 0] },
-                    //             },
-                    //             "in": "$$tmp.data.status"
-                    //         }
-                    //     }, 0]
-                    // },
+                    _id: 1,
+                    creditPrice: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$adspricecredits_data", 0] },
+                            },
+                            "in": "$$tmp.creditPrice"
+                        }
+                    },
+                    name: 1,
+                    userID: 1,
+                    status: 1,
+                    fullName: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.fullName"
+                        }
+                    },
+                    typeAdsID: 1,
+                    nameType: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
+                            },
+                            "in": "$$tmp.nameType"
+                        }
+                    },
+                    adsObjectivitasId: 1,
+                    name_id: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$adsobjectivitas_data", 0] },
+                            },
+                            "in": "$$tmp.name_id"
+                        }
+                    },
+                    name_en: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$adsobjectivitas_data", 0] },
+                            },
+                            "in": "$$tmp.name_en"
+                        }
+                    },
+                    tayangQualication: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $lt: ["$tayang", 50]
+                                    },
+                                    then: "<50"
+                                },
+                                {
+                                    case: {
+                                        $and: [{
+                                            $gte: ["$tayang", 50]
+                                        }, {
+                                            $lte: ["$tayang", 99]
+                                        }]
+                                    },
+                                    then: "50 - 99"
+                                },
+                                {
+                                    case: {
+                                        $and: [{
+                                            $gte: ["$tayang", 100]
+                                        }, {
+                                            $lte: ["$tayang", 500]
+                                        }]
+                                    },
+                                    then: "100 - 500"
+                                },
+                                {
+                                    case: {
+                                        $and: [{
+                                            $gt: ["$tayang", 500]
+                                        }]
+                                    },
+                                    then: ">500"
+                                },
+                            ],
+                            "default": "Other"
+                        }
+                    },
+                    credit: 1
+                }
+            },
+            {
+                $facet:
+                {
+                    user: [
+                        {
+                            $group: {
+                                _id: "$userID",
+                                email: { $first: '$email' },
+                                fullName: { $first: '$fullName' },
+                                count: { $sum: 1 }
+                            }
+                        }
+                    ],
+                    iklan: [
+                        {
+                            $group: {
+                                _id: "$_id",
+                                name: { $first: '$name' },
+                                count: { $sum: 1 }
+                            }
+                        }
+                    ],
+                    typeAdsID: [
+                        {
+                            $match: {
+                                status: "ACTIVE",
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$typeAdsID",
+                                nameType: { $first: '$nameType' },
+                                count: { $sum: 1 }
+                            }
+                        }
+                    ],
+                    status: [
+                        {
+                            $group: {
+                                _id: "$status",
+                                status: { $first: '$status' },
+                                count: { $sum: 1 }
+                            }
+                        }
+                    ],
+                    adsObjectivitasId: [
+                        {
+                            $match: {
+                                status: "ACTIVE",
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$adsObjectivitasId",
+                                name_id: { $first: '$name_id' },
+                                name_en: { $first: '$name_en' },
+                                count: { $sum: 1 }
+                            }
+                        }
+                    ],
+                    tayangQualication: [
+                        {
+                            $match: {
+                                status: "ACTIVE",
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$tayangQualication",
+                                count: { $sum: 1 }
+                            }
+                        }
+                    ],
+                    totalCredit: [
+                        {
+                            $group: {
+                                _id: null,
+                                sum_val: { $sum: "$credit" },
+                                count: { $sum: 1 }
+                            }
+                        }
+                    ],
+                    creditPrice: [
+                        {
+                            $group: {
+                                _id: "$creditPrice",
+                                count: { $sum: 1 }
+                            }
+                        }
+                    ],
+                }
+            },
+            {
+                $project: {
+                    totalAds: { $size: "$iklan" },
+                    totalAdvertisers: { $size: "$user" },
+                    statusAds: "$status",
+                    creditPrice: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$creditPrice", 0] },
+                            },
+                            "in": "$$tmp._id"
+                        }
+                    },
+                    totalIncome: {
+                        $multiply: [{
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$totalCredit", 0] },
+                                },
+                                "in": "$$tmp.sum_val"
+                            }
+                        }, {
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$creditPrice", 0] },
+                                },
+                                "in": "$$tmp._id"
+                            }
+                        }]
+                    },
+                    adsType: "$typeAdsID",
+                    totCredit: 1,
+                    adsObjectivitas: "$adsObjectivitasId",
+                    adsPlanShows: "$tayangQualication",
+                }
+            },
+            {
+                "$addFields": {
+                    "adsType": {
+                        "$map": {
+                            "input": { "$range": [0, { "$size": "$adsType" }] },
+                            "in": {
+                                "_id": {
+                                    "$arrayElemAt": ["$adsType._id", "$$this"]
+                                },
+                                "count": {
+                                    "$arrayElemAt": ["$adsType.count", "$$this"]
+                                },
+                                "nameType": {
+                                    "$arrayElemAt": ["$adsType.nameType", "$$this"]
+                                },
+                                "persentase": {
+                                    "$multiply": [{
+                                        "$divide": [{
+                                            "$arrayElemAt": ["$adsType.count", "$$this"]
+                                        }, "$totalAds"]
+                                    }, 100]
+                                },
+                                "persentaseText": {
+                                    "$concat": [{
+                                        "$toString": {
+                                            "$multiply": [{
+                                                "$divide": [{
+                                                    "$arrayElemAt": ["$adsType.count", "$$this"]
+                                                }, "$totalAds"]
+                                            }, 100]
+                                        }
+                                    }, "", "%"]
+                                }
+                            }
+                        }
+                    },
+                    "adsObjectivitas": {
+                        "$map": {
+                            "input": { "$range": [0, { "$size": "$adsObjectivitas" }] },
+                            "in": {
+                                "_id": {
+                                    "$arrayElemAt": ["$adsObjectivitas._id", "$$this"]
+                                },
+                                "count": {
+                                    "$arrayElemAt": ["$adsObjectivitas.count", "$$this"]
+                                },
+                                "name_id": {
+                                    "$arrayElemAt": ["$adsObjectivitas.name_id", "$$this"]
+                                },
+                                "name_en": {
+                                    "$arrayElemAt": ["$adsObjectivitas.name_en", "$$this"]
+                                },
+                                "persentase": {
+                                    "$multiply": [{
+                                        "$divide": [{
+                                            "$arrayElemAt": ["$adsObjectivitas.count", "$$this"]
+                                        }, "$totalAds"]
+                                    }, 100]
+                                },
+                                "persentaseText": {
+                                    "$concat": [{
+                                        "$toString": {
+                                            "$multiply": [{
+                                                "$divide": [{
+                                                    "$arrayElemAt": ["$adsObjectivitas.count", "$$this"]
+                                                }, "$totalAds"]
+                                            }, 100]
+                                        }
+                                    }, "", "%"]
+                                }
+                            }
+                        }
+                    },
+                    "adsPlanShows": {
+                        "$map": {
+                            "input": { "$range": [0, { "$size": "$adsPlanShows" }] },
+                            "in": {
+                                "name": {
+                                    "$arrayElemAt": ["$adsPlanShows._id", "$$this"]
+                                },
+                                "count": {
+                                    "$arrayElemAt": ["$adsPlanShows.count", "$$this"]
+                                },
+                                "persentase": {
+                                    "$multiply": [{
+                                        "$divide": [{
+                                            "$arrayElemAt": ["$adsPlanShows.count", "$$this"]
+                                        }, "$totalAds"]
+                                    }, 100]
+                                },
+                                "persentaseText": {
+                                    "$concat": [{
+                                        "$toString": {
+                                            "$multiply": [{
+                                                "$divide": [{
+                                                    "$arrayElemAt": ["$adsPlanShows.count", "$$this"]
+                                                }, "$totalAds"]
+                                            }, 100]
+                                        }
+                                    }, "", "%"]
+                                }
+                            }
+                        }
+                    },
+                    "statusAds": {
+                        "$map": {
+                            "input": { "$range": [0, { "$size": "$statusAds" }] },
+                            "in": {
+                                "name": {
+                                    "$arrayElemAt": ["$statusAds._id", "$$this"]
+                                },
+                                "count": {
+                                    "$arrayElemAt": ["$statusAds.count", "$$this"]
+                                },
+                                "persentase": {
+                                    "$multiply": [{
+                                        "$divide": [{
+                                            "$arrayElemAt": ["$statusAds.count", "$$this"]
+                                        }, "$totalAds"]
+                                    }, 100]
+                                },
+                                "persentaseText": {
+                                    "$concat": [{
+                                        "$toString": {
+                                            "$multiply": [{
+                                                "$divide": [{
+                                                    "$arrayElemAt": ["$statusAds.count", "$$this"]
+                                                }, "$totalAds"]
+                                            }, 100]
+                                        }
+                                    }, "", "%"]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+        );
+
+        //------------FACET VIEWED------------
+        var viewedFacet = [];
+        if (start_date != undefined && end_date != undefined) {
+            viewedFacet.push({
+                $match: {
+                    updateAt: {
+                        $elemMatch: {
+                            $gte: start_date.toISOString(),
+                            $lte: end_date.toISOString()
+                        }
+                    }
+                }
+            });
+        }
+        viewedFacet.push({
+            $unwind:
+            {
+                path: "$updateAt",
+                includeArrayIndex: 'updateAt_index',
+            }
+        });
+        if (start_date != undefined && end_date != undefined) {
+            viewedFacet.push({
+                $match: {
+                    updateAt: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        viewedFacet.push({
+            $group: {
+                _id: "$userID",
+                userIDCount: { "$sum": 1 }
+            }
+        },
+            {
+                $group: {
+                    _id: null,
+                    reach: { "$sum": 1 },
+                    impresi: { "$sum": "$userIDCount" }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    reach: 1,
+                    impresi: 1
+                }
+            });
+
+        //------------FACET CTA COUNT------------
+        var CTACountFacet = [];
+        if (start_date != undefined && end_date != undefined) {
+            CTACountFacet.push({
+                $match: {
+                    clickTime: {
+                        $elemMatch: {
+                            $gte: start_date.toISOString(),
+                            $lte: end_date.toISOString()
+                        }
+                    }
+                }
+            });
+        }
+        CTACountFacet.push({
+            $unwind:
+            {
+                path: "$clickTime",
+                includeArrayIndex: 'clickTime_index',
+            }
+        });
+        if (start_date != undefined && end_date != undefined) {
+            CTACountFacet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        CTACountFacet.push({
+            $project: {
+                clickTime: {
+                    $substr:
+                        [
+                            "$clickTime", 0, 10
+                        ]
+                }
+            }
+        },
+            {
+                $group:
+                {
+                    _id: "$clickTime",
+                    CTACount:
+                    {
+                        "$sum": 1
+                    }
+                }
+            },
+            {
+                $group:
+                {
+                    _id: null,
+                    CTACount:
+                    {
+                        "$sum": "$CTACount"
+                    }
+                }
+            });
+
+        //------------FACET VIEWTIME------------
+        var viewTimeFacet = [];
+        if (start_date != undefined && end_date != undefined) {
+            viewTimeFacet.push({
+                $match: {
+                    updateAt: {
+                        $elemMatch: {
+                            $gte: start_date.toISOString(),
+                            $lte: end_date.toISOString()
+                        }
+                    }
+                }
+            });
+        }
+        viewTimeFacet.push(
+            {
+                $lookup:
+                {
+                    from: "ads",
+                    as: "adsTable",
+                    let:
+                    {
+                        type_fk: "$adsID"
+                    },
+                    pipeline:
+                        [
+                            {
+                                $match:
+                                {
+                                    $expr:
+                                    {
+                                        $eq:
+                                            [
+                                                "$_id",
+                                                "$$type_fk"
+                                            ]
+                                    }
+                                },
+                            },
+                            {
+                                $lookup: {
+                                    from: "adstypes",
+                                    localField: "typeAdsID",
+                                    foreignField: "_id",
+                                    as: "adstypes_data"
+                                }
+                            },
+                            {
+                                $project:
+                                {
+                                    CPV: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
+                                            },
+                                            "in": "$$tmp.CPV"
+                                        }
+                                    },
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                $unwind:
+                {
+                    path: "$updateAt",
+                    includeArrayIndex: 'updateAt_index',
+                }
+            });
+        if (start_date != undefined && end_date != undefined) {
+            viewTimeFacet.push({
+                $match: {
+                    updateAt: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        viewTimeFacet.push(
+            {
+                $project: {
+                    CPV: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                            },
+                            "in": "$$tmp.CPV"
+                        }
+                    },
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    row: { $sum: 1 },
+                    count: { $sum: "$CPV" }
+                }
+            });
+
+        //------------FACET CLICKTIME------------
+        var clickTimeFacet = [];
+        if (start_date != undefined && end_date != undefined) {
+            clickTimeFacet.push({
+                $match: {
+                    clickTime: {
+                        $elemMatch: {
+                            $gte: start_date.toISOString(),
+                            $lte: end_date.toISOString()
+                        }
+                    }
+                }
+            });
+        }
+        clickTimeFacet.push(
+            {
+                $lookup:
+                {
+                    from: "ads",
+                    as: "adsTable",
+                    let:
+                    {
+                        type_fk: "$adsID"
+                    },
+                    pipeline:
+                        [
+                            {
+                                $match:
+                                {
+                                    $expr:
+                                    {
+                                        $eq:
+                                            [
+                                                "$_id",
+                                                "$$type_fk"
+                                            ]
+                                    }
+                                },
+                            },
+                            {
+                                $lookup: {
+                                    from: "adstypes",
+                                    localField: "typeAdsID",
+                                    foreignField: "_id",
+                                    as: "adstypes_data"
+                                }
+                            },
+                            {
+                                $project:
+                                {
+                                    CPA: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
+                                            },
+                                            "in": "$$tmp.CPA"
+                                        }
+                                    },
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                $unwind:
+                {
+                    path: "$clickTime",
+                    includeArrayIndex: 'clickTime_index',
+                }
+            });
+        if (start_date != undefined && end_date != undefined) {
+            clickTimeFacet.push({
+                $match: {
+                    clickTime: {
+                        $gte: start_date.toISOString(),
+                        $lte: end_date.toISOString()
+                    }
+                }
+            });
+        }
+        clickTimeFacet.push(
+            {
+                $project: {
+                    CPA: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                            },
+                            "in": "$$tmp.CPA"
+                        }
+                    },
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    row: { $sum: 1 },
+                    count: { $sum: "$CPA" }
+                }
+            });
+            
+        var aggregateData = [];
+        aggregateData.push(
+            {
+                $addFields: {
+                    dateStart: start_date,
+                    dateEnd: end_date
+                }
+            },
+            {
+                $lookup:
+                {
+                    from: "ads",
+                    as: "ads_data",
+                    let:
+                    {
+                        dateStart_: "$dateStart",
+                        dateEnd_: "$dateEnd"
+                    },
+                    pipeline: pipelineMatch
+                }
+            },);
+
+        aggregateData.push(
+            {
+                $facet:
+                {
+                    viewed: viewedFacet,
+                    CTACount: CTACountFacet,
+                    viewTime: viewTimeFacet,
+                    clickTime: clickTimeFacet,
+                    ads: [
+                        {
+                            $group: {
+                                _id: "$ads_data",
+                                count: { $sum: 1 }
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                $project: {
                     saldoKredit: {
                         $sum: [
                             {
@@ -3802,14 +4623,6 @@ export class UserAdsService {
                             "in": "$$tmp.impresi"
                         }
                     },
-                    Totalreach: {
-                        "$let": {
-                            "vars": {
-                                "tmp": { "$arrayElemAt": ["$viewed", 0] },
-                            },
-                            "in": "$$tmp.reach"
-                        }
-                    },
                     TotalCTA: {
                         "$let": {
                             "vars": {
@@ -3818,11 +4631,168 @@ export class UserAdsService {
                             "in": "$$tmp.CTACount"
                         }
                     },
-                    impresi: 1,
-                    reach: 1,
-                    CTA: 1
+                    CTA: 1,
+                    totalAds: {
+                        $let: {
+                            "vars": {
+                                ads: {
+                                    "$arrayElemAt": [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$ads", 0] },
+                                            },
+                                            "in": "$$tmp._id"
+                                        }
+                                    }, 0]
+                                }
+                            },
+                            "in": "$$ads.totalAds"
+                        }
+                    },
+                    totalAdvertisers: {
+                        $let: {
+                            "vars": {
+                                ads: {
+                                    "$arrayElemAt": [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$ads", 0] },
+                                            },
+                                            "in": "$$tmp._id"
+                                        }
+                                    }, 0]
+                                }
+                            },
+                            "in": "$$ads.totalAdvertisers"
+                        }
+                    },
+                    statusAds: {
+                        $let: {
+                            "vars": {
+                                ads: {
+                                    "$arrayElemAt": [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$ads", 0] },
+                                            },
+                                            "in": "$$tmp._id"
+                                        }
+                                    }, 0]
+                                }
+                            },
+                            "in": "$$ads.statusAds"
+                        }
+                    },
+                    creditPrice: {
+                        $let: {
+                            "vars": {
+                                ads: {
+                                    "$arrayElemAt": [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$ads", 0] },
+                                            },
+                                            "in": "$$tmp._id"
+                                        }
+                                    }, 0]
+                                }
+                            },
+                            "in": "$$ads.creditPrice"
+                        }
+                    },
+                    adsType: {
+                        $let: {
+                            "vars": {
+                                ads: {
+                                    "$arrayElemAt": [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$ads", 0] },
+                                            },
+                                            "in": "$$tmp._id"
+                                        }
+                                    }, 0]
+                                }
+                            },
+                            "in": "$$ads.adsType"
+                        }
+                    },
+                    adsObjectivitas: {
+                        $let: {
+                            "vars": {
+                                ads: {
+                                    "$arrayElemAt": [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$ads", 0] },
+                                            },
+                                            "in": "$$tmp._id"
+                                        }
+                                    }, 0]
+                                }
+                            },
+                            "in": "$$ads.adsObjectivitas"
+                        }
+                    },
+                    adsPlanShows: {
+                        $let: {
+                            "vars": {
+                                ads: {
+                                    "$arrayElemAt": [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$ads", 0] },
+                                            },
+                                            "in": "$$tmp._id"
+                                        }
+                                    }, 0]
+                                }
+                            },
+                            "in": "$$ads.adsPlanShows"
+                        }
+                    },
+                    totalIncome: {
+                        $multiply: [{
+                            $sum: [
+                                {
+                                    $convert: {
+                                        input: { "$arrayElemAt": ['$viewTime.count', 0] },
+                                        to: "int",
+                                        onError: 0,
+                                        onNull: 0
+                                    }
+                                },
+                                {
+                                    $convert: {
+                                        input: { "$arrayElemAt": ['$clickTime.count', 0] },
+                                        to: "int",
+                                        onError: 0,
+                                        onNull: 0
+                                    }
+                                }
+                            ]
+                        }, 
+                        {
+                            "$let": {
+                                "vars": {
+                                    ads: {
+                                        "$arrayElemAt": [{
+                                            "$let": {
+                                                "vars": {
+                                                    "tmp": { "$arrayElemAt": ["$ads", 0] },
+                                                },
+                                                "in": "$$tmp._id"
+                                            }
+                                        }, 0]
+                                    }
+                                },
+                                "in": "$$ads.creditPrice"
+                            }
+                        },]
+                    },
                 }
-            });
+            }
+        );
         //console.log(JSON.stringify(aggregateData));
         let query = await this.userAdsModel.aggregate(aggregateData);
         return query;
