@@ -38,7 +38,7 @@ export class StickerCategoryService {
         {
             "$sort":
             {
-                createdAt:-1
+                createdAt:1
             }
         }
     );
