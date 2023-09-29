@@ -1602,6 +1602,7 @@ export class AdsController {
                 CreateUserAdsDto_.scoreInterest = data_ads[0].scoreMinat;
                 CreateUserAdsDto_.scoreTotal = data_ads[0].scoreTotal;
                 CreateUserAdsDto_.updateAt = [current_date];
+                CreateUserAdsDto_.statusView = true;
                 CreateUserAdsDto_.viewed = 1;
                 this.userAdsService.create(CreateUserAdsDto_);
             } else {

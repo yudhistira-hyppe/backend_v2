@@ -5674,6 +5674,7 @@ export class AdsService {
                         isAdsActive: {
                             $arrayElemAt: ["$adsUser.isActive", 0]
                         },
+                        audiensFrekuensi:1,
                         placingID: 1,
                         placingName: 1,
                         timestamps: 1,
