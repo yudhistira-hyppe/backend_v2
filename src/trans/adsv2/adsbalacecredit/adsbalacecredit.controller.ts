@@ -55,11 +55,11 @@ export class AdsPurposesController {
             }else{
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
-                const dataResponse = {
+                const dataResponse = [{
                     saldoKredit: 0,
                     totalUseKredit: 0,
                     totalBuyKredit: 0
-                }
+                }]
                 return await this.errorHandler.generateAcceptResponseCodeWithData(
                     "Get Ads Balance succesfully ", dataResponse
                 );
@@ -67,11 +67,11 @@ export class AdsPurposesController {
         } else {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
-            const dataResponse = {
+            const dataResponse = [{
                 saldoKredit: 0,
                 totalUseKredit: 0,
                 totalBuyKredit: 0
-            }
+            }]
             return await this.errorHandler.generateAcceptResponseCodeWithData(
                 "Get Ads Balance succesfully ", dataResponse
             );
