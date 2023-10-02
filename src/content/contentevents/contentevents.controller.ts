@@ -2799,7 +2799,8 @@ export class ContenteventsController {
     var arrdata = [];
     var objintr = {};
     var datasubchallenge = null;
-
+    var datauserchallengeNew = null;
+    var scorenegatif = null;
 
     try {
       datachallenge = await this.challengeService.challengeFollow();
@@ -2848,6 +2849,24 @@ export class ContenteventsController {
               console.log(objintr)
               activity.push(objintr)
               await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+
+              //update score if negative
+              try {
+                datauserchallengeNew = await this.userchallengesService.findOneByid(iduserchall.toString(), idsubchallenge.toString(),);
+              } catch (e) {
+                datauserchallengeNew = null;
+              }
+
+              if (datauserchallengeNew !== null && datauserchallengeNew !== undefined) {
+                scorenegatif = datauserchallengeNew.score;
+              } else {
+                scorenegatif = 0;
+              }
+
+              if (scorenegatif < 0) {
+                await this.userchallengesService.updateScoreNull(iduserchall.toString(), timedate);
+              }
+              //
 
               var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
@@ -4674,6 +4693,8 @@ export class ContenteventsController {
     var datapost = null;
     var createAt = null;
     var saleAmount = null;
+    var datauserchallengeNew = null;
+    var scorenegatif = null;
     try {
       datapost = await this.postsService.findByPostId(postID);
     } catch (e) {
@@ -4807,6 +4828,25 @@ export class ContenteventsController {
                           console.log(objintr)
                           activity.push(objintr)
                           await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+
+
+                          //update score if negative
+                          try {
+                            datauserchallengeNew = await this.userchallengesService.findOneByid(iduserchall.toString(), idsubchallenge.toString(),);
+                          } catch (e) {
+                            datauserchallengeNew = null;
+                          }
+
+                          if (datauserchallengeNew !== null && datauserchallengeNew !== undefined) {
+                            scorenegatif = datauserchallengeNew.score;
+                          } else {
+                            scorenegatif = 0;
+                          }
+
+                          if (scorenegatif < 0) {
+                            await this.userchallengesService.updateScoreNull(iduserchall.toString(), timedate);
+                          }
+                          //
                           try {
                             datapostchall = await this.postchallengeService.findBypostID(postID);
                           } catch (e) {
@@ -4870,6 +4910,24 @@ export class ContenteventsController {
                           console.log(objintr)
                           activity.push(objintr)
                           await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+
+                          //update score if negative
+                          try {
+                            datauserchallengeNew = await this.userchallengesService.findOneByid(iduserchall.toString(), idsubchallenge.toString(),);
+                          } catch (e) {
+                            datauserchallengeNew = null;
+                          }
+
+                          if (datauserchallengeNew !== null && datauserchallengeNew !== undefined) {
+                            scorenegatif = datauserchallengeNew.score;
+                          } else {
+                            scorenegatif = 0;
+                          }
+
+                          if (scorenegatif < 0) {
+                            await this.userchallengesService.updateScoreNull(iduserchall.toString(), timedate);
+                          }
+                          //
                           try {
                             datapostchall = await this.postchallengeService.findBypostID(postID);
                           } catch (e) {
@@ -4986,6 +5044,24 @@ export class ContenteventsController {
                     console.log(objintr)
                     activity.push(objintr)
                     await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+
+                    //update score if negative
+                    try {
+                      datauserchallengeNew = await this.userchallengesService.findOneByid(iduserchall.toString(), idsubchallenge.toString(),);
+                    } catch (e) {
+                      datauserchallengeNew = null;
+                    }
+
+                    if (datauserchallengeNew !== null && datauserchallengeNew !== undefined) {
+                      scorenegatif = datauserchallengeNew.score;
+                    } else {
+                      scorenegatif = 0;
+                    }
+
+                    if (scorenegatif < 0) {
+                      await this.userchallengesService.updateScoreNull(iduserchall.toString(), timedate);
+                    }
+                    //
                     try {
                       datapostchall = await this.postchallengeService.findBypostID(postID);
                     } catch (e) {
@@ -5046,6 +5122,24 @@ export class ContenteventsController {
                     console.log(objintr)
                     activity.push(objintr)
                     await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+
+                    //update score if negative
+                    try {
+                      datauserchallengeNew = await this.userchallengesService.findOneByid(iduserchall.toString(), idsubchallenge.toString(),);
+                    } catch (e) {
+                      datauserchallengeNew = null;
+                    }
+
+                    if (datauserchallengeNew !== null && datauserchallengeNew !== undefined) {
+                      scorenegatif = datauserchallengeNew.score;
+                    } else {
+                      scorenegatif = 0;
+                    }
+
+                    if (scorenegatif < 0) {
+                      await this.userchallengesService.updateScoreNull(iduserchall.toString(), timedate);
+                    }
+                    //
                     try {
                       datapostchall = await this.postchallengeService.findBypostID(postID);
                     } catch (e) {

@@ -664,7 +664,7 @@ export class ChallengeController {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var email = auth.email;
-    
+
     var data = await this.challengeService.findOne(id);
 
     var mongoose = require('mongoose');
@@ -1361,8 +1361,7 @@ export class ChallengeController {
     };
 
     await this.challengeService.update(id, getdata);
-    if(statusChallenge == "PUBLISH")
-    {
+    if (statusChallenge == "PUBLISH") {
       var checkjoinchallenge = getdata.peserta[0].caraGabung;
       var checkpartisipan = getdata.listParticipant;
       if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined) {
@@ -1561,7 +1560,7 @@ export class ChallengeController {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var email = auth.email;
-    
+
     var challengeId = id;
 
     var data = await this.subchallenge.getwilayahpengguna(challengeId);
@@ -2063,8 +2062,8 @@ export class ChallengeController {
   @Post('userbadge')
   async userbadges() {
 
-    //this.userbadge();
-    this.updateUserbadge();
+    this.userbadge();
+    // this.updateUserbadge();
 
     const messages = {
       "info": ["The proses successful"],
@@ -2305,7 +2304,7 @@ export class ChallengeController {
               databadge = null;
             }
 
-            if (databadge == null) {
+            if (databadge == null && databadge == undefined) {
               if (status = "BERAKHIR") {
                 let Userbadge_ = new Userbadge();
                 Userbadge_.SubChallengeId = idSubChallenges;
