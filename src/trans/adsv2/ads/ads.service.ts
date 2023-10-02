@@ -5499,6 +5499,11 @@ export class AdsService {
                     }
                 },
                 {
+                    $set: {
+                        balancesReplace: { $ifNull: ["$balances.total", 0] }
+                    }
+                },
+                {
                     $match: {
                         $or: [
                             {
@@ -5506,11 +5511,6 @@ export class AdsService {
                                     {
                                         $expr: {
                                             $eq: ['$isValid', true]
-                                        }
-                                    },
-                                    {
-                                        $expr: {
-                                            $eq: ["$validasi", true]
                                         }
                                     },
                                     {
@@ -5523,11 +5523,7 @@ export class AdsService {
                                     },
                                     {
                                         $expr: {
-                                            $lt: [
-                                                {
-                                                    $arrayElemAt: ["$balances.total", 0]
-                                                },
-                                                49000
+                                            $lt: ["$balancesReplace", 49000
                                             ]
                                         }
                                     },
@@ -5584,7 +5580,30 @@ export class AdsService {
 
                                 ]
                             },
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$isValid', false]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$sorts', true]
+                                        }
+                                    },
+                                    {
+                                        "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$balancesReplace", 49000
+                                            ]
+                                        }
+                                    },
 
+                                ]
+                            },
                         ]
                     }
                 },
@@ -5656,8 +5675,9 @@ export class AdsService {
                 },
                 {
                     $project: {
+                        audiensFrekuensi: 1,
                         balances: "$userBasic.balances",
-                        totalSaldo: "$userBasic.balances.total",
+                        totalSaldo: "$balancesReplace",
                         username: "$userBasicAds.userName",
                         avatar: "$userBasicAds.avatar",
                         email: "$userBasicAds.email",
@@ -5674,7 +5694,6 @@ export class AdsService {
                         isAdsActive: {
                             $arrayElemAt: ["$adsUser.isActive", 0]
                         },
-                        audiensFrekuensi:1,
                         placingID: 1,
                         placingName: 1,
                         timestamps: 1,
