@@ -4753,12 +4753,12 @@ export class AdsService {
                                     $ne: "$email"
                                 }
                             },
-                            {
-                                "userID":
-                                {
-                                    $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
-                                }
-                            },
+                            // {
+                            //     "userID":
+                            //     {
+                            //         $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                            //     }
+                            // },
                             {
                                 $expr: {
                                     $lt: ["$tayang", "$testDate"]
@@ -4782,14 +4782,14 @@ export class AdsService {
                         from: "userbasics",
                         as: "userBasic",
                         let: {
-                            localID: '$email'
+                            localID: new mongoose.Types.ObjectId(idUser)
                         },
                         pipeline: [
                             {
                                 $match:
                                 {
                                     $expr: {
-                                        $eq: ['$email', '$$localID']
+                                        $eq: ['$_id', '$$localID']
                                     }
                                 }
                             },
