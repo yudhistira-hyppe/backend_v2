@@ -734,6 +734,120 @@ export class UserticketsController {
 
   }
 
+  @Post('api/usertickets/filter/v2')
+  @UseGuards(JwtAuthGuard)
+  async profileuser2(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/usertickets/filter/v2';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var search = null;
+    var data = null;
+    var page = null;
+    var limit = null;
+    var countrow = null;
+    var startdate = null;
+    var enddate = null;
+    var sumber = null;
+    var level = null;
+    var status = null;
+    var sort = null;
+    var order = null;
+    var kategori = null;
+    var startdate = null;
+    var enddate = null;
+    var assignto = null;
+    var descending = null;
+    var iduser = null;
+    var close = null;
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
+    sumber = request_json["sumber"];
+    kategori = request_json["kategori"];
+    level = request_json["level"];
+    search = request_json["search"];
+    status = request_json["status"];
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
+    assignto = request_json["assignto"];
+    descending = request_json["descending"];
+    iduser = request_json["iduser"];
+    close = request_json["close"];
+    if (request_json["page"] !== undefined) {
+      page = request_json["page"];
+    } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["limit"] !== undefined) {
+      limit = request_json["limit"];
+    } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    try {
+      data = await this.userticketsService.filterdata2(search, assignto, sumber, kategori, level, status, startdate, enddate, page, limit, descending, iduser, close);
+    } catch (e) {
+      data = null;
+    }
+
+
+    var total = null;
+    var totalsearch = null;
+    var totalallrow = null;
+    var totalpage = null;
+    var datasearch = null;
+    var dataall = null;
+    total = data.length;
+
+    // try {
+    //   datasearch = await this.userticketsService.filterdatacount(search, assignto, sumber, kategori, level, status, startdate, enddate, iduser, close);
+    //   totalsearch = datasearch[0].count;
+    // } catch (e) {
+    //   datasearch = null;
+    //   totalsearch = 0;
+    // }
+
+    // try {
+    //   dataall = await this.userticketsService.filterdatacount(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+    //   totalallrow = dataall[0].count;
+    // } catch (e) {
+    //   totalallrow = 0;
+    // }
+
+
+    // var tpage = null;
+    // var tpage2 = null;
+
+    // tpage2 = (totalsearch / limit).toFixed(0);
+    // tpage = (totalsearch % limit);
+    // if (tpage > 0 && tpage < 5) {
+    //   totalpage = parseInt(tpage2) + 1;
+
+    // } else {
+    //   totalpage = parseInt(tpage2);
+    // }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+    return { response_code: 202, data, page, limit, total, totalallrow: 0, totalsearch: 0, totalpage: 0, messages };
+
+  }
+
   @Post('api/usertickets/count')
   @UseGuards(JwtAuthGuard)
   async countticket(@Headers() headers): Promise<any> {

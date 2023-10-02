@@ -1744,6 +1744,709 @@ export class UserticketsService {
       );
     }
 
+    if (skip > 0) {
+      pipeline.push({ $skip: (skip * limit) });
+    }
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
+
+
+
+    let query = await this.userticketsModel.aggregate(pipeline);
+    return query;
+  }
+
+  async filterdata2(search: string, assignto: string, sumber: any[], kategori: any[], level: any[], status: any[], startdate: string, enddate: string, skip: number, limit: number, descending: boolean, iduser?: string, close?: any) {
+
+    var lenghtkategori = 0;
+    var lenghtsumber = 0;
+    var lenghtlevel = 0;
+    var arrayKategory = [];
+    var arraySumber = [];
+    var arrayLevel = [];
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+    var order = null;
+
+    if (descending === true) {
+      order = -1;
+    } else {
+      order = 1;
+    }
+    var pipeline = [];
+    var userid = mongoose.Types.ObjectId(iduser)
+
+    if (iduser && iduser !== undefined) {
+
+      pipeline = [
+        {
+          $match: {
+            active: true,
+            IdUser: userid
+          }
+        },
+        { $sort: { datetime: order }, },
+        {
+          "$lookup": {
+            "from": "newUserBasics",
+            "localField": "IdUser",
+            "foreignField": "_id",
+            "as": "userbasics_data"
+          }
+        },
+        {
+          "$lookup": {
+            "from": "categorytickets",
+            "localField": "categoryTicket",
+            "foreignField": "_id",
+            "as": "category_data"
+          }
+        },
+        {
+          "$lookup": {
+            "from": "leveltickets",
+            "localField": "levelTicket",
+            "foreignField": "_id",
+            "as": "level_data"
+          }
+        },
+        {
+          "$lookup": {
+            "from": "sourcetickets",
+            "localField": "sourceTicket",
+            "foreignField": "_id",
+            "as": "source_data"
+          }
+        },
+        {
+          "$lookup": {
+            "from": "newUserBasics",
+            "localField": "assignTo",
+            "foreignField": "_id",
+            "as": "asignto_data"
+          }
+        },
+        {
+          "$project": {
+            "user": {
+              "$arrayElemAt": [
+                "$userbasics_data",
+                0
+              ]
+            },
+            "userasign": {
+              "$arrayElemAt": [
+                "$asignto_data",
+                0
+              ]
+            },
+            "category": {
+              "$arrayElemAt": [
+                "$category_data",
+                0
+              ]
+            },
+            "level": {
+              "$arrayElemAt": [
+                "$level_data",
+                0
+              ]
+            },
+            "source": {
+              "$arrayElemAt": [
+                "$source_data",
+                0
+              ]
+            },
+            "nomortiket": 1,
+            "IdUser": 1,
+            "subject": 1,
+            "body": 1,
+            "status": 1,
+            "isRead": 1,
+            "active": 1,
+            "datetime": 1,
+            "sourceTicket": 1,
+            "levelTicket": 1,
+            "categoryTicket": 1,
+            "mediaBasePath": 1,
+            "mediaMime": 1,
+            "mediaType": 1,
+            "mediaUri": 1,
+            "originalName": 1,
+            "fsSourceUri": 1,
+            "fsSourceName": 1,
+            "fsTargetUri": 1
+          }
+        },
+        {
+          "$project": {
+            "user":1,
+            "userasign":1,
+            "IdUser": 1,
+            "pengirim": "$user.email",
+            "penerima": "$userasign.email",
+            "nameCategory": "$category.nameCategory",
+            "nameLevel": "$level.nameLevel",
+            "sourceName": "$source.sourceName",
+            "nomortiket": 1,
+            "subject": 1,
+            "body": 1,
+            "status": 1,
+            "isRead": 1,
+            "active": 1,
+            "datetime": 1,
+            "sourceTicket": 1,
+            "levelTicket": 1,
+            "categoryTicket": 1,
+            "mediaBasePath": 1,
+            "mediaMime": 1,
+            "mediaType": 1,
+            "mediaUri": 1,
+            "originalName": 1,
+            "fsSourceUri": 1,
+            "fsSourceName": 1,
+            "fsTargetUri": 1
+          }
+        },
+        {
+          "$project": {
+            "user":1,
+            "userasign":1,
+            "IdUser": 1,
+            "nomortiket": 1,
+            "pengirim": 1,
+            "penerima": 1,
+            "subject": 1,
+            "body": 1,
+            "status": 1,
+            "isRead": 1,
+            "active": 1,
+            "datetime": 1,
+            "nameCategory": 1,
+            "nameLevel": 1,
+            "sourceName": 1,
+            "sourceTicket": 1,
+            "levelTicket": 1,
+            "categoryTicket": 1,
+            "mediaBasePath": 1,
+            "mediaMime": 1,
+            "mediaType": 1,
+            "mediaUri": 1,
+            "originalName": 1,
+            "fsSourceUri": 1,
+            "fsSourceName": 1,
+            "fsTargetUri": 1
+          }
+        },
+        {
+          "$project": {
+            "user":1,
+            "userasign":1,
+            "username": 1,
+            "IdUser": 1,
+            "nomortiket": 1,
+            "pengirim": 1,
+            "penerima": 1,
+            "subject": 1,
+            "body": 1,
+            "status": 1,
+            "isRead": 1,
+            "active": 1,
+            "datetime": 1,
+            "nameCategory": 1,
+            "nameLevel": 1,
+            "sourceName": 1,
+            "sourceTicket": 1,
+            "levelTicket": 1,
+            "categoryTicket": 1,
+            "mediaBasePath": 1,
+            "mediaMime": 1,
+            "mediaType": 1,
+            "mediaUri": 1,
+            "originalName": 1,
+            "fsSourceUri": 1,
+            "fsSourceName": 1,
+            "fsTargetUri": 1,
+            "concats": "/profilepict",
+            "pict": {
+              "$replaceOne": {
+                "input": "$userasign.mediaUri",
+                "find": "_0001.jpeg",
+                "replacement": ""
+              }
+            },
+            "avatar": {
+              "mediaBasePath": "$userasign.mediaBasePath",
+              "mediaUri": "$userasign.mediaUri",
+              "mediaType": "$userasign.mediaType",
+              "mediaEndpoint": "$userasign.fsTargetUri",
+              "medreplace": {
+                "$replaceOne": {
+                  "input": "$userasign.mediaUri",
+                  "find": "_0001.jpeg",
+                  "replacement": ""
+                }
+              }
+            }
+          }
+        },
+        {
+          "$project": {
+            "username": 1,
+            "IdUser": 1,
+            "nomortiket": 1,
+            "pengirim": 1,
+            "penerima": 1,
+            "subject": 1,
+            "body": 1,
+            "status": 1,
+            "isRead": 1,
+            "active": 1,
+            "datetime": 1,
+            "nameCategory": 1,
+            "nameLevel": 1,
+            "sourceName": 1,
+            "sourceTicket": 1,
+            "levelTicket": 1,
+            "categoryTicket": 1,
+            "mediaBasePath": 1,
+            "mediaMime": 1,
+            "mediaType": 1,
+            "mediaUri": 1,
+            "originalName": 1,
+            "fsSourceUri": 1,
+            "fsSourceName": 1,
+            "fsTargetUri": 1,
+            "concats": "/profilepict",
+            "pict": 1,
+            "avatar": {
+              "mediaBasePath": "$avatar.mediaBasePath",
+              "mediaUri": "$avatar.mediaUri",
+              "mediaType": "$avatar.mediaType",
+              "mediaEndpoint": {
+                "$concat": [
+                  "$concats",
+                  "/",
+                  "$pict"
+                ]
+              }
+            }
+          }
+        },
+
+      ];
+
+    } else {
+      pipeline = [
+        {
+          $match: {
+            active: true,
+          }
+        },
+        { $sort: { datetime: order }, },
+        {
+          "$lookup": {
+            "from": "newUserBasics",
+            "localField": "IdUser",
+            "foreignField": "_id",
+            "as": "userbasics_data"
+          }
+        },
+        {
+          "$lookup": {
+            "from": "categorytickets",
+            "localField": "categoryTicket",
+            "foreignField": "_id",
+            "as": "category_data"
+          }
+        },
+        {
+          "$lookup": {
+            "from": "leveltickets",
+            "localField": "levelTicket",
+            "foreignField": "_id",
+            "as": "level_data"
+          }
+        },
+        {
+          "$lookup": {
+            "from": "sourcetickets",
+            "localField": "sourceTicket",
+            "foreignField": "_id",
+            "as": "source_data"
+          }
+        },
+        {
+          "$lookup": {
+            "from": "newUserBasics",
+            "localField": "assignTo",
+            "foreignField": "_id",
+            "as": "asignto_data"
+          }
+        },
+        {
+          "$project": {
+            "user": {
+              "$arrayElemAt": [
+                "$userbasics_data",
+                0
+              ]
+            },
+            "userasign": {
+              "$arrayElemAt": [
+                "$asignto_data",
+                0
+              ]
+            },
+            "category": {
+              "$arrayElemAt": [
+                "$category_data",
+                0
+              ]
+            },
+            "level": {
+              "$arrayElemAt": [
+                "$level_data",
+                0
+              ]
+            },
+            "source": {
+              "$arrayElemAt": [
+                "$source_data",
+                0
+              ]
+            },
+            "nomortiket": 1,
+            "IdUser": 1,
+            "subject": 1,
+            "body": 1,
+            "status": 1,
+            "isRead": 1,
+            "active": 1,
+            "datetime": 1,
+            "sourceTicket": 1,
+            "levelTicket": 1,
+            "categoryTicket": 1,
+            "mediaBasePath": 1,
+            "mediaMime": 1,
+            "mediaType": 1,
+            "mediaUri": 1,
+            "originalName": 1,
+            "fsSourceUri": 1,
+            "fsSourceName": 1,
+            "fsTargetUri": 1
+          }
+        },
+        {
+          "$project": {
+            "user":1,
+            "userasign":1,
+            "IdUser": 1,
+            "pengirim": "$user.email",
+            "penerima": "$userasign.email",
+            "nameCategory": "$category.nameCategory",
+            "nameLevel": "$level.nameLevel",
+            "sourceName": "$source.sourceName",
+            "nomortiket": 1,
+            "subject": 1,
+            "body": 1,
+            "status": 1,
+            "isRead": 1,
+            "active": 1,
+            "datetime": 1,
+            "sourceTicket": 1,
+            "levelTicket": 1,
+            "categoryTicket": 1,
+            "mediaBasePath": 1,
+            "mediaMime": 1,
+            "mediaType": 1,
+            "mediaUri": 1,
+            "originalName": 1,
+            "fsSourceUri": 1,
+            "fsSourceName": 1,
+            "fsTargetUri": 1
+          }
+        },
+        {
+          "$project": {
+            "user":1,
+            "userasign":1,
+            "IdUser": 1,
+            "nomortiket": 1,
+            "pengirim": 1,
+            "penerima": 1,
+            "subject": 1,
+            "body": 1,
+            "status": 1,
+            "isRead": 1,
+            "active": 1,
+            "datetime": 1,
+            "nameCategory": 1,
+            "nameLevel": 1,
+            "sourceName": 1,
+            "sourceTicket": 1,
+            "levelTicket": 1,
+            "categoryTicket": 1,
+            "mediaBasePath": 1,
+            "mediaMime": 1,
+            "mediaType": 1,
+            "mediaUri": 1,
+            "originalName": 1,
+            "fsSourceUri": 1,
+            "fsSourceName": 1,
+            "fsTargetUri": 1
+          }
+        },
+        {
+          "$project": {
+            "user":1,
+            "userasign":1,
+            "username": 1,
+            "IdUser": 1,
+            "nomortiket": 1,
+            "pengirim": 1,
+            "penerima": 1,
+            "subject": 1,
+            "body": 1,
+            "status": 1,
+            "isRead": 1,
+            "active": 1,
+            "datetime": 1,
+            "nameCategory": 1,
+            "nameLevel": 1,
+            "sourceName": 1,
+            "sourceTicket": 1,
+            "levelTicket": 1,
+            "categoryTicket": 1,
+            "mediaBasePath": 1,
+            "mediaMime": 1,
+            "mediaType": 1,
+            "mediaUri": 1,
+            "originalName": 1,
+            "fsSourceUri": 1,
+            "fsSourceName": 1,
+            "fsTargetUri": 1,
+            "concats": "/profilepict",
+            "pict": {
+              "$replaceOne": {
+                "input": "$userasign.mediaUri",
+                "find": "_0001.jpeg",
+                "replacement": ""
+              }
+            },
+            "avatar": {
+              "mediaBasePath": "$userasign.mediaBasePath",
+              "mediaUri": "$userasign.mediaUri",
+              "mediaType": "$userasign.mediaType",
+              "mediaEndpoint": "$userasign.fsTargetUri",
+              "medreplace": {
+                "$replaceOne": {
+                  "input": "$userasign.mediaUri",
+                  "find": "_0001.jpeg",
+                  "replacement": ""
+                }
+              }
+            }
+          }
+        },
+        {
+          "$project": {
+            "username": 1,
+            "IdUser": 1,
+            "nomortiket": 1,
+            "pengirim": 1,
+            "penerima": 1,
+            "subject": 1,
+            "body": 1,
+            "status": 1,
+            "isRead": 1,
+            "active": 1,
+            "datetime": 1,
+            "nameCategory": 1,
+            "nameLevel": 1,
+            "sourceName": 1,
+            "sourceTicket": 1,
+            "levelTicket": 1,
+            "categoryTicket": 1,
+            "mediaBasePath": 1,
+            "mediaMime": 1,
+            "mediaType": 1,
+            "mediaUri": 1,
+            "originalName": 1,
+            "fsSourceUri": 1,
+            "fsSourceName": 1,
+            "fsTargetUri": 1,
+            "concats": "/profilepict",
+            "pict": 1,
+            "avatar": {
+              "mediaBasePath": "$avatar.mediaBasePath",
+              "mediaUri": "$avatar.mediaUri",
+              "mediaType": "$avatar.mediaType",
+              "mediaEndpoint": {
+                "$concat": [
+                  "$concats",
+                  "/",
+                  "$pict"
+                ]
+              }
+            }
+          }
+        },
+
+      ];
+    }
+
+    if (close === false && close !== undefined) {
+      pipeline.push({
+        $match: {
+          status: { $ne: "close" }
+
+        }
+      },);
+    }
+
+
+
+    if (search && search !== undefined) {
+
+      pipeline.push(
+        {
+          $match: {
+            $or: [{
+              username: {
+                $regex: search,
+                $options: 'i'
+              },
+
+            }, {
+              nomortiket: {
+                $regex: search,
+                $options: 'i'
+              },
+
+            }],
+
+          }
+        },
+      );
+
+
+    }
+
+    if (sumber && sumber !== undefined) {
+      lenghtsumber = sumber.length;
+
+      for (var i = 0; i < lenghtsumber; i++) {
+        var id = sumber[i];
+        var idsumber = mongoose.Types.ObjectId(id);
+        arraySumber.push(idsumber);
+      }
+      pipeline.push(
+        {
+          $match: {
+            $or: [
+              {
+                sourceTicket: {
+                  $in: arraySumber
+                }
+              },
+
+            ],
+          }
+        },
+      );
+    }
+    if (kategori && kategori !== undefined) {
+      lenghtkategori = kategori.length;
+
+      for (var i = 0; i < lenghtkategori; i++) {
+        var id = kategori[i];
+        var idkategori = mongoose.Types.ObjectId(id);
+        arrayKategory.push(idkategori);
+      }
+      pipeline.push(
+        {
+          $match: {
+            $or: [
+              {
+                categoryTicket: {
+                  $in: arrayKategory
+                }
+              },
+
+            ],
+          }
+        },
+      );
+    }
+    if (level && level !== undefined) {
+      lenghtlevel = level.length;
+
+      for (var i = 0; i < lenghtlevel; i++) {
+        var id = level[i];
+        var idlevel = mongoose.Types.ObjectId(id);
+        arrayLevel.push(idlevel);
+      }
+      pipeline.push(
+        {
+          $match: {
+            $or: [
+              {
+                levelTicket: {
+                  $in: arrayLevel
+                }
+              },
+
+            ],
+          }
+        },
+      );
+    }
+    if (status && status !== undefined) {
+
+      pipeline.push(
+        {
+          $match: {
+            $or: [
+              {
+                status: {
+                  $in: status
+                }
+              },
+
+            ],
+          }
+        });
+    }
+    if (startdate && startdate !== undefined) {
+      pipeline.push({ $match: { datetime: { "$gte": startdate } } });
+    }
+    if (enddate && enddate !== undefined) {
+      pipeline.push({ $match: { datetime: { "$lte": dateend } } });
+    }
+    if (assignto && assignto !== undefined) {
+      pipeline.push({
+        $match: {
+
+          penerima: {
+            $regex: assignto,
+            $options: 'i'
+          },
+
+        }
+      },
+      );
+    }
+
 
     if (skip > 0) {
       pipeline.push({ $skip: (skip * limit) });
