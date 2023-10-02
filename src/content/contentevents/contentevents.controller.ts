@@ -2142,11 +2142,14 @@ export class ContenteventsController {
                       if (datapostchall != null) {
                         idpostchall = datapostchall._id.toString();
                       }
-                      try {
-                        await this.postchallengeService.updatePostchallenge(idpostchall, poin);
-                      } catch (e) {
+                      if (poin > 0) {
+                        try {
+                          await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                        } catch (e) {
 
+                        }
                       }
+
 
 
                       var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
@@ -3940,10 +3943,12 @@ export class ContenteventsController {
                           if (datapostchall != null) {
                             idpostchall = datapostchall._id.toString();
                           }
-                          try {
-                            await this.postchallengeService.updatePostchallenge(idpostchall, poin);
-                          } catch (e) {
+                          if (poin > 0) {
+                            try {
+                              await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                            } catch (e) {
 
+                            }
                           }
 
 
@@ -4004,10 +4009,12 @@ export class ContenteventsController {
                           if (datapostchall != null) {
                             idpostchall = datapostchall._id.toString();
                           }
-                          try {
-                            await this.postchallengeService.updatePostchallenge(idpostchall, poin);
-                          } catch (e) {
+                          if (poin > 0) {
+                            try {
+                              await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                            } catch (e) {
 
+                            }
                           }
 
 
@@ -4118,10 +4125,12 @@ export class ContenteventsController {
                     if (datapostchall != null) {
                       idpostchall = datapostchall._id.toString();
                     }
-                    try {
-                      await this.postchallengeService.updatePostchallenge(idpostchall, poin);
-                    } catch (e) {
+                    if (poin > 0) {
+                      try {
+                        await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                      } catch (e) {
 
+                      }
                     }
                     var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
@@ -4177,10 +4186,12 @@ export class ContenteventsController {
                     if (datapostchall != null) {
                       idpostchall = datapostchall._id.toString();
                     }
-                    try {
-                      await this.postchallengeService.updatePostchallenge(idpostchall, poin);
-                    } catch (e) {
+                    if (poin > 0) {
+                      try {
+                        await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                      } catch (e) {
 
+                      }
                     }
                     var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
@@ -4389,10 +4400,12 @@ export class ContenteventsController {
                           if (datapostchall != null) {
                             idpostchall = datapostchall._id.toString();
                           }
-                          try {
-                            await this.postchallengeService.updatePostchallenge(idpostchall, poin);
-                          } catch (e) {
+                          if (poin > 0) {
+                            try {
+                              await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                            } catch (e) {
 
+                            }
                           }
 
 
@@ -4452,10 +4465,12 @@ export class ContenteventsController {
                           if (datapostchall != null) {
                             idpostchall = datapostchall._id.toString();
                           }
-                          try {
-                            await this.postchallengeService.updatePostchallenge(idpostchall, poin);
-                          } catch (e) {
+                          if (poin > 0) {
+                            try {
+                              await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                            } catch (e) {
 
+                            }
                           }
 
 
@@ -4568,10 +4583,12 @@ export class ContenteventsController {
                     if (datapostchall != null) {
                       idpostchall = datapostchall._id.toString();
                     }
-                    try {
-                      await this.postchallengeService.updatePostchallenge(idpostchall, poin);
-                    } catch (e) {
+                    if (poin > 0) {
+                      try {
+                        await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                      } catch (e) {
 
+                      }
                     }
                     var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
@@ -4628,10 +4645,12 @@ export class ContenteventsController {
                     if (datapostchall != null) {
                       idpostchall = datapostchall._id.toString();
                     }
-                    try {
-                      await this.postchallengeService.updatePostchallenge(idpostchall, poin);
-                    } catch (e) {
+                    if (poin > 0) {
+                      try {
+                        await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                      } catch (e) {
 
+                      }
                     }
                     var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
@@ -4861,12 +4880,13 @@ export class ContenteventsController {
                           if (datapostchall != null) {
                             idpostchall = datapostchall._id.toString();
                           }
-                          try {
-                            await this.postchallengeService.updateUnchallnge(idpostchall, poin);
-                          } catch (e) {
+                          if (poin > 0) {
+                            try {
+                              await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                            } catch (e) {
 
+                            }
                           }
-
 
                           var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
@@ -4942,10 +4962,12 @@ export class ContenteventsController {
                           if (datapostchall != null) {
                             idpostchall = datapostchall._id.toString();
                           }
-                          try {
-                            await this.postchallengeService.updateUnchallnge(idpostchall, poin);
-                          } catch (e) {
+                          if (poin > 0) {
+                            try {
+                              await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                            } catch (e) {
 
+                            }
                           }
 
 
@@ -5076,10 +5098,12 @@ export class ContenteventsController {
                     if (datapostchall != null) {
                       idpostchall = datapostchall._id.toString();
                     }
-                    try {
-                      await this.postchallengeService.updateUnchallnge(idpostchall, poin);
-                    } catch (e) {
+                    if (poin > 0) {
+                      try {
+                        await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                      } catch (e) {
 
+                      }
                     }
                     var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
@@ -5154,10 +5178,12 @@ export class ContenteventsController {
                     if (datapostchall != null) {
                       idpostchall = datapostchall._id.toString();
                     }
-                    try {
-                      await this.postchallengeService.updateUnchallnge(idpostchall, poin);
-                    } catch (e) {
+                    if (poin > 0) {
+                      try {
+                        await this.postchallengeService.updatePostchallenge(idpostchall, poin);
+                      } catch (e) {
 
+                      }
                     }
                     var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
