@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, UseInterceptors, UploadedFiles, Res, BadRequestException, HttpStatus, Headers, Head } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards, UseInterceptors, UploadedFiles, Res, BadRequestException, HttpStatus, Headers, Head, NotAcceptableException } from '@nestjs/common';
 import { ChallengeService } from './challenge.service';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { Challenge } from './schemas/challenge.schema';
@@ -664,7 +664,7 @@ export class ChallengeController {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var email = auth.email;
-    
+
     var data = await this.challengeService.findOne(id);
 
     var mongoose = require('mongoose');
@@ -1361,8 +1361,7 @@ export class ChallengeController {
     };
 
     await this.challengeService.update(id, getdata);
-    if(statusChallenge == "PUBLISH")
-    {
+    if (statusChallenge == "PUBLISH") {
       var checkjoinchallenge = getdata.peserta[0].caraGabung;
       var checkpartisipan = getdata.listParticipant;
       if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined) {
@@ -1561,7 +1560,7 @@ export class ChallengeController {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var email = auth.email;
-    
+
     var challengeId = id;
 
     var data = await this.subchallenge.getwilayahpengguna(challengeId);
@@ -1603,14 +1602,39 @@ export class ChallengeController {
 
     var request_json = JSON.parse(JSON.stringify(request.body));
     var getsubid = request_json['idChallenge'];
+    var getuserid = request_json['idUser'];
 
-    var checkdata = await this.userchallengeSS.checkUserjoinchallenge(request_json['idChallenge'], request_json['idUser']);
+    if(getsubid == null || getsubid == undefined)
+    {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, challenge id field is required");
+    }
+
+    if(getuserid == null || getuserid == undefined)
+    {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, user id field is required");
+    }
+
+    var getuserbasic = await this.userbasicsSS.findbyid(getuserid);
+    if(getuserbasic == null)
+    {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
+
+      throw new NotAcceptableException("Unabled to proceed, user data not found");
+    }
+
+    var checkdata = await this.userchallengeSS.checkUserjoinchallenge(getsubid, getuserid);
     if (checkdata == true) {
-      var getuserbasic = await this.userbasicsSS.findbyid(request_json['idUser']);
       var languages_json = JSON.parse(JSON.stringify(getuserbasic.languages));
 
       var timestamps_end = await this.util.getDateTimeString();
-      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, request_json['idUser'], null, request_json);
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
 
       if (languages_json.$id == '6152481690f7b2293d0bf653') {
         throw new BadRequestException("user already registered");
@@ -1635,8 +1659,8 @@ export class ChallengeController {
           var createdata = new Userchallenges();
           var mongo = require('mongoose');
           createdata._id = mongo.Types.ObjectId();
-          createdata.idChallenge = new mongo.Types.ObjectId(request_json['idChallenge']);
-          createdata.idUser = new mongo.Types.ObjectId(request_json['idUser']);
+          createdata.idChallenge = new mongo.Types.ObjectId(getsubid);
+          createdata.idUser = new mongo.Types.ObjectId(getuserid);
           createdata.idSubChallenge = new mongo.Types.ObjectId(getsubdata[i]._id);
           createdata.isActive = true;
           createdata.ranking = getsubdata[i].lastrank;
@@ -2063,8 +2087,8 @@ export class ChallengeController {
   @Post('userbadge')
   async userbadges() {
 
-    //this.userbadge();
-    this.updateUserbadge();
+    this.userbadge();
+    // this.updateUserbadge();
 
     const messages = {
       "info": ["The proses successful"],
@@ -2305,7 +2329,7 @@ export class ChallengeController {
               databadge = null;
             }
 
-            if (databadge == null) {
+            if (databadge == null && databadge == undefined) {
               if (status = "BERAKHIR") {
                 let Userbadge_ = new Userbadge();
                 Userbadge_.SubChallengeId = idSubChallenges;

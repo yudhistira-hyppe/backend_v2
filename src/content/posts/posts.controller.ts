@@ -3594,12 +3594,14 @@ export class PostsController {
     var datapost = null;
     var createAt = null;
     var saleAmount = null;
+    var postTypeparent = null;
     try {
       datapost = await this.PostsService.findByPostId(postID);
     } catch (e) {
       datapost = null;
     }
     if (datapost !== null) {
+      postTypeparent = datapost.postType;
       createAt = datapost.createdAt;
       if (datapost.saleAmount !== undefined) {
         saleAmount = datapost.saleAmount;
@@ -3641,7 +3643,7 @@ export class PostsController {
           tagar = "";
         }
 
-        if (tagar != undefined && tagar != "") {
+        if (tagar != undefined && tagar != "" && tagar.length > 0) {
 
           try {
             datatag = await this.tagCountService.listag(tagar.toLowerCase());
@@ -3652,8 +3654,8 @@ export class PostsController {
           if (datatag != null && datatag.length > 0) {
 
             for (let i = 0; i < datatag.length; i++) {
-              var postIDpost = datatag[i].postID;
-              var postType = datatag[i].postType;
+              let postIDpost = datatag[i].postID;
+              let postType = datatag[i].postType;
 
               if (postIDpost == postID) {
                 try {
@@ -3785,11 +3787,11 @@ export class PostsController {
                     "score": datauserchall[y].score,
                     "ranking": datauserchall[y].ranking,
                   }
-                  if (postType == "vid") {
+                  if (postTypeparent == "vid") {
                     poin = poinViewVid;
-                  } else if (postType == "diary") {
+                  } else if (postTypeparent == "diary") {
                     poin = poinViewDiary;
-                  } else if (postType == "pict") {
+                  } else if (postTypeparent == "pict") {
                     poin = poinPict;
                   }
                   await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);

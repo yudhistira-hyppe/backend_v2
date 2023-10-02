@@ -20,6 +20,10 @@ export class UserchallengesService {
         return this.UserchallengesModel.findOne({ _id: new Types.ObjectId(id) }).exec();
     }
 
+    async findOneByid(id: string, idSubChallenge: string): Promise<Userchallenges> {
+        return this.UserchallengesModel.findOne({ _id: new Types.ObjectId(id), idSubChallenge: new Types.ObjectId(idSubChallenge) }).exec();
+    }
+
     async find(): Promise<Userchallenges[]> {
         return this.UserchallengesModel.find().exec();
     }
@@ -174,6 +178,13 @@ export class UserchallengesService {
         ]);
         return query;
     }
+
+    async updateScoreNull(id: string, updatedAt: string) {
+        let data = await this.UserchallengesModel.updateOne({ "_id": new Types.ObjectId(id) },
+            { $set: { "score": 0, "updatedAt": updatedAt, } });
+        return data;
+    }
+
 
     async updateRangking(id: string, rangking: number, updatedAt: string) {
         let data = await this.UserchallengesModel.updateOne({ "_id": new Types.ObjectId(id) },
