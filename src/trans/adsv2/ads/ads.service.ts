@@ -5727,12 +5727,12 @@ export class AdsService {
                         scoreGeografis: 1,
                         scoreTotal: 1,
                         isValid: 1,
+                        objectivitasId: "$objectivitas.name_id",
+                        objectivitasEn: "$objectivitas.name_en",
                         mediaBasePath: 1,
                         mediaUri: 1,
                         mediaThumBasePath: 1,
                         mediaThumUri: 1,
-                        objectivitasId: "$objectivitas.name_id",
-                        objectivitasEn: "$objectivitas.name_en",
 
                     }
                 },
@@ -6372,7 +6372,7 @@ export class AdsService {
                             {
                                 "userID":
                                 {
-                                    $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                    $ne: new mongoose.Types.ObjectId(idUser)
                                 }
                             },
                             {
@@ -6398,14 +6398,14 @@ export class AdsService {
                         from: "userbasics",
                         as: "userBasic",
                         let: {
-                            localID: '$email'
+                            localID: new mongoose.Types.ObjectId(idUser)
                         },
                         pipeline: [
                             {
                                 $match:
                                 {
                                     $expr: {
-                                        $eq: ['$email', '$$localID']
+                                        $eq: ['$_id', '$$localID']
                                     }
                                 }
                             },
@@ -7115,6 +7115,11 @@ export class AdsService {
                     }
                 },
                 {
+                    $set: {
+                        balancesReplace: { $ifNull: ["$balances.total", 0] }
+                    }
+                },
+                {
                     $match: {
                         $or: [
                             {
@@ -7126,24 +7131,15 @@ export class AdsService {
                                     },
                                     {
                                         $expr: {
-                                            $eq: ["$validasi", true]
-                                        }
-                                    },
-                                    {
-                                        $expr: {
                                             $eq: ['$sorts', true]
                                         }
                                     },
                                     {
-                                        "userID": new mongoose.Types.ObjectId(idUser)
+                                        "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                                     },
                                     {
                                         $expr: {
-                                            $lt: [
-                                                {
-                                                    $arrayElemAt: ["$balances.total", 0]
-                                                },
-                                                49000
+                                            $lt: ["$balancesReplace", 49000
                                             ]
                                         }
                                     },
@@ -7169,7 +7165,7 @@ export class AdsService {
                                     },
                                     {
                                         "userID": {
-                                            $ne: new mongoose.Types.ObjectId(idUser)
+                                            $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                                         }
                                     },
 
@@ -7194,13 +7190,36 @@ export class AdsService {
                                     },
                                     {
                                         "userID": {
-                                            $ne: new mongoose.Types.ObjectId(idUser)
+                                            $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                                         }
                                     },
 
                                 ]
                             },
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$isValid', false]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$sorts', true]
+                                        }
+                                    },
+                                    {
+                                        "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$balancesReplace", 49000
+                                            ]
+                                        }
+                                    },
 
+                                ]
+                            },
                         ]
                     }
                 },
@@ -7272,8 +7291,9 @@ export class AdsService {
                 },
                 {
                     $project: {
+                        audiensFrekuensi: 1,
                         balances: "$userBasic.balances",
-                        totalSaldo: "$userBasic.balances.total",
+                        totalSaldo: "$balancesReplace",
                         username: "$userBasicAds.userName",
                         avatar: "$userBasicAds.avatar",
                         email: "$userBasicAds.email",
