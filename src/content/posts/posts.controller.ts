@@ -3709,9 +3709,9 @@ export class PostsController {
                           Postchallenge_.updatedAt = timedate;
                           Postchallenge_.idUser = mongoose.Types.ObjectId(iduser);
                           Postchallenge_.score = poin;
-                          if (poin !== 0) {
-                            await this.postchallengeService.create(Postchallenge_);
-                          }
+
+                          await this.postchallengeService.create(Postchallenge_);
+
 
                         } catch (e) {
 
