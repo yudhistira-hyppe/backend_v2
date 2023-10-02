@@ -5500,7 +5500,7 @@ export class AdsService {
                 },
                 {
                     $set: {
-                        balancesReplace: { $ifNull: ["$balances.total", 0] }
+                        balancesReplace: { $ifNull: ["$userBasic.balances.total", 0] }
                     }
                 },
                 {
