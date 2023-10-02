@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req, HttpCode, HttpStatus, Post, Body, Headers } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, HttpCode, HttpStatus, Post, Body, Headers, BadRequestException } from '@nestjs/common';
 import { NewPostService } from './new_post.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { CreateNewPostDTO, CreatenewPost2Dto } from './dto/create-newPost.dto';
@@ -237,5 +237,110 @@ export class NewPostController {
         'Unabled to proceed, Data Post not found'
       );
     }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('database')
+  async finddata3(@Req() request, @Headers() headers): Promise<any> {
+      var timestamps_start = await this.utilsService.getDateTimeString();
+      var fullurl = request.get("Host") + request.originalUrl;
+      var token = headers['x-auth-token'];
+      var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      var email = auth.email;
+
+      const messages = {
+          "info": ["The process successful"],
+      };
+
+      var request_json = JSON.parse(JSON.stringify(request.body));
+      var page = null;
+      var startdate = null;
+      var enddate = null;
+      var limit = null;
+      var totalpage = 0;
+      var totalallrow = 0;
+      var totalsearch = 0;
+      var total = 0;
+      var username = null;
+      var kepemilikan = [];
+      var statusjual = [];
+      var data = [];
+      var description = null;
+      var postType = [];
+      var kategori = [];
+      var startmount = null;
+      var endmount = null;
+      var descending = null;
+      var iduser = null;
+      var buy = null;
+      var reported = null;
+      var popular = null;
+      var hashtag = null;
+      var userid = null;
+      const mongoose = require('mongoose');
+      var ObjectId = require('mongodb').ObjectId;
+      if (request_json["limit"] !== undefined) {
+          limit = request_json["limit"];
+      } else {
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+          throw new BadRequestException("Unabled to proceed");
+      }
+      if (request_json["page"] !== undefined) {
+          page = request_json["page"];
+      } else {
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+          throw new BadRequestException("Unabled to proceed");
+      }
+
+      startdate = request_json["startdate"];
+      enddate = request_json["enddate"];
+      username = request_json["username"];
+      description = request_json["description"];
+      kepemilikan = request_json["kepemilikan"];
+      statusjual = request_json["statusjual"];
+      postType = request_json["postType"];
+      kategori = request_json["kategori"];
+      startmount = request_json["startmount"];
+      endmount = request_json["endmount"];
+      descending = request_json["descending"];
+      buy = request_json["buy"];
+      reported = request_json["reported"];
+      popular = request_json["popular"];
+      hashtag = request_json["hashtag"];
+      if (request_json["limit"] !== undefined) {
+          iduser = request_json["iduser"];
+          userid = mongoose.Types.ObjectId(iduser);
+      }
+      var query = null;
+      var datasearch = null;
+      var dataall = null;
+
+      if (iduser !== undefined) {
+          try {
+              query = await this.newPostService.databasenew(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, hashtag, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+              data = query;
+          } catch (e) {
+              query = null;
+              data = [];
+          }
+      } else {
+          try {
+              query = await this.newPostService.databasenew(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, hashtag, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+              data = query;
+          } catch (e) {
+              query = null;
+              data = [];
+          }
+      }
+
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+
+      return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
   }
 }
