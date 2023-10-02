@@ -3696,8 +3696,7 @@ export class PostsController {
                         } else if (postType == "pict") {
                           poin = poinPict;
                         }
-                        await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                        await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+
                         try {
                           var Postchallenge_ = new Postchallenge();
                           Postchallenge_.postID = postID;
@@ -3710,13 +3709,16 @@ export class PostsController {
                           Postchallenge_.updatedAt = timedate;
                           Postchallenge_.idUser = mongoose.Types.ObjectId(iduser);
                           Postchallenge_.score = poin;
-                          if (poin > 0) {
+                          if (poin !== 0) {
                             await this.postchallengeService.create(Postchallenge_);
                           }
 
                         } catch (e) {
 
                         }
+                        await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+                        await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+
                         var detail = await this.userchallengesService.findOne(iduserchall.toString());
                         var activity = detail.activity;
                         objintr = { "type": nametable, "id": idref, "desc": action }
