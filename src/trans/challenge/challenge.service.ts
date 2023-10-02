@@ -3,6 +3,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { Challenge, challengeDocument } from './schemas/challenge.schema';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
+import { UserbadgeService } from '../userbadge/userbadge.service';
+import { subChallengeService } from './subChallenge.service';
+import { Userbadge } from '../userbadge/schemas/userbadge.schema';
+import { CreateSubChallengeDto } from './dto/create-subchallenge.dto';
+import { notifChallenge } from './schemas/notifChallenge.schema';
+import { notifChallengeService } from './notifChallenge.service';
+import { UtilsService } from 'src/utils/utils.service';
+import { UserbasicsService } from '../userbasics/userbasics.service';
+import { LanguagesService } from '../../infra/languages/languages.service';
 import { Pipeline } from 'ioredis';
 
 @Injectable()
@@ -10,6 +19,12 @@ export class ChallengeService {
   constructor(
     @InjectModel(Challenge.name, 'SERVER_FULL')
     private readonly ChallengeModel: Model<challengeDocument>,
+    private readonly userbadgeService: UserbadgeService,
+    private readonly subchallenge: subChallengeService,
+    private readonly notifChallengeService: notifChallengeService,
+    private readonly util: UtilsService,
+    private readonly userbasicsSS: UserbasicsService,
+    private readonly languagesService: LanguagesService,
   ) { }
 
   async create(Challenge_: CreateChallengeDto) {
@@ -811,1148 +826,1148 @@ export class ChallengeService {
       {
         "$unwind":
         {
-            path:"$notifikasiPush"
+          path: "$notifikasiPush"
         }
-    },
-    {
+      },
+      {
         "$project":
         {
-            _id: 1,
-            nameChallenge: 1,
-            jenisChallenge: 1,
-            jenisChallengeName: 1,
-            description: 1,
-            createdAt: 1,
-            updatedAt: 1,
-            durasi: 1,
-            totaldurasi: 1,
-            startChallenge: 1,
-            endChallenge: 1,
-            startTime: 1,
-            endTime: 1,
-            jumlahSiklusdurasi: 1,
-            tampilStatusPengguna: 1,
-            objectChallenge: 1,
-            statusChallenge: 1,
-            statuscurrentChallenge: 
+          _id: 1,
+          nameChallenge: 1,
+          jenisChallenge: 1,
+          jenisChallengeName: 1,
+          description: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          durasi: 1,
+          totaldurasi: 1,
+          startChallenge: 1,
+          endChallenge: 1,
+          startTime: 1,
+          endTime: 1,
+          jumlahSiklusdurasi: 1,
+          tampilStatusPengguna: 1,
+          objectChallenge: 1,
+          statusChallenge: 1,
+          statuscurrentChallenge:
+          {
+            "$switch":
             {
-              "$switch":
-              {
-                branches:
-                  [
+              branches:
+                [
+                  {
+                    case:
                     {
-                      case:
-                      {
-                        "$and":
-                          [
-                            {
-                              "$gte": [
-                                "$timenow", 
-                                "$startTime"
-                              ]
-                            },
-                            {
-                              "$lte": [
-                                "$timenow", 
-                                "$endTime"
-                              ]
-                            },
-                          ]
-                      },
-                      then: "SEDANG BERJALAN"
-                    },
-                    {
-                      case:
-                      {
-                        "$and":
-                          [
-                            {
-                              "$gt": [
-                                "$timenow", 
-                                "$endTime",
-                              ]
-                            },
-                          ]
-                      },
-                      then: "SELESAI"
-                    },
-                  ],
-                default: "AKAN DATANG"
-              }
-            },
-            metrik: 1,
-            leaderBoard: 1,
-            ketentuanHadiah:
-            [
-              {
-                    badgePemenang:
-                    {
-                        "$arrayElemAt":
+                      "$and":
                         [
-                            "$ketentuanHadiah.badgePemenang",
-                            0
-                        ]
-                    },
-                    Height: 
-                    {
-                        "$arrayElemAt":
-                        [
-                            "$ketentuanHadiah.Height",
-                            0
-                        ]
-                    },
-                    Width:
-                    {
-                        "$arrayElemAt":
-                        [
-                            "$ketentuanHadiah.Width",
-                            0
-                        ]
-                    },
-                    maxSize: 
-                    {
-                        "$arrayElemAt":
-                        [
-                            "$ketentuanHadiah.maxSize",
-                            0
-                        ]
-                    },
-                    minSize: 
-                    {
-                        "$arrayElemAt":
-                        [
-                            "$ketentuanHadiah.minSize",
-                            0
-                        ]
-                    },
-                    formatFile: 
-                    {
-                        "$arrayElemAt":
-                        [
-                            "$ketentuanHadiah.formatFile",
-                            0
-                        ]
-                    },
-                    badge:
-                    {
-                      "$cond":
-                      {
-                        if:
-                        {
-                          "$eq":
-                          [
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$ketentuanHadiah.badgePemenang",
-                                    0
-                                ]
-                            }, 
-                            false
-                          ]
-                        },
-                        then: [],
-                        else: [
                           {
-                            juara1: 
-                            {
-                                "$cond":
-                                {
-                                    if:
-                                    {
-                                        "$eq":
-                                        [
-                                            "$juara1", null
-                                        ]
-                                    },
-                                    then: "$$REMOVE",
-                                    else: "$juara1"
-                                }
-                            },
-                            juara1_general:
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$badge_data.badgeOther",
-                                    0
-                                ]
-                            },
-                            juara1_profile:
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$badge_data.badgeProfile",
-                                    0
-                                ]
-                            },
-                            juara2: 
-                            {
-                                "$cond":
-                                {
-                                    if:
-                                    {
-                                        "$eq":
-                                        [
-                                            "$juara2", null
-                                        ]
-                                    },
-                                    then: "$$REMOVE",
-                                    else: "$juara2"
-                                }
-                            },
-                            juara2_general:
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$badge_data.badgeOther",
-                                    1
-                                ]
-                            },
-                            juara2_profile:
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$badge_data.badgeProfile",
-                                    1
-                                ]
-                            },
-                            juara3: 
-                            {
-                                "$cond":
-                                {
-                                    if:
-                                    {
-                                        "$eq":
-                                        [
-                                            "$juara3", null
-                                        ]
-                                    },
-                                    then: "$$REMOVE",
-                                    else: "$juara3"
-                                }
-                            },
-                            juara3_general:
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$badge_data.badgeOther",
-                                    2
-                                ]
-                            },
-                            juara3_profile:
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$badge_data.badgeProfile",
-                                    2
-                                ]
-                            },
+                            "$gte": [
+                              "$timenow",
+                              "$startTime"
+                            ]
+                          },
+                          {
+                            "$lte": [
+                              "$timenow",
+                              "$endTime"
+                            ]
                           },
                         ]
-                      }
                     },
+                    then: "SEDANG BERJALAN"
+                  },
+                  {
+                    case:
+                    {
+                      "$and":
+                        [
+                          {
+                            "$gt": [
+                              "$timenow",
+                              "$endTime",
+                            ]
+                          },
+                        ]
+                    },
+                    then: "SELESAI"
+                  },
+                ],
+              default: "AKAN DATANG"
+            }
+          },
+          metrik: 1,
+          leaderBoard: 1,
+          ketentuanHadiah:
+            [
+              {
+                badgePemenang:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$ketentuanHadiah.badgePemenang",
+                      0
+                    ]
+                },
+                Height:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$ketentuanHadiah.Height",
+                      0
+                    ]
+                },
+                Width:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$ketentuanHadiah.Width",
+                      0
+                    ]
+                },
+                maxSize:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$ketentuanHadiah.maxSize",
+                      0
+                    ]
+                },
+                minSize:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$ketentuanHadiah.minSize",
+                      0
+                    ]
+                },
+                formatFile:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$ketentuanHadiah.formatFile",
+                      0
+                    ]
+                },
+                badge:
+                {
+                  "$cond":
+                  {
+                    if:
+                    {
+                      "$eq":
+                        [
+                          {
+                            "$arrayElemAt":
+                              [
+                                "$ketentuanHadiah.badgePemenang",
+                                0
+                              ]
+                          },
+                          false
+                        ]
+                    },
+                    then: [],
+                    else: [
+                      {
+                        juara1:
+                        {
+                          "$cond":
+                          {
+                            if:
+                            {
+                              "$eq":
+                                [
+                                  "$juara1", null
+                                ]
+                            },
+                            then: "$$REMOVE",
+                            else: "$juara1"
+                          }
+                        },
+                        juara1_general:
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$badge_data.badgeOther",
+                              0
+                            ]
+                        },
+                        juara1_profile:
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$badge_data.badgeProfile",
+                              0
+                            ]
+                        },
+                        juara2:
+                        {
+                          "$cond":
+                          {
+                            if:
+                            {
+                              "$eq":
+                                [
+                                  "$juara2", null
+                                ]
+                            },
+                            then: "$$REMOVE",
+                            else: "$juara2"
+                          }
+                        },
+                        juara2_general:
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$badge_data.badgeOther",
+                              1
+                            ]
+                        },
+                        juara2_profile:
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$badge_data.badgeProfile",
+                              1
+                            ]
+                        },
+                        juara3:
+                        {
+                          "$cond":
+                          {
+                            if:
+                            {
+                              "$eq":
+                                [
+                                  "$juara3", null
+                                ]
+                            },
+                            then: "$$REMOVE",
+                            else: "$juara3"
+                          }
+                        },
+                        juara3_general:
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$badge_data.badgeOther",
+                              2
+                            ]
+                        },
+                        juara3_profile:
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$badge_data.badgeProfile",
+                              2
+                            ]
+                        },
+                      },
+                    ]
+                  }
+                },
               }
             ],
-            peserta:
+          peserta:
             [
+              {
+                tipeAkunTerverikasi:
                 {
-                    tipeAkunTerverikasi: 
+                  "$arrayElemAt":
+                    [
+                      "$peserta.tipeAkunTerverikasi", 0
+                    ]
+                },
+                statusTipeAkunTerverifikasi:
+                {
+                  "$switch":
+                  {
+                    branches: [
+                      {
+                        case:
+                        {
+                          "$eq":
+                            [
+                              {
+                                "$arrayElemAt":
+                                  [
+                                    "$peserta.tipeAkunTerverikasi", 0
+                                  ]
+                              },
+                              "YES"
+                            ]
+                        },
+                        then: "KYC"
+                      },
+                      {
+                        case:
+                        {
+                          "$eq":
+                            [
+                              {
+                                "$arrayElemAt":
+                                  [
+                                    "$peserta.tipeAkunTerverikasi", 0
+                                  ]
+                              },
+                              "NO"
+                            ]
+                        },
+                        then: "Non E-KYC"
+                      },
+                    ],
+                    default: "KYC & Non E-KYC"
+                  }
+                },
+                caraGabung:
+                {
+                  "$arrayElemAt":
+                    [
+                      "$peserta.caraGabung", 0
+                    ]
+                },
+                "jenisKelamin":
+                {
+                  "$arrayElemAt":
+                    [
+                      "$peserta.jenisKelamin", 0
+                    ]
+                },
+                // "lokasiPengguna": 
+                // {
+                //     "$arrayElemAt":
+                //     [
+                //         "$peserta.lokasiPengguna", 0
+                //     ]
+                // },
+                "lokasiPengguna":
+                {
+                  "$arrayElemAt":
+                    [
+                      "$areas_data.data", 0
+                    ]
+                },
+                "rentangUmur":
+                {
+                  "$arrayElemAt":
+                    [
+                      "$peserta.rentangUmur", 0
+                    ]
+                },
+              }
+            ],
+          hadiahPemenang: 1,
+          bannerSearch: 1,
+          popUp: 1,
+          // notifikasiPush:1,
+          notifikasiPush: [
+            {
+              "akanDatang": [
+                {
+                  "include":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.akanDatang.include", 0
+                      ]
+                  },
+                  "title":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.akanDatang.title", 0
+                      ]
+                  },
+                  "titleEN":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.akanDatang.titleEN", 0
+                      ]
+                  },
+                  "description":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.akanDatang.description", 0
+                      ]
+                  },
+                  "descriptionEN":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.akanDatang.descriptionEN", 0
+                      ]
+                  },
+                  "unit":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.akanDatang.unit", 0
+                      ]
+                  },
+                  "aturWaktu":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.akanDatang.aturWaktu", 0
+                      ]
+                  },
+                  "statusNotifikasi":
+                  {
+                    "$cond":
                     {
-                        "$arrayElemAt":
-                        [
-                            "$peserta.tipeAkunTerverikasi", 0
-                        ]
-                    },
-                    statusTipeAkunTerverifikasi:
+                      if:
+                      {
+                        "$eq":
+                          [
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$notifikasiPush.akanDatang.include",
+                                  0
+                                ]
+                            },
+                            "NO"
+                          ]
+                      },
+                      then: "DISABLE",
+                      else:
+                      {
+                        "$cond":
+                        {
+                          if:
+                          {
+                            "$lt":
+                              [
+                                "$timenow",
+                                {
+                                  "$dateToString": {
+                                    "format": "%Y-%m-%d %H:%M:%S",
+                                    "date": {
+                                      "$add":
+                                        [
+                                          {
+                                            $dateFromString:
+                                            {
+                                              dateString: '$startChallenge'
+                                            },
+                                          },
+                                          {
+                                            "$multiply":
+                                              [
+                                                {
+                                                  "$toInt":
+                                                  {
+                                                    "$arrayElemAt":
+                                                      [
+                                                        "$notifikasiPush.akanDatang.aturWaktu",
+                                                        0
+                                                      ]
+                                                  }
+                                                },
+                                                3600000
+                                              ]
+                                          }
+                                        ]
+                                    }
+                                  }
+                                }
+                              ]
+                          },
+                          then: "AKAN DATANG",
+                          else: "SELESAI"
+                        }
+                      }
+                    }
+                  }
+                }
+              ],
+              "challengeDimulai": [
+                {
+                  "include":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeDimulai.include", 0
+                      ]
+                  },
+                  "title":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeDimulai.title", 0
+                      ]
+                  },
+                  "titleEN":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeDimulai.titleEN", 0
+                      ]
+                  },
+                  "description":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeDimulai.description", 0
+                      ]
+                  },
+                  "descriptionEN":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeDimulai.descriptionEN", 0
+                      ]
+                  },
+                  "unit":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeDimulai.unit", 0
+                      ]
+                  },
+                  "statusNotifikasi":
+                  {
+                    "$cond":
                     {
+                      if:
+                      {
+                        "$eq":
+                          [
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$notifikasiPush.challengeDimulai.include",
+                                  0
+                                ]
+                            },
+                            "NO"
+                          ]
+                      },
+                      then: "DISABLE",
+                      else:
+                      {
+                        "$cond":
+                        {
+                          if:
+                          {
+                            "$lt":
+                              [
+                                "$timenow",
+                                "$startChallenge"
+                              ]
+                          },
+                          then: "AKAN DATANG",
+                          else: "SELESAI"
+                        }
+                      }
+                    }
+                  }
+                }
+              ],
+              "updateLeaderboard": [
+                {
+                  "include":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.updateLeaderboard.include", 0
+                      ]
+                  },
+                  "title":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.updateLeaderboard.title", 0
+                      ]
+                  },
+                  "titleEN":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.updateLeaderboard.titleEN", 0
+                      ]
+                  },
+                  "description":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.updateLeaderboard.description", 0
+                      ]
+                  },
+                  "descriptionEN":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.updateLeaderboard.descriptionEN", 0
+                      ]
+                  },
+                  "unit":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.updateLeaderboard.unit", 0
+                      ]
+                  },
+                  "aturWaktu":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.updateLeaderboard.aturWaktu", 0
+                      ]
+                  },
+                  "statusNotifikasi":
+                  {
+                    "$cond":
+                    {
+                      if:
+                      {
+                        "$eq":
+                          [
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$notifikasiPush.updateLeaderboard.include",
+                                  0
+                                ]
+                            },
+                            "NO"
+                          ]
+                      },
+                      then: "DISABLE",
+                      else:
+                      {
                         "$switch":
                         {
-                            branches: [
+                          branches:
+                            [
+                              {
+                                case:
                                 {
-                                    case:
-                                    {
-                                        "$eq":
-                                        [
-                                            {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$peserta.tipeAkunTerverikasi", 0
-                                                ]
-                                            },
-                                            "YES"
-                                        ]
-                                    },
-                                    then: "KYC"
+                                  "$lt":
+                                    [
+                                      "$timenow",
+                                      {
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            "$add":
+                                              [
+                                                {
+                                                  $dateFromString:
+                                                  {
+                                                    dateString: '$startChallenge'
+                                                  },
+                                                },
+                                                {
+                                                  "$multiply":
+                                                    [
+                                                      {
+                                                        "$toInt":
+                                                        {
+                                                          "$first":
+                                                          {
+                                                            "$let":
+                                                            {
+                                                              vars:
+                                                              {
+                                                                datawaktu:
+                                                                {
+                                                                  "$let":
+                                                                  {
+                                                                    vars:
+                                                                    {
+                                                                      getdata:
+                                                                      {
+                                                                        "$arrayElemAt":
+                                                                          [
+                                                                            "$notifikasiPush.updateLeaderboard.aturWaktu", 0
+                                                                          ]
+                                                                      }
+                                                                    },
+                                                                    in: "$$getdata"
+                                                                  }
+                                                                },
+                                                              },
+                                                              in: "$$datawaktu"
+                                                            }
+                                                          },
+                                                        },
+                                                      },
+                                                      3600000
+                                                    ]
+                                                }
+                                              ]
+                                          }
+                                        }
+                                      }
+                                    ]
                                 },
+                                then: "AKAN DATANG"
+                              },
+                              {
+                                case:
                                 {
-                                    case:
-                                    {
-                                        "$eq":
-                                        [
-                                            {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$peserta.tipeAkunTerverikasi", 0
-                                                ]
-                                            },
-                                            "NO"
-                                        ]
-                                    },
-                                    then: "Non E-KYC"
+                                  "$lt":
+                                    [
+                                      {
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            "$add":
+                                              [
+                                                {
+                                                  $dateFromString:
+                                                  {
+                                                    dateString: '$endChallenge'
+                                                  },
+                                                },
+                                                {
+                                                  "$multiply":
+                                                    [
+                                                      {
+                                                        "$toInt":
+                                                        {
+                                                          "$last":
+                                                          {
+                                                            "$let":
+                                                            {
+                                                              vars:
+                                                              {
+                                                                datawaktu:
+                                                                {
+                                                                  "$let":
+                                                                  {
+                                                                    vars:
+                                                                    {
+                                                                      getdata:
+                                                                      {
+                                                                        "$arrayElemAt":
+                                                                          [
+                                                                            "$notifikasiPush.updateLeaderboard.aturWaktu", 0
+                                                                          ]
+                                                                      }
+                                                                    },
+                                                                    in: "$$getdata"
+                                                                  }
+                                                                },
+                                                              },
+                                                              in: "$$datawaktu"
+                                                            }
+                                                          },
+                                                        }
+                                                      },
+                                                      3600000
+                                                    ]
+                                                }
+                                              ]
+                                          }
+                                        }
+                                      },
+                                      "$timenow"
+                                    ]
                                 },
+                                then: "SELESAI"
+                              },
                             ],
-                            default: "KYC & Non E-KYC"
-                        }
-                    },
-                    caraGabung: 
-                    {
-                        "$arrayElemAt":
-                        [
-                            "$peserta.caraGabung", 0
-                        ]
-                    },
-                    "jenisKelamin": 
-                    {
-                        "$arrayElemAt":
-                        [
-                            "$peserta.jenisKelamin", 0
-                        ]
-                    },
-                    // "lokasiPengguna": 
-                    // {
-                    //     "$arrayElemAt":
-                    //     [
-                    //         "$peserta.lokasiPengguna", 0
-                    //     ]
-                    // },
-                    "lokasiPengguna": 
-                    {
-                        "$arrayElemAt":
-                        [
-                            "$areas_data.data", 0
-                        ]
-                    },
-                    "rentangUmur": 
-                    {
-                        "$arrayElemAt":
-                        [
-                            "$peserta.rentangUmur", 0
-                        ]
-                    },
+                          default: "SEDANG BERJALAN"
+                        },
+                      }
+                    }
+                  }
                 }
-            ],
-            hadiahPemenang:1,
-            bannerSearch:1,
-            popUp:1,
-            // notifikasiPush:1,
-            notifikasiPush:[
+              ],
+              "challengeAkanBerakhir": [
                 {
-                    "akanDatang":[
+                  "include":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeAkanBerakhir.include", 0
+                      ]
+                  },
+                  "title":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeAkanBerakhir.title", 0
+                      ]
+                  },
+                  "titleEN":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeAkanBerakhir.titleEN", 0
+                      ]
+                  },
+                  "description":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeAkanBerakhir.description", 0
+                      ]
+                  },
+                  "descriptionEN":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeAkanBerakhir.descriptionEN", 0
+                      ]
+                  },
+                  "unit":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeAkanBerakhir.unit", 0
+                      ]
+                  },
+                  "aturWaktu":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeAkanBerakhir.aturWaktu", 0
+                      ]
+                  },
+                  "statusNotifikasi":
+                  {
+                    "$cond":
+                    {
+                      if:
+                      {
+                        "$eq":
+                          [
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$notifikasiPush.challengeAkanBerakhir.include",
+                                  0
+                                ]
+                            },
+                            "NO"
+                          ]
+                      },
+                      then: "DISABLE",
+                      else:
+                      {
+                        "$cond":
                         {
-                            "include":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.akanDatang.include",0
-                                ]
-                            },
-                            "title":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.akanDatang.title",0
-                                ]
-                            },
-                            "titleEN":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.akanDatang.titleEN",0
-                                ]
-                            },
-                            "description":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.akanDatang.description",0
-                                ]
-                            },
-                            "descriptionEN":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.akanDatang.descriptionEN",0
-                                ]
-                            },
-                            "unit":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.akanDatang.unit",0
-                                ]
-                            },
-                            "aturWaktu":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.akanDatang.aturWaktu",0
-                                ]
-                            },
-                            "statusNotifikasi":
-                            {
-                                "$cond":
+                          if:
+                          {
+                            "$lt":
+                              [
+                                "$timenow",
                                 {
-                                    if:
-                                    {
-                                        "$eq":
+                                  "$dateToString": {
+                                    "format": "%Y-%m-%d %H:%M:%S",
+                                    "date": {
+                                      "$add":
                                         [
+                                          {
+                                            $dateFromString:
                                             {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$notifikasiPush.akanDatang.include",
-                                                    0
-                                                ]
+                                              dateString: '$endChallenge'
                                             },
-                                            "NO"
-                                        ]
-                                    },
-                                    then:"DISABLE",
-                                    else:
-                                    {
-                                        "$cond":
-                                        {
-                                            if:
-                                            {
-                                                "$lt":
-                                                [
-                                                    "$timenow",
-                                                    {
-                                                        "$dateToString": {
-                                                            "format": "%Y-%m-%d %H:%M:%S",
-                                                            "date": {
-                                                                "$add":
-                                                                [
-                                                                    {
-                                                                        $dateFromString: 
-                                                                        {
-                                                                            dateString: '$startChallenge'
-                                                                        },
-                                                                    },
-                                                                    {
-                                                                        "$multiply":
-                                                                        [
-                                                                            {
-                                                                                "$toInt":
-                                                                                {
-                                                                                    "$arrayElemAt":
-                                                                                    [
-                                                                                        "$notifikasiPush.akanDatang.aturWaktu",
-                                                                                        0
-                                                                                    ]
-                                                                                }
-                                                                            },
-                                                                            3600000
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            }
-                                                        }
-                                                    }
-                                                ]
-                                            },
-                                            then:"AKAN DATANG",
-                                            else:"SELESAI"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    ],
-                    "challengeDimulai":[
-                        {
-                            "include":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeDimulai.include",0
-                                ]
-                            },
-                            "title":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeDimulai.title",0
-                                ]
-                            },
-                            "titleEN":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeDimulai.titleEN",0
-                                ]
-                            },
-                            "description":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeDimulai.description",0
-                                ]
-                            },
-                            "descriptionEN":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeDimulai.descriptionEN",0
-                                ]
-                            },
-                            "unit":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeDimulai.unit",0
-                                ]
-                            },
-                            "statusNotifikasi":
-                            {
-                                "$cond":
-                                {
-                                    if:
-                                    {
-                                        "$eq":
-                                        [
-                                            {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$notifikasiPush.challengeDimulai.include",
-                                                    0
-                                                ]
-                                            },
-                                            "NO"
-                                        ]
-                                    },
-                                    then:"DISABLE",
-                                    else:
-                                    {
-                                        "$cond":
-                                        {
-                                            if:
-                                            {
-                                                "$lt":
-                                                [
-                                                    "$timenow",
-                                                    "$startChallenge"
-                                                ]
-                                            },
-                                            then:"AKAN DATANG",
-                                            else:"SELESAI"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    ],
-                    "updateLeaderboard":[
-                        {
-                            "include":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.updateLeaderboard.include",0
-                                ]
-                            },
-                            "title":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.updateLeaderboard.title",0
-                                ]
-                            },
-                            "titleEN":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.updateLeaderboard.titleEN",0
-                                ]
-                            },
-                            "description":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.updateLeaderboard.description",0
-                                ]
-                            },
-                            "descriptionEN":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.updateLeaderboard.descriptionEN",0
-                                ]
-                            },
-                            "unit":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.updateLeaderboard.unit",0
-                                ]
-                            },
-                            "aturWaktu":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.updateLeaderboard.aturWaktu",0
-                                ]
-                            },
-                            "statusNotifikasi":
-                            {
-                                "$cond":
-                                {
-                                    if:
-                                    {
-                                        "$eq":
-                                        [
-                                            {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$notifikasiPush.updateLeaderboard.include",
-                                                    0
-                                                ]
-                                            },
-                                            "NO"
-                                        ]
-                                    },
-                                    then:"DISABLE",
-                                    else:
-                                    {
-                                        "$switch":
-                                        {
-                                            branches:
-                                            [
+                                          },
+                                          {
+                                            "$multiply":
+                                              [
                                                 {
-                                                    case:
-                                                    {
-                                                        "$lt":
-                                                        [
-                                                            "$timenow",
-                                                            {
-                                                                "$dateToString": {
-                                                                    "format": "%Y-%m-%d %H:%M:%S",
-                                                                    "date": {
-                                                                        "$add":
-                                                                        [
-                                                                            {
-                                                                                $dateFromString: 
-                                                                                {
-                                                                                    dateString: '$startChallenge'
-                                                                                },
-                                                                            },
-                                                                            {
-                                                                                "$multiply":
-                                                                                [
-                                                                                    {
-                                                                                        "$toInt":
-                                                                                        {
-                                                                                            "$first":
-                                                                                            {
-                                                                                                "$let":
-                                                                                                {
-                                                                                                    vars:
-                                                                                                    {
-                                                                                                        datawaktu:
-                                                                                                        {
-                                                                                                            "$let":
-                                                                                                            {
-                                                                                                                vars:
-                                                                                                                {
-                                                                                                                    getdata:
-                                                                                                                    {
-                                                                                                                        "$arrayElemAt":
-                                                                                                                        [
-                                                                                                                            "$notifikasiPush.updateLeaderboard.aturWaktu", 0
-                                                                                                                        ]
-                                                                                                                    }
-                                                                                                                },
-                                                                                                                in:"$$getdata"
-                                                                                                            }
-                                                                                                        },
-                                                                                                    },
-                                                                                                    in:"$$datawaktu"
-                                                                                                }
-                                                                                            },
-                                                                                        },
-                                                                                    },
-                                                                                    3600000
-                                                                                ]
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                }
-                                                            }
-                                                        ]
-                                                    },
-                                                    then:"AKAN DATANG"
+                                                  "$toInt":
+                                                  {
+                                                    "$arrayElemAt":
+                                                      [
+                                                        "$notifikasiPush.challengeAkanBerakhir.aturWaktu",
+                                                        0
+                                                      ]
+                                                  }
                                                 },
+                                                3600000
+                                              ]
+                                          }
+                                        ]
+                                    }
+                                  }
+                                }
+                              ]
+                          },
+                          then: "AKAN DATANG",
+                          else: "SELESAI"
+                        }
+                      }
+                    }
+                  }
+                }
+              ],
+              "challengeBerakhir": [
+                {
+                  "include":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeBerakhir.include", 0
+                      ]
+                  },
+                  "title":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeBerakhir.title", 0
+                      ]
+                  },
+                  "titleEN":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeBerakhir.titleEN", 0
+                      ]
+                  },
+                  "description":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeBerakhir.description", 0
+                      ]
+                  },
+                  "descriptionEN":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeBerakhir.descriptionEN", 0
+                      ]
+                  },
+                  "unit":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeBerakhir.unit", 0
+                      ]
+                  },
+                  "aturWaktu":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.challengeBerakhir.aturWaktu", 0
+                      ]
+                  },
+                  "statusNotifikasi":
+                  {
+                    "$cond":
+                    {
+                      if:
+                      {
+                        "$eq":
+                          [
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$notifikasiPush.challengeBerakhir.include",
+                                  0
+                                ]
+                            },
+                            "NO"
+                          ]
+                      },
+                      then: "DISABLE",
+                      else:
+                      {
+                        "$cond":
+                        {
+                          if:
+                          {
+                            "$lt":
+                              [
+                                "$timenow",
+                                {
+                                  "$dateToString": {
+                                    "format": "%Y-%m-%d %H:%M:%S",
+                                    "date": {
+                                      "$add":
+                                        [
+                                          {
+                                            $dateFromString:
+                                            {
+                                              dateString: '$endChallenge'
+                                            },
+                                          },
+                                          {
+                                            "$multiply":
+                                              [
                                                 {
-                                                    case:
-                                                    {
-                                                        "$lt":
-                                                        [
-                                                            {
-                                                                "$dateToString": {
-                                                                    "format": "%Y-%m-%d %H:%M:%S",
-                                                                    "date": {
-                                                                        "$add":
-                                                                        [
-                                                                            {
-                                                                                $dateFromString: 
-                                                                                {
-                                                                                    dateString: '$endChallenge'
-                                                                                },
-                                                                            },
-                                                                            {
-                                                                                "$multiply":
-                                                                                [
-                                                                                    {
-                                                                                        "$toInt":
-                                                                                        {
-                                                                                            "$last":
-                                                                                            {
-                                                                                                "$let":
-                                                                                                {
-                                                                                                    vars:
-                                                                                                    {
-                                                                                                        datawaktu:
-                                                                                                        {
-                                                                                                            "$let":
-                                                                                                            {
-                                                                                                                vars:
-                                                                                                                {
-                                                                                                                    getdata:
-                                                                                                                    {
-                                                                                                                        "$arrayElemAt":
-                                                                                                                        [
-                                                                                                                            "$notifikasiPush.updateLeaderboard.aturWaktu", 0
-                                                                                                                        ]
-                                                                                                                    }
-                                                                                                                },
-                                                                                                                in:"$$getdata"
-                                                                                                            }
-                                                                                                        },
-                                                                                                    },
-                                                                                                    in:"$$datawaktu"
-                                                                                                }
-                                                                                            },
-                                                                                        }
-                                                                                    },
-                                                                                    3600000
-                                                                                ]
-                                                                            }
-                                                                        ]
-                                                                    }
-                                                                }
-                                                            },
-                                                            "$timenow"
-                                                        ]
-                                                    },
-                                                    then:"SELESAI"
+                                                  "$toInt":
+                                                  {
+                                                    "$arrayElemAt":
+                                                      [
+                                                        "$notifikasiPush.challengeBerakhir.aturWaktu",
+                                                        0
+                                                      ]
+                                                  }
                                                 },
-                                            ],
-                                            default:"SEDANG BERJALAN"
-                                        },
-                                    }
-                                }
-                            }
-                        }
-                    ],
-                    "challengeAkanBerakhir":[
-                        {
-                            "include":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeAkanBerakhir.include",0
-                                ]
-                            },
-                            "title":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeAkanBerakhir.title",0
-                                ]
-                            },
-                            "titleEN":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeAkanBerakhir.titleEN",0
-                                ]
-                            },
-                            "description":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeAkanBerakhir.description",0
-                                ]
-                            },
-                            "descriptionEN":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeAkanBerakhir.descriptionEN",0
-                                ]
-                            },
-                            "unit":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeAkanBerakhir.unit",0
-                                ]
-                            },
-                            "aturWaktu":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeAkanBerakhir.aturWaktu",0
-                                ]
-                            },
-                            "statusNotifikasi":
-                            {
-                                "$cond":
-                                {
-                                    if:
-                                    {
-                                        "$eq":
-                                        [
-                                            {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$notifikasiPush.challengeAkanBerakhir.include",
-                                                    0
-                                                ]
-                                            },
-                                            "NO"
+                                                3600000
+                                              ]
+                                          }
                                         ]
-                                    },
-                                    then:"DISABLE",
-                                    else:
-                                    {
-                                        "$cond":
-                                        {
-                                            if:
-                                            {
-                                                "$lt":
-                                                [
-                                                    "$timenow",
-                                                    {
-                                                        "$dateToString": {
-                                                            "format": "%Y-%m-%d %H:%M:%S",
-                                                            "date": {
-                                                                "$add":
-                                                                [
-                                                                    {
-                                                                        $dateFromString: 
-                                                                        {
-                                                                            dateString: '$endChallenge'
-                                                                        },
-                                                                    },
-                                                                    {
-                                                                        "$multiply":
-                                                                        [
-                                                                            {
-                                                                                "$toInt":
-                                                                                {
-                                                                                    "$arrayElemAt":
-                                                                                    [
-                                                                                        "$notifikasiPush.challengeAkanBerakhir.aturWaktu",
-                                                                                        0
-                                                                                    ]
-                                                                                }
-                                                                            },
-                                                                            3600000
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            }
-                                                        }
-                                                    }
-                                                ]
-                                            },
-                                            then:"AKAN DATANG",
-                                            else:"SELESAI"
-                                        }
                                     }
+                                  }
                                 }
-                            }
+                              ]
+                          },
+                          then: "AKAN DATANG",
+                          else: "SELESAI"
                         }
-                    ],
-                    "challengeBerakhir":[
+                      }
+                    }
+                  }
+                }
+              ],
+              "untukPemenang": [
+                {
+                  "include":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.untukPemenang.include", 0
+                      ]
+                  },
+                  "title":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.untukPemenang.title", 0
+                      ]
+                  },
+                  "titleEN":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.untukPemenang.titleEN", 0
+                      ]
+                  },
+                  "description":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.untukPemenang.description", 0
+                      ]
+                  },
+                  "descriptionEN":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.untukPemenang.descriptionEN", 0
+                      ]
+                  },
+                  "unit":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.untukPemenang.unit", 0
+                      ]
+                  },
+                  "aturWaktu":
+                  {
+                    "$arrayElemAt":
+                      [
+                        "$notifikasiPush.untukPemenang.aturWaktu", 0
+                      ]
+                  },
+                  "statusNotifikasi":
+                  {
+                    "$cond":
+                    {
+                      if:
+                      {
+                        "$eq":
+                          [
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$notifikasiPush.untukPemenang.include",
+                                  0
+                                ]
+                            },
+                            "NO"
+                          ]
+                      },
+                      then: "DISABLE",
+                      else:
+                      {
+                        "$cond":
                         {
-                            "include":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeBerakhir.include",0
-                                ]
-                            },
-                            "title":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeBerakhir.title",0
-                                ]
-                            },
-                            "titleEN":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeBerakhir.titleEN",0
-                                ]
-                            },
-                            "description":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeBerakhir.description",0
-                                ]
-                            },
-                            "descriptionEN":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeBerakhir.descriptionEN",0
-                                ]
-                            },
-                            "unit":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeBerakhir.unit",0
-                                ]
-                            },
-                            "aturWaktu":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.challengeBerakhir.aturWaktu",0
-                                ]
-                            },
-                            "statusNotifikasi":
-                            {
-                                "$cond":
+                          if:
+                          {
+                            "$lt":
+                              [
+                                "$timenow",
                                 {
-                                    if:
-                                    {
-                                        "$eq":
+                                  "$dateToString": {
+                                    "format": "%Y-%m-%d %H:%M:%S",
+                                    "date": {
+                                      "$add":
                                         [
+                                          {
+                                            $dateFromString:
                                             {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$notifikasiPush.challengeBerakhir.include",
-                                                    0
-                                                ]
+                                              dateString: '$endChallenge'
                                             },
-                                            "NO"
+                                          },
+                                          {
+                                            "$multiply":
+                                              [
+                                                {
+                                                  "$toInt":
+                                                  {
+                                                    "$arrayElemAt":
+                                                      [
+                                                        "$notifikasiPush.untukPemenang.aturWaktu",
+                                                        0
+                                                      ]
+                                                  },
+                                                },
+                                                3600000
+                                              ]
+                                          }
                                         ]
-                                    },
-                                    then:"DISABLE",
-                                    else:
-                                    {
-                                        "$cond":
-                                        {
-                                            if:
-                                            {
-                                                "$lt":
-                                                [
-                                                    "$timenow",
-                                                    {
-                                                        "$dateToString": {
-                                                            "format": "%Y-%m-%d %H:%M:%S",
-                                                            "date": {
-                                                                "$add":
-                                                                [
-                                                                    {
-                                                                        $dateFromString: 
-                                                                        {
-                                                                            dateString: '$endChallenge'
-                                                                        },
-                                                                    },
-                                                                    {
-                                                                        "$multiply":
-                                                                        [
-                                                                            {
-                                                                                "$toInt":
-                                                                                {
-                                                                                    "$arrayElemAt":
-                                                                                    [
-                                                                                        "$notifikasiPush.challengeBerakhir.aturWaktu",
-                                                                                        0
-                                                                                    ]
-                                                                                }
-                                                                            },
-                                                                            3600000
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            }
-                                                        }
-                                                    }
-                                                ]
-                                            },
-                                            then:"AKAN DATANG",
-                                            else:"SELESAI"
-                                        }
                                     }
+                                  }
                                 }
-                            }
+                              ]
+                          },
+                          then: "AKAN DATANG",
+                          else: "SELESAI"
                         }
-                    ],
-                    "untukPemenang":[
-                        {
-                            "include":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.untukPemenang.include",0
-                                ]
-                            },
-                            "title":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.untukPemenang.title",0
-                                ]
-                            },
-                            "titleEN":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.untukPemenang.titleEN",0
-                                ]
-                            },
-                            "description":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.untukPemenang.description",0
-                                ]
-                            },
-                            "descriptionEN":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.untukPemenang.descriptionEN",0
-                                ]
-                            },
-                            "unit":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.untukPemenang.unit",0
-                                ]
-                            },
-                            "aturWaktu":
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$notifikasiPush.untukPemenang.aturWaktu",0
-                                ]
-                            },
-                            "statusNotifikasi":
-                            {
-                                "$cond":
-                                {
-                                    if:
-                                    {
-                                        "$eq":
-                                        [
-                                            {
-                                                "$arrayElemAt":
-                                                [
-                                                    "$notifikasiPush.untukPemenang.include",
-                                                    0
-                                                ]
-                                            },
-                                            "NO"
-                                        ]
-                                    },
-                                    then:"DISABLE",
-                                    else:
-                                    {
-                                        "$cond":
-                                        {
-                                            if:
-                                            {
-                                                "$lt":
-                                                [
-                                                    "$timenow",
-                                                    {
-                                                        "$dateToString": {
-                                                            "format": "%Y-%m-%d %H:%M:%S",
-                                                            "date": {
-                                                                "$add":
-                                                                [
-                                                                    {
-                                                                        $dateFromString: 
-                                                                        {
-                                                                            dateString: '$endChallenge'
-                                                                        },
-                                                                    },
-                                                                    {
-                                                                        "$multiply":
-                                                                        [
-                                                                            {
-                                                                                "$toInt":
-                                                                                {
-                                                                                    "$arrayElemAt":
-                                                                                    [
-                                                                                        "$notifikasiPush.untukPemenang.aturWaktu",
-                                                                                        0
-                                                                                    ]
-                                                                                },
-                                                                            },
-                                                                            3600000
-                                                                        ]
-                                                                    }
-                                                                ]
-                                                            }
-                                                        }
-                                                    }
-                                                ]
-                                            },
-                                            then:"AKAN DATANG",
-                                            else:"SELESAI"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    ],
-                },
-            ],
-            totalsession:
-            {
-                "$last": "$session.session"
+                      }
+                    }
+                  }
+                }
+              ],
             },
-            //listParticipant:1,
-						// listParticipant:
-						// {
-						// 		"$reduce": 
-						// 		{
-            //         input: "$listParticipant",
-            //         initialValue: "",
-            //         in: 
-						// 				{ 
-						// 					$concat: 
-						// 					[ 
-						// 						"$$value",
-						// 						{
-						// 							"$toString":"$$this"
-						// 						},
-						// 						","
-						// 					] 
-						// 				}
-            //     }
-						// },
-            session: 1
+          ],
+          totalsession:
+          {
+            "$last": "$session.session"
+          },
+          //listParticipant:1,
+          // listParticipant:
+          // {
+          // 		"$reduce": 
+          // 		{
+          //         input: "$listParticipant",
+          //         initialValue: "",
+          //         in: 
+          // 				{ 
+          // 					$concat: 
+          // 					[ 
+          // 						"$$value",
+          // 						{
+          // 							"$toString":"$$this"
+          // 						},
+          // 						","
+          // 					] 
+          // 				}
+          //     }
+          // },
+          session: 1
         }
       }
     ]);
@@ -1964,7 +1979,7 @@ export class ChallengeService {
     var pipeline = [];
     pipeline.push(
       {
-          "$set": {
+        "$set": {
           "timenow": {
             "$dateToString": {
               "format": "%Y-%m-%d %H:%M:%S",
@@ -1979,131 +1994,129 @@ export class ChallengeService {
         }
       }
     );
-  
-  if(jenischallenge != undefined && jenischallenge != null)
-  {
-    var mongo = require('mongoose');
-    var konvertchallenge = mongo.Types.ObjectId(jenischallenge);
-    pipeline.push(
-    {
-      "$match":
-      {
-        "$and":
-          [
-            // {
-            //   "$expr":
-            //   {
-            //     "$lte":
-            //       [
-            //         {
-            //           "$concat":
-            //           [
-            //             "$startChallenge",
-            //             " ",
-            //             "$startTime"
-            //           ]
-            //         },
-            //         "$timenow"
-            //       ]
-            //   }
-            // },
-            {
-              "$expr":
-              {
-                "$gte":
-                  [
-                    {
-                      "$concat":
+
+    if (jenischallenge != undefined && jenischallenge != null) {
+      var mongo = require('mongoose');
+      var konvertchallenge = mongo.Types.ObjectId(jenischallenge);
+      pipeline.push(
+        {
+          "$match":
+          {
+            "$and":
+              [
+                // {
+                //   "$expr":
+                //   {
+                //     "$lte":
+                //       [
+                //         {
+                //           "$concat":
+                //           [
+                //             "$startChallenge",
+                //             " ",
+                //             "$startTime"
+                //           ]
+                //         },
+                //         "$timenow"
+                //       ]
+                //   }
+                // },
+                {
+                  "$expr":
+                  {
+                    "$gte":
                       [
-                        "$endChallenge",
-                        " ",
-                        "$endTime"
+                        {
+                          "$concat":
+                            [
+                              "$endChallenge",
+                              " ",
+                              "$endTime"
+                            ]
+                        },
+                        "$timenow"
                       ]
-                    },
-                    "$timenow"
-                  ]
-              }
-            },
-            {
-              "$expr":
-              {
-                "$eq":
-                  [
-                    "$statusChallenge",
-                    "PUBLISH"
-                  ]
-              }
-            },
-            {
-              "$expr":
-              {
-                "$eq":
-                  [
-                    "$jenisChallenge",
-                    konvertchallenge
-                  ]
-              }
-            }
-          ]
-      }
-    });
-  }
-  else
-  {
-    pipeline.push(
-    {
-      "$match":
-      {
-        "$and":
-          [
-            // {
-            //   "$expr":
-            //   {
-            //     "$lte":
-            //       [
-            //         {
-            //           "$concat":
-            //           [
-            //             "$startChallenge",
-            //             " ",
-            //             "$startTime"
-            //           ]
-            //         },
-            //         "$timenow"
-            //       ]
-            //   }
-            // },
-            {
-              "$expr":
-              {
-                "$gte":
-                  [
-                    {
-                      "$concat":
+                  }
+                },
+                {
+                  "$expr":
+                  {
+                    "$eq":
                       [
-                        "$endChallenge",
-                        " ",
-                        "$endTime"
+                        "$statusChallenge",
+                        "PUBLISH"
                       ]
-                    },
-                    "$timenow"
-                  ]
-              }
-            },
-            {
-              "$expr":
-              {
-                "$eq":
-                  [
-                    "$statusChallenge",
-                    "PUBLISH"
-                  ]
-              }
-            }
-          ]
-      }
-    });
-  }
+                  }
+                },
+                {
+                  "$expr":
+                  {
+                    "$eq":
+                      [
+                        "$jenisChallenge",
+                        konvertchallenge
+                      ]
+                  }
+                }
+              ]
+          }
+        });
+    }
+    else {
+      pipeline.push(
+        {
+          "$match":
+          {
+            "$and":
+              [
+                // {
+                //   "$expr":
+                //   {
+                //     "$lte":
+                //       [
+                //         {
+                //           "$concat":
+                //           [
+                //             "$startChallenge",
+                //             " ",
+                //             "$startTime"
+                //           ]
+                //         },
+                //         "$timenow"
+                //       ]
+                //   }
+                // },
+                {
+                  "$expr":
+                  {
+                    "$gte":
+                      [
+                        {
+                          "$concat":
+                            [
+                              "$endChallenge",
+                              " ",
+                              "$endTime"
+                            ]
+                        },
+                        "$timenow"
+                      ]
+                  }
+                },
+                {
+                  "$expr":
+                  {
+                    "$eq":
+                      [
+                        "$statusChallenge",
+                        "PUBLISH"
+                      ]
+                  }
+                }
+              ]
+          }
+        });
+    }
 
     var projectdata = {
       _id: 1,
@@ -2140,19 +2153,18 @@ export class ChallengeService {
       {
         "$sort":
         {
-          createdAt:-1
+          createdAt: -1
         }
       },
       {
-        "$limit":5
+        "$limit": 5
       }
     );
 
-    if(page > 0)
-    {
+    if (page > 0) {
       pipeline.push(
         {
-          "$skip":page * 5
+          "$skip": page * 5
         }
       );
     }
@@ -2404,218 +2416,214 @@ export class ChallengeService {
     var konvertid = mongo.Types.ObjectId(iduser);
     var pipeline = [];
     pipeline.push({
-        "$set": {
-            timeEnd: {
-                "$concat": [
-                    {
-                        "$dateToString": {
-                            "format": "%Y-%m-%d",
-                            "date": {
-                                $toDate: "$endChallenge"
-                            }
-                        }
-                    },
-                    " ",
-                    "$endTime"
-                ]
-            }
-          }
-      },
-          {
-          "$set": {
-              timeStart: {
-                  "$concat": [
-                      {
-                          "$dateToString": {
-                              "format": "%Y-%m-%d",
-                              "date": {
-                                  $toDate: "$startChallenge"
-                              }
-                          }
-                      },
-                      " ",
-                      "$startTime"
-                  ]
+      "$set": {
+        timeEnd: {
+          "$concat": [
+            {
+              "$dateToString": {
+                "format": "%Y-%m-%d",
+                "date": {
+                  $toDate: "$endChallenge"
+                }
               }
+            },
+            " ",
+            "$endTime"
+          ]
+        }
+      }
+    },
+      {
+        "$set": {
+          timeStart: {
+            "$concat": [
+              {
+                "$dateToString": {
+                  "format": "%Y-%m-%d",
+                  "date": {
+                    $toDate: "$startChallenge"
+                  }
+                }
+              },
+              " ",
+              "$startTime"
+            ]
           }
+        }
       },
       {
-          $set: {
-              nowDate: 
-              {
-                  "$dateToString": {
-                      "format": "%Y-%m-%d %H:%M:%S",
-                      "date": {
-                          $add: [new Date(), 25200000]
-                      }
-                  }
+        $set: {
+          nowDate:
+          {
+            "$dateToString": {
+              "format": "%Y-%m-%d %H:%M:%S",
+              "date": {
+                $add: [new Date(), 25200000]
               }
+            }
           }
+        }
       });
 
-  if(jenischallenge != undefined && jenischallenge != null)
-  {
-    var mongo = require('mongoose');
-    var konvertjenischallenge = mongo.Types.ObjectId(jenischallenge);
+    if (jenischallenge != undefined && jenischallenge != null) {
+      var mongo = require('mongoose');
+      var konvertjenischallenge = mongo.Types.ObjectId(jenischallenge);
 
-    pipeline.push({
+      pipeline.push({
         $match: {
-            $and: [
-                {
-                  $expr: 
-                  {
-                      $gte: ["$timeEnd", "$nowDate"]
-                  },
-                },
-                {
-                    "statusChallenge": "PUBLISH"
-                },
-                {
-                  "jenisChallenge":konvertjenischallenge
-                }
-            ]
-        }
-    });
-  }
-  else
-  {
-    pipeline.push(
-    {
-      $match: {
-            $and: [
-                {
-                    $expr: 
-                    {
-                        $gte: ["$timeEnd", "$nowDate"]
-                    },
-                    
-                },
-                {
-                    "statusChallenge": "PUBLISH"
-                }
-            ]
-        }
-    });
-  }
-
-  pipeline.push(
-      {
-          "$lookup": 
-          {
-              from: "userChallenge",
-              let: 
+          $and: [
+            {
+              $expr:
               {
-                  userchallenge_fk: "$_id"
+                $gte: ["$timeEnd", "$nowDate"]
               },
-              as: 'userChallenges',
-              pipeline: 
-              [
-                  {
-                      "$match": 
-                      {
-                          "$and": 
-                          [
-                              {
-                                  "$expr": 
-                                  {
-                                      "$eq": 
-                                      [
-                                          "$$userchallenge_fk",
-                                          "$idChallenge"
-                                      ]
-                                  }
-                              },
-                              {
-                                  isActive: true
-                              },
-                              {
-                                  idUser: konvertid,
-                                  
-                              }
-                          ]
-                      }
-                  },
-                  
-              ]
-          },
-          
-      },
-      {
-          $project: {
-              "_id": 1,
-              "nameChallenge": 1,
-              "jenisChallenge": 1,
-              "description": 1,
-              "createdAt": 1,
-              "updatedAt": 1,
-              "durasi": 1,
-              "startChallenge": 1,
-              "endChallenge": 1,
-              "startTime": 1,
-              "endTime": 1,
-              "jenisDurasi": 1,
-              "tampilStatusPengguna": 1,
-              "objectChallenge": 1,
-              "statusChallenge": 1,
-              searchBanner: {
-                  $arrayElemAt: ["$bannerSearch.image", 0]
-              },
-              bannerLeaderboard: {
-                  $arrayElemAt: ["$leaderBoard.bannerLeaderboard", 0]
-              },
-              statusJoined: 
-              {
-                  $cond: {
-                      if: {
-                          $gt: [{
-                              $size: '$userChallenges'
-                          }, 0]
-                      },
-                      then: "Partisipan",
-                      else: "Bukan Partisipan"
-                  }
-              },
-              statusFormalChallenge: 
-              {
-                  $cond: {
-                      if: {
-                          $and: [
-                              {
-                                  $gte: ["$timeEnd", "$nowDate"]
-                              },		
-                              {
-                                  $lte: ["$timeStart", "$nowDate"]
-                              },																													
-                          ]
-                      },
-                      then: "Berlangsung",
-                      else: "Akan Datang"
-                  }
-              },
-          }
-      },
-      {
-            $sort: {
-                statusChallenge: -1,
-                timeStart: 1,
+            },
+            {
+              "statusChallenge": "PUBLISH"
+            },
+            {
+              "jenisChallenge": konvertjenischallenge
             }
+          ]
+        }
+      });
+    }
+    else {
+      pipeline.push(
+        {
+          $match: {
+            $and: [
+              {
+                $expr:
+                {
+                  $gte: ["$timeEnd", "$nowDate"]
+                },
+
+              },
+              {
+                "statusChallenge": "PUBLISH"
+              }
+            ]
+          }
+        });
+    }
+
+    pipeline.push(
+      {
+        "$lookup":
+        {
+          from: "userChallenge",
+          let:
+          {
+            userchallenge_fk: "$_id"
+          },
+          as: 'userChallenges',
+          pipeline:
+            [
+              {
+                "$match":
+                {
+                  "$and":
+                    [
+                      {
+                        "$expr":
+                        {
+                          "$eq":
+                            [
+                              "$$userchallenge_fk",
+                              "$idChallenge"
+                            ]
+                        }
+                      },
+                      {
+                        isActive: true
+                      },
+                      {
+                        idUser: konvertid,
+
+                      }
+                    ]
+                }
+              },
+
+            ]
+        },
+
+      },
+      {
+        $project: {
+          "_id": 1,
+          "nameChallenge": 1,
+          "jenisChallenge": 1,
+          "description": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "durasi": 1,
+          "startChallenge": 1,
+          "endChallenge": 1,
+          "startTime": 1,
+          "endTime": 1,
+          "jenisDurasi": 1,
+          "tampilStatusPengguna": 1,
+          "objectChallenge": 1,
+          "statusChallenge": 1,
+          searchBanner: {
+            $arrayElemAt: ["$bannerSearch.image", 0]
+          },
+          bannerLeaderboard: {
+            $arrayElemAt: ["$leaderBoard.bannerLeaderboard", 0]
+          },
+          statusJoined:
+          {
+            $cond: {
+              if: {
+                $gt: [{
+                  $size: '$userChallenges'
+                }, 0]
+              },
+              then: "Partisipan",
+              else: "Bukan Partisipan"
+            }
+          },
+          statusFormalChallenge:
+          {
+            $cond: {
+              if: {
+                $and: [
+                  {
+                    $gte: ["$timeEnd", "$nowDate"]
+                  },
+                  {
+                    $lte: ["$timeStart", "$nowDate"]
+                  },
+                ]
+              },
+              then: "Berlangsung",
+              else: "Akan Datang"
+            }
+          },
+        }
+      },
+      {
+        $sort: {
+          statusChallenge: -1,
+          timeStart: 1,
+        }
       }
     );
 
-    if(page > 0)
-    {
+    if (page > 0) {
       pipeline.push(
         {
-          "$skip":page * limit
+          "$skip": page * limit
         }
       );
     }
 
-    if(limit > 0)
-    {
+    if (limit > 0) {
       pipeline.push(
         {
-          "$limit":limit
+          "$limit": limit
         }
       );
     }
@@ -2623,5 +2631,261 @@ export class ChallengeService {
     var data = await this.ChallengeModel.aggregate(pipeline);
 
     return data;
+  }
+
+  async userbadge() {
+    var datachallengejuara = null;
+    var status = null;
+    var idsubchallenge = null;
+    var idchallenge = null;
+    var session = null;
+    var startDatetime = null;
+    var endDatetime = null;
+    var userjuara = null;
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var timedate = splitdate[0];
+    try {
+      datachallengejuara = await this.subchallenge.getjuara();
+    } catch (e) {
+      datachallengejuara = null;
+    }
+
+    if (datachallengejuara !== null && datachallengejuara.length > 0) {
+      for (let i = 0; i < datachallengejuara.length; i++) {
+        status = datachallengejuara[i], status;
+        idsubchallenge = datachallengejuara[i]._id;
+        idchallenge = datachallengejuara[i].challengeId;
+        session = datachallengejuara[i].session;
+        startDatetime = datachallengejuara[i].startDatetime;
+        endDatetime = datachallengejuara[i].endDatetime;
+        userjuara = datachallengejuara[i].getlastrank;
+        let lengtjuara = userjuara.length;
+        let end = new Date(endDatetime);
+        end.setHours(dt.getHours() + 12); // timestamp
+        end = new Date(end);
+        let getseminngu = new Date(new Date(end).setDate(new Date(end).getDate() + 7));
+        let strdateseminggu = getseminngu.toISOString();
+        var repdatesm = strdateseminggu.replace('T', ' ');
+        var splitdatesm = repdatesm.split('.');
+        var timedatesm = splitdatesm[0];
+        if (lengtjuara > 0) {
+          for (let x = 0; x < lengtjuara; x++) {
+            let iduser = userjuara[x].idUser;
+            let ranking = userjuara[x].ranking;
+            let score = userjuara[x].score;
+            let lastRank = userjuara[x].lastRank;
+            let idBadge = userjuara[x].idBadge;
+            let idSubChallenges = userjuara[x].idSubChallenge;
+            let databadge = null;
+            try {
+              databadge = await this.userbadgeService.getUserbadge(iduser.toString(), idSubChallenges.toString());
+            } catch (e) {
+              databadge = null;
+            }
+
+            if (databadge == null && databadge == undefined) {
+              if (status = "BERAKHIR") {
+                let Userbadge_ = new Userbadge();
+                Userbadge_.SubChallengeId = idSubChallenges;
+                Userbadge_.idBadge = idBadge;
+                Userbadge_.createdAt = timedate;
+                Userbadge_.isActive = true;
+                Userbadge_.userId = iduser;
+                Userbadge_.session = session;
+                Userbadge_.startDatetime = endDatetime;
+                Userbadge_.endDatetime = timedatesm;
+
+                await this.userbadgeService.create(Userbadge_);
+
+              }
+
+            }
+
+          }
+        }
+
+      }
+
+    }
+  }
+
+  async updateUserbadge() {
+    var idsubchallenge = null;
+    var idchallenge = null;
+    var session = null;
+    var startDatetime = null;
+    var endDatetime = null;
+    var isActive = null;
+    var status = null;
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var timedate = splitdate[0];
+    var datachallengejuara = null;
+    try {
+      datachallengejuara = await this.subchallenge.getjuara();
+    } catch (e) {
+      datachallengejuara = null;
+    }
+
+    if (datachallengejuara !== null && datachallengejuara.length > 0) {
+      for (let i = 0; i < datachallengejuara.length; i++) {
+        status = datachallengejuara[i], status;
+        idsubchallenge = datachallengejuara[i]._id;
+        idchallenge = datachallengejuara[i].challengeId;
+        session = datachallengejuara[i].session;
+        startDatetime = datachallengejuara[i].startDatetime;
+        endDatetime = datachallengejuara[i].endDatetime;
+        isActive = datachallengejuara[i].isActive;
+        let end = new Date(endDatetime);
+        end.setHours(dt.getHours() + 12); // timestamp
+        end = new Date(end);
+        let getseminngu = new Date(new Date(end).setDate(new Date(end).getDate() + 7));
+        let strdateseminggu = getseminngu.toISOString();
+        var repdatesm = strdateseminggu.replace('T', ' ');
+        var splitdatesm = repdatesm.split('.');
+        var timedatesm = splitdatesm[0];
+        if (timedate >= timedatesm) {
+          if (isActive == true) {
+            let CreateSubChallengeDto_ = new CreateSubChallengeDto();
+            CreateSubChallengeDto_.isActive = false;
+            await this.subchallenge.update(idsubchallenge.toString(), CreateSubChallengeDto_);
+
+          }
+
+        }
+
+      }
+    }
+
+  }
+
+  async sendNotifeChallenge() {
+
+    var datanotif = null;
+    var email = null;
+    var body = null;
+    var bodyEN = null;
+    var title = null;
+    var titleEN = null;
+    var timenow = null;
+    var datetime = null;
+    var challengeID = null;
+    var typeChallenge = null;
+    var databasic = null;
+    var id = null;
+    var type = null;
+    var languages = null;
+    var idlanguages = null;
+    var datalanguage = null;
+    var langIso = null;
+    var datapemenang = null;
+    var getlastrank = null;
+    try {
+      datanotif = await this.notifChallengeService.listnotifchallenge();
+    } catch (e) {
+      datanotif = null;
+    }
+    timenow = new Date(Date.now());
+    if (datanotif !== null && datanotif.length > 0) {
+
+      for (let i = 0; i < datanotif.length; i++) {
+        id = datanotif[i]._id;
+        challengeID = datanotif[i].challengeID;
+        email = datanotif[i].email;
+        title = datanotif[i].title;
+        titleEN = datanotif[i].titleEN;
+        body = datanotif[i].notification;
+        bodyEN = datanotif[i].notificationEN;
+        datetime = datanotif[i].datetime;
+        type = datanotif[i].type;
+        typeChallenge = datanotif[i].typeChallenge;
+
+        try {
+          databasic = await this.userbasicsSS.findOne(email);
+        } catch (e) {
+          databasic = null;
+        }
+
+        if (databasic !== null) {
+          try {
+            languages = databasic.languages;
+            idlanguages = languages.oid.toString();
+            datalanguage = await this.languagesService.findOne(idlanguages)
+            langIso = datalanguage.langIso;
+
+            console.log(idlanguages)
+          } catch (e) {
+            languages = null;
+            idlanguages = "";
+            datalanguage = null;
+            langIso = "";
+          }
+
+        }
+
+        if (timenow == new Date(datetime)) {
+
+          if (type == "untukPemenang") {
+            try {
+              datapemenang = await this.subchallenge.getpemenang(challengeID.toString());
+            } catch (e) {
+              datapemenang = null;
+            }
+            if (datapemenang !== null && datapemenang.length > 0) {
+
+              try {
+                getlastrank = datapemenang[0].getlastrank;
+              } catch (e) {
+                getlastrank = null;
+              }
+              if (getlastrank !== null && getlastrank.length > 0) {
+                for (let i = 0; i < getlastrank.length; i++) {
+                  let emailmenang = getlastrank[i].email
+
+                  if (langIso == "id") {
+                    await this.util.sendNotifChallenge(emailmenang, title, body, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                    await this.notifChallengeService.updateStatussend(id.toString(), email);
+                  } else {
+                    await this.util.sendNotifChallenge(emailmenang, titleEN, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                    await this.notifChallengeService.updateStatussend(id.toString(), email);
+                  }
+
+
+                }
+
+              }
+
+            }
+
+
+          } else {
+
+            if (langIso == "id") {
+              await this.util.sendNotifChallenge(email, title, body, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+              await this.notifChallengeService.updateStatussend(id.toString(), email);
+            } else {
+              await this.util.sendNotifChallenge(email, titleEN, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+              await this.notifChallengeService.updateStatussend(id.toString(), email);
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
   }
 }
