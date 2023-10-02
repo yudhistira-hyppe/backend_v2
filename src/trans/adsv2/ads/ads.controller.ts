@@ -1601,7 +1601,19 @@ export class AdsController {
                 CreateUserAdsDto_.scoreGeografis = data_ads[0].scoreGeografis;
                 CreateUserAdsDto_.scoreInterest = data_ads[0].scoreMinat;
                 CreateUserAdsDto_.scoreTotal = data_ads[0].scoreTotal;
+                CreateUserAdsDto_.updateAt = [current_date];
+                CreateUserAdsDto_.statusView = true;
+                CreateUserAdsDto_.viewed = 1;
                 this.userAdsService.create(CreateUserAdsDto_);
+            } else {
+                var data_Update_UserAds = {
+                    $inc: { 'viewed': 1 },
+                    $push: { "updateAt": current_date },
+                }
+                if (((ceckData.viewed != undefined ? ceckData.viewed : 0) + 1) == (data_ads.audiensFrekuensi != undefined ? data_ads.audiensFrekuensi : 0)) {
+                    data_Update_UserAds["isActive"] = false;
+                }
+                await this.userAdsService.updateData(ceckData._id.toString(), data_Update_UserAds)
             }
 
             //Get Pict User Ads
@@ -2036,10 +2048,15 @@ export class AdsController {
             //Update User Ads
             var data_Update_UserAds = {
                 statusClick: true,
-                timeViewSecond: Number(AdsAction_.watchingTime),
-                $inc: { 'viewed': 1, 'cliked': 1 },
-                $push: { "updateAt": current_date_string, 'timeView': Number(AdsAction_.watchingTime), "clickTime": current_date_string, },
+                $inc: { 'cliked': 1 },
+                $push: { "clickTime": current_date_string, },
             }
+            // var data_Update_UserAds = {
+            //     statusClick: true,
+            //     timeViewSecond: Number(AdsAction_.watchingTime),
+            //     $inc: { 'viewed': 1, 'cliked': 1 },
+            //     $push: { "updateAt": current_date_string, 'timeView': Number(AdsAction_.watchingTime), "clickTime": current_date_string, },
+            // }
             if (((dataAdsUser.viewed != undefined ? dataAdsUser.viewed : 0) + 1) == (dataAds.audiensFrekuensi != undefined ? dataAds.audiensFrekuensi : 0)) {
                 data_Update_UserAds["isActive"] = false;
             }
