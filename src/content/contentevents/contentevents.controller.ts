@@ -3878,7 +3878,7 @@ export class ContenteventsController {
             }
           }
 
-          if (datatag != null && datatag.length > 0) {
+          if (datatag != null && datatag != undefined && datatag.length > 0) {
 
             for (let i = 0; i < datatag.length; i++) {
               let postIDpost = datatag[i].postID;

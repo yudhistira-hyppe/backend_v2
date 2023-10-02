@@ -3253,15 +3253,18 @@ export class subChallengeService {
                                                 },
 
                                             },
-                                            {
-                                                $limit: 1
-                                            },
+                                            // {
+                                            //     $limit: 1
+                                            // },
                                             {
                                                 $sort: {
                                                     score: - 1,
                                                     updatedAt: 1,
 
                                                 }
+                                            },
+                                            {
+                                                $limit: 1
                                             },
                                             {
                                                 "$lookup":
