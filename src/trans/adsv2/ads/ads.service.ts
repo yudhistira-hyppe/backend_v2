@@ -4753,12 +4753,12 @@ export class AdsService {
                                     $ne: "$email"
                                 }
                             },
-                            // {
-                            //     "userID":
-                            //     {
-                            //         $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
-                            //     }
-                            // },
+                            {
+                                "userID":
+                                {
+                                    $ne: new mongoose.Types.ObjectId(idUser)
+                                }
+                            },
                             {
                                 $expr: {
                                     $lt: ["$tayang", "$testDate"]
@@ -5519,7 +5519,7 @@ export class AdsService {
                                         }
                                     },
                                     {
-                                        "userID": new mongoose.Types.ObjectId(idUser)
+                                        "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                                     },
                                     {
                                         $expr: {
@@ -5553,7 +5553,7 @@ export class AdsService {
                                     },
                                     {
                                         "userID": {
-                                            $ne: new mongoose.Types.ObjectId(idUser)
+                                            $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                                         }
                                     },
 
@@ -5578,7 +5578,7 @@ export class AdsService {
                                     },
                                     {
                                         "userID": {
-                                            $ne: new mongoose.Types.ObjectId(idUser)
+                                            $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
                                         }
                                     },
 
