@@ -146,78 +146,83 @@ export class ChallengeController {
         throw new BadRequestException("Unabled to proceed, referral score or following score is required");
       }
 
+      var tempinsideakun = {};
+      if(setreferal != 0)
+      {
+        tempinsideakun['Referal'] = setreferal;
+      }
+
+      if(setikuti != 0)
+      {
+        tempinsideakun['Ikuti'] = setikuti;
+      }
+
       setmetrik = {
         "Aktivitas": true,
         "Interaksi": false,
         "InteraksiKonten": [],
-        "AktivitasAkun": [
-          {
-            "Referal": setreferal,
-            "Ikuti": setikuti
-          }
-        ]
+        "AktivitasAkun": [tempinsideakun]
       }
     }
     else {
-      if (request_json["konten_hyppevid_createpost"] == undefined && request_json["konten_hyppevid_createpost"] == null) {
-        request_json['konten_hyppevid_createpost'] = 0;
+      var tempinsidesuka = {};
+      var tempinsidenonton = {};
+      var tempinsidebuat = {};
+
+      if (request_json["konten_hyppevid_createpost"] != undefined && request_json["konten_hyppevid_createpost"] != null) {
+        tempinsidebuat['HyppeVid'] = request_json['konten_hyppevid_createpost'];
       }
 
-      if (request_json["konten_hyppepic_createpost"] == undefined && request_json["konten_hyppepic_createpost"] == null) {
-        request_json['konten_hyppepic_createpost'] = 0;
+      if (request_json["konten_hyppepic_createpost"] != undefined && request_json["konten_hyppepic_createpost"] != null) {
+        tempinsidebuat['HyppePic'] = request_json['konten_hyppepic_createpost'];
       }
 
-      if (request_json["konten_hyppediary_createpost"] == undefined && request_json["konten_hyppediary_createpost"] == null) {
-        request_json['konten_hyppediary_createpost'] = 0;
+      if (request_json["konten_hyppediary_createpost"] != undefined && request_json["konten_hyppediary_createpost"] != null) {
+        tempinsidebuat['HyppeDiary'] = request_json['konten_hyppediary_createpost'];
       }
 
-      if (request_json["konten_hyppevid_likepost"] == undefined && request_json["konten_hyppevid_likepost"] == null) {
-        request_json['konten_hyppevid_likepost'] = 0;
+      if (request_json["konten_hyppevid_likepost"] != undefined && request_json["konten_hyppevid_likepost"] != null) {
+        tempinsidesuka['HyppeVid'] = request_json['konten_hyppevid_likepost'];
       }
 
-      if (request_json["konten_hyppepic_likepost"] == undefined && request_json["konten_hyppepic_likepost"] == null) {
-        request_json['konten_hyppepic_likepost'] = 0;
+      if (request_json["konten_hyppepic_likepost"] != undefined && request_json["konten_hyppepic_likepost"] != null) {
+        tempinsidesuka['HyppePic'] = request_json['konten_hyppepic_likepost'];
       }
 
-      if (request_json["konten_hyppediary_likepost"] == undefined && request_json["konten_hyppediary_likepost"] == null) {
-        request_json['konten_hyppediary_likepost'] = 0;
+      if (request_json["konten_hyppediary_likepost"] != undefined && request_json["konten_hyppediary_likepost"] != null) {
+        tempinsidesuka['HyppeDiary'] = request_json['konten_hyppediary_likepost'];
       }
 
-      if (request_json["konten_hyppevid_viewpost"] == undefined && request_json["konten_hyppevid_viewpost"] == null) {
-        request_json['konten_hyppevid_viewpost'] = 0;
+      if (request_json["konten_hyppevid_viewpost"] != undefined && request_json["konten_hyppevid_viewpost"] != null) {
+        tempinsidenonton['HyppeVid'] = request_json['konten_hyppevid_viewpost'];
       }
 
-      if (request_json["konten_hyppediary_viewpost"] == undefined && request_json["konten_hyppediary_viewpost"] == null) {
-        request_json['konten_hyppediary_viewpost'] = 0;
+      if (request_json["konten_hyppediary_viewpost"] != undefined && request_json["konten_hyppediary_viewpost"] != null) {
+        tempinsidenonton['HyppeDiary'] = request_json['konten_hyppediary_viewpost'];
       }
+
+      var arraysuka = (Object.keys(tempinsidesuka).length == 0 ? [] : [tempinsidesuka]);
+      var arraynonton = (Object.keys(tempinsidenonton).length == 0 ? [] : [tempinsidenonton]);
+      var arraybuat = (Object.keys(tempinsidebuat).length == 0 ? [] : [tempinsidebuat]);
 
       var setinteraksikonten = {
-        "suka": [
-          {
-            "HyppeVid": Number(request_json['konten_hyppevid_likepost']),
-            "HyppePic": Number(request_json['konten_hyppepic_likepost']),
-            "HyppeDiary": Number(request_json['konten_hyppediary_likepost'])
-          }
-        ],
-        "tonton": [
-          {
-            "HyppeVid": Number(request_json['konten_hyppevid_viewpost']),
-            "HyppeDiary": Number(request_json['konten_hyppediary_viewpost'])
-          }
-        ],
+        "suka": arraysuka,
+        "tonton": arraynonton,
       }
 
       if (insertdata.objectChallenge == 'KONTEN') {
         setinteraksikonten['buatKonten'] = [];
       }
       else {
-        setinteraksikonten['buatKonten'] = [
-          {
-            "HyppeVid": Number(request_json['konten_hyppevid_createpost']),
-            "HyppePic": Number(request_json['konten_hyppepic_createpost']),
-            "HyppeDiary": Number(request_json['konten_hyppediary_createpost'])
-          }
-        ];
+        setinteraksikonten['buatKonten'] = arraybuat;
+      }
+
+      if(setinteraksikonten['buatKonten'].length == 0 && setinteraksikonten['tonton'].length == 0 && setinteraksikonten['suka'].length == 0)
+      {
+        var timestamps_end = await this.util.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        throw new NotAcceptableException("Unabled to proceed, insert content interaction score at least one.");
       }
 
       if (request_json["konten_tagar"] != null && request_json["konten_tagar"] != undefined) {
