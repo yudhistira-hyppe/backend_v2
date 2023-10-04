@@ -39,7 +39,47 @@ export class ContenteventsService {
     query.where('email', email);
     return query.exec();
   }
+  async findLiked(postID: string, startdate: string, enddate: string) {
 
+    var pipeline = [];
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+    if (startdate && startdate !== undefined) {
+
+      pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+
+    }
+    if (enddate && enddate !== undefined) {
+
+      pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
+
+    }
+    pipeline.push(
+      {
+        $match:
+        {
+
+          "postID": postID,
+          "eventType": "LIKE",
+          "event": "DONE",
+
+
+        }
+      },
+
+      { $count: "myCount" }
+    );
+
+
+    let query = this.ContenteventsModel.aggregate(pipeline);
+
+    return query.exec();
+  }
   async findisLike(email: string, postID: string) {
     let query = this.ContenteventsModel.aggregate([
 

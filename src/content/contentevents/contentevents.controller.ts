@@ -5217,6 +5217,522 @@ export class ContenteventsController {
 
   }
 
+  async userChallengeLike3new(idref: string, nametable: string, action: string, postID: string, emailuser: string, emailreceiver: string) {
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
 
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var timedate = splitdate[0];
+    var lengchal = null;
+    var datauserchall = null;
+    var datachallenge = null;
+    var arrdata = [];
+    var objintr = {};
+    var datasubchallenge = null;
+    var poin = null;
+    var datatag = null;
+    var poinViewVid = null;
+    var poinViewDiary = null;
+    var poinPict = null;
+    var tagar = null;
+    var datapostchall = null;
+    var idpostchall = null;
+    var databasic = null;
+    var objectChallenge = null;
+    var iduser = null;
+    var datapost = null;
+    var createAt = null;
+    var saleAmount = null;
+    var postTypeParent = null;
+    try {
+      datapost = await this.postsService.findByPostId(postID);
+    } catch (e) {
+      datapost = null;
+    }
+    if (datapost !== null) {
+      postTypeParent = datapost.postType;
+      createAt = datapost.createdAt;
+      if (datapost.saleAmount !== undefined) {
+        saleAmount = datapost.saleAmount;
+      } else {
+        saleAmount = 0;
+      }
+    }
+    try {
+      datachallenge = await this.challengeService.challengeKonten();
+    } catch (e) {
+      datachallenge = null;
+    }
+
+    if (datachallenge !== null && datachallenge.length > 0) {
+      lengchal = datachallenge.length;
+
+      for (let i = 0; i < lengchal; i++) {
+        var idChallenge = datachallenge[i]._id.toString();
+        try {
+          objectChallenge = datachallenge[i].objectChallenge;
+        } catch (e) {
+          objectChallenge = null;
+        }
+
+        try {
+          poinViewVid = datachallenge[i].suka[0].HyppeVid;
+        } catch (e) {
+          poinViewVid = 0;
+        }
+
+        try {
+          poinViewDiary = datachallenge[i].suka[0].HyppeDiary;
+        } catch (e) {
+          poinViewDiary = 0;
+        }
+        try {
+          poinPict = datachallenge[i].suka[0].HyppePic;
+        } catch (e) {
+          poinPict = 0;
+        }
+
+
+        try {
+          tagar = datachallenge[i].tagar;
+        } catch (e) {
+          tagar = "";
+        }
+        if (tagar != undefined && tagar != "" && tagar.length > 0) {
+
+          try {
+            datatag = await this.tagCountService.listag(tagar);
+          } catch (e) {
+            datatag = null;
+          }
+
+          if (objectChallenge == "AKUN") {
+            try {
+              databasic = await this.userbasicsService.findOne(emailuser);
+              iduser = databasic._id;
+            } catch (e) {
+              databasic = null;
+            }
+
+          } else {
+            try {
+              databasic = await this.userbasicsService.findOne(emailreceiver);
+              iduser = databasic._id;
+            } catch (e) {
+              databasic = null;
+            }
+          }
+
+          if (datatag != null && datatag.length > 0) {
+
+            for (let i = 0; i < datatag.length; i++) {
+              let postIDpost = datatag[i].postID;
+              let postType = datatag[i].postType;
+
+              if (postIDpost == postID) {
+                try {
+                  datauserchall = await this.userchallengesService.userChallengebyIdChall(iduser.toString(), idChallenge);
+                } catch (e) {
+                  datauserchall = null;
+                }
+
+                if (datauserchall.length > 0) {
+
+
+                  for (let y = 0; y < datauserchall.length; y++) {
+
+                    var iduserchall = datauserchall[y]._id;
+                    var idsubchallenge = datauserchall[y].idSubChallenge;
+                    var idChallenges = datauserchall[y].idChallenge;
+                    var start = new Date(datauserchall[y].startDatetime);
+                    var end = new Date(datauserchall[y].endDatetime);
+                    var datenow = new Date(Date.now());
+                    var startdate = datauserchall[y].startDatetime
+                    var enddate = datauserchall[y].endDatetime;
+
+
+                    if (objectChallenge == "KONTEN") {
+                      if (new Date(createAt) >= start && new Date(createAt) <= end && saleAmount == 0) {
+                        if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
+
+                          var obj = {};
+
+                          obj = {
+                            "updatedAt": datauserchall[y].updatedAt,
+                            "score": datauserchall[y].score,
+                            "ranking": datauserchall[y].ranking,
+                          }
+
+                          if (postType == "vid") {
+                            poin = poinViewVid;
+                          } else if (postType == "diary") {
+                            poin = poinViewDiary;
+                          } else if (postType == "pict") {
+                            poin = poinPict;
+                          }
+
+                          await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+                          await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+                          var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                          var activity = detail.activity;
+                          objintr = { "type": nametable, "id": idref, "desc": action }
+                          console.log(objintr)
+                          activity.push(objintr)
+                          await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                          try {
+                            datapostchall = await this.postchallengeService.findBypostID(postID);
+                          } catch (e) {
+                            datapostchall = null;
+                          }
+                          if (datapostchall != null) {
+                            idpostchall = datapostchall._id.toString();
+                          }
+
+                          let dataLikeevent = null;
+                          let total = null;
+                          try {
+                            dataLikeevent = await this.contenteventsService.findLiked(postID, startdate, enddate);
+                          } catch (e) {
+                            dataLikeevent = null;
+                          }
+
+                          if (dataLikeevent !== null && dataLikeevent !== undefined) {
+                            total = dataLikeevent[0].myCount;
+                          } else {
+                            total = 0;
+                          }
+                          if (poin > 0) {
+                            try {
+
+                              await this.postchallengeService.updatePostchallenge2(idpostchall, timedate, (poin * total));
+                            } catch (e) {
+
+                            }
+                          }
+
+
+                          var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
+
+                          if (datauschall.length > 0) {
+                            for (let x = 0; x < datauschall.length; x++) {
+
+                              let iducall = datauschall[x]._id;
+                              let start = new Date(datauschall[x].startDatetime);
+                              let end = new Date(datauschall[x].endDatetime);
+                              let datenow = new Date(Date.now());
+                              let idChallenges2 = datauschall[x].idChallenge;
+                              let rank = x + 1;
+
+                              //if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                              await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                              //}
+
+                            }
+                          }
+
+
+                        }
+                      }
+                    } else {
+                      if (saleAmount == 0) {
+                        if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
+
+                          var obj = {};
+
+                          obj = {
+                            "updatedAt": datauserchall[y].updatedAt,
+                            "score": datauserchall[y].score,
+                            "ranking": datauserchall[y].ranking,
+                          }
+                          if (postType == "vid") {
+                            poin = poinViewVid;
+                          } else if (postType == "diary") {
+                            poin = poinViewDiary;
+                          } else if (postType == "pict") {
+                            poin = poinPict;
+                          }
+                          await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+                          await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+                          var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                          var activity = detail.activity;
+                          objintr = { "type": nametable, "id": idref, "desc": action }
+                          console.log(objintr)
+                          activity.push(objintr)
+                          await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                          try {
+                            datapostchall = await this.postchallengeService.findBypostID(postID);
+                          } catch (e) {
+                            datapostchall = null;
+                          }
+                          if (datapostchall != null) {
+                            idpostchall = datapostchall._id.toString();
+                          }
+                          let dataLikeevent = null;
+                          let total = null;
+                          try {
+                            dataLikeevent = await this.contenteventsService.findLiked(postID, startdate, enddate);
+                          } catch (e) {
+                            dataLikeevent = null;
+                          }
+
+                          if (dataLikeevent !== null && dataLikeevent !== undefined) {
+                            total = dataLikeevent[0].myCount;
+                          } else {
+                            total = 0;
+                          }
+                          if (poin > 0) {
+                            try {
+
+                              await this.postchallengeService.updatePostchallenge2(idpostchall, timedate, (poin * total));
+                            } catch (e) {
+
+                            }
+                          }
+
+
+                          var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
+
+                          if (datauschall.length > 0) {
+                            for (let x = 0; x < datauschall.length; x++) {
+
+                              let iducall = datauschall[x]._id;
+                              let start = new Date(datauschall[x].startDatetime);
+                              let end = new Date(datauschall[x].endDatetime);
+                              let datenow = new Date(Date.now());
+                              let idChallenges2 = datauschall[x].idChallenge;
+                              let rank = x + 1;
+
+                              //if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                              await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                              //}
+
+                            }
+                          }
+
+
+                        }
+                      }
+
+                    }
+
+
+                  }
+
+
+                }
+              }
+
+
+            }
+
+          }
+
+        }
+        else {
+          if (objectChallenge == "AKUN") {
+            try {
+              databasic = await this.userbasicsService.findOne(emailuser);
+              iduser = databasic._id;
+            } catch (e) {
+              databasic = null;
+            }
+
+          } else {
+            try {
+              databasic = await this.userbasicsService.findOne(emailreceiver);
+              iduser = databasic._id;
+            } catch (e) {
+              databasic = null;
+            }
+          }
+          try {
+            datauserchall = await this.userchallengesService.userChallengebyIdChall(iduser.toString(), idChallenge);
+          } catch (e) {
+            datauserchall = null;
+          }
+
+          if (datauserchall !== null && datauserchall.length > 0) {
+
+
+            for (let y = 0; y < datauserchall.length; y++) {
+
+              var iduserchall = datauserchall[y]._id;
+              var idsubchallenge = datauserchall[y].idSubChallenge;
+              var idChallenges = datauserchall[y].idChallenge;
+              var start = new Date(datauserchall[y].startDatetime);
+              var end = new Date(datauserchall[y].endDatetime);
+              var datenow = new Date(Date.now());
+              var startdate = datauserchall[y].startDatetime
+              var enddate = datauserchall[y].endDatetime;
+              if (objectChallenge == "KONTEN") {
+                if (new Date(createAt) >= start && new Date(createAt) <= end && saleAmount == 0) {
+                  if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
+
+                    var obj = {};
+
+                    obj = {
+                      "updatedAt": datauserchall[y].updatedAt,
+                      "score": datauserchall[y].score,
+                      "ranking": datauserchall[y].ranking,
+                    }
+
+                    if (postTypeParent == "vid") {
+                      poin = poinViewVid;
+                    } else if (postTypeParent == "diary") {
+                      poin = poinViewDiary;
+                    } else if (postTypeParent == "pict") {
+                      poin = poinPict;
+                    }
+
+                    await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+                    await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+                    var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                    var activity = detail.activity;
+                    let objintr = { "type": nametable, "id": idref, "desc": action }
+                    console.log(objintr)
+                    activity.push(objintr)
+                    await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                    try {
+                      datapostchall = await this.postchallengeService.findBypostID(postID);
+                    } catch (e) {
+                      datapostchall = null;
+                    }
+                    if (datapostchall != null) {
+                      idpostchall = datapostchall._id.toString();
+                    }
+                    let dataLikeevent = null;
+                    let total = null;
+                    try {
+                      dataLikeevent = await this.contenteventsService.findLiked(postID, startdate, enddate);
+                    } catch (e) {
+                      dataLikeevent = null;
+                    }
+
+                    if (dataLikeevent !== null && dataLikeevent !== undefined) {
+                      total = dataLikeevent[0].myCount;
+                    } else {
+                      total = 0;
+                    }
+                    if (poin > 0) {
+                      try {
+
+                        await this.postchallengeService.updatePostchallenge2(idpostchall, timedate, (poin * total));
+                      } catch (e) {
+
+                      }
+                    }
+                    var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
+
+                    if (datauschall.length > 0) {
+                      for (let x = 0; x < datauschall.length; x++) {
+
+                        let iducall = datauschall[x]._id;
+                        let start = new Date(datauschall[x].startDatetime);
+                        let end = new Date(datauschall[x].endDatetime);
+                        let datenow = new Date(Date.now());
+                        let idChallenges2 = datauschall[x].idChallenge;
+                        let rank = x + 1;
+
+                        // if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                        await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                        // }
+
+                      }
+                    }
+                  }
+                }
+              } else {
+                if (saleAmount == 0) {
+                  if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
+
+                    var obj = {};
+
+                    obj = {
+                      "updatedAt": datauserchall[y].updatedAt,
+                      "score": datauserchall[y].score,
+                      "ranking": datauserchall[y].ranking,
+                    }
+
+                    if (postTypeParent == "vid") {
+                      poin = poinViewVid;
+                    } else if (postTypeParent == "diary") {
+                      poin = poinViewDiary;
+                    } else if (postTypeParent == "pict") {
+                      poin = poinPict;
+                    }
+                    await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+                    await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+                    var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                    var activity = detail.activity;
+                    let objintr = { "type": nametable, "id": idref, "desc": action }
+                    console.log(objintr)
+                    activity.push(objintr)
+                    await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                    try {
+                      datapostchall = await this.postchallengeService.findBypostID(postID);
+                    } catch (e) {
+                      datapostchall = null;
+                    }
+                    if (datapostchall != null) {
+                      idpostchall = datapostchall._id.toString();
+                    }
+                    let dataLikeevent = null;
+                    let total = null;
+                    try {
+                      dataLikeevent = await this.contenteventsService.findLiked(postID, startdate, enddate);
+                    } catch (e) {
+                      dataLikeevent = null;
+                    }
+
+                    if (dataLikeevent !== null && dataLikeevent !== undefined) {
+                      total = dataLikeevent[0].myCount;
+                    } else {
+                      total = 0;
+                    }
+                    if (poin > 0) {
+                      try {
+
+                        await this.postchallengeService.updatePostchallenge2(idpostchall, timedate, (poin * total));
+                      } catch (e) {
+
+                      }
+                    }
+                    var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
+
+                    if (datauschall.length > 0) {
+                      for (let x = 0; x < datauschall.length; x++) {
+
+                        let iducall = datauschall[x]._id;
+                        let start = new Date(datauschall[x].startDatetime);
+                        let end = new Date(datauschall[x].endDatetime);
+                        let datenow = new Date(Date.now());
+                        let idChallenges2 = datauschall[x].idChallenge;
+                        let rank = x + 1;
+
+                        // if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                        await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                        // }
+
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+          }
+        }
+
+      }
+
+    }
+
+  }
 
 }

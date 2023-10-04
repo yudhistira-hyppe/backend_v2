@@ -1604,16 +1604,14 @@ export class ChallengeController {
     var getsubid = request_json['idChallenge'];
     var getuserid = request_json['idUser'];
 
-    if(getsubid == null || getsubid == undefined)
-    {
+    if (getsubid == null || getsubid == undefined) {
       var timestamps_end = await this.util.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
 
       throw new BadRequestException("Unabled to proceed, challenge id field is required");
     }
 
-    if(getuserid == null || getuserid == undefined)
-    {
+    if (getuserid == null || getuserid == undefined) {
       var timestamps_end = await this.util.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
 
@@ -1621,8 +1619,7 @@ export class ChallengeController {
     }
 
     var getuserbasic = await this.userbasicsSS.findbyid(getuserid);
-    if(getuserbasic == null)
-    {
+    if (getuserbasic == null) {
       var timestamps_end = await this.util.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
 

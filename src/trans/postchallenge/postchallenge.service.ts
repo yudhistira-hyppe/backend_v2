@@ -27,7 +27,17 @@ export class PostchallengeService {
     async find(): Promise<Postchallenge[]> {
         return this.PostchallengeModel.find().exec();
     }
+    async updatePostchallenge2(id: string, updatedAt: string, score: number): Promise<Object> {
+        let data = await this.PostchallengeModel.updateOne({ "_id": new Types.ObjectId(id), },
+            {
+                $set: {
+                    "score": score,
+                    "updatedAt": updatedAt,
 
+                }
+            });
+        return data;
+    }
     async update(id: string, Postchallenge_: Postchallenge): Promise<Postchallenge> {
         let data = await this.PostchallengeModel.findByIdAndUpdate(id, Postchallenge_, { new: true });
         if (!data) {
