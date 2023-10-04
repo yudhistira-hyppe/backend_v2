@@ -1228,10 +1228,11 @@ export class ContenteventsController {
                 error,
               );
             }
-            this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+
           }
 
         }
+        this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
       }
       var datapost = await this.NewpostsService.updatePostviewer(request.body.postID, email_user);
     } else if (eventType == "LIKE") {
