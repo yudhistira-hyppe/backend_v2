@@ -1306,7 +1306,7 @@ export class ContenteventsController {
           //   this.userChallengeLike(iduser.toString(), idevent1.toString(), "contentevents", "LIKE", request.body.postID);
           // }
           //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-          this.userChallengeLike3new(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+          this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
@@ -1362,7 +1362,7 @@ export class ContenteventsController {
             let event1 = ceck_data_DONE.eventType.toString();
             // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
             // this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-            this.userChallengeLike3new(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+            this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
@@ -1464,7 +1464,7 @@ export class ContenteventsController {
               // }
 
               //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-              this.userChallengeLike3new(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+              this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
