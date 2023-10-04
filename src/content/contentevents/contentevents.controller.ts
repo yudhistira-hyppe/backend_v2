@@ -1078,6 +1078,7 @@ export class ContenteventsController {
     } else if (eventType == "VIEW") {
 
       if (email_user !== email_receiverParty) {
+        var idevent1 = null;
         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW Email Not Same >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify({ postID: request.body.postID, email_user: email_user, email_receiverParty: email_receiverParty }));
         var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEW", "DONE", email_receiverParty, "", request.body.postID);
         var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "VIEW", "ACCEPT", "", email_user, request.body.postID);
@@ -1146,20 +1147,11 @@ export class ContenteventsController {
 
           try {
             const resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
-            let idevent1 = resultdata1._id;
+            idevent1 = resultdata1._id;
             let event1 = resultdata1.eventType.toString();
             //await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
             var dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
-            // const databasic = await this.userbasicsService.findOne(
-            //   email_receiverParty
-            // );
-            // var iduser = null;
-            // if (databasic !== null) {
-            //   iduser = databasic._id;
-            //   this.userChallengeView(iduser.toString(), idevent1.toString(), "contentevents", "VIEW", request.body.postID);
-            // }
-            //  this.userChallengeViewv2(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
-            //  this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+
             await this.postsService.updateView(email_receiverParty, request.body.postID);
             await this.insightsService.updateViews(email_receiverParty);
           } catch (error) {
@@ -1213,7 +1205,7 @@ export class ContenteventsController {
 
             try {
               var resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
-              var idevent1 = resultdata1._id;
+              idevent1 = resultdata1._id;
               var dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
 
 
