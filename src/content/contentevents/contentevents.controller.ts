@@ -2135,7 +2135,7 @@ export class ContenteventsController {
                       activity.push(objintr)
                       await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                       try {
-                        datapostchall = await this.postchallengeService.findBypostID(postID);
+                        datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                       } catch (e) {
                         datapostchall = null;
                       }
@@ -2229,7 +2229,7 @@ export class ContenteventsController {
                 activity.push(objintr)
                 await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                 try {
-                  datapostchall = await this.postchallengeService.findBypostID(postID);
+                  datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                 } catch (e) {
                   datapostchall = null;
                 }
@@ -2393,7 +2393,7 @@ export class ContenteventsController {
                       activity.push(objintr)
                       await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                       try {
-                        datapostchall = await this.postchallengeService.findBypostID(postID);
+                        datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                       } catch (e) {
                         datapostchall = null;
                       }
@@ -2483,7 +2483,7 @@ export class ContenteventsController {
                 activity.push(objintr)
                 await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                 try {
-                  datapostchall = await this.postchallengeService.findBypostID(postID);
+                  datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                 } catch (e) {
                   datapostchall = null;
                 }
@@ -2648,7 +2648,7 @@ export class ContenteventsController {
                       activity.push(objintr)
                       await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                       try {
-                        datapostchall = await this.postchallengeService.findBypostID(postID);
+                        datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                       } catch (e) {
                         datapostchall = null;
                       }
@@ -2738,7 +2738,7 @@ export class ContenteventsController {
                 activity.push(objintr)
                 await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                 try {
-                  datapostchall = await this.postchallengeService.findBypostID(postID);
+                  datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                 } catch (e) {
                   datapostchall = null;
                 }
@@ -3043,7 +3043,7 @@ export class ContenteventsController {
                       activity.push(objintr)
                       await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                       try {
-                        datapostchall = await this.postchallengeService.findBypostID(postID);
+                        datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                       } catch (e) {
                         datapostchall = null;
                       }
@@ -3149,7 +3149,7 @@ export class ContenteventsController {
                 activity.push(objintr)
                 await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                 try {
-                  datapostchall = await this.postchallengeService.findBypostID(postID);
+                  datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                 } catch (e) {
                   datapostchall = null;
                 }
@@ -3333,7 +3333,7 @@ export class ContenteventsController {
                       activity.push(objintr)
                       await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                       try {
-                        datapostchall = await this.postchallengeService.findBypostID(postID);
+                        datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                       } catch (e) {
                         datapostchall = null;
                       }
@@ -3438,7 +3438,7 @@ export class ContenteventsController {
                 activity.push(objintr)
                 await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                 try {
-                  datapostchall = await this.postchallengeService.findBypostID(postID);
+                  datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                 } catch (e) {
                   datapostchall = null;
                 }
@@ -3625,7 +3625,7 @@ export class ContenteventsController {
                       activity.push(objintr)
                       await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                       try {
-                        datapostchall = await this.postchallengeService.findBypostID(postID);
+                        datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                       } catch (e) {
                         datapostchall = null;
                       }
@@ -3730,7 +3730,7 @@ export class ContenteventsController {
                 activity.push(objintr)
                 await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                 try {
-                  datapostchall = await this.postchallengeService.findBypostID(postID);
+                  datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                 } catch (e) {
                   datapostchall = null;
                 }
@@ -3936,7 +3936,7 @@ export class ContenteventsController {
                           activity.push(objintr)
                           await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                           try {
-                            datapostchall = await this.postchallengeService.findBypostID(postID);
+                            datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                           } catch (e) {
                             datapostchall = null;
                           }
@@ -4002,7 +4002,7 @@ export class ContenteventsController {
                           activity.push(objintr)
                           await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                           try {
-                            datapostchall = await this.postchallengeService.findBypostID(postID);
+                            datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                           } catch (e) {
                             datapostchall = null;
                           }
@@ -4118,7 +4118,7 @@ export class ContenteventsController {
                     activity.push(objintr)
                     await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                     try {
-                      datapostchall = await this.postchallengeService.findBypostID(postID);
+                      datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                     } catch (e) {
                       datapostchall = null;
                     }
@@ -4179,7 +4179,7 @@ export class ContenteventsController {
                     activity.push(objintr)
                     await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                     try {
-                      datapostchall = await this.postchallengeService.findBypostID(postID);
+                      datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                     } catch (e) {
                       datapostchall = null;
                     }
@@ -4393,7 +4393,7 @@ export class ContenteventsController {
                           activity.push(objintr)
                           await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                           try {
-                            datapostchall = await this.postchallengeService.findBypostID(postID);
+                            datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                           } catch (e) {
                             datapostchall = null;
                           }
@@ -4458,7 +4458,7 @@ export class ContenteventsController {
                           activity.push(objintr)
                           await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                           try {
-                            datapostchall = await this.postchallengeService.findBypostID(postID);
+                            datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                           } catch (e) {
                             datapostchall = null;
                           }
@@ -4576,7 +4576,7 @@ export class ContenteventsController {
                     activity.push(objintr)
                     await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                     try {
-                      datapostchall = await this.postchallengeService.findBypostID(postID);
+                      datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                     } catch (e) {
                       datapostchall = null;
                     }
@@ -4638,7 +4638,7 @@ export class ContenteventsController {
                     activity.push(objintr)
                     await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                     try {
-                      datapostchall = await this.postchallengeService.findBypostID(postID);
+                      datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                     } catch (e) {
                       datapostchall = null;
                     }
@@ -4873,7 +4873,7 @@ export class ContenteventsController {
                           }
                           //
                           try {
-                            datapostchall = await this.postchallengeService.findBypostID(postID);
+                            datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                           } catch (e) {
                             datapostchall = null;
                           }
@@ -4955,7 +4955,7 @@ export class ContenteventsController {
                           }
                           //
                           try {
-                            datapostchall = await this.postchallengeService.findBypostID(postID);
+                            datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                           } catch (e) {
                             datapostchall = null;
                           }
@@ -5091,7 +5091,7 @@ export class ContenteventsController {
                     }
                     //
                     try {
-                      datapostchall = await this.postchallengeService.findBypostID(postID);
+                      datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                     } catch (e) {
                       datapostchall = null;
                     }
@@ -5171,7 +5171,7 @@ export class ContenteventsController {
                     }
                     //
                     try {
-                      datapostchall = await this.postchallengeService.findBypostID(postID);
+                      datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                     } catch (e) {
                       datapostchall = null;
                     }
@@ -5386,7 +5386,7 @@ export class ContenteventsController {
                           activity.push(objintr)
                           await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                           try {
-                            datapostchall = await this.postchallengeService.findBypostID(postID);
+                            datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                           } catch (e) {
                             datapostchall = null;
                           }
@@ -5466,7 +5466,7 @@ export class ContenteventsController {
                           activity.push(objintr)
                           await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                           try {
-                            datapostchall = await this.postchallengeService.findBypostID(postID);
+                            datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                           } catch (e) {
                             datapostchall = null;
                           }
@@ -5599,7 +5599,7 @@ export class ContenteventsController {
                     activity.push(objintr)
                     await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                     try {
-                      datapostchall = await this.postchallengeService.findBypostID(postID);
+                      datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                     } catch (e) {
                       datapostchall = null;
                     }
@@ -5675,7 +5675,7 @@ export class ContenteventsController {
                     activity.push(objintr)
                     await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
                     try {
-                      datapostchall = await this.postchallengeService.findBypostID(postID);
+                      datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                     } catch (e) {
                       datapostchall = null;
                     }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId, Types } from 'mongoose';
+import mongoose, { Model, ObjectId, Types } from 'mongoose';
 import { Postchallenge, PostchallengeDocument } from './schemas/postchallenge.schema';
 
 @Injectable()
@@ -20,7 +20,10 @@ export class PostchallengeService {
         return this.PostchallengeModel.findOne({ _id: new Types.ObjectId(id) }).exec();
     }
 
-    async findBypostID(postID: string): Promise<Postchallenge> {
+    async findBypostID(postID: string, idChallenge: string): Promise<Postchallenge> {
+        return this.PostchallengeModel.findOne({ postID: postID, idChallenge: new mongoose.Types.ObjectId(idChallenge) }).exec();
+    }
+    async findBypostID2(postID: string): Promise<Postchallenge> {
         return this.PostchallengeModel.findOne({ postID: postID }).exec();
     }
 

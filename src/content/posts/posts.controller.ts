@@ -674,7 +674,7 @@ export class PostsController {
       }
     }
     try {
-      datapostchallenge = await this.postchallengeService.findBypostID(body.postID.toString());
+      datapostchallenge = await this.postchallengeService.findBypostID2(body.postID.toString());
     } catch (e) {
       datapostchallenge = null;
     }
