@@ -1306,7 +1306,7 @@ export class ContenteventsController {
           //   this.userChallengeLike(iduser.toString(), idevent1.toString(), "contentevents", "LIKE", request.body.postID);
           // }
           //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-          this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+          this.userChallengeLike3new(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
@@ -1362,7 +1362,7 @@ export class ContenteventsController {
             let event1 = ceck_data_DONE.eventType.toString();
             // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
             // this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-            this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+            this.userChallengeLike3new(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
@@ -1464,7 +1464,7 @@ export class ContenteventsController {
               // }
 
               //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-              this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+              this.userChallengeLike3new(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -5242,6 +5242,7 @@ export class ContenteventsController {
     var datapost = null;
     var createAt = null;
     var saleAmount = null;
+    var tonton = null;
     var postTypeParent = null;
     try {
       datapost = await this.postsService.findByPostId(postID);
@@ -5268,6 +5269,12 @@ export class ContenteventsController {
 
       for (let i = 0; i < lengchal; i++) {
         var idChallenge = datachallenge[i]._id.toString();
+        try {
+          tonton = datachallenge[i].tonton;
+        } catch (e) {
+          tonton = null;
+        }
+
         try {
           objectChallenge = datachallenge[i].objectChallenge;
         } catch (e) {
@@ -5466,6 +5473,27 @@ export class ContenteventsController {
                           if (datapostchall != null) {
                             idpostchall = datapostchall._id.toString();
                           }
+
+                          let totalAll = null;
+                          let dataViewevent = null;
+                          let totalview = null;
+                          try {
+                            dataViewevent = await this.contenteventsService.findViewed(postID, startdate, enddate);
+                          } catch (e) {
+                            dataViewevent = null;
+                          }
+
+                          if (tonton !== undefined && tonton !== null && tonton.length > 0) {
+                            if (dataViewevent !== null && dataViewevent !== undefined) {
+                              totalview = dataViewevent[0].myCount;
+                            } else {
+                              totalview = 0;
+                            }
+                          } else {
+                            totalview = 0;
+                          }
+
+
                           let dataLikeevent = null;
                           let total = null;
                           try {
@@ -5479,10 +5507,11 @@ export class ContenteventsController {
                           } else {
                             total = 0;
                           }
+                          totalAll = total + totalview;
                           if (poin > 0) {
                             try {
 
-                              await this.postchallengeService.updatePostchallenge2(idpostchall, timedate, (poin * total));
+                              await this.postchallengeService.updatePostchallenge2(idpostchall, timedate, (poin * totalAll));
                             } catch (e) {
 
                             }
