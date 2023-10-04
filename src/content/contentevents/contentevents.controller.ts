@@ -5394,6 +5394,26 @@ export class ContenteventsController {
                             idpostchall = datapostchall._id.toString();
                           }
 
+                          let totalAll = null;
+                          let dataViewevent = null;
+                          let totalview = null;
+                          try {
+                            dataViewevent = await this.contenteventsService.findViewed(postID, startdate, enddate);
+                          } catch (e) {
+                            dataViewevent = null;
+                          }
+
+                          if (tonton !== undefined && tonton !== null && tonton.length > 0) {
+                            if (dataViewevent !== null && dataViewevent !== undefined) {
+                              totalview = dataViewevent[0].myCount;
+                            } else {
+                              totalview = 0;
+                            }
+                          } else {
+                            totalview = 0;
+                          }
+
+
                           let dataLikeevent = null;
                           let total = null;
                           try {
@@ -5407,10 +5427,11 @@ export class ContenteventsController {
                           } else {
                             total = 0;
                           }
+                          totalAll = total + totalview;
                           if (poin > 0) {
                             try {
 
-                              await this.postchallengeService.updatePostchallenge2(idpostchall, timedate, (poin * total));
+                              await this.postchallengeService.updatePostchallenge2(idpostchall, timedate, (poin * totalAll));
                             } catch (e) {
 
                             }
@@ -5628,6 +5649,26 @@ export class ContenteventsController {
                     if (datapostchall != null) {
                       idpostchall = datapostchall._id.toString();
                     }
+                    let totalAll = null;
+                    let dataViewevent = null;
+                    let totalview = null;
+                    try {
+                      dataViewevent = await this.contenteventsService.findViewed(postID, startdate, enddate);
+                    } catch (e) {
+                      dataViewevent = null;
+                    }
+
+                    if (tonton !== undefined && tonton !== null && tonton.length > 0) {
+                      if (dataViewevent !== null && dataViewevent !== undefined) {
+                        totalview = dataViewevent[0].myCount;
+                      } else {
+                        totalview = 0;
+                      }
+                    } else {
+                      totalview = 0;
+                    }
+
+
                     let dataLikeevent = null;
                     let total = null;
                     try {
@@ -5641,10 +5682,11 @@ export class ContenteventsController {
                     } else {
                       total = 0;
                     }
+                    totalAll = total + totalview;
                     if (poin > 0) {
                       try {
 
-                        await this.postchallengeService.updatePostchallenge2(idpostchall, timedate, (poin * total));
+                        await this.postchallengeService.updatePostchallenge2(idpostchall, timedate, (poin * totalAll));
                       } catch (e) {
 
                       }
@@ -5704,6 +5746,26 @@ export class ContenteventsController {
                     if (datapostchall != null) {
                       idpostchall = datapostchall._id.toString();
                     }
+                    let totalAll = null;
+                    let dataViewevent = null;
+                    let totalview = null;
+                    try {
+                      dataViewevent = await this.contenteventsService.findViewed(postID, startdate, enddate);
+                    } catch (e) {
+                      dataViewevent = null;
+                    }
+
+                    if (tonton !== undefined && tonton !== null && tonton.length > 0) {
+                      if (dataViewevent !== null && dataViewevent !== undefined) {
+                        totalview = dataViewevent[0].myCount;
+                      } else {
+                        totalview = 0;
+                      }
+                    } else {
+                      totalview = 0;
+                    }
+
+
                     let dataLikeevent = null;
                     let total = null;
                     try {
@@ -5717,10 +5779,11 @@ export class ContenteventsController {
                     } else {
                       total = 0;
                     }
+                    totalAll = total + totalview;
                     if (poin > 0) {
                       try {
 
-                        await this.postchallengeService.updatePostchallenge2(idpostchall, timedate, (poin * total));
+                        await this.postchallengeService.updatePostchallenge2(idpostchall, timedate, (poin * totalAll));
                       } catch (e) {
 
                       }
