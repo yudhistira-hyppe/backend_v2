@@ -1947,7 +1947,7 @@ export class ChallengeController {
 
 
     try {
-      data = await this.subchallenge.getListUserChallenge(idchallenge, iduser, status, session);
+      data = await this.subchallenge.getListUserChallengeNew(idchallenge, iduser, status, session);
     } catch (e) {
       data = [];
     }
@@ -2444,7 +2444,7 @@ export class ChallengeController {
 
 
     try {
-      data = await this.subchallenge.getListUserChallengekedua(idchallenge, iduser, status, session);
+      data = await this.subchallenge.getListUserChallengekeduaNew(idchallenge, iduser, status, session);
     } catch (e) {
       data = [];
     }
