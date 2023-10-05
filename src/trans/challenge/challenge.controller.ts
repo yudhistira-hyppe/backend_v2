@@ -3094,4 +3094,34 @@ export class ChallengeController {
     }
 
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('join/currentstatus')
+  async cekjoinchallengeuser(@Req() request, @Headers() header)
+  {
+    var iduser = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if(request_json['idUser'] == null || request_json['idUser'] == undefined)
+    {
+      throw new BadRequestException("Unable to proceed, idUser field is required");
+    }
+    iduser = request_json['idUser'];
+
+    var result = await this.challengeService.checkuserstatusjoin(iduser, null, null, null);
+    
+    var final = false;
+    for(var i = 0; i < result.length; i++)
+    {
+      var data = result[i].statusJoined;
+      if(data == "Partisipan")
+      {
+        final = true;
+        break;
+      }
+    }
+    return {
+      response_code:202,
+      join_status:final
+    }
+  }
 }
