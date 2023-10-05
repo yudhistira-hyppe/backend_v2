@@ -3298,4 +3298,1214 @@ export class NewPostService {
 
       return query;
     }
+
+    async findcontentbysearch(key: string, email: string, skip: number, limit: number, pict: any, vid: any, diary: any, user: any)
+    {
+      var pipeline = [];
+      pipeline.push(
+        {
+          "$project":
+          {
+            "dedy" : key
+          }
+        },
+        {
+          "$limit":1
+        }
+      );
+
+      var facet = {};
+      if(user == true)
+      {
+        facet['user'] = [
+          {
+              "$lookup":
+              {
+                  from:"newUserBasics",
+                  let:
+                  {
+                      name:"$dedy"
+                  },
+                  as: "userdata",
+                  pipeline:
+                  [
+                      {
+                          "$match":
+                          {
+                              "$expr":
+                              {
+                                  "$regexMatch":
+                                  {
+                                      input:"$username",
+                                      regex:"$$name",
+                                      options:"i"
+                                  }
+                              }
+                          }
+                      }
+                  ]
+              }
+          },
+          {
+              "$unwind":
+              {
+                  path:"$userdata",
+                  preserveNullAndEmptyArrays:true
+              }
+          },
+          {
+              "$project":
+              {
+                  fullName:"$userdata.fullName",
+                  profilePict:"$userdata.profilePict",
+                  username:"$userdata.username",
+                  email:"$userdata.email",
+                  avatar:
+                  {
+                      mediaBasePath:"$userdata.mediaBasePath",
+                      mediaUri:"$userdata.mediaUri",
+                      mediaType:"$userdata.mediaType",
+                      mediaEndpoint:"$userdata.mediaEndpoint",
+                  },
+                  urluserBadge:
+                  {
+                      "$ifNull":
+                      [
+                          {
+                              "$filter":
+                              {
+                                  input:
+                                  {
+                                      "$arrayElemAt":
+                                      [
+                                          "$userdata.userBadge", 0
+                                      ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                      "$and":
+                                      [
+                                          {
+                                              "$eq":
+                                              [
+                                                  "$$listbadge.isActive", true
+                                              ]
+                                          },
+                                          {
+                                              "$lte": [
+                                              {
+                                                  "$dateToString": {
+                                                  "format": "%Y-%m-%d %H:%M:%S",
+                                                  "date": {
+                                                      "$add": [
+                                                      new Date(),
+                                                      25200000
+                                                      ]
+                                                  }
+                                                  }
+                                              },
+                                              "$$listbadge.endDatetime"
+                                              ]
+                                          }
+                                      ]
+                                  }
+                              }
+                          },
+                          []
+                      ]
+                  },
+              }       
+          },
+          {
+              "$project":
+              {
+                  fullName:1,
+                  profilePict:1,
+                  username:1,
+                  email:1,
+                  avatar:1,
+                  urluserBadge:
+                  {
+                      "$ifNull":
+                      [
+                          {
+                              "$arrayElemAt":
+                              [
+                                  "$urluserBadge", 0
+                              ]
+                          },
+                          null
+                      ]
+                  }
+              }
+          },
+          {
+              "$skip":(skip * limit)
+          },
+          {
+              "$limit":limit
+          },
+        ];
+      }
+
+      if(pict == true)
+      {
+        facet['pict'] = [
+          {
+              "$lookup":
+              {
+                  from:"newPosts",
+                  let:
+                  {
+                      name:"$dedy"
+                  },
+                  as: "postdata",
+                  pipeline:
+                  [
+                      {
+                          "$match":
+                          {
+                              "$and":
+                              [
+                                  {
+                                      "$expr":
+                                      {
+                                          "$regexMatch":
+                                          {
+                                              input:"$description",
+                                              regex:"$$name",
+                                              options:"i"
+                                          }
+                                      }
+                                  },
+                                  {
+                                      "reportedStatus":
+                                      {
+                                          "$ne":"OWNED"
+                                      }
+                                  },
+                                  {
+                                      "visibility":"PUBLIC"
+                                  },
+                                  {
+                                      "active":true
+                                  },
+                                  {
+                                      "postType":"pict"
+                                  },
+                                  {
+                                      "reportedUser.email":
+                                      {
+                                          "$not":
+                                          {
+                                              "$regex":"kusnur9@gmail.com"
+                                          }
+                                      }
+                                  }
+                              ]
+                          }
+                      },
+                      {
+                          "$project":
+                          {
+                              "boosted":
+                              {
+                                  $cond: {
+                                    if: {
+                                      $gt: [{
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            $add: [new Date(), 25200000]
+                                          }
+                                        }
+                                      }, "$boosted.boostSession.timeEnd"]
+                                    },
+                                    then: [],
+                                    else: '$boosted'
+                                  }
+                              },
+                              "reportedStatus": 1,
+                              "insight": {
+                                  "shares": "$shares",
+                                  "comments": "$comments",
+                                  "views": "$views",
+                                  "likes": "$likes",
+
+                              },
+                              "_id": 1,
+                              "postID": 1,
+                              "createdAt": 1,
+                              "updatedAt": 1,
+                              "email": 1,
+                              "postType": 1,
+                              "description": 1,
+                              "active": 1,
+                              "metadata": 1,
+                              "location": 1,
+                              "isOwned": 1,
+                              "visibility": 1,
+                              "isViewed": 1,
+                              "allowComments": 1,
+                              "saleAmount": 1,
+                              "certified": 1,
+                              "mediaSource":1,
+                              "isLiked":
+                              {
+                                  "$ifNull":
+                                  [
+                                      {
+                                          "$filter":
+                                          {
+                                              input:"$userLike",
+                                              as:"datalike",
+                                              cond:
+                                              {
+                                                  "$eq":
+                                                  [
+                                                      "$$datalike",
+                                                      "kusnur9@gmail.com"
+                                                  ]
+                                              }
+                                          }
+                                      },
+                                      []
+                                  ]
+                              }
+                          }
+                      },
+                      {
+                          "$lookup":
+                          {
+                              from:"newUserBasics",
+                              localField:"email",
+                              foreignField:"email",
+                              as:"authdata"
+                          }
+                      },
+                      {
+                          "$project":
+                          {
+                              "boosted": 1,
+                              "reportedStatus": 1,
+                              "insight": 1,
+                              "_id": 1,
+                              "postID": 1,
+                              "createdAt": 1,
+                              "updatedAt": 1,
+                              "email": 1,
+                              "postType": 1,
+                              "description": 1,
+                              "active": 1,
+                              "metadata": 1,
+                              "location": 1,
+                              "isOwned": 1,
+                              "visibility": 1,
+                              "isViewed": 1,
+                              "allowComments": 1,
+                              "saleAmount": 1,
+                              "isLiked": 
+                              {
+                                  "$cond":
+                                  {
+                                      if:
+                                      {
+                                          "eq":
+                                          [
+                                              {
+                                                  "$size":"$isLiked"
+                                              },
+                                              0
+                                          ]
+                                      },
+                                      then:false,
+                                      else:true
+                                  }
+                              },
+                              "certified": 1,
+                              "username":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$authdata.username", 0
+                                  ]
+                              },
+                              "profilepictid":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$authdata.profilePict", 0
+                                  ]
+                              },
+                              "urluserBadge":
+                              {
+                                  "$ifNull":
+                                  [
+                                      {
+                                          "$filter":
+                                          {
+                                              input:
+                                              {
+                                                  "$arrayElemAt":
+                                                  [
+                                                      "$authdata.userBadge", 0
+                                                  ]
+                                              },
+                                              as: "listbadge",
+                                              cond:
+                                              {
+                                                  "$and":
+                                                  [
+                                                      {
+                                                      "$eq":
+                                                          [
+                                                              "$$listbadge.isActive", true
+                                                          ]
+                                                      },
+                                                      {
+                                                          "$lte": [
+                                                              {
+                                                                  "$dateToString": {
+                                                                      "format": "%Y-%m-%d %H:%M:%S",
+                                                                      "date": {
+                                                                          "$add": [
+                                                                              new Date(),
+                                                                              25200000
+                                                                          ]
+                                                                      }
+                                                                  }
+                                                              },
+                                                              "$$listbadge.endDatetime"
+                                                          ]
+                                                      }
+                                                  ]
+                                              }
+                                          }
+                                      },
+                                      []
+                                  ]
+                              },
+                              "avatar":
+                              {
+                                  "mediaEndpoint":
+                                  {
+                                      "$arrayElemAt":
+                                      [
+                                          "$authdata.mediaEndpoint", 0
+                                      ]
+                                  }
+                              },
+                              "mediaThumbEndpoint":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.mediaThumbEndpoint", 0
+                                  ]
+                              },
+                              "mediaEndpoint":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.mediaEndpoint", 0
+                                  ]
+                              },
+                              "mediaType":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.mediaType", 0
+                                  ]
+                              },
+                              "isApsara":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.apsara", 0
+                                  ]
+                              },
+                              "apsaraId":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.apsaraId", 0
+                                  ]
+                              }
+                          }
+                      },
+                      {
+                          "$skip":(skip * limit)
+                      },
+                      {
+                          "$limit":limit
+                      }
+                  ]
+              }
+          },
+          {
+              "$unwind":
+              {
+                  path:"$postdata",
+                  preserveNullAndEmptyArrays:true
+              }
+          },
+          {
+              "$project":
+              {
+                  boosted:"$postdata.boosted",
+                  reportedStatus:"$postdata.reportedStatus",
+                  insight:"$postdata.insight",
+                  _id:"$postdata._id",
+                  postID:"$postdata.postID",
+                  createdAt:"$postdata.createdAt",
+                  updatedAt:"$postdata.updatedAt",
+                  email:"$postdata.email",
+                  postType:"$postdata.postType",
+                  description:"$postdata.description",
+                  active:"$postdata.active",
+                  metadata:"$postdata.metadata",
+                  location:"$postdata.location",
+                  isOwned:"$postdata.isOwned",
+                  visibility:"$postdata.visibility",
+                  isViewed:"$postdata.isViewed",
+                  allowComments:"$postdata.allowComments",
+                  saleAmount:"$postdata.saleAmount",
+                  isLiked:"$postdata.isLiked",
+                  certified:"$postdata.certified",
+                  username:"$postdata.username",
+                  profilepictid:"$postdata.profilepictid",
+                  urluserBadge:
+                  {
+                      "$ifNull":
+                      [
+                          {
+                              "$arrayElemAt":
+                              [
+                                  "$postdata.urluserBadge", 0
+                              ]
+                          },
+                          null
+                      ]
+                  },
+                  avatar:"$postdata.avatar",
+                  mediaThumbEndpoint:"$postdata.mediaThumbEndpoint",
+                  mediaEndpoint:"$postdata.mediaEndpoint",
+                  mediaType:"$postdata.mediaType",
+                  isApsara:"$postdata.isApsara",
+                  apsaraId:"$postdata.apsaraId",
+              }
+          }
+        ];
+      }
+
+      if(vid == true)
+      {
+        facet['vid'] = [
+          {
+              "$lookup":
+              {
+                  from:"newPosts",
+                  let:
+                  {
+                      name:"$dedy"
+                  },
+                  as: "postdata",
+                  pipeline:
+                  [
+                      {
+                          "$match":
+                          {
+                              "$and":
+                              [
+                                  {
+                                      "$expr":
+                                      {
+                                          "$regexMatch":
+                                          {
+                                              input:"$description",
+                                              regex:"$$name",
+                                              options:"i"
+                                          }
+                                      }
+                                  },
+                                  {
+                                      "reportedStatus":
+                                      {
+                                          "$ne":"OWNED"
+                                      }
+                                  },
+                                  {
+                                      "visibility":"PUBLIC"
+                                  },
+                                  {
+                                      "active":true
+                                  },
+                                  {
+                                      "postType":"vid"
+                                  },
+                                  {
+                                      "reportedUser.email":
+                                      {
+                                          "$not":
+                                          {
+                                              "$regex":"kusnur9@gmail.com"
+                                          }
+                                      }
+                                  }
+                              ]
+                          }
+                      },
+                      {
+                          "$project":
+                          {
+                              "boosted":
+                              {
+                                  $cond: {
+                                    if: {
+                                      $gt: [{
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            $add: [new Date(), 25200000]
+                                          }
+                                        }
+                                      }, "$boosted.boostSession.timeEnd"]
+                                    },
+                                    then: [],
+                                    else: '$boosted'
+                                  }
+                              },
+                              "reportedStatus": 1,
+                              "insight": {
+                                  "shares": "$shares",
+                                  "comments": "$comments",
+                                  "views": "$views",
+                                  "likes": "$likes",
+
+                              },
+                              "_id": 1,
+                              "postID": 1,
+                              "createdAt": 1,
+                              "updatedAt": 1,
+                              "email": 1,
+                              "postType": 1,
+                              "description": 1,
+                              "active": 1,
+                              "metadata": 1,
+                              "location": 1,
+                              "isOwned": 1,
+                              "visibility": 1,
+                              "isViewed": 1,
+                              "allowComments": 1,
+                              "saleAmount": 1,
+                              "certified": 1,
+                              "mediaSource":1,
+                              "isLiked":
+                              {
+                                  "$ifNull":
+                                  [
+                                      {
+                                          "$filter":
+                                          {
+                                              input:"$userLike",
+                                              as:"datalike",
+                                              cond:
+                                              {
+                                                  "$eq":
+                                                  [
+                                                      "$$datalike",
+                                                      "kusnur9@gmail.com"
+                                                  ]
+                                              }
+                                          }
+                                      },
+                                      []
+                                  ]
+                              }
+                          }
+                      },
+                      {
+                          "$lookup":
+                          {
+                              from:"newUserBasics",
+                              localField:"email",
+                              foreignField:"email",
+                              as:"authdata"
+                          }
+                      },
+                      {
+                          "$project":
+                          {
+                              "boosted": 1,
+                              "reportedStatus": 1,
+                              "insight": 1,
+                              "_id": 1,
+                              "postID": 1,
+                              "createdAt": 1,
+                              "updatedAt": 1,
+                              "email": 1,
+                              "postType": 1,
+                              "description": 1,
+                              "active": 1,
+                              "metadata": 1,
+                              "location": 1,
+                              "isOwned": 1,
+                              "visibility": 1,
+                              "isViewed": 1,
+                              "allowComments": 1,
+                              "saleAmount": 1,
+                              "isLiked": 
+                              {
+                                  "$cond":
+                                  {
+                                      if:
+                                      {
+                                          "eq":
+                                          [
+                                              {
+                                                  "$size":"$isLiked"
+                                              },
+                                              0
+                                          ]
+                                      },
+                                      then:false,
+                                      else:true
+                                  }
+                              },
+                              "certified": 1,
+                              "username":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$authdata.username", 0
+                                  ]
+                              },
+                              "profilepictid":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$authdata.profilePict", 0
+                                  ]
+                              },
+                              "urluserBadge":
+                              {
+                                  "$ifNull":
+                                  [
+                                      {
+                                          "$filter":
+                                          {
+                                              input:
+                                              {
+                                                  "$arrayElemAt":
+                                                  [
+                                                      "$authdata.userBadge", 0
+                                                  ]
+                                              },
+                                              as: "listbadge",
+                                              cond:
+                                              {
+                                                  "$and":
+                                                  [
+                                                      {
+                                                      "$eq":
+                                                          [
+                                                              "$$listbadge.isActive", true
+                                                          ]
+                                                      },
+                                                      {
+                                                          "$lte": [
+                                                              {
+                                                                  "$dateToString": {
+                                                                      "format": "%Y-%m-%d %H:%M:%S",
+                                                                      "date": {
+                                                                          "$add": [
+                                                                              new Date(),
+                                                                              25200000
+                                                                          ]
+                                                                      }
+                                                                  }
+                                                              },
+                                                              "$$listbadge.endDatetime"
+                                                          ]
+                                                      }
+                                                  ]
+                                              }
+                                          }
+                                      },
+                                      []
+                                  ]
+                              },
+                              "avatar":
+                              {
+                                  "mediaEndpoint":
+                                  {
+                                      "$arrayElemAt":
+                                      [
+                                          "$authdata.mediaEndpoint", 0
+                                      ]
+                                  }
+                              },
+                              "mediaThumbEndpoint":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.mediaThumbEndpoint", 0
+                                  ]
+                              },
+                              "mediaEndpoint":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.mediaEndpoint", 0
+                                  ]
+                              },
+                              "mediaType":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.mediaType", 0
+                                  ]
+                              },
+                              "isApsara":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.apsara", 0
+                                  ]
+                              },
+                              "apsaraId":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.apsaraId", 0
+                                  ]
+                              }
+                          }
+                      },
+                      {
+                          "$skip":(skip * limit)
+                      },
+                      {
+                          "$limit":limit
+                      }
+                  ]
+              }
+          },
+          {
+              "$unwind":
+              {
+                  path:"$postdata",
+                  preserveNullAndEmptyArrays:true
+              }
+          },
+          {
+              "$project":
+              {
+                  boosted:"$postdata.boosted",
+                  reportedStatus:"$postdata.reportedStatus",
+                  insight:"$postdata.insight",
+                  _id:"$postdata._id",
+                  postID:"$postdata.postID",
+                  createdAt:"$postdata.createdAt",
+                  updatedAt:"$postdata.updatedAt",
+                  email:"$postdata.email",
+                  postType:"$postdata.postType",
+                  description:"$postdata.description",
+                  active:"$postdata.active",
+                  metadata:"$postdata.metadata",
+                  location:"$postdata.location",
+                  isOwned:"$postdata.isOwned",
+                  visibility:"$postdata.visibility",
+                  isViewed:"$postdata.isViewed",
+                  allowComments:"$postdata.allowComments",
+                  saleAmount:"$postdata.saleAmount",
+                  isLiked:"$postdata.isLiked",
+                  certified:"$postdata.certified",
+                  username:"$postdata.username",
+                  profilepictid:"$postdata.profilepictid",
+                  urluserBadge:
+                  {
+                      "$ifNull":
+                      [
+                          {
+                              "$arrayElemAt":
+                              [
+                                  "$postdata.urluserBadge", 0
+                              ]
+                          },
+                          null
+                      ]
+                  },
+                  avatar:"$postdata.avatar",
+                  mediaThumbEndpoint:"$postdata.mediaThumbEndpoint",
+                  mediaEndpoint:"$postdata.mediaEndpoint",
+                  mediaType:"$postdata.mediaType",
+                  isApsara:"$postdata.isApsara",
+                  apsaraId:"$postdata.apsaraId",
+              }
+          }
+        ]
+      }
+
+      if(diary == true)
+      {
+        facet['diary'] = [
+          {
+              "$lookup":
+              {
+                  from:"newPosts",
+                  let:
+                  {
+                      name:"$dedy"
+                  },
+                  as: "postdata",
+                  pipeline:
+                  [
+                      {
+                          "$match":
+                          {
+                              "$and":
+                              [
+                                  {
+                                      "$expr":
+                                      {
+                                          "$regexMatch":
+                                          {
+                                              input:"$description",
+                                              regex:"$$name",
+                                              options:"i"
+                                          }
+                                      }
+                                  },
+                                  {
+                                      "reportedStatus":
+                                      {
+                                          "$ne":"OWNED"
+                                      }
+                                  },
+                                  {
+                                      "visibility":"PUBLIC"
+                                  },
+                                  {
+                                      "active":true
+                                  },
+                                  {
+                                      "postType":"diary"
+                                  },
+                                  {
+                                      "reportedUser.email":
+                                      {
+                                          "$not":
+                                          {
+                                              "$regex":"kusnur9@gmail.com"
+                                          }
+                                      }
+                                  }
+                              ]
+                          }
+                      },
+                      {
+                          "$project":
+                          {
+                              "boosted":
+                              {
+                                  $cond: {
+                                    if: {
+                                      $gt: [{
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            $add: [new Date(), 25200000]
+                                          }
+                                        }
+                                      }, "$boosted.boostSession.timeEnd"]
+                                    },
+                                    then: [],
+                                    else: '$boosted'
+                                  }
+                              },
+                              "reportedStatus": 1,
+                              "insight": {
+                                  "shares": "$shares",
+                                  "comments": "$comments",
+                                  "views": "$views",
+                                  "likes": "$likes",
+
+                              },
+                              "_id": 1,
+                              "postID": 1,
+                              "createdAt": 1,
+                              "updatedAt": 1,
+                              "email": 1,
+                              "postType": 1,
+                              "description": 1,
+                              "active": 1,
+                              "metadata": 1,
+                              "location": 1,
+                              "isOwned": 1,
+                              "visibility": 1,
+                              "isViewed": 1,
+                              "allowComments": 1,
+                              "saleAmount": 1,
+                              "certified": 1,
+                              "mediaSource":1,
+                              "isLiked":
+                              {
+                                  "$ifNull":
+                                  [
+                                      {
+                                          "$filter":
+                                          {
+                                              input:"$userLike",
+                                              as:"datalike",
+                                              cond:
+                                              {
+                                                  "$eq":
+                                                  [
+                                                      "$$datalike",
+                                                      "kusnur9@gmail.com"
+                                                  ]
+                                              }
+                                          }
+                                      },
+                                      []
+                                  ]
+                              }
+                          }
+                      },
+                      {
+                          "$lookup":
+                          {
+                              from:"newUserBasics",
+                              localField:"email",
+                              foreignField:"email",
+                              as:"authdata"
+                          }
+                      },
+                      {
+                          "$project":
+                          {
+                              "boosted": 1,
+                              "reportedStatus": 1,
+                              "insight": 1,
+                              "_id": 1,
+                              "postID": 1,
+                              "createdAt": 1,
+                              "updatedAt": 1,
+                              "email": 1,
+                              "postType": 1,
+                              "description": 1,
+                              "active": 1,
+                              "metadata": 1,
+                              "location": 1,
+                              "isOwned": 1,
+                              "visibility": 1,
+                              "isViewed": 1,
+                              "allowComments": 1,
+                              "saleAmount": 1,
+                              "isLiked": 
+                              {
+                                  "$cond":
+                                  {
+                                      if:
+                                      {
+                                          "eq":
+                                          [
+                                              {
+                                                  "$size":"$isLiked"
+                                              },
+                                              0
+                                          ]
+                                      },
+                                      then:false,
+                                      else:true
+                                  }
+                              },
+                              "certified": 1,
+                              "username":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$authdata.username", 0
+                                  ]
+                              },
+                              "profilepictid":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$authdata.profilePict", 0
+                                  ]
+                              },
+                              "urluserBadge":
+                              {
+                                  "$ifNull":
+                                  [
+                                      {
+                                          "$filter":
+                                          {
+                                              input:
+                                              {
+                                                  "$arrayElemAt":
+                                                  [
+                                                      "$authdata.userBadge", 0
+                                                  ]
+                                              },
+                                              as: "listbadge",
+                                              cond:
+                                              {
+                                                  "$and":
+                                                  [
+                                                      {
+                                                      "$eq":
+                                                          [
+                                                              "$$listbadge.isActive", true
+                                                          ]
+                                                      },
+                                                      {
+                                                          "$lte": [
+                                                              {
+                                                                  "$dateToString": {
+                                                                      "format": "%Y-%m-%d %H:%M:%S",
+                                                                      "date": {
+                                                                          "$add": [
+                                                                              new Date(),
+                                                                              25200000
+                                                                          ]
+                                                                      }
+                                                                  }
+                                                              },
+                                                              "$$listbadge.endDatetime"
+                                                          ]
+                                                      }
+                                                  ]
+                                              }
+                                          }
+                                      },
+                                      []
+                                  ]
+                              },
+                              "avatar":
+                              {
+                                  "mediaEndpoint":
+                                  {
+                                      "$arrayElemAt":
+                                      [
+                                          "$authdata.mediaEndpoint", 0
+                                      ]
+                                  }
+                              },
+                              "mediaThumbEndpoint":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.mediaThumbEndpoint", 0
+                                  ]
+                              },
+                              "mediaEndpoint":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.mediaEndpoint", 0
+                                  ]
+                              },
+                              "mediaType":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.mediaType", 0
+                                  ]
+                              },
+                              "isApsara":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.apsara", 0
+                                  ]
+                              },
+                              "apsaraId":
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource.apsaraId", 0
+                                  ]
+                              }
+                          }
+                      },
+                      {
+                          "$skip":(skip * limit)
+                      },
+                      {
+                          "$limit":limit
+                      }
+                  ]
+              }
+          },
+          {
+              "$unwind":
+              {
+                  path:"$postdata",
+                  preserveNullAndEmptyArrays:true
+              }
+          },
+          {
+              "$project":
+              {
+                  boosted:"$postdata.boosted",
+                  reportedStatus:"$postdata.reportedStatus",
+                  insight:"$postdata.insight",
+                  _id:"$postdata._id",
+                  postID:"$postdata.postID",
+                  createdAt:"$postdata.createdAt",
+                  updatedAt:"$postdata.updatedAt",
+                  email:"$postdata.email",
+                  postType:"$postdata.postType",
+                  description:"$postdata.description",
+                  active:"$postdata.active",
+                  metadata:"$postdata.metadata",
+                  location:"$postdata.location",
+                  isOwned:"$postdata.isOwned",
+                  visibility:"$postdata.visibility",
+                  isViewed:"$postdata.isViewed",
+                  allowComments:"$postdata.allowComments",
+                  saleAmount:"$postdata.saleAmount",
+                  isLiked:"$postdata.isLiked",
+                  certified:"$postdata.certified",
+                  username:"$postdata.username",
+                  profilepictid:"$postdata.profilepictid",
+                  urluserBadge:
+                  {
+                      "$ifNull":
+                      [
+                          {
+                              "$arrayElemAt":
+                              [
+                                  "$postdata.urluserBadge", 0
+                              ]
+                          },
+                          null
+                      ]
+                  },
+                  avatar:"$postdata.avatar",
+                  mediaThumbEndpoint:"$postdata.mediaThumbEndpoint",
+                  mediaEndpoint:"$postdata.mediaEndpoint",
+                  mediaType:"$postdata.mediaType",
+                  isApsara:"$postdata.isApsara",
+                  apsaraId:"$postdata.apsaraId",
+              }
+          }
+        ]
+      }
+
+      pipeline.push(
+        {
+          "$facet":facet
+        }
+      );
+
+      console.log(JSON.stringify(pipeline));
+
+      var query = await this.loaddata.aggregate(pipeline);
+
+      return query;
+    }
 }

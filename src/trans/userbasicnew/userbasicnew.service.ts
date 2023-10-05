@@ -1080,4 +1080,50 @@ export class UserbasicnewService {
         return query;
     }
 
+    async regexfindUser(target:string, page:number, limit:number)
+    {
+        var query = await this.UserbasicnewModel.aggregate([
+            {
+                "$match":
+                {
+                    "username":
+                    {
+                        "$regex":target,
+                        "$options":"i"
+                    }
+                }
+            },
+            {
+                "$project":
+                {
+                    idUserAuth:"$_id",
+                    profilpictId:"$profilePict.$id",
+                    fullName:1,
+                    username:1,
+                    avatar:
+                    {
+                        mediaBasePath:"$mediaBasePath",
+                        mediaUri:"$mediaUri",
+                        mediaType:"$mediaType",
+                        mediaEndpoint:"$mediaEndpoint"
+                    }
+                }
+            },
+            {
+                "$sort":
+                {
+                    fullName:1
+                }                
+            },
+            {
+                "$skip":page * limit
+            },
+            {
+                "$limit":limit
+            }
+        ]);
+
+        return query;
+    }
+
 }

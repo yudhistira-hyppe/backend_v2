@@ -241,7 +241,7 @@ export class NewPostController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('database')
+  @Post('getusercontents/database')
   async finddata3(@Req() request, @Headers() headers): Promise<any> {
       var timestamps_start = await this.utilsService.getDateTimeString();
       var fullurl = request.get("Host") + request.originalUrl;
@@ -345,7 +345,7 @@ export class NewPostController {
       return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
   }
 
-  @Post('database/details')
+  @Post('getusercontents/database/details')
   @UseGuards(JwtAuthGuard)
   async detailcontent(@Req() request, @Headers() headers): Promise<any> {
       var timestamps_start = await this.utilsService.getDateTimeString();
@@ -550,4 +550,296 @@ export class NewPostController {
       }
 
   }
+
+    @Post('getusercontents/searchdata')
+    @UseGuards(JwtAuthGuard)
+    async contentsearch(@Req() request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
+        var keys = null;
+        var skip = 0;
+        var limit = 0;
+
+        var email = null;
+        var data = null;
+        var datasearch = null;
+        var dataLike = null;
+        var listpict = null;
+        var listvid = null;
+        var listdiary = null;
+        var listuser = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        email = request_json["email"];
+        keys = request_json["keys"];
+        listpict = request_json["listpict"];
+        listvid = request_json["listvid"];
+        listdiary = request_json["listdiary"];
+        listuser = request_json["listuser"];
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+
+        var user = [];
+        var arrpict = [];
+        var arrvid = [];
+        var arrdiary = [];
+        var picts = [];
+
+        var vid = [];
+        var diary = [];
+        var lengpict = null;
+        var lengdiary = null;
+        var lengvid = null;
+        var lenguser = null;
+
+        try {
+            datasearch = await this.newPostService.findcontentbysearch(keys, email, skip, limit, listpict, listvid, listdiary, listuser);
+            user = datasearch[0].user;
+
+        } catch (e) {
+            datasearch = null;
+            user = [];
+
+        }
+
+        try {
+            user = datasearch[0].user;
+            lenguser = user.length;
+
+        } catch (e) {
+            user = [];
+            lenguser = 0;
+
+        }
+
+        try {
+            arrpict = datasearch[0].pict;
+            lengpict = arrpict.length;
+
+        } catch (e) {
+            arrpict = [];
+            lengpict = 0;
+
+        }
+        try {
+            arrvid = datasearch[0].vid;
+            lengvid = arrvid.length;
+
+        } catch (e) {
+            arrvid = [];
+            lengvid = 0;
+
+        }
+
+        try {
+            arrdiary = datasearch[0].diary;
+            lengdiary = arrdiary.length;
+
+        } catch (e) {
+            arrdiary = [];
+            lengdiary = 0;
+
+        }
+
+        if (lenguser > 0 && user[0].email !== undefined) {
+            user = datasearch[0].user;
+        } else {
+            user = [];
+        }
+
+        console.log(arrpict);
+        if (lengpict > 0) {
+
+            if (arrpict[0]._id !== undefined) {
+                var listdata = [];
+                var tempresult = null;
+                var tempdata = null;
+                for(var i = 0; i < lengpict; i++)
+                {
+                    tempdata = arrpict[i];
+                    if(tempdata.isApsara == true)
+                    {
+                        listdata.push(tempdata.apsaraId);
+                    }
+                    else
+                    {
+                        listdata.push(undefined);
+                    }
+                }
+
+                var apsaraimage = await this.postContentService.getImageApsara(listdata);
+                tempresult = apsaraimage.ImageInfo;
+                for(var loopimage = 0; loopimage < arrpict.length; loopimage++)
+                {
+                    for(var loopapsara = 0; loopapsara < tempresult.length; loopapsara++)
+                    {
+                        if(tempresult[loopapsara].ImageId == arrpict[loopimage].apsaraId)
+                        {
+                            arrpict[loopimage].media = 
+                            {
+                                "ImageInfo": [tempresult[loopapsara]]
+                            }
+                        }
+                        else if(arrpict[loopimage].isApsara == false && (arrpict[loopimage].mediaType == "image" || arrpict[loopimage].mediaType == "images"))
+                        {
+                            arrpict[loopimage].media = 
+                            {
+                                "ImageInfo":[]
+                            }
+                        }
+
+                    }
+                    
+                    picts.push(arrpict[loopimage]);
+                }
+            } else {
+                picts = [];
+            }
+
+
+        } else {
+            picts = [];
+        }
+
+        if (lengvid > 0) {
+
+            if (arrvid[0]._id !== undefined) {
+                var listdata = [];
+                var tempresult = null;
+                var tempdata = null;
+                for(var i = 0; i < lengvid; i++)
+                {
+                    tempdata = arrvid[i];
+                    if(tempdata.isApsara == true)
+                    {
+                        listdata.push(tempdata.apsaraId);
+                    }
+                    else
+                    {
+                        listdata.push(undefined);
+                    }
+                }
+
+                var apsaravideo = await this.postContentService.getVideoApsara(listdata);
+                tempresult = apsaravideo.VideoList;
+                for(var loopvid = 0; loopvid < arrvid.length; loopvid++)
+                {
+                    for(var loopapsara = 0; loopapsara < tempresult.length; loopapsara++)
+                    {
+                        if(loopapsara == loopvid)
+                        {
+                            if(tempresult[loopapsara].VideoId == arrvid[loopvid].apsaraId)
+                            {
+                                arrvid[loopvid].media = 
+                                {
+                                    "VideoList": [tempresult[loopapsara]]
+                                }
+                            }
+                            else if(arrvid[loopvid].isApsara == false && arrvid[loopvid].mediaType == "video")
+                            {
+                                arrvid[loopvid].media = 
+                                {
+                                    "VideoList":[]
+                                }
+                            }
+
+                            vid.push(arrvid[loopvid]);
+                        }
+                    }
+                }
+            } else {
+                vid = [];
+            }
+        } else {
+            vid = [];
+        }
+
+        if (lengdiary > 0) {
+            if (arrdiary[0]._id !== undefined) {
+                var listdata = [];
+                var tempresult = null;
+                var tempdata = null;
+                for(var i = 0; i < lengvid; i++)
+                {
+                    tempdata = arrdiary[i];
+                    if(tempdata.isApsara == true)
+                    {
+                        listdata.push(tempdata.apsaraId);
+                    }
+                    else
+                    {
+                        listdata.push(undefined);
+                    }
+                }
+
+                var apsaravideo = await this.postContentService.getVideoApsara(listdata);
+                tempresult = apsaravideo.VideoList;
+                for(var loopvid = 0; loopvid < arrdiary.length; loopvid++)
+                {
+                    for(var loopapsara = 0; loopapsara < tempresult.length; loopapsara++)
+                    {
+                        if(loopapsara == loopvid)
+                        {
+                            if(tempresult[loopapsara].VideoId == arrdiary[loopvid].apsaraId)
+                            {
+                                arrdiary[loopvid].media = 
+                                {
+                                    "VideoList": [tempresult[loopapsara]]
+                                }
+                            }
+                            else if(arrdiary[loopvid].isApsara == false && arrdiary[loopvid].mediaType == "video")
+                            {
+                                arrdiary[loopvid].media = 
+                                {
+                                    "VideoList":[]
+                                }
+                            }
+
+                            diary.push(arrdiary[loopvid]);
+                        }
+                    }
+                }
+            } else {
+                diary = [];
+            }
+        } else {
+            diary = [];
+        }
+
+        data = [{
+
+            user, picts, vid, diary
+        }];
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        return { response_code: 202, data, messages };
+    }
 }

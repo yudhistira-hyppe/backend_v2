@@ -14,79 +14,141 @@ export class UserbasicnewController {
     @Post('userauths/useractivebychart/v2')
     @UseGuards(JwtAuthGuard)
     async getUserActiveChartBasedDate(@Req() request: Request, @Headers() headers): Promise<any> {
-    var setdate = new Date();
-    var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
-    var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
-    var fullurl = headers.host + '/api/userauths/useractivebychart';
-    var token = headers['x-auth-token'];
-    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    var email = auth.email;
+        var setdate = new Date();
+        var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        var fullurl = headers.host + '/api/userauths/useractivebychart';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
 
-    var data = null;
-    var date = null;
+        var data = null;
+        var date = null;
 
-    const messages = {
-        "info": ["The process successful"],
-    };
+        const messages = {
+            "info": ["The process successful"],
+        };
 
-    var request_json = JSON.parse(JSON.stringify(request.body));
-    if (request_json["date"] !== undefined) {
-        date = request_json["date"];
-    } else {
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["date"] !== undefined) {
+            date = request_json["date"];
+        } else {
+            var setdate = new Date();
+            var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+            var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        var tempdata = await this.UserbasicnewService.getUserActiveByDate(date);
+        var getdata = [];
+        try {
+            getdata = tempdata[0].resultdata;
+        }
+        catch (e) {
+            getdata = [];
+        }
+
+        var startdate = new Date(date);
+        startdate.setDate(startdate.getDate() - 1);
+        var tempdate = new Date(startdate).toISOString().split("T")[0];
+        var end = new Date().toISOString().split("T")[0];
+        var array = [];
+
+        //kalo lama, berarti error disini!!
+        while (tempdate != end) {
+            var temp = new Date(tempdate);
+            temp.setDate(temp.getDate() + 1);
+            tempdate = new Date(temp).toISOString().split("T")[0];
+            //console.log(tempdate);
+
+            let obj = getdata.find(objs => objs._id === tempdate);
+            //console.log(obj);
+            if (obj == undefined) {
+            obj =
+            {
+                _id: tempdate,
+                totaldata: 0
+            }
+            }
+
+            array.push(obj);
+        }
+
+        data =
+        {
+            data: array,
+            total: (getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
+        }
+
         var setdate = new Date();
         var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
         var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
-        throw new BadRequestException("Unabled to proceed");
+        return { response_code: 202, messages, data };
     }
 
-    var tempdata = await this.UserbasicnewService.getUserActiveByDate(date);
-    var getdata = [];
-    try {
-        getdata = tempdata[0].resultdata;
-    }
-    catch (e) {
-        getdata = [];
-    }
+    @Post('getuserprofiles/search/v2')
+    //@FormDataRequest()
+    @UseGuards(JwtAuthGuard)
+    async finduser(@Req() request: Request, @Headers() headers): Promise<any> {
+        var setdate = new Date();
+        var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        var fullurl = headers.host + '/api/getuserprofiles/search/v2';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var username = null;
+        var skip = 0;
+        var limit = 0;
+        var data = null;
 
-    var startdate = new Date(date);
-    startdate.setDate(startdate.getDate() - 1);
-    var tempdate = new Date(startdate).toISOString().split("T")[0];
-    var end = new Date().toISOString().split("T")[0];
-    var array = [];
+        const messages = {
+        "info": ["The process successful"],
+        };
 
-    //kalo lama, berarti error disini!!
-    while (tempdate != end) {
-        var temp = new Date(tempdate);
-        temp.setDate(temp.getDate() + 1);
-        tempdate = new Date(temp).toISOString().split("T")[0];
-        //console.log(tempdate);
+        if (request_json["username"] !== undefined) {
+            username = request_json["username"];
+        } else {
+            var setdate = new Date();
+            var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+            var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
-        let obj = getdata.find(objs => objs._id === tempdate);
-        //console.log(obj);
-        if (obj == undefined) {
-        obj =
-        {
-            _id: tempdate,
-            totaldata: 0
+            throw new BadRequestException("Unabled to proceed");
         }
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            var setdate = new Date();
+            var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+            var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
         }
 
-        array.push(obj);
-    }
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            var setdate = new Date();
+            var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+            var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
-    data =
-    {
-        data: array,
-        total: (getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
-    }
+            throw new BadRequestException("Unabled to proceed");
+        }
+        data = await this.UserbasicnewService.regexfindUser(username, skip, limit);
 
-    var setdate = new Date();
-    var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
-    var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
-    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
-
-    return { response_code: 202, messages, data };
+        var setdate = new Date();
+        var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+        return { response_code: 202, data, skip, limit, messages };
     }
 }
