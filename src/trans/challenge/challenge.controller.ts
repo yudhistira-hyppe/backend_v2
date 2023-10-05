@@ -1660,6 +1660,7 @@ export class ChallengeController {
           createdata.idUser = new mongo.Types.ObjectId(getuserid);
           createdata.idSubChallenge = new mongo.Types.ObjectId(getsubdata[i]._id);
           createdata.isActive = true;
+          createdata.score = 0;
           createdata.ranking = getsubdata[i].lastrank;
           createdata.startDatetime = getsubdata[i].startDatetime;
           createdata.endDatetime = getsubdata[i].endDatetime;
