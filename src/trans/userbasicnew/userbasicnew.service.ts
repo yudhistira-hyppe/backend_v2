@@ -1097,6 +1097,7 @@ export class UserbasicnewService {
                 "$project":
                 {
                     idUserAuth:"$_id",
+                    email:1,
                     profilpictId:"$profilePict.$id",
                     fullName:1,
                     username:1,

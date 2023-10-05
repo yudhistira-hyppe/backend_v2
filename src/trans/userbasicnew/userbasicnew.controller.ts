@@ -17,7 +17,7 @@ export class UserbasicnewController {
         var setdate = new Date();
         var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
         var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
-        var fullurl = headers.host + '/api/userauths/useractivebychart';
+        var fullurl = headers.host + '/api/userauths/useractivebychart/v2';
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
