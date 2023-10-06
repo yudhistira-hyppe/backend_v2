@@ -18262,7 +18262,7 @@ export class subChallengeService {
                                                         $gt: [{
                                                             $arrayElemAt: [{
                                                                 $arrayElemAt: [{
-                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.suka.HyppePict", 0]
+                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.suka.HyppePic", 0]
                                                                 }, 0]
                                                             }, 0]
                                                         }, 0]
@@ -18270,7 +18270,7 @@ export class subChallengeService {
                                                     then: {
                                                         $arrayElemAt: [{
                                                             $arrayElemAt: [{
-                                                                $arrayElemAt: ["$metrik.InteraksiKonten.suka.HyppePict", 0]
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.suka.HyppePic", 0]
                                                             }, 0]
                                                         }, 0]
                                                     },
@@ -18333,7 +18333,7 @@ export class subChallengeService {
                                                         $gt: [{
                                                             $arrayElemAt: [{
                                                                 $arrayElemAt: [{
-                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.buatKonten.HyppePict", 0]
+                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.buatKonten.HyppePic", 0]
                                                                 }, 0]
                                                             }, 0]
                                                         }, 0]
@@ -18341,7 +18341,7 @@ export class subChallengeService {
                                                     then: {
                                                         $arrayElemAt: [{
                                                             $arrayElemAt: [{
-                                                                $arrayElemAt: ["$metrik.InteraksiKonten.buatKonten.HyppePict", 0]
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.buatKonten.HyppePic", 0]
                                                             }, 0]
                                                         }, 0]
                                                     },
@@ -18401,7 +18401,7 @@ export class subChallengeService {
                                                         $gt: [{
                                                             $arrayElemAt: [{
                                                                 $arrayElemAt: [{
-                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.tonton.HyppePict", 0]
+                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.tonton.HyppePic", 0]
                                                                 }, 0]
                                                             }, 0]
                                                         }, 0]
@@ -18409,7 +18409,7 @@ export class subChallengeService {
                                                     then: {
                                                         $arrayElemAt: [{
                                                             $arrayElemAt: [{
-                                                                $arrayElemAt: ["$metrik.InteraksiKonten.tonton.HyppePict", 0]
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.tonton.HyppePic", 0]
                                                             }, 0]
                                                         }, 0]
                                                     },
@@ -18727,8 +18727,8 @@ export class subChallengeService {
                             {
                                 $project: {
                                     _id: "$tempe",
-                                    //                        postID: 1,
-                                    //                        eventType: 1,
+                                    postID: 1,
+                                    eventType: 1,
                                     type: "$eventType",
                                     "id": "$postID",
                                     "desc": "$eventType",
@@ -18828,7 +18828,16 @@ export class subChallengeService {
                                     input: "$event",
                                     as: "nonok",
                                     cond: {
-                                        $eq: ["$$nonok.postType", "vid"]
+
+                                        $and: [
+                                            {
+                                                $eq: ["$$nonok.postType", "vid"]
+                                            },
+                                            {
+                                                $eq: ["$$nonok.eventType", "LIKE"]
+                                            },
+
+                                        ]
                                     }
                                 }
                             },
@@ -18846,7 +18855,15 @@ export class subChallengeService {
                                     input: "$event",
                                     as: "nonok",
                                     cond: {
-                                        $eq: ["$$nonok.postType", "pict"]
+                                        $and: [
+                                            {
+                                                $eq: ["$$nonok.postType", "pict"]
+                                            },
+                                            {
+                                                $eq: ["$$nonok.eventType", "LIKE"]
+                                            },
+
+                                        ]
                                     }
                                 }
                             },
@@ -18864,7 +18881,16 @@ export class subChallengeService {
                                     input: "$event",
                                     as: "nonok",
                                     cond: {
-                                        $eq: ["$$nonok.postType", "diary"]
+
+                                        $and: [
+                                            {
+                                                $eq: ["$$nonok.postType", "diary"]
+                                            },
+                                            {
+                                                $eq: ["$$nonok.eventType", "LIKE"]
+                                            },
+
+                                        ]
                                     }
                                 }
                             },
@@ -18906,7 +18932,16 @@ export class subChallengeService {
                                     input: "$event",
                                     as: "nonok",
                                     cond: {
-                                        $eq: ["$$nonok.postType", "vid"]
+
+                                        $and: [
+                                            {
+                                                $eq: ["$$nonok.postType", "vid"]
+                                            },
+                                            {
+                                                $eq: ["$$nonok.eventType", "VIEW"]
+                                            },
+
+                                        ]
                                     }
                                 }
                             },
@@ -18924,7 +18959,16 @@ export class subChallengeService {
                                     input: "$event",
                                     as: "nonok",
                                     cond: {
-                                        $eq: ["$$nonok.postType", "pict"]
+
+                                        $and: [
+                                            {
+                                                $eq: ["$$nonok.postType", "pict"]
+                                            },
+                                            {
+                                                $eq: ["$$nonok.eventType", "VIEW"]
+                                            },
+
+                                        ]
                                     }
                                 }
                             },
@@ -18942,7 +18986,16 @@ export class subChallengeService {
                                     input: "$event",
                                     as: "nonok",
                                     cond: {
-                                        $eq: ["$$nonok.postType", "diary"]
+
+                                        $and: [
+                                            {
+                                                $eq: ["$$nonok.postType", "diary"]
+                                            },
+                                            {
+                                                $eq: ["$$nonok.eventType", "VIEW"]
+                                            },
+
+                                        ]
                                     }
                                 }
                             },
@@ -18975,6 +19028,20 @@ export class subChallengeService {
                     }
                 }
             },
+            //{
+            //    $project: {
+            //        tester: {
+            //            $arrayElemAt: ["$challenges.post.vid", 0]
+            //        },
+            //        tester2: "$vidPostSize",
+            //        tester1: {
+            //            $multiply: ["$vidPostSize", {
+            //            $arrayElemAt: ["$challenges.post.vid", 0]
+            //        },]
+            //        },
+            //        
+            //    }
+            //}
         );
         var query = await this.subChallengeModel.aggregate(pipeline);
         return query[0];
