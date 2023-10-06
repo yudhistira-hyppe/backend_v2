@@ -336,9 +336,9 @@ export class ChallengeController {
     var ektensileaderboard = request_json['leaderboard_formatFile'];
     var insertbanner = files.bannerBoard[0];
     var path = "images/challenge/" + insertdata._id + "_bannerLeaderboard" + "." + ektensileaderboard;
-    // var result = await this.osservices.uploadFile(insertbanner, path);
-    // setleaderboard['bannerLeaderboard'] = result.url;
-    setleaderboard['bannerLeaderboard'] = path;
+    var result = await this.osservices.uploadFile(insertbanner, path);
+    setleaderboard['bannerLeaderboard'] = result.url;
+    // setleaderboard['bannerLeaderboard'] = path;
 
     insertdata.leaderBoard = [setleaderboard];
 
@@ -378,9 +378,9 @@ export class ChallengeController {
           insertnewbadge.name = insertdata.nameChallenge + "_" + settype;
           insertnewbadge.type = settype;
 
-          // var resultbadge = await this.badge.create(getbadgegeneral, getbadgeprofile, insertnewbadge);
-          // var getbadgeid = resultbadge._id;
-          var getbadgeid = insertnewbadge.name;
+          var resultbadge = await this.badge.create(getbadgegeneral, getbadgeprofile, insertnewbadge);
+          var getbadgeid = resultbadge._id;
+          // var getbadgeid = insertnewbadge.name;
           convertid = new mongoose.Types.ObjectId(getbadgeid.toString());
         }
         else {
@@ -412,9 +412,9 @@ export class ChallengeController {
     var ektensisearch = request_json['bannersearch_formatFile'];
     var insertsearch = files.bannerSearch[0];
     var path = "images/challenge/" + insertdata._id + "_bannerSearch" + "." + ektensisearch;
-    // var result = await this.osservices.uploadFile(insertsearch, path);
-    // setbannersearch['image'] = result.url;
-    setbannersearch['image'] = path;
+    var result = await this.osservices.uploadFile(insertsearch, path);
+    setbannersearch['image'] = result.url;
+    // setbannersearch['image'] = path;
 
     insertdata.bannerSearch = [setbannersearch];
 
@@ -427,9 +427,9 @@ export class ChallengeController {
     var ektensipopup = request_json['popup_formatFile'];
     var insertpopup = files.popUpnotif[0];
     var path = "images/challenge/" + insertdata._id + "_popup" + "." + ektensipopup;
-    // var result = await this.osservices.uploadFile(insertpopup, path);
-    // setpopup['image'] = result.url;
-    setpopup['image'] = path;
+    var result = await this.osservices.uploadFile(insertpopup, path);
+    setpopup['image'] = result.url;
+    // setpopup['image'] = path;
 
     insertdata.popUp = [setpopup];
 
@@ -531,19 +531,19 @@ export class ChallengeController {
     };
 
     try {
-      // await this.challengeService.create(insertdata);
+      await this.challengeService.create(insertdata);
 
-      // var checkpartisipan = request_json['list_partisipan_challenge'];
-      // var checkjoinchallenge = request_json['caraGabung'];
-      // var checkstatusChallenge = request_json['statusChallenge'];
-      // if (checkstatusChallenge != 'NONACTIVE') {
-      //   if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined) {
-      //     this.insertchildofchallenge(insertdata, request_json['list_partisipan_challenge']);
-      //   }
-      //   else {
-      //     this.insertchildofchallenge(insertdata, null);
-      //   }
-      // }
+      var checkpartisipan = request_json['list_partisipan_challenge'];
+      var checkjoinchallenge = request_json['caraGabung'];
+      var checkstatusChallenge = request_json['statusChallenge'];
+      if (checkstatusChallenge != 'NONACTIVE') {
+        if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined) {
+          this.insertchildofchallenge(insertdata, request_json['list_partisipan_challenge']);
+        }
+        else {
+          this.insertchildofchallenge(insertdata, null);
+        }
+      }
 
       // console.log(JSON.stringify(listsubchallenge));
 
