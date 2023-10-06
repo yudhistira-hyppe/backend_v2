@@ -1797,7 +1797,6 @@ export class subChallengeService {
                                     else: "NOT ALLOWED"
                                 }
                             },
-
                         }
                     },
 
@@ -4699,7 +4698,7 @@ export class subChallengeService {
                                             $arrayElemAt: ["$peserta.peserta.caraGabung", 0]
                                         }, "SEMUA PENGGUNA"]
                                     },
-                                    else:
+                                    then:
                                     {
                                         $cond: {
                                             if: {
@@ -4738,7 +4737,7 @@ export class subChallengeService {
                                         },
 
                                     },
-                                    then: "ALLOWED"
+                                    else: "NOT ALLOWED"
                                 }
                             },
 
@@ -8199,7 +8198,7 @@ export class subChallengeService {
                                             $arrayElemAt: ["$peserta.peserta.caraGabung", 0]
                                         }, "SEMUA PENGGUNA"]
                                     },
-                                    else:
+                                    then:
                                     {
                                         $cond: {
                                             if: {
@@ -8238,7 +8237,7 @@ export class subChallengeService {
                                         },
 
                                     },
-                                    then: "ALLOWED"
+                                    else: "NOT ALLOWED"
                                 }
                             },
 
@@ -10652,7 +10651,7 @@ export class subChallengeService {
                                             $arrayElemAt: ["$peserta.peserta.caraGabung", 0]
                                         }, "SEMUA PENGGUNA"]
                                     },
-                                    else:
+                                    then:
                                     {
                                         $cond: {
                                             if: {
@@ -10691,7 +10690,7 @@ export class subChallengeService {
                                         },
 
                                     },
-                                    then: "ALLOWED"
+                                    else: "NOT ALLOWED"
                                 }
                             },
 
@@ -13046,7 +13045,7 @@ export class subChallengeService {
                                             $arrayElemAt: ["$peserta.peserta.caraGabung", 0]
                                         }, "SEMUA PENGGUNA"]
                                     },
-                                    else:
+                                    then:
                                     {
                                         $cond: {
                                             if: {
@@ -13085,7 +13084,7 @@ export class subChallengeService {
                                         },
 
                                     },
-                                    then: "ALLOWED"
+                                    else: "NOT ALLOWED"
                                 }
                             },
 
