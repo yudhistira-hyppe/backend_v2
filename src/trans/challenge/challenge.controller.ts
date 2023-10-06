@@ -236,23 +236,30 @@ export class ChallengeController {
     insertdata.metrik = arraymetrik;
 
     var setpesertafield = {};
+    setpesertafield["caraGabung"] = request_json['caraGabung'].toUpperCase();
+    var cekgabung = setpesertafield["caraGabung"];
     var datatipeAkun = request_json['tipeAkun'];
     var konversitipeAkun = datatipeAkun.toString().split(",");
 
-    if (konversitipeAkun.length == 2) {
-      setpesertafield["tipeAkunTerverikasi"] = 'ALL';
-    }
-    else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TERVERIFIKASI') {
-      setpesertafield["tipeAkunTerverikasi"] = 'YES';
-    }
-    else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TIDAKTERVERIFIKASI') {
+    if(cekgabung == "DENGAN UNDANGAN")
+    {
       setpesertafield["tipeAkunTerverikasi"] = 'NO';
     }
-
-    setpesertafield["caraGabung"] = request_json['caraGabung'].toUpperCase();
+    else
+    {
+      if (konversitipeAkun.length == 2) {
+        setpesertafield["tipeAkunTerverikasi"] = 'ALL';
+      }
+      else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TERVERIFIKASI') {
+        setpesertafield["tipeAkunTerverikasi"] = 'YES';
+      }
+      else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TIDAKTERVERIFIKASI') {
+        setpesertafield["tipeAkunTerverikasi"] = 'NO';
+      }
+    }
 
     var datajeniskelamin = request_json['jenis_kelamin'];
-    var konversikelamin = datajeniskelamin.toString();
+    var konversikelamin = (cekgabung == "SEMUA PENGGUNA" ? datajeniskelamin.toString() : "");
     konversikelamin.split(",");
     var tempkelamindata = null;
     var setjeniskelamin = {};
@@ -274,7 +281,7 @@ export class ChallengeController {
     setpesertafield["jenisKelamin"] = [setjeniskelamin];
 
     var datalokasi = request_json['lokasi'];
-    var konversilokasi = datalokasi.toString().split(",");
+    var konversilokasi = (cekgabung == "SEMUA PENGGUNA" ? datalokasi.toString().split(",") : []);
     var templokasidata = null;
     var setlokasi = [];
     var mongoose = require('mongoose');
@@ -286,7 +293,7 @@ export class ChallengeController {
     setpesertafield["lokasiPengguna"] = setlokasi;
 
     var dataumur = request_json['rentangumur'];
-    var konversiumur = dataumur.toString();
+    var konversiumur = (cekgabung == "SEMUA PENGGUNA" ? dataumur.toString() : "");
     konversiumur.split(",");
     var listumur = ["<14", "14-28", "29-43", "44<", "LAINNYA"];
     var setumur = {};
@@ -893,23 +900,30 @@ export class ChallengeController {
       insertdata.metrik = arraymetrik;
 
       var setpesertafield = {};
+      setpesertafield["caraGabung"] = request_json['caraGabung'].toUpperCase();
+      var cekgabung = setpesertafield["caraGabung"];
       var datatipeAkun = request_json['tipeAkun'];
       var konversitipeAkun = datatipeAkun.toString().split(",");
 
-      if (konversitipeAkun.length == 2) {
-        setpesertafield["tipeAkunTerverikasi"] = 'ALL';
-      }
-      else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TERVERIFIKASI') {
-        setpesertafield["tipeAkunTerverikasi"] = 'YES';
-      }
-      else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TIDAKTERVERIFIKASI') {
+      if(cekgabung == "DENGAN UNDANGAN")
+      {
         setpesertafield["tipeAkunTerverikasi"] = 'NO';
       }
-
-      setpesertafield["caraGabung"] = request_json['caraGabung'].toUpperCase();
+      else
+      {
+        if (konversitipeAkun.length == 2) {
+          setpesertafield["tipeAkunTerverikasi"] = 'ALL';
+        }
+        else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TERVERIFIKASI') {
+          setpesertafield["tipeAkunTerverikasi"] = 'YES';
+        }
+        else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TIDAKTERVERIFIKASI') {
+          setpesertafield["tipeAkunTerverikasi"] = 'NO';
+        }
+      }
 
       var datajeniskelamin = request_json['jenis_kelamin'];
-      var konversikelamin = datajeniskelamin.toString();
+      var konversikelamin = (cekgabung == "SEMUA PENGGUNA" ? datajeniskelamin.toString() : "");
       konversikelamin.split(",");
       var tempkelamindata = null;
       var setjeniskelamin = {};
@@ -931,7 +945,7 @@ export class ChallengeController {
       setpesertafield["jenisKelamin"] = [setjeniskelamin];
 
       var datalokasi = request_json['lokasi'];
-      var konversilokasi = datalokasi.toString().split(",");
+      var konversilokasi = (cekgabung == "SEMUA PENGGUNA" ? datalokasi.toString().split(",") : []);
       var templokasidata = null;
       var setlokasi = [];
       var mongoose = require('mongoose');
@@ -943,7 +957,7 @@ export class ChallengeController {
       setpesertafield["lokasiPengguna"] = setlokasi;
 
       var dataumur = request_json['rentangumur'];
-      var konversiumur = dataumur.toString();
+      var konversiumur = (cekgabung == "SEMUA PENGGUNA" ? dataumur.toString() : "");
       konversiumur.split(",");
       var listumur = ["<14", "14-28", "29-43", "44<", "LAINNYA"];
       var setumur = {};
