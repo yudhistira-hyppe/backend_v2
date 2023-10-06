@@ -13326,4 +13326,810 @@ export class subChallengeService {
         var query = await this.subChallengeModel.aggregate(pipeline);
         return query;
     }
+
+    async getPoinchallenge(idsubchallenge: string, email: string) {
+        var pipeline = [];
+        pipeline.push(
+            {
+                $set: {
+                    "timenow":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [
+                                    new Date(),
+                                    25200000
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $match: {
+                    _id: new Types.ObjectId(idsubchallenge)
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: "challenge",
+                    let:
+                    {
+                        idChallenge: "$challengeId"
+                    },
+                    as: 'challenges',
+                    pipeline:
+                        [
+                            {
+                                "$match":
+                                {
+                                    "$and":
+                                        [
+                                            {
+                                                "$expr":
+                                                {
+                                                    "$eq":
+                                                        [
+                                                            "$_id",
+                                                            "$$idChallenge"
+                                                        ]
+                                                },
+
+                                            },
+
+                                        ]
+                                }
+                            },
+                            {
+                                $project: {
+                                    likes: [
+                                        {
+                                            diary: {
+                                                $cond: {
+                                                    if: {
+                                                        $gt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: [{
+                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.suka.HyppeDiary", 0]
+                                                                }, 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    then: {
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.suka.HyppeDiary", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    else: 0
+                                                }
+                                            }
+                                        },
+                                        {
+                                            pict: {
+                                                $cond: {
+                                                    if: {
+                                                        $gt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: [{
+                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.suka.HyppePict", 0]
+                                                                }, 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    then: {
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.suka.HyppePict", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    else: 0
+                                                }
+                                            }
+                                        },
+                                        {
+                                            vid: {
+                                                $cond: {
+                                                    if: {
+                                                        $gt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: [{
+                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.suka.HyppeVid", 0]
+                                                                }, 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    then: {
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.suka.HyppeVid", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    else: 0
+                                                }
+                                            }
+                                        },
+
+                                    ],
+                                    post: [//post
+                                        {
+                                            diary: {
+                                                $cond: {
+                                                    if: {
+                                                        $gt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: [{
+                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.buatKonten.HyppeDiary", 0]
+                                                                }, 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    then: {
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.buatKonten.HyppeDiary", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    else: 0
+                                                }
+                                            }
+                                        }, {
+                                            pict: {
+                                                $cond: {
+                                                    if: {
+                                                        $gt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: [{
+                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.buatKonten.HyppePict", 0]
+                                                                }, 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    then: {
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.buatKonten.HyppePict", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    else: 0
+                                                }
+                                            }
+                                        }, {
+                                            vid: {
+                                                $cond: {
+                                                    if: {
+                                                        $gt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: [{
+                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.buatKonten.HyppeVid", 0]
+                                                                }, 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    then: {
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.buatKonten.HyppeVid", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    else: 0
+                                                }
+                                            }
+                                        },],
+                                    view: [//view
+                                        {
+                                            diary: {
+                                                $cond: {
+                                                    if: {
+                                                        $gt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: [{
+                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.tonton.HyppeDiary", 0]
+                                                                }, 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    then: {
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.tonton.HyppeDiary", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    else: 0
+                                                }
+                                            }
+                                        }, {
+                                            pict: {
+                                                $cond: {
+                                                    if: {
+                                                        $gt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: [{
+                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.tonton.HyppePict", 0]
+                                                                }, 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    then: {
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.tonton.HyppePict", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    else: 0
+                                                }
+                                            }
+                                        }, {
+                                            vid: {
+                                                $cond: {
+                                                    if: {
+                                                        $gt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: [{
+                                                                    $arrayElemAt: ["$metrik.InteraksiKonten.tonton.HyppeVid", 0]
+                                                                }, 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    then: {
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.tonton.HyppeVid", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    },
+                                                    else: 0
+                                                }
+                                            }
+                                        },],
+                                    dodol: [
+                                        {
+                                            $cond: {
+                                                if: {
+                                                    $gt: [{
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.suka.HyppeVid", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    }, 0]
+                                                },
+                                                then: "vid",
+                                                else: "kusnurudin"
+                                            }
+                                        },
+                                        {
+                                            $cond: {
+                                                if: {
+                                                    $gt: [{
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.suka.HyppePic", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    }, 0]
+                                                },
+                                                then: "pict",
+                                                else: "kusnurudin"
+                                            }
+                                        },
+                                        {
+                                            $cond: {
+                                                if: {
+                                                    $gt: [{
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.suka.HyppeDiary", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    }, 0]
+                                                },
+                                                then: "diary",
+                                                else: "kusnurudin"
+                                            }
+                                        },
+                                        //view
+                                        {
+                                            $cond: {
+                                                if: {
+                                                    $gt: [{
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.tonton.HyppeVid", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    }, 0]
+                                                },
+                                                then: "vid",
+                                                else: "kusnurudin"
+                                            }
+                                        },
+                                        {
+                                            $cond: {
+                                                if: {
+                                                    $gt: [{
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.tonton.HyppePic", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    }, 0]
+                                                },
+                                                then: "pict",
+                                                else: "kusnurudin"
+                                            }
+                                        },
+                                        {
+                                            $cond: {
+                                                if: {
+                                                    $gt: [{
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.tonton.HyppeDiary", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    }, 0]
+                                                },
+                                                then: "diary",
+                                                else: "kusnurudin"
+                                            }
+                                        },
+                                        //post
+                                        {
+                                            $cond: {
+                                                if: {
+                                                    $gt: [{
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.buatKonten.HyppeVid", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    }, 0]
+                                                },
+                                                then: "vid",
+                                                else: "kusnurudin"
+                                            }
+                                        },
+                                        {
+                                            $cond: {
+                                                if: {
+                                                    $gt: [{
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.buatKonten.HyppePic", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    }, 0]
+                                                },
+                                                then: "pict",
+                                                else: "kusnurudin"
+                                            }
+                                        },
+                                        {
+                                            $cond: {
+                                                if: {
+                                                    $gt: [{
+                                                        $arrayElemAt: [{
+                                                            $arrayElemAt: [{
+                                                                $arrayElemAt: ["$metrik.InteraksiKonten.buatKonten.HyppeDiary", 0]
+                                                            }, 0]
+                                                        }, 0]
+                                                    }, 0]
+                                                },
+                                                then: "diary",
+                                                else: "kusnurudin"
+                                            }
+                                        },
+
+                                    ]
+                                }
+                            },
+                            {
+                                $set: {
+                                    metrikAja: {
+                                        $setUnion: [
+                                            "$dodol",
+                                            "$dodol"
+                                        ],
+
+                                    }
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                $unwind: {
+                    path: "$challenges"
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: "posts",
+                    let:
+                    {
+                        idPost: email,
+                        start: "$startDatetime",
+                        end: "$timenow",
+                        ilhamBibir: "$challenges.metrikAja"
+                    },
+                    as: 'posted',
+                    pipeline:
+                        [
+                            {
+                                "$match":
+                                {
+                                    "$and":
+                                        [
+                                            {
+                                                "$expr":
+                                                {
+                                                    $eq: ["$email", "$$idPost"]
+                                                },
+
+                                            },
+                                            {
+                                                "$expr":
+                                                {
+                                                    $lt: ["$createdAt", "$$end"]
+                                                },
+
+                                            },
+                                            {
+                                                "$expr":
+                                                {
+                                                    $gte: ["$createdAt", "$$start"]
+                                                },
+
+                                            },
+                                            {
+                                                "$expr":
+                                                {
+                                                    $lt: ["$saleAmount", 1]
+                                                },
+
+                                            },
+                                            {
+                                                "$expr":
+                                                {
+                                                    $in: ["$postType", "$$ilhamBibir"]
+                                                },
+
+                                            },
+
+                                        ]
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: "$tempe",
+                                    postID: 1,
+                                    postType: 1
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: "contentevents",
+                    let:
+                    {
+                        idPost: "$posted",
+                        ilhamBibir: ["LIKE", "VIEW"]
+                    },
+                    as: 'event',
+                    pipeline:
+                        [
+                            {
+                                "$match":
+                                {
+                                    "$and":
+                                        [
+                                            {
+                                                "$expr":
+                                                {
+                                                    $in: ["$postID", "$$idPost.postID"]
+                                                },
+
+                                            },
+                                            {
+                                                "$expr":
+                                                {
+                                                    $in: ["$eventType", "$$ilhamBibir"]
+                                                },
+
+                                            },
+                                            {
+                                                "event": "DONE"
+                                            },
+                                            {
+                                                "active": true
+                                            },
+
+                                        ]
+                                }
+                            },
+                            {
+                                $set: {
+                                    postType:
+                                    {
+                                        $filter: {
+                                            input: "$$idPost",
+                                            as: "nonok",
+                                            cond: {
+                                                $eq: ["$$nonok.postID", "$postID"]
+                                            }
+                                        }
+                                    },
+
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: "$tempe",
+                                    //                        postID: 1,
+                                    //                        eventType: 1,
+                                    type: "$eventType",
+                                    "id": "$postID",
+                                    "desc": "$eventType",
+                                    postType: {
+                                        $arrayElemAt: ["$postType.postType", 0]
+                                    },
+
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                $set: {
+                    vidPostSize: {
+                        $size: [
+                            {
+                                $filter: {
+                                    input: "$posted",
+                                    as: "nonok",
+                                    cond: {
+                                        $eq: ["$$nonok.postType", "vid"]
+                                    }
+                                }
+                            },
+
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    pictPostSize: {
+                        $size: [
+                            {
+                                $filter: {
+                                    input: "$posted",
+                                    as: "nonok",
+                                    cond: {
+                                        $eq: ["$$nonok.postType", "pict"]
+                                    }
+                                }
+                            },
+
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    diaryPostSize: {
+                        $size: [
+                            {
+                                $filter: {
+                                    input: "$posted",
+                                    as: "nonok",
+                                    cond: {
+                                        $eq: ["$$nonok.postType", "diary"]
+                                    }
+                                }
+                            },
+
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    scorePost: {
+                        $add: [
+                            {
+                                $multiply: ["$vidPostSize", {
+                                    $arrayElemAt: ["$challenges.post.vid", 0]
+                                }]
+                            },
+                            {
+                                $multiply: ["$pictPostSize", {
+                                    $arrayElemAt: ["$challenges.post.pict", 0]
+                                }]
+                            },
+                            {
+                                $multiply: ["$diaryPostSize", {
+                                    $arrayElemAt: ["$challenges.post.diary", 0]
+                                }]
+                            },
+
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    vidLikeSize: {
+                        $size: [
+                            {
+                                $filter: {
+                                    input: "$event",
+                                    as: "nonok",
+                                    cond: {
+                                        $eq: ["$$nonok.postType", "vid"]
+                                    }
+                                }
+                            },
+
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    pictLikeSize: {
+                        $size: [
+                            {
+                                $filter: {
+                                    input: "$event",
+                                    as: "nonok",
+                                    cond: {
+                                        $eq: ["$$nonok.postType", "pict"]
+                                    }
+                                }
+                            },
+
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    diaryLikeSize: {
+                        $size: [
+                            {
+                                $filter: {
+                                    input: "$event",
+                                    as: "nonok",
+                                    cond: {
+                                        $eq: ["$$nonok.postType", "diary"]
+                                    }
+                                }
+                            },
+
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    scoreLike: {
+                        $add: [
+                            {
+                                $multiply: ["$vidLikeSize", {
+                                    $arrayElemAt: ["$challenges.likes.vid", 0]
+                                }]
+                            },
+                            {
+                                $multiply: ["$pictLikeSize", {
+                                    $arrayElemAt: ["$challenges.likes.pict", 0]
+                                }]
+                            },
+                            {
+                                $multiply: ["$diaryLikeSize", {
+                                    $arrayElemAt: ["$challenges.likes.diary", 0]
+                                }]
+                            },
+
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    vidViewSize: {
+                        $size: [
+                            {
+                                $filter: {
+                                    input: "$event",
+                                    as: "nonok",
+                                    cond: {
+                                        $eq: ["$$nonok.postType", "vid"]
+                                    }
+                                }
+                            },
+
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    pictViewSize: {
+                        $size: [
+                            {
+                                $filter: {
+                                    input: "$event",
+                                    as: "nonok",
+                                    cond: {
+                                        $eq: ["$$nonok.postType", "pict"]
+                                    }
+                                }
+                            },
+
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    diaryViewSize: {
+                        $size: [
+                            {
+                                $filter: {
+                                    input: "$event",
+                                    as: "nonok",
+                                    cond: {
+                                        $eq: ["$$nonok.postType", "diary"]
+                                    }
+                                }
+                            },
+
+                        ]
+                    }
+                }
+            },
+            {
+                $set: {
+                    scoreView: {
+                        $add: [
+                            {
+                                $multiply: ["$vidViewSize", {
+                                    $arrayElemAt: ["$challenges.view.vid", 0]
+                                }]
+                            },
+                            {
+                                $multiply: ["$pictViewSize", {
+                                    $arrayElemAt: ["$challenges.view.pict", 0]
+                                }]
+                            },
+                            {
+                                $multiply: ["$diaryViewSize", {
+                                    $arrayElemAt: ["$challenges.view.diary", 0]
+                                }]
+                            },
+
+                        ]
+                    }
+                }
+            },
+        );
+        var query = await this.subChallengeModel.aggregate(pipeline);
+        return query[0];
+    }
 }

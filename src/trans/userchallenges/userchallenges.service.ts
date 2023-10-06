@@ -198,6 +198,11 @@ export class UserchallengesService {
         return data;
     }
 
+    async updateScoring(id: string, idSubChallenge: string, score: number) {
+        let data = await this.UserchallengesModel.updateOne({ "_id": new Types.ObjectId(id), "idSubChallenge": new Types.ObjectId(idSubChallenge) },
+            { $set: { "score": score, } });
+        return data;
+    }
     async updateHistory(id: string, idSubChallenge: string, data: {}) {
         let result = await this.UserchallengesModel.updateOne({ _id: new Types.ObjectId(id), idSubChallenge: new Types.ObjectId(idSubChallenge) }, { $push: { history: data } }).exec();
         return result;
