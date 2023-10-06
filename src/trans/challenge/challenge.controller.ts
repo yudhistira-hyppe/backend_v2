@@ -3121,7 +3121,9 @@ export class ChallengeController {
     }
     return {
       response_code:202,
-      join_status:final
+      data: {
+          join_status:final
+      }
     }
   }
 }
