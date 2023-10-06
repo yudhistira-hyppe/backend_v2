@@ -2179,7 +2179,15 @@ export class ChallengeController {
       isActive1 = datauserbadge[0].isActive;
 
       try {
-        userBadge = datauserbadge[0].userBadge;
+        var checkdata = datauserbadge[0].userBadge;
+        if(checkdata == null)
+        {
+          userBadge = [];
+        }
+        else
+        {
+          userBadge = datauserbadge[0].userBadge;
+        }
       } catch (e) {
         userBadge = [];
       }
