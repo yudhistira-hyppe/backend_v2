@@ -403,4 +403,137 @@ export class UserchallengesService {
             return false;
         }
     }
+
+    async checkuserstatusjoin(target:string)
+    {
+        var mongo = require('mongoose');
+        var konvertid = new mongo.Types.ObjectId(target);
+        var result = await this.UserchallengesModel.aggregate([
+            {
+                "$match":
+                {
+                    "idUser":konvertid
+                }
+            },
+            {
+                "$set":
+                {
+                    "datenow":
+                    {
+                        "$dateToString": 
+                        {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": 
+                            {
+                                $add: [new Date(), + 25200000]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from:"challenge",
+                    as:"challengedata",
+                    let:
+                    {
+                        "fk_challenge":"$idChallenge",
+                        "now":"$datenow"
+                    },
+                    pipeline:
+                    [
+                        {
+                            "$addFields":
+                            {
+                                "setend":
+                                {
+                                    "$concat":
+                                    [
+                                        "$endChallenge",
+                                        " ",
+                                        "$startTime"
+                                    ]
+                                },
+                            }
+                        },
+                        {
+                            "$match":
+                            {
+                                "$and":
+                                [
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$_id","$$fk_challenge"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$eq":
+                                            [
+                                                "$statusChallenge","PUBLISH"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "$expr":
+                                        {
+                                            "$gt":
+                                            [
+                                                "$setend", "$$now"
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "$unwind":
+                {
+                    path:"$challengedata"
+                }
+            },
+            {
+                "$group":
+                {
+                    _id:null,
+                    total:
+                    {
+                        "$sum":1
+                    }
+                }
+            },
+            {
+                "$project":
+                {
+                    _id:0,
+                    join_status:
+                    {
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$eq":
+                                [
+                                    "$total", 0
+                                ]
+                            },
+                            then:false,
+                            else:true
+                        }
+                    }
+                }
+            }
+        ]);
+
+        return result[0];
+    }
 }

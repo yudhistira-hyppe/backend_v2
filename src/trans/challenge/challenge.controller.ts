@@ -3107,23 +3107,17 @@ export class ChallengeController {
     }
     iduser = request_json['idUser'];
 
-    var result = await this.challengeService.checkuserstatusjoin(iduser, null, null, null);
-    
-    var final = false;
-    for(var i = 0; i < result.length; i++)
+    var result = await this.userchallengeSS.checkuserstatusjoin(iduser);
+    if(result == null)
     {
-      var data = result[i].statusJoined;
-      if(data == "Partisipan")
-      {
-        final = true;
-        break;
-      }
+      result = {
+        join_status:false
+      };
     }
+    
     return {
       response_code:202,
-      data: {
-          join_status:final
-      }
+      data: result
     }
   }
 }
