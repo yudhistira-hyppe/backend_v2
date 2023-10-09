@@ -815,8 +815,8 @@ export class GetuserprofilesService {
     if(startdate != null && enddate != null)
     {
       var convertstart = startdate.split(" ")[0];
-      var dateend = new Date(enddate);
-      var convertend = dateend.toISOString().split("T")[0];
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+      var convertend = currentdate.toISOString().split("T")[0];
 
       firstmatch.push({
           "$expr":
@@ -830,7 +830,7 @@ export class GetuserprofilesService {
                       ],
                   },
                   {
-                      "$lte":
+                      "$lt":
                       [
                           "$createdAt", convertend
                       ]
