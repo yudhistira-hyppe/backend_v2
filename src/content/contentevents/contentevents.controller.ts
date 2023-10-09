@@ -1228,7 +1228,7 @@ export class ContenteventsController {
         }
         if (idevent1 != null) {
           try {
-            this.userChallengeViewv3Newpoin(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+            this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
             console.log("sukses hitung score")
           } catch (e) {
             console.log("gagal ngitung skor" + e)
@@ -1316,7 +1316,7 @@ export class ContenteventsController {
           //   this.userChallengeLike(iduser.toString(), idevent1.toString(), "contentevents", "LIKE", request.body.postID);
           // }
           //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-          this.userChallengeLike3Newpoin(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+          this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
@@ -1372,7 +1372,7 @@ export class ContenteventsController {
             let event1 = ceck_data_DONE.eventType.toString();
             // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
             // this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-            this.userChallengeLike3Newpoin(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+            this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
@@ -1475,7 +1475,7 @@ export class ContenteventsController {
               // }
 
               //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-              this.userChallengeLike3Newpoin(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+              this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2083,9 +2083,9 @@ export class ContenteventsController {
           tagar = "";
         }
         if (tagar != undefined && tagar != "") {
-
+          var tag2 = tagar.replace("#", "");
           try {
-            datatag = await this.tagCountService.listag(tagar);
+            datatag = await this.tagCountService.listag(tag2);
           } catch (e) {
             datatag = null;
           }
@@ -2339,9 +2339,9 @@ export class ContenteventsController {
         }
 
         if (tagar != undefined && tagar != "") {
-
+          var tag2 = tagar.replace("#", "");
           try {
-            datatag = await this.tagCountService.listag(tagar);
+            datatag = await this.tagCountService.listag(tag2);
           } catch (e) {
             datatag = null;
           }
@@ -2594,9 +2594,9 @@ export class ContenteventsController {
         }
 
         if (tagar != undefined && tagar != "") {
-
+          var tag2 = tagar.replace("#", "");
           try {
-            datatag = await this.tagCountService.listag(tagar);
+            datatag = await this.tagCountService.listag(tag2);
           } catch (e) {
             datatag = null;
           }
@@ -2974,9 +2974,9 @@ export class ContenteventsController {
           tagar = "";
         }
         if (tagar != undefined && tagar != "") {
-
+          var tag2 = tagar.replace("#", "");
           try {
-            datatag = await this.tagCountService.listag(tagar);
+            datatag = await this.tagCountService.listag(tag2);
           } catch (e) {
             datatag = null;
           }
@@ -3264,9 +3264,9 @@ export class ContenteventsController {
         }
 
         if (tagar != undefined && tagar != "") {
-
+          var tag2 = tagar.replace("#", "");
           try {
-            datatag = await this.tagCountService.listag(tagar);
+            datatag = await this.tagCountService.listag(tag2);
           } catch (e) {
             datatag = null;
           }
@@ -3555,9 +3555,9 @@ export class ContenteventsController {
         }
 
         if (tagar != undefined && tagar != "") {
-
+          var tag2 = tagar.replace("#", "");
           try {
-            datatag = await this.tagCountService.listag(tagar);
+            datatag = await this.tagCountService.listag(tag2);
           } catch (e) {
             datatag = null;
           }
@@ -3861,9 +3861,9 @@ export class ContenteventsController {
           tagar = "";
         }
         if (tagar != undefined && tagar != "" && tagar.length > 0) {
-
+          var tag2 = tagar.replace("#", "");
           try {
-            datatag = await this.tagCountService.listag(tagar);
+            datatag = await this.tagCountService.listag(tag2);
           } catch (e) {
             datatag = null;
           }
@@ -4316,10 +4316,12 @@ export class ContenteventsController {
         } catch (e) {
           tagar = "";
         }
-        if (tagar != undefined && tagar != "" && tagar.length > 0) {
 
+
+        if (tagar != undefined && tagar != "" && tagar.length > 0) {
+          var tag2 = tagar.replace("#", "");
           try {
-            datatag = await this.tagCountService.listag(tagar);
+            datatag = await this.tagCountService.listag(tag2);
           } catch (e) {
             datatag = null;
           }
@@ -4777,10 +4779,11 @@ export class ContenteventsController {
         } catch (e) {
           tagar = "";
         }
-        if (tagar != undefined && tagar != "" && tagar.length > 0) {
 
+        if (tagar != undefined && tagar != "" && tagar.length > 0) {
+          var tag2 = tagar.replace("#", "");
           try {
-            datatag = await this.tagCountService.listag(tagar);
+            datatag = await this.tagCountService.listag(tag2);
           } catch (e) {
             datatag = null;
           }
@@ -5867,6 +5870,11 @@ export class ContenteventsController {
     var saleAmount = null;
     var postTypeParent = null;
     var datapoin = null;
+    var totalscor = null;
+    var scoreLike = null;
+    var scorePost = null;
+    var scoreView = null;
+    var event = null;
     try {
       datapost = await this.postsService.findByPostId(postID);
     } catch (e) {
@@ -5922,9 +5930,9 @@ export class ContenteventsController {
           tagar = "";
         }
         if (tagar != undefined && tagar != "" && tagar.length > 0) {
-
+          var tag2 = tagar.replace("#", "");
           try {
-            datatag = await this.tagCountService.listag(tagar);
+            datatag = await this.tagCountService.listag(tag2);
           } catch (e) {
             datatag = null;
           }
@@ -5984,9 +5992,7 @@ export class ContenteventsController {
                     }
                     console.log(datapoin)
 
-                    if (datapoin !== null && datapoin.length > 0) {
-                      var totalscor = null;
-                      var scoreLike = null;
+                    if (datapoin !== null) {
 
                       try {
                         scoreLike = datapoin.scoreLike;
@@ -5994,14 +6000,11 @@ export class ContenteventsController {
                         scoreLike = 0;
                       }
 
-                      var scorePost = null;
-
                       try {
                         scorePost = datapoin.scorePost;
                       } catch (e) {
                         scorePost = 0;
                       }
-                      var scoreView = null;
 
                       try {
                         scoreView = datapoin.scoreView;
@@ -6009,7 +6012,7 @@ export class ContenteventsController {
                         scoreView = 0;
                       }
 
-                      var event = null;
+
 
                       try {
                         event = datapoin.event;
@@ -6017,7 +6020,24 @@ export class ContenteventsController {
                         event = [];
                       }
                     }
+                    if (event == null) {
+                      event = [];
+                    }
+                    if (scoreView == null) {
+                      scoreView = 0;
+                    }
+                    if (scoreLike == null) {
+                      scoreLike = 0;
+                    }
+                    if (scorePost == null) {
+                      scorePost = 0;
+                    }
                     totalscor = scoreLike + scorePost + scoreView;
+
+                    if (totalscor == null) {
+                      totalscor = 0;
+                    }
+
                     if (objectChallenge == "KONTEN") {
                       if (new Date(createAt) >= start && new Date(createAt) <= end && saleAmount == 0) {
                         if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
@@ -6037,9 +6057,9 @@ export class ContenteventsController {
                           } else if (postType == "pict") {
                             poin = poinPict;
                           }
-
+                          await this.userchallengesService.updateScoring(iduserchall.toString(), idsubchallenge.toString(), totalscor);
                           await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                          await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), totalscor);
+
                           // var detail = await this.userchallengesService.findOne(iduserchall.toString());
                           // var activity = detail.activity;
                           // objintr = { "type": nametable, "id": idref, "desc": action }
@@ -6103,8 +6123,9 @@ export class ContenteventsController {
                           } else if (postType == "pict") {
                             poin = poinPict;
                           }
+                          await this.userchallengesService.updateScoring(iduserchall.toString(), idsubchallenge.toString(), totalscor);
                           await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                          await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), totalscor);
+
                           // var detail = await this.userchallengesService.findOne(iduserchall.toString());
                           // var activity = detail.activity;
                           // objintr = { "type": nametable, "id": idref, "desc": action }
@@ -6213,9 +6234,7 @@ export class ContenteventsController {
               }
               console.log(datapoin)
 
-              if (datapoin !== null && datapoin.length > 0) {
-                var totalscor = null;
-                var scoreLike = null;
+              if (datapoin !== null) {
 
                 try {
                   scoreLike = datapoin.scoreLike;
@@ -6223,14 +6242,11 @@ export class ContenteventsController {
                   scoreLike = 0;
                 }
 
-                var scorePost = null;
-
                 try {
                   scorePost = datapoin.scorePost;
                 } catch (e) {
                   scorePost = 0;
                 }
-                var scoreView = null;
 
                 try {
                   scoreView = datapoin.scoreView;
@@ -6238,7 +6254,7 @@ export class ContenteventsController {
                   scoreView = 0;
                 }
 
-                var event = null;
+
 
                 try {
                   event = datapoin.event;
@@ -6246,7 +6262,23 @@ export class ContenteventsController {
                   event = [];
                 }
               }
+              if (event == null) {
+                event = [];
+              }
+              if (scoreView == null) {
+                scoreView = 0;
+              }
+              if (scoreLike == null) {
+                scoreLike = 0;
+              }
+              if (scorePost == null) {
+                scorePost = 0;
+              }
               totalscor = scoreLike + scorePost + scoreView;
+
+              if (totalscor == null) {
+                totalscor = 0;
+              }
 
               if (objectChallenge == "KONTEN") {
                 if (new Date(createAt) >= start && new Date(createAt) <= end && saleAmount == 0) {
@@ -6268,8 +6300,9 @@ export class ContenteventsController {
                       poin = poinPict;
                     }
 
+                    await this.userchallengesService.updateScoring(iduserchall.toString(), idsubchallenge.toString(), totalscor);
                     await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                    await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), totalscor);
+
                     // var detail = await this.userchallengesService.findOne(iduserchall.toString());
                     // var activity = detail.activity;
                     // objintr = { "type": nametable, "id": idref, "desc": action }
@@ -6330,8 +6363,9 @@ export class ContenteventsController {
                     } else if (postTypeParent == "pict") {
                       poin = poinPict;
                     }
+                    await this.userchallengesService.updateScoring(iduserchall.toString(), idsubchallenge.toString(), totalscor);
                     await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                    await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), totalscor);
+
                     // var detail = await this.userchallengesService.findOne(iduserchall.toString());
                     // var activity = detail.activity;
                     // objintr = { "type": nametable, "id": idref, "desc": action }
@@ -6419,6 +6453,11 @@ export class ContenteventsController {
     var saleAmount = null;
     var postTypeParent = null;
     var datapoin = null;
+    var totalscor = null;
+    var scoreLike = null;
+    var scorePost = null;
+    var scoreView = null;
+    var event = null;
     try {
       datapost = await this.postsService.findByPostId(postID);
     } catch (e) {
@@ -6468,9 +6507,9 @@ export class ContenteventsController {
           tagar = "";
         }
         if (tagar != undefined && tagar != "" && tagar.length > 0) {
-
+          var tag2 = tagar.replace("#", "");
           try {
-            datatag = await this.tagCountService.listag(tagar);
+            datatag = await this.tagCountService.listag(tag2);
           } catch (e) {
             datatag = null;
           }
@@ -6530,9 +6569,7 @@ export class ContenteventsController {
                     }
                     console.log(datapoin)
 
-                    if (datapoin !== null && datapoin.length > 0) {
-                      var totalscor = null;
-                      var scoreLike = null;
+                    if (datapoin !== null) {
 
                       try {
                         scoreLike = datapoin.scoreLike;
@@ -6540,14 +6577,11 @@ export class ContenteventsController {
                         scoreLike = 0;
                       }
 
-                      var scorePost = null;
-
                       try {
                         scorePost = datapoin.scorePost;
                       } catch (e) {
                         scorePost = 0;
                       }
-                      var scoreView = null;
 
                       try {
                         scoreView = datapoin.scoreView;
@@ -6555,7 +6589,7 @@ export class ContenteventsController {
                         scoreView = 0;
                       }
 
-                      var event = null;
+
 
                       try {
                         event = datapoin.event;
@@ -6563,7 +6597,23 @@ export class ContenteventsController {
                         event = [];
                       }
                     }
+                    if (event == null) {
+                      event = [];
+                    }
+                    if (scoreView == null) {
+                      scoreView = 0;
+                    }
+                    if (scoreLike == null) {
+                      scoreLike = 0;
+                    }
+                    if (scorePost == null) {
+                      scorePost = 0;
+                    }
                     totalscor = scoreLike + scorePost + scoreView;
+
+                    if (totalscor == null) {
+                      totalscor = 0;
+                    }
 
                     if (objectChallenge == "KONTEN") {
                       if (new Date(createAt) >= start && new Date(createAt) <= end && saleAmount == 0) {
@@ -6758,9 +6808,7 @@ export class ContenteventsController {
               }
               console.log(datapoin)
 
-              if (datapoin !== null && datapoin.length > 0) {
-                var totalscor = null;
-                var scoreLike = null;
+              if (datapoin !== null) {
 
                 try {
                   scoreLike = datapoin.scoreLike;
@@ -6768,14 +6816,11 @@ export class ContenteventsController {
                   scoreLike = 0;
                 }
 
-                var scorePost = null;
-
                 try {
                   scorePost = datapoin.scorePost;
                 } catch (e) {
                   scorePost = 0;
                 }
-                var scoreView = null;
 
                 try {
                   scoreView = datapoin.scoreView;
@@ -6783,7 +6828,7 @@ export class ContenteventsController {
                   scoreView = 0;
                 }
 
-                var event = null;
+
 
                 try {
                   event = datapoin.event;
@@ -6791,7 +6836,23 @@ export class ContenteventsController {
                   event = [];
                 }
               }
+              if (event == null) {
+                event = [];
+              }
+              if (scoreView == null) {
+                scoreView = 0;
+              }
+              if (scoreLike == null) {
+                scoreLike = 0;
+              }
+              if (scorePost == null) {
+                scorePost = 0;
+              }
               totalscor = scoreLike + scorePost + scoreView;
+
+              if (totalscor == null) {
+                totalscor = 0;
+              }
 
               if (objectChallenge == "KONTEN") {
                 if (new Date(createAt) >= start && new Date(createAt) <= end && saleAmount == 0) {

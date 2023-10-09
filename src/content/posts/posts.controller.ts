@@ -3644,9 +3644,9 @@ export class PostsController {
         }
 
         if (tagar != undefined && tagar != "" && tagar.length > 0) {
-
+          var tag2 = tagar.replace("#", "");
           try {
-            datatag = await this.tagCountService.listag(tagar.toLowerCase());
+            datatag = await this.tagCountService.listag(tag2);
           } catch (e) {
             datatag = null;
           }
