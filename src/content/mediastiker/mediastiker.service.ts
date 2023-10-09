@@ -455,7 +455,7 @@ export class MediastikerService {
             // var dateend = currentdate.toISOString().split(" ")[0];
             var convertstart = startdate.split(" ")[0];
             var dateend = new Date(enddate);
-            var convertend = dateend.toISOString().split(" ")[0];
+            var convertend = dateend.toISOString().split("T")[0];
 
             firstmatch.push(
                 {
