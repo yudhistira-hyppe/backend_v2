@@ -2740,7 +2740,7 @@ export class ChallengeService {
 
     if (datachallengejuara !== null && datachallengejuara.length > 0) {
       for (let i = 0; i < datachallengejuara.length; i++) {
-        status = datachallengejuara[i], status;
+        status = datachallengejuara[i].status;
         idsubchallenge = datachallengejuara[i]._id;
         idchallenge = datachallengejuara[i].challengeId;
         session = datachallengejuara[i].session;
