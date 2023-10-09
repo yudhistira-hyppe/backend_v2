@@ -254,8 +254,7 @@ export class ChallengeController {
       else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TIDAKTERVERIFIKASI') {
         setpesertafield["tipeAkunTerverikasi"] = 'NO';
       }
-      else
-      {
+      else {
         setpesertafield["tipeAkunTerverikasi"] = 'NO';
       }
     }
@@ -286,8 +285,7 @@ export class ChallengeController {
     var konversilokasi = (cekgabung == "SEMUA PENGGUNA" ? ((datalokasi != '' && datalokasi != null && datalokasi != undefined) ? datalokasi.toString().split(",") : []) : []);
     var templokasidata = null;
     var setlokasi = [];
-    if(konversilokasi.length != 0)
-    {
+    if (konversilokasi.length != 0) {
       var mongoose = require('mongoose');
       for (var i = 0; i < konversilokasi.length; i++) {
         templokasidata = new mongoose.Types.ObjectId(konversilokasi[i].toString());
@@ -351,8 +349,7 @@ export class ChallengeController {
       setketentuanhadiah['minSize'] = (request_json["ketentuanhadiah_minSize"] == undefined && request_json["ketentuanhadiah_minSize"] == null ? 0 : Number(request_json['ketentuanhadiah_minSize']));
       setketentuanhadiah['formatFile'] = request_json['ketentuanhadiah_formatFile'];
       var listjuara = request_json['listbadge'];
-      if(listjuara == null || listjuara == undefined || listjuara == '')
-      {
+      if (listjuara == null || listjuara == undefined || listjuara == '') {
         var timestamps_end = await this.util.getDateTimeString();
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
@@ -930,8 +927,7 @@ export class ChallengeController {
         else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TIDAKTERVERIFIKASI') {
           setpesertafield["tipeAkunTerverikasi"] = 'NO';
         }
-        else
-        {
+        else {
           setpesertafield["tipeAkunTerverikasi"] = 'NO';
         }
       }
@@ -962,8 +958,7 @@ export class ChallengeController {
       var konversilokasi = (cekgabung == "SEMUA PENGGUNA" ? ((datalokasi != '' && datalokasi != null && datalokasi != undefined) ? datalokasi.toString().split(",") : []) : []);
       var templokasidata = null;
       var setlokasi = [];
-      if(konversilokasi.length != 0)
-      {
+      if (konversilokasi.length != 0) {
         var mongoose = require('mongoose');
         for (var i = 0; i < konversilokasi.length; i++) {
           templokasidata = new mongoose.Types.ObjectId(konversilokasi[i].toString());
@@ -1033,8 +1028,7 @@ export class ChallengeController {
         setketentuanhadiah['minSize'] = (request_json["ketentuanhadiah_minSize"] == undefined && request_json["ketentuanhadiah_minSize"] == null ? 0 : Number(request_json['ketentuanhadiah_minSize']));
         setketentuanhadiah['formatFile'] = request_json['ketentuanhadiah_formatFile'];
         var listjuara = request_json['listbadge'];
-        if(listjuara == null || listjuara == undefined || listjuara == '')
-        {
+        if (listjuara == null || listjuara == undefined || listjuara == '') {
           var timestamps_end = await this.util.getDateTimeString();
           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
