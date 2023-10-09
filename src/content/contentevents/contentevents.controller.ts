@@ -1228,7 +1228,7 @@ export class ContenteventsController {
         }
         if (idevent1 != null) {
           try {
-            this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+            this.userChallengeViewv3Newpoin(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
             console.log("sukses hitung score")
           } catch (e) {
             console.log("gagal ngitung skor" + e)
@@ -1316,7 +1316,7 @@ export class ContenteventsController {
           //   this.userChallengeLike(iduser.toString(), idevent1.toString(), "contentevents", "LIKE", request.body.postID);
           // }
           //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-          this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+          this.userChallengeLike3Newpoin(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
@@ -1372,7 +1372,7 @@ export class ContenteventsController {
             let event1 = ceck_data_DONE.eventType.toString();
             // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
             // this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-            this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+            this.userChallengeLike3Newpoin(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
@@ -1475,7 +1475,7 @@ export class ContenteventsController {
               // }
 
               //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-              this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+              this.userChallengeLike3Newpoin(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -6585,13 +6585,13 @@ export class ContenteventsController {
 
 
                           await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                          await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
-                          var detail = await this.userchallengesService.findOne(iduserchall.toString());
-                          var activity = detail.activity;
-                          objintr = { "type": nametable, "id": idref, "desc": action }
-                          console.log(objintr)
-                          activity.push(objintr)
-                          await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                          await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), totalscor);
+                          // var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                          // var activity = detail.activity;
+                          // objintr = { "type": nametable, "id": idref, "desc": action }
+                          // console.log(objintr)
+                          // activity.push(objintr)
+                          await this.userchallengesService.updateActivity(iduserchall.toString(), event, timedate);
                           try {
                             datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                           } catch (e) {
@@ -6607,7 +6607,6 @@ export class ContenteventsController {
 
                             }
                           }
-
 
                           var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
@@ -6651,13 +6650,13 @@ export class ContenteventsController {
 
 
                           await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                          await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
-                          var detail = await this.userchallengesService.findOne(iduserchall.toString());
-                          var activity = detail.activity;
-                          objintr = { "type": nametable, "id": idref, "desc": action }
-                          console.log(objintr)
-                          activity.push(objintr)
-                          await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                          await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), totalscor);
+                          // var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                          // var activity = detail.activity;
+                          // objintr = { "type": nametable, "id": idref, "desc": action }
+                          // console.log(objintr)
+                          // activity.push(objintr)
+                          await this.userchallengesService.updateActivity(iduserchall.toString(), event, timedate);
                           try {
                             datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                           } catch (e) {
@@ -6740,13 +6739,59 @@ export class ContenteventsController {
 
 
             for (let y = 0; y < datauserchall.length; y++) {
-
               var iduserchall = datauserchall[y]._id;
+              var userid = datauserchall[y].idUser;
               var idsubchallenge = datauserchall[y].idSubChallenge;
               var idChallenges = datauserchall[y].idChallenge;
               var start = new Date(datauserchall[y].startDatetime);
               var end = new Date(datauserchall[y].endDatetime);
               var datenow = new Date(Date.now());
+
+              const databasic = await this.userbasicsService.findbyid(
+                userid.toString()
+              );
+              var email = databasic.email;
+              try {
+                datapoin = await this.subChallengeService.getPoinchallenge(idsubchallenge.toString(), email.toString());
+              } catch (e) {
+                datapoin = null;
+              }
+              console.log(datapoin)
+
+              if (datapoin !== null && datapoin.length > 0) {
+                var totalscor = null;
+                var scoreLike = null;
+
+                try {
+                  scoreLike = datapoin.scoreLike;
+                } catch (e) {
+                  scoreLike = 0;
+                }
+
+                var scorePost = null;
+
+                try {
+                  scorePost = datapoin.scorePost;
+                } catch (e) {
+                  scorePost = 0;
+                }
+                var scoreView = null;
+
+                try {
+                  scoreView = datapoin.scoreView;
+                } catch (e) {
+                  scoreView = 0;
+                }
+
+                var event = null;
+
+                try {
+                  event = datapoin.event;
+                } catch (e) {
+                  event = [];
+                }
+              }
+              totalscor = scoreLike + scorePost + scoreView;
 
               if (objectChallenge == "KONTEN") {
                 if (new Date(createAt) >= start && new Date(createAt) <= end && saleAmount == 0) {
@@ -6767,13 +6812,13 @@ export class ContenteventsController {
                     }
 
                     await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                    await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
-                    var detail = await this.userchallengesService.findOne(iduserchall.toString());
-                    var activity = detail.activity;
-                    let objintr = { "type": nametable, "id": idref, "desc": action }
-                    console.log(objintr)
-                    activity.push(objintr)
-                    await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                    await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), totalscor);
+                    // var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                    // var activity = detail.activity;
+                    // objintr = { "type": nametable, "id": idref, "desc": action }
+                    // console.log(objintr)
+                    // activity.push(objintr)
+                    await this.userchallengesService.updateActivity(iduserchall.toString(), event, timedate);
                     try {
                       datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                     } catch (e) {
@@ -6828,13 +6873,13 @@ export class ContenteventsController {
                     }
 
                     await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                    await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
-                    var detail = await this.userchallengesService.findOne(iduserchall.toString());
-                    var activity = detail.activity;
-                    let objintr = { "type": nametable, "id": idref, "desc": action }
-                    console.log(objintr)
-                    activity.push(objintr)
-                    await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                    await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), totalscor);
+                    // var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                    // var activity = detail.activity;
+                    // objintr = { "type": nametable, "id": idref, "desc": action }
+                    // console.log(objintr)
+                    // activity.push(objintr)
+                    await this.userchallengesService.updateActivity(iduserchall.toString(), event, timedate);
                     try {
                       datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
                     } catch (e) {
