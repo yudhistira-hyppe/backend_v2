@@ -454,8 +454,8 @@ export class MediastikerService {
             // var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
             // var dateend = currentdate.toISOString().split(" ")[0];
             var convertstart = startdate.split(" ")[0];
-            var dateend = new Date(enddate);
-            var convertend = dateend.toISOString().split("T")[0];
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+            var convertend = currentdate.toISOString().split("T")[0];
 
             firstmatch.push(
                 {
@@ -467,7 +467,7 @@ export class MediastikerService {
                 {
                     "createdAt":
                     {
-                        "$lte": convertend
+                        "$lt": convertend
                     }
                 },
             );
