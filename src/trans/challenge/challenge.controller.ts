@@ -1396,8 +1396,8 @@ export class ChallengeController {
     if (statusChallenge == "PUBLISH") {
       var checkjoinchallenge = getdata.peserta[0].caraGabung;
       var checkpartisipan = getdata.listParticipant;
-      if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined) {
-        this.insertchildofchallenge(getdata, request_json['list_partisipan_challenge']);
+      if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined && checkpartisipan.length != 0) {
+        this.insertchildofchallenge(getdata, checkpartisipan);
       }
       else {
         this.insertchildofchallenge(getdata, null);
@@ -1595,22 +1595,35 @@ export class ChallengeController {
 
     var challengeId = id;
 
-    var data = await this.subchallenge.getwilayahpengguna(challengeId);
+    // var data = await this.subchallenge.getwilayahpengguna(challengeId);
+    var data = await this.userchallengeSS.wilayahpengguna(challengeId);
 
-    for (var i = 0; i < data.length; i++) {
-      var setarray = [];
-      var getarray = data[i].userChallenge_data;
-      for (var j = 0; j < getarray.length; j++) {
-        var setobject = {};
-        setobject["_id"] = getarray[j]._id;
-        var getangka = getarray[j].persentase;
-        setobject["persentase"] = parseFloat(getangka.toFixed(2));
+    // for (var i = 0; i < data.length; i++) {
+    //   var setarray = [];
+    //   var getarray = data[i].userChallenge_data;
+    //   for (var j = 0; j < getarray.length; j++) {
+    //     var setobject = {};
+    //     setobject["_id"] = getarray[j]._id;
+    //     var getangka = getarray[j].persentase;
+    //     setobject["persentase"] = parseFloat(getangka.toFixed(2));
 
-        setarray.push(setobject);
-      }
+    //     setarray.push(setobject);
+    //   }
 
-      data[i].userChallenge_data = setarray;
+    //   data[i].userChallenge_data = setarray;
+    // }
+
+    var setarray = [];
+    for (var j = 0; j < data.length; j++) {
+      var setobject = {};
+      setobject["_id"] = data[j]._id;
+      var getangka = data[j].persentase;
+      setobject["persentase"] = parseFloat(getangka.toFixed(2));
+
+      setarray.push(setobject);
     }
+
+    data = setarray;
 
     const messages = {
       "info": ["The process successful"],
@@ -1736,7 +1749,7 @@ export class ChallengeController {
       var timestamp_start = await this.util.getDateTimeString();
       // console.log(timestamp_start);
       var setparticipantchallenge = [];
-      if (participant = "ALL") {
+      if (participant == "ALL") {
         var totaldata = await this.userbasicsSS.getcount();
         var setpagination = parseInt(totaldata[0].totalpost) / 200;
         var ceksisa = (parseInt(totaldata[0].totalpost) % 200);
@@ -1754,6 +1767,17 @@ export class ChallengeController {
       }
       else {
         var partisipan = participant;
+        if(typeof(partisipan) != "string")
+        {
+          var temp = "";
+          for(var loopP = 0; loopP < partisipan.length; loopP++)
+          {
+            var getpartisipan = partisipan[loopP].toString();
+            temp = temp + getpartisipan + ((loopP == partisipan.length - 1) ? "" : ",");
+          }
+
+          partisipan = temp;
+        }
         setparticipantchallenge = partisipan.toString().split(",");
       }
 
