@@ -241,12 +241,10 @@ export class ChallengeController {
     var datatipeAkun = request_json['tipeAkun'];
     var konversitipeAkun = datatipeAkun.toString().split(",");
 
-    if(cekgabung == "DENGAN UNDANGAN")
-    {
+    if (cekgabung == "DENGAN UNDANGAN") {
       setpesertafield["tipeAkunTerverikasi"] = 'NO';
     }
-    else
-    {
+    else {
       if (konversitipeAkun.length == 2) {
         setpesertafield["tipeAkunTerverikasi"] = 'ALL';
       }
@@ -905,12 +903,10 @@ export class ChallengeController {
       var datatipeAkun = request_json['tipeAkun'];
       var konversitipeAkun = datatipeAkun.toString().split(",");
 
-      if(cekgabung == "DENGAN UNDANGAN")
-      {
+      if (cekgabung == "DENGAN UNDANGAN") {
         setpesertafield["tipeAkunTerverikasi"] = 'NO';
       }
-      else
-      {
+      else {
         if (konversitipeAkun.length == 2) {
           setpesertafield["tipeAkunTerverikasi"] = 'ALL';
         }
@@ -2194,12 +2190,10 @@ export class ChallengeController {
 
       try {
         var checkdata = datauserbadge[0].userBadge;
-        if(checkdata == null)
-        {
+        if (checkdata == null) {
           userBadge = [];
         }
-        else
-        {
+        else {
           userBadge = datauserbadge[0].userBadge;
         }
       } catch (e) {
@@ -2318,7 +2312,7 @@ export class ChallengeController {
 
     if (datachallengejuara !== null && datachallengejuara.length > 0) {
       for (let i = 0; i < datachallengejuara.length; i++) {
-        status = datachallengejuara[i], status;
+        status = datachallengejuara[i].status;
         idsubchallenge = datachallengejuara[i]._id;
         idchallenge = datachallengejuara[i].challengeId;
         session = datachallengejuara[i].session;
@@ -3119,26 +3113,23 @@ export class ChallengeController {
 
   @UseGuards(JwtAuthGuard)
   @Post('join/currentstatus')
-  async cekjoinchallengeuser(@Req() request, @Headers() header)
-  {
+  async cekjoinchallengeuser(@Req() request, @Headers() header) {
     var iduser = null;
     var request_json = JSON.parse(JSON.stringify(request.body));
-    if(request_json['idUser'] == null || request_json['idUser'] == undefined)
-    {
+    if (request_json['idUser'] == null || request_json['idUser'] == undefined) {
       throw new BadRequestException("Unable to proceed, idUser field is required");
     }
     iduser = request_json['idUser'];
 
     var result = await this.userchallengeSS.checkuserstatusjoin(iduser);
-    if(result == null)
-    {
+    if (result == null) {
       result = {
-        join_status:false
+        join_status: false
       };
     }
-    
+
     return {
-      response_code:202,
+      response_code: 202,
       data: result
     }
   }
