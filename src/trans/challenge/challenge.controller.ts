@@ -254,6 +254,10 @@ export class ChallengeController {
       else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TIDAKTERVERIFIKASI') {
         setpesertafield["tipeAkunTerverikasi"] = 'NO';
       }
+      else
+      {
+        setpesertafield["tipeAkunTerverikasi"] = 'NO';
+      }
     }
 
     var datajeniskelamin = request_json['jenis_kelamin'];
@@ -279,13 +283,16 @@ export class ChallengeController {
     setpesertafield["jenisKelamin"] = [setjeniskelamin];
 
     var datalokasi = request_json['lokasi'];
-    var konversilokasi = (cekgabung == "SEMUA PENGGUNA" ? datalokasi.toString().split(",") : []);
+    var konversilokasi = (cekgabung == "SEMUA PENGGUNA" ? ((datalokasi != '' && datalokasi != null && datalokasi != undefined) ? datalokasi.toString().split(",") : []) : []);
     var templokasidata = null;
     var setlokasi = [];
-    var mongoose = require('mongoose');
-    for (var i = 0; i < konversilokasi.length; i++) {
-      templokasidata = new mongoose.Types.ObjectId(konversilokasi[i].toString());
-      setlokasi.push(templokasidata);
+    if(konversilokasi.length != 0)
+    {
+      var mongoose = require('mongoose');
+      for (var i = 0; i < konversilokasi.length; i++) {
+        templokasidata = new mongoose.Types.ObjectId(konversilokasi[i].toString());
+        setlokasi.push(templokasidata);
+      }
     }
 
     setpesertafield["lokasiPengguna"] = setlokasi;
@@ -344,6 +351,13 @@ export class ChallengeController {
       setketentuanhadiah['minSize'] = (request_json["ketentuanhadiah_minSize"] == undefined && request_json["ketentuanhadiah_minSize"] == null ? 0 : Number(request_json['ketentuanhadiah_minSize']));
       setketentuanhadiah['formatFile'] = request_json['ketentuanhadiah_formatFile'];
       var listjuara = request_json['listbadge'];
+      if(listjuara == null || listjuara == undefined || listjuara == '')
+      {
+        var timestamps_end = await this.util.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        throw new BadRequestException("unable to proceed. badge list required");
+      }
       var konversilistjuara = listjuara.toString().split(",");
       var mongoose = require('mongoose');
       var setjuara = {};
@@ -916,6 +930,10 @@ export class ChallengeController {
         else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TIDAKTERVERIFIKASI') {
           setpesertafield["tipeAkunTerverikasi"] = 'NO';
         }
+        else
+        {
+          setpesertafield["tipeAkunTerverikasi"] = 'NO';
+        }
       }
 
       var datajeniskelamin = request_json['jenis_kelamin'];
@@ -941,13 +959,16 @@ export class ChallengeController {
       setpesertafield["jenisKelamin"] = [setjeniskelamin];
 
       var datalokasi = request_json['lokasi'];
-      var konversilokasi = (cekgabung == "SEMUA PENGGUNA" ? datalokasi.toString().split(",") : []);
+      var konversilokasi = (cekgabung == "SEMUA PENGGUNA" ? ((datalokasi != '' && datalokasi != null && datalokasi != undefined) ? datalokasi.toString().split(",") : []) : []);
       var templokasidata = null;
       var setlokasi = [];
-      var mongoose = require('mongoose');
-      for (var i = 0; i < konversilokasi.length; i++) {
-        templokasidata = new mongoose.Types.ObjectId(konversilokasi[i].toString());
-        setlokasi.push(templokasidata);
+      if(konversilokasi.length != 0)
+      {
+        var mongoose = require('mongoose');
+        for (var i = 0; i < konversilokasi.length; i++) {
+          templokasidata = new mongoose.Types.ObjectId(konversilokasi[i].toString());
+          setlokasi.push(templokasidata);
+        }
       }
 
       setpesertafield["lokasiPengguna"] = setlokasi;
@@ -1012,6 +1033,13 @@ export class ChallengeController {
         setketentuanhadiah['minSize'] = (request_json["ketentuanhadiah_minSize"] == undefined && request_json["ketentuanhadiah_minSize"] == null ? 0 : Number(request_json['ketentuanhadiah_minSize']));
         setketentuanhadiah['formatFile'] = request_json['ketentuanhadiah_formatFile'];
         var listjuara = request_json['listbadge'];
+        if(listjuara == null || listjuara == undefined || listjuara == '')
+        {
+          var timestamps_end = await this.util.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+          throw new BadRequestException("unable to proceed. badge list required");
+        }
         var konversilistjuara = listjuara.toString().split(",");
         var mongoose = require('mongoose');
         var setjuara = {};
