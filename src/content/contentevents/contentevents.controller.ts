@@ -1230,7 +1230,7 @@ export class ContenteventsController {
           try {
             this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
           } catch (e) {
-            console.log("gagal" + e)
+            console.log("gagal ngitung skor" + e)
           }
 
         }
