@@ -14195,6 +14195,7 @@ export class subChallengeService {
                                             },
                                             {
                                                 $project: {
+                                                    likes: 1,
                                                     postID: "$posted.postID",
                                                     description: "$posted.description",
                                                     postType: "$posted.postType",
@@ -14474,7 +14475,7 @@ export class subChallengeService {
             {
                 $set:
                 {
-                    co: ["MALE", " MALE", "Laki-laki", "Pria"]
+                    co: ["MALE", "Male", " MALE", "Laki-laki", "Pria"]
                 },
 
             },
@@ -14482,31 +14483,31 @@ export class subChallengeService {
                 $set:
                 {
                     ce:
-                        ["FEMALE", " FEMALE", "Perempuan", "Wanita"]
+                        ["FEMALE", "Female", " FEMALE", "Perempuan", "Wanita"]
                 }
             },
             {
                 $set:
                 {
-                    all: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "MALE", " MALE", "Laki-laki", "Pria", "Other"]
+                    all: ["FEMALE", "Female", " FEMALE", "Perempuan", "Wanita", "MALE", "Male", " MALE", "Laki-laki", "Pria", "Other"]
                 }
             },
             {
                 $set:
                 {
-                    ceOther: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "Other"]
+                    ceOther: ["FEMALE", "Female", " FEMALE", "Perempuan", "Wanita", "Other"]
                 }
             },
             {
                 $set:
                 {
-                    coOther: ["MALE", " MALE", "Laki-laki", "Pria", "Other"]
+                    coOther: ["MALE", " MALE", "Male", "Laki-laki", "Pria", "Other"]
                 }
             },
             {
                 $set:
                 {
-                    ceCo: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "MALE", " MALE", "Laki-laki", "Pria"]
+                    ceCo: ["FEMALE", "Female", " FEMALE", "Perempuan", "Wanita", "Male", "MALE", " MALE", "Laki-laki", "Pria"]
                 }
             },
             {
@@ -15472,6 +15473,7 @@ export class subChallengeService {
             {
                 $project:
                 {
+                    postChallengess: "$postChallenges",
                     ageChallenge: 1,
                     age: 1,
                     kelamin: 1,
@@ -15535,9 +15537,7 @@ export class subChallengeService {
                     {
                         $cond: {
                             if: {
-                                $eq: [{
-                                    $arrayElemAt: ["$getlastrank.isUserLogin", 10]
-                                }, true]
+                                $in: [true, "$getlastrank.isUserLogin"]
                             },
                             then: "JOINED",
                             else: {
@@ -16645,6 +16645,7 @@ export class subChallengeService {
                                             },
                                             {
                                                 $project: {
+                                                    likes: 1,
                                                     postID: "$posted.postID",
                                                     description: "$posted.description",
                                                     postType: "$posted.postType",
@@ -16924,7 +16925,7 @@ export class subChallengeService {
             {
                 $set:
                 {
-                    co: ["MALE", " MALE", "Laki-laki", "Pria"]
+                    co: ["MALE", "Male", " MALE", "Laki-laki", "Pria"]
                 },
 
             },
@@ -16932,31 +16933,31 @@ export class subChallengeService {
                 $set:
                 {
                     ce:
-                        ["FEMALE", " FEMALE", "Perempuan", "Wanita"]
+                        ["FEMALE", "Female", " FEMALE", "Perempuan", "Wanita"]
                 }
             },
             {
                 $set:
                 {
-                    all: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "MALE", " MALE", "Laki-laki", "Pria", "Other"]
+                    all: ["FEMALE", "Female", " FEMALE", "Perempuan", "Wanita", "MALE", "Male", " MALE", "Laki-laki", "Pria", "Other"]
                 }
             },
             {
                 $set:
                 {
-                    ceOther: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "Other"]
+                    ceOther: ["FEMALE", "Female", " FEMALE", "Perempuan", "Wanita", "Other"]
                 }
             },
             {
                 $set:
                 {
-                    coOther: ["MALE", " MALE", "Laki-laki", "Pria", "Other"]
+                    coOther: ["MALE", " MALE", "Male", "Laki-laki", "Pria", "Other"]
                 }
             },
             {
                 $set:
                 {
-                    ceCo: ["FEMALE", " FEMALE", "Perempuan", "Wanita", "MALE", " MALE", "Laki-laki", "Pria"]
+                    ceCo: ["FEMALE", "Female", " FEMALE", "Perempuan", "Wanita", "Male", "MALE", " MALE", "Laki-laki", "Pria"]
                 }
             },
             {
@@ -17922,6 +17923,7 @@ export class subChallengeService {
             {
                 $project:
                 {
+                    postChallengess: "$postChallenges",
                     ageChallenge: 1,
                     age: 1,
                     kelamin: 1,
@@ -17985,9 +17987,7 @@ export class subChallengeService {
                     {
                         $cond: {
                             if: {
-                                $eq: [{
-                                    $arrayElemAt: ["$getlastrank.isUserLogin", 10]
-                                }, true]
+                                $in: [true, "$getlastrank.isUserLogin"]
                             },
                             then: "JOINED",
                             else: {
@@ -18257,9 +18257,9 @@ export class subChallengeService {
                     session: 1
                 }
             },
-            // {
-            //     $limit: 1
-            // }
+            //    {
+            //        $limit: 1
+            //    }
         );
 
 
