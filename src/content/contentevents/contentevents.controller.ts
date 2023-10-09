@@ -1227,7 +1227,12 @@ export class ContenteventsController {
 
         }
         if (idevent1 != null) {
-          this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+          try {
+            this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+          } catch (e) {
+            console.log("gagal" + e)
+          }
+
         }
       }
       var datapost = await this.NewpostsService.updatePostviewer(request.body.postID, email_user);
