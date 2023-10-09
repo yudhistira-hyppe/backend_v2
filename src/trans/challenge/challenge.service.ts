@@ -2690,7 +2690,7 @@ export class ChallengeService {
             }
 
             if (databadge == null && databadge == undefined) {
-              if (status = "BERAKHIR") {
+              if (status == "BERAKHIR") {
                 let Userbadge_ = new Userbadge();
                 Userbadge_.SubChallengeId = idSubChallenges;
                 Userbadge_.idBadge = idBadge;
