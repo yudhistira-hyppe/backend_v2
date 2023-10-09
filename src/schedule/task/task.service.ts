@@ -6,7 +6,7 @@ import { ChallengeService } from "src/trans/challenge/challenge.service";
 
 @Injectable()
 export class TaskService {
-  constructor( 
+  constructor(
     private readonly challengeService: ChallengeService,
   ) { }
 
@@ -22,7 +22,7 @@ export class TaskService {
   challengeJob() {
     this.logger.debug('Challenge JOB START');
     this.challengeService.userbadge();
-    this.challengeService.updateUserbadge();
+    //this.challengeService.updateUserbadge();
     this.challengeService.sendNotifeChallenge();
     //this.postContentService.cronJobSeaweedProfileStart();
     //this.postContentService.cronJobSeaweedPictStart();
