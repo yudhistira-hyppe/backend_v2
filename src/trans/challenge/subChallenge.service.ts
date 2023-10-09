@@ -14422,7 +14422,51 @@ export class subChallengeService {
                                 }
                             }
                         },
-
+                        //{
+                        //		$set:{
+                        //				kelaminya:[
+                        //						{
+                        //                $cond: {
+                        //                    if :{
+                        //                        $eq: [{
+                        //                            $arrayElemAt: [{
+                        //                                $arrayElemAt: ["$peserta.peserta.jenisKelamin.Laki-Laki", 0]
+                        //                            }, 0]
+                        //                        }, "YES"]
+                        //                    },
+                        //                    then: "Laki-Laki",
+                        //                    else : "kusnurudin"
+                        //									}
+                        //							},
+                        //						{
+                        //                $cond: {
+                        //                    if :{
+                        //                        $eq: [{
+                        //                            $arrayElemAt: [{
+                        //                                $arrayElemAt: ["$peserta.peserta.jenisKelamin.PEREMPUAN", 0]
+                        //                            }, 0]
+                        //                        }, "YES"]
+                        //                    },
+                        //                    then: "PEREMPUAN",
+                        //                    else : "kusnurudin"
+                        //									}
+                        //							},
+                        //						{
+                        //                $cond: {
+                        //                    if :{
+                        //                        $eq: [{
+                        //                            $arrayElemAt: [{
+                        //                                $arrayElemAt: ["$peserta.peserta.jenisKelamin.OTHER", 0]
+                        //                            }, 0]
+                        //                        }, "YES"]
+                        //                    },
+                        //                    then: "OTHER",
+                        //                    else : "kusnurudin"
+                        //									}
+                        //							},
+                        //				]
+                        //		}
+                        //},
                     ],
 
                 }
@@ -14807,6 +14851,7 @@ export class subChallengeService {
             },
             {
                 $set: {
+
                     ageChallenge:
                     {
                         $switch: {
@@ -15427,6 +15472,10 @@ export class subChallengeService {
             {
                 $project:
                 {
+                    ageChallenge: 1,
+                    age: 1,
+                    kelamin: 1,
+                    joinUser: 1,
                     "_id": 1,
                     "challengeId": 1,
                     "startDatetime": 1,
@@ -15505,24 +15554,27 @@ export class subChallengeService {
                                                 $eq: ["$verified", true]
                                             },
                                             else: "NOT ALLOWED",
-                                            then: {
+                                            then:
+                                            {
                                                 $cond: {
                                                     if: {
-                                                        $eq: ["$ads.kelamin", "$joinUser.gender"]
+                                                        $in: ["$joinUser.gender", "$kelamin"]
                                                     },
                                                     else: "NOT ALLOWED",
-                                                    then: {
+                                                    then:
+                                                    {
                                                         $cond: {
                                                             if: {
                                                                 $eq: ["$ageChallenge", true]
                                                             },
                                                             else: "NOT ALLOWED",
-                                                            then: {
+                                                            then:
+                                                            {
                                                                 $cond: {
                                                                     if: {
-                                                                        $eq: [{
+                                                                        $in: ["$joinUser.states.$id", {
                                                                             $arrayElemAt: ["$peserta.peserta.lokasiPengguna", 0]
-                                                                        }, "$joinUser.states.$id"]
+                                                                        }]
                                                                     },
                                                                     else: "NOT ALLOWED",
                                                                     then: "ALLOWED"
@@ -15697,6 +15749,10 @@ export class subChallengeService {
             {
                 $project:
                 {
+                    ageChallenge: 1,
+                    age: 1,
+                    kelamin: 1,
+                    tester: "$joinUser",
                     "_id": 1,
                     "challengeId": 1,
                     "startDatetime": 1,
@@ -16816,7 +16872,51 @@ export class subChallengeService {
                                 }
                             }
                         },
-
+                        //{
+                        //		$set:{
+                        //				kelaminya:[
+                        //						{
+                        //                $cond: {
+                        //                    if :{
+                        //                        $eq: [{
+                        //                            $arrayElemAt: [{
+                        //                                $arrayElemAt: ["$peserta.peserta.jenisKelamin.Laki-Laki", 0]
+                        //                            }, 0]
+                        //                        }, "YES"]
+                        //                    },
+                        //                    then: "Laki-Laki",
+                        //                    else : "kusnurudin"
+                        //									}
+                        //							},
+                        //						{
+                        //                $cond: {
+                        //                    if :{
+                        //                        $eq: [{
+                        //                            $arrayElemAt: [{
+                        //                                $arrayElemAt: ["$peserta.peserta.jenisKelamin.PEREMPUAN", 0]
+                        //                            }, 0]
+                        //                        }, "YES"]
+                        //                    },
+                        //                    then: "PEREMPUAN",
+                        //                    else : "kusnurudin"
+                        //									}
+                        //							},
+                        //						{
+                        //                $cond: {
+                        //                    if :{
+                        //                        $eq: [{
+                        //                            $arrayElemAt: [{
+                        //                                $arrayElemAt: ["$peserta.peserta.jenisKelamin.OTHER", 0]
+                        //                            }, 0]
+                        //                        }, "YES"]
+                        //                    },
+                        //                    then: "OTHER",
+                        //                    else : "kusnurudin"
+                        //									}
+                        //							},
+                        //				]
+                        //		}
+                        //},
                     ],
 
                 }
@@ -17201,6 +17301,7 @@ export class subChallengeService {
             },
             {
                 $set: {
+
                     ageChallenge:
                     {
                         $switch: {
@@ -17821,6 +17922,10 @@ export class subChallengeService {
             {
                 $project:
                 {
+                    ageChallenge: 1,
+                    age: 1,
+                    kelamin: 1,
+                    joinUser: 1,
                     "_id": 1,
                     "challengeId": 1,
                     "startDatetime": 1,
@@ -17899,24 +18004,27 @@ export class subChallengeService {
                                                 $eq: ["$verified", true]
                                             },
                                             else: "NOT ALLOWED",
-                                            then: {
+                                            then:
+                                            {
                                                 $cond: {
                                                     if: {
-                                                        $eq: ["$ads.kelamin", "$joinUser.gender"]
+                                                        $in: ["$joinUser.gender", "$kelamin"]
                                                     },
                                                     else: "NOT ALLOWED",
-                                                    then: {
+                                                    then:
+                                                    {
                                                         $cond: {
                                                             if: {
                                                                 $eq: ["$ageChallenge", true]
                                                             },
                                                             else: "NOT ALLOWED",
-                                                            then: {
+                                                            then:
+                                                            {
                                                                 $cond: {
                                                                     if: {
-                                                                        $eq: [{
+                                                                        $in: ["$joinUser.states.$id", {
                                                                             $arrayElemAt: ["$peserta.peserta.lokasiPengguna", 0]
-                                                                        }, "$joinUser.states.$id"]
+                                                                        }]
                                                                     },
                                                                     else: "NOT ALLOWED",
                                                                     then: "ALLOWED"
@@ -18091,6 +18199,10 @@ export class subChallengeService {
             {
                 $project:
                 {
+                    ageChallenge: 1,
+                    age: 1,
+                    kelamin: 1,
+                    tester: "$joinUser",
                     "_id": 1,
                     "challengeId": 1,
                     "startDatetime": 1,

@@ -1767,11 +1767,9 @@ export class ChallengeController {
       }
       else {
         var partisipan = participant;
-        if(typeof(partisipan) != "string")
-        {
+        if (typeof (partisipan) != "string") {
           var temp = "";
-          for(var loopP = 0; loopP < partisipan.length; loopP++)
-          {
+          for (var loopP = 0; loopP < partisipan.length; loopP++) {
             var getpartisipan = partisipan[loopP].toString();
             temp = temp + getpartisipan + ((loopP == partisipan.length - 1) ? "" : ",");
           }
@@ -2004,7 +2002,7 @@ export class ChallengeController {
 
 
     try {
-      data = await this.subchallenge.getListUserChallengeNew(idchallenge, iduser, status, session);
+      data = await this.subchallenge.getListUserChallengeNew2(idchallenge, iduser, status, session);
     } catch (e) {
       data = [];
     }
@@ -2507,7 +2505,7 @@ export class ChallengeController {
 
 
     try {
-      data = await this.subchallenge.getListUserChallengekeduaNew(idchallenge, iduser, status, session);
+      data = await this.subchallenge.getListUserChallengekeduaNew2(idchallenge, iduser, status, session);
     } catch (e) {
       data = [];
     }
