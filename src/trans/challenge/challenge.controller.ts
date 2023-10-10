@@ -22,6 +22,8 @@ import { Userbadge } from '../userbadge/schemas/userbadge.schema';
 import { LanguagesService } from '../../infra/languages/languages.service';
 import { session } from 'passport';
 import { LogapisService } from '../logapis/logapis.service';
+import { Postchallenge } from '../postchallenge/schemas/postchallenge.schema';
+import { PostchallengeService } from '../postchallenge/postchallenge.service';
 
 @Controller('api/challenge')
 export class ChallengeController {
@@ -35,6 +37,7 @@ export class ChallengeController {
     private readonly userbadgeService: UserbadgeService,
     private readonly logapiSS: LogapisService,
     private readonly languagesService: LanguagesService,
+    private readonly postchallengeService:PostchallengeService,
     private readonly userbasicsSS: UserbasicsService) { }
 
   @UseGuards(JwtAuthGuard)
@@ -1690,6 +1693,7 @@ export class ChallengeController {
       var getsubdata = await this.subchallenge.subchallengedetailwithlastrank(getsubid);
 
       var listjoin = [];
+      var firstdata = null;
       for (var i = 0; i < getsubdata.length; i++) {
         var getdatenow = await this.util.getDateTimeString();
         var convertnow = new Date(getdatenow);
@@ -1717,6 +1721,26 @@ export class ChallengeController {
 
           await this.userchallengeSS.create(createdata);
           listjoin.push(createdata);
+
+          if(firstdata == null)
+          {
+            firstdata = new Userchallenges();
+            firstdata._id = createdata._id;
+            firstdata.idChallenge = createdata.idChallenge;
+            firstdata.idUser = createdata.idUser;
+            firstdata.idSubChallenge = createdata.idSubChallenge;
+            firstdata.isActive = createdata.isActive;
+            firstdata.score = createdata.score;
+            firstdata.ranking = createdata.ranking;
+            firstdata.startDatetime = createdata.startDatetime;
+            firstdata.endDatetime = createdata.endDatetime;
+            firstdata.objectChallenge = createdata.objectChallenge;
+            firstdata.createdAt = createdata.createdAt;
+            firstdata.updatedAt = createdata.updatedAt;
+            firstdata.activity = createdata.activity;
+            firstdata.history = createdata.history;
+            firstdata.session = getsubdata[i].session;
+          }
         }
       }
 
@@ -1730,6 +1754,11 @@ export class ChallengeController {
 
       var timestamps_end = await this.util.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, request_json['idUser'], null, request_json);
+
+      if(getsubdata.length != 0 && firstdata != null && parentdata.objectChallenge == "KONTEN")
+      {
+        this.beforejoinchallenge(getuserbasic, firstdata);
+      }
 
       return res.status(HttpStatus.OK).json({
         response_code: 202,
@@ -3194,6 +3223,42 @@ export class ChallengeController {
     return {
       response_code: 202,
       data: result
+    }
+  }
+
+  async beforejoinchallenge(emailuser:any, subchallenge:any)
+  {
+    var data = await this.subchallenge.getlistinsertpostchallenge(emailuser.email.toString(), subchallenge.idSubChallenge.toString());
+    
+    if(data.length != 0)
+    {
+      var mongo = require('mongoose');
+      var totalScore = 0;
+      for(var i = 0; i < data.length; i++)
+      {
+        totalScore = totalScore + data[i].totalScore;
+        var insertdata = new Postchallenge();
+
+        insertdata._id = new mongo.Types.ObjectId();
+        insertdata.postID = data[i]._id;
+        insertdata.createdAt = await this.util.getDateTimeString();
+        insertdata.idChallenge = new mongo.Types.ObjectId(subchallenge.idChallenge);
+        insertdata.idSubChallenge = new mongo.Types.ObjectId(subchallenge.idSubChallenge);
+        insertdata.session = subchallenge.session;
+        insertdata.startDatetime = subchallenge.startDatetime;
+        insertdata.endDatetime = subchallenge.endDatetime;
+        insertdata.updatedAt = await this.util.getDateTimeString();
+        insertdata.idUser = new mongo.Types.ObjectId(emailuser._id);
+        insertdata.score = data[i].totalScore;
+        insertdata.postType = data[i].postType;
+
+        // console.log(insertdata);
+        await this.postchallengeService.create(insertdata);
+      }
+
+      var updatedata = new Userchallenges();
+      updatedata.score = totalScore;
+      await this.userchallengeSS.update(subchallenge._id, updatedata);
     }
   }
 }
