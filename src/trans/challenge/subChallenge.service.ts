@@ -16447,7 +16447,9 @@ export class subChallengeService {
                         $cond: {
                             if: {
                                 $eq: [{
-                                    $arrayElemAt: ["$peserta.peserta.caraGabung", 0]
+                                    $arrayElemAt: [{
+                                        $arrayElemAt: ["$challenge_data.peserta.caraGabung", 0]
+                                    }, 0]
                                 }, "SEMUA PENGGUNA"]
                             },
                             then: "$joined",
@@ -18952,7 +18954,9 @@ export class subChallengeService {
                         $cond: {
                             if: {
                                 $eq: [{
-                                    $arrayElemAt: ["$peserta.peserta.caraGabung", 0]
+                                    $arrayElemAt: [{
+                                        $arrayElemAt: ["$challenge_data.peserta.caraGabung", 0]
+                                    }, 0]
                                 }, "SEMUA PENGGUNA"]
                             },
                             then: "$joined",
