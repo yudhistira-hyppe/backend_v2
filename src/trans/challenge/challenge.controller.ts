@@ -1523,7 +1523,7 @@ export class ChallengeController {
       jenischallenge = request_json['jenischallenge'];
     }
 
-    var data = await this.challengeService.checkuserstatusjoin(iduser, jenischallenge, page, limit);
+    var data = await this.challengeService.checkallchallenge(iduser, jenischallenge, page, limit);
 
     const messages = {
       "info": ["The process successful"],
