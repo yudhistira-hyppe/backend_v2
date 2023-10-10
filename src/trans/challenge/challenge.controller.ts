@@ -1755,7 +1755,7 @@ export class ChallengeController {
       var timestamps_end = await this.util.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, request_json['idUser'], null, request_json);
 
-      if(getsubdata.length != 0 && firstdata != null)
+      if(getsubdata.length != 0 && firstdata != null && parentdata.objectChallenge == "KONTEN")
       {
         this.beforejoinchallenge(getuserbasic, firstdata);
       }
