@@ -2723,7 +2723,8 @@ export class ChallengeService {
               objectChallenge:1,
               leaderBoard:1,
               bannerSearch: 1,
-              statusChallenge:1
+              statusChallenge:1,
+              listParticipant:1
           }
       },
       {
@@ -3815,7 +3816,16 @@ export class ChallengeService {
                           },
                           
                       },
-                      else : "NOT ALLOWED"
+                      else : 
+                      {
+                          $cond: {
+                              if : {
+                                  $in: ["$joinUser._id", "$listParticipant"]
+                              },
+                              else : "NOT ALLOWED",
+                              then: "ALLOWED"
+                          }
+                      },
                   }
               },
               
