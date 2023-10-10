@@ -37,7 +37,7 @@ export class ChallengeController {
     private readonly userbadgeService: UserbadgeService,
     private readonly logapiSS: LogapisService,
     private readonly languagesService: LanguagesService,
-    private readonly postchallengeService:PostchallengeService,
+    private readonly postchallengeService: PostchallengeService,
     private readonly userbasicsSS: UserbasicsService) { }
 
   @UseGuards(JwtAuthGuard)
@@ -1651,6 +1651,7 @@ export class ChallengeController {
     var request_json = JSON.parse(JSON.stringify(request.body));
     var getsubid = request_json['idChallenge'];
     var getuserid = request_json['idUser'];
+    var uscall = null;
 
     if (getsubid == null || getsubid == undefined) {
       var timestamps_end = await this.util.getDateTimeString();
@@ -1722,8 +1723,8 @@ export class ChallengeController {
           await this.userchallengeSS.create(createdata);
           listjoin.push(createdata);
 
-          if(firstdata == null)
-          {
+
+          if (firstdata == null) {
             firstdata = new Userchallenges();
             firstdata._id = createdata._id;
             firstdata.idChallenge = createdata.idChallenge;
@@ -1755,11 +1756,10 @@ export class ChallengeController {
       var timestamps_end = await this.util.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, request_json['idUser'], null, request_json);
 
-      if(getsubdata.length != 0 && firstdata != null && parentdata.objectChallenge == "KONTEN")
-      {
+      if (getsubdata.length != 0 && firstdata != null && parentdata.objectChallenge == "KONTEN") {
         this.beforejoinchallenge(getuserbasic, firstdata);
       }
-
+      this.notifchallenge(getsubid);
       return res.status(HttpStatus.OK).json({
         response_code: 202,
         "data": listjoin,
@@ -2168,7 +2168,7 @@ export class ChallengeController {
   @Post('userbadge')
   async userbadges() {
 
-    this.userbadge();
+    this.sendNotifeChallenge();
     // this.updateUserbadge();
 
     const messages = {
@@ -3226,16 +3226,13 @@ export class ChallengeController {
     }
   }
 
-  async beforejoinchallenge(emailuser:any, subchallenge:any)
-  {
+  async beforejoinchallenge(emailuser: any, subchallenge: any) {
     var data = await this.subchallenge.getlistinsertpostchallenge(emailuser.email.toString(), subchallenge.idSubChallenge.toString());
-    
-    if(data.length != 0)
-    {
+
+    if (data.length != 0) {
       var mongo = require('mongoose');
       var totalScore = 0;
-      for(var i = 0; i < data.length; i++)
-      {
+      for (var i = 0; i < data.length; i++) {
         totalScore = totalScore + data[i].totalScore;
         var insertdata = new Postchallenge();
 

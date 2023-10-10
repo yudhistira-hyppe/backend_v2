@@ -104,7 +104,7 @@ export class notifChallengeService {
                 }
             }
         );
-        var query = await this.notifChallengeModel.aggregate();
+        var query = await this.notifChallengeModel.aggregate(pipeline);
         return query;
     }
 }
