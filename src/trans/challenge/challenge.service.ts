@@ -2650,69 +2650,88 @@ export class ChallengeService {
     var repdate = strdate.replace('T', ' ');
     var splitdate = repdate.split('.');
     var timedate = splitdate[0];
+    var datasubchalange = null;
+
+    var idsub = null;
     try {
-      datachallengejuara = await this.subchallenge.getjuara();
+      datasubchalange = await this.subchallenge.findsub();
+
     } catch (e) {
-      datachallengejuara = null;
+      datasubchalange = null;
     }
 
-    if (datachallengejuara !== null && datachallengejuara.length > 0) {
-      for (let i = 0; i < datachallengejuara.length; i++) {
-        status = datachallengejuara[i].status;
-        idsubchallenge = datachallengejuara[i]._id;
-        idchallenge = datachallengejuara[i].challengeId;
-        session = datachallengejuara[i].session;
-        startDatetime = datachallengejuara[i].startDatetime;
-        endDatetime = datachallengejuara[i].endDatetime;
-        userjuara = datachallengejuara[i].getlastrank;
-        let lengtjuara = userjuara.length;
-        let end = new Date(endDatetime);
-        end.setHours(dt.getHours() + 12); // timestamp
-        end = new Date(end);
-        let getseminngu = new Date(new Date(end).setDate(new Date(end).getDate() + 7));
-        let strdateseminggu = getseminngu.toISOString();
-        var repdatesm = strdateseminggu.replace('T', ' ');
-        var splitdatesm = repdatesm.split('.');
-        var timedatesm = splitdatesm[0];
-        if (lengtjuara > 0) {
-          for (let x = 0; x < lengtjuara; x++) {
-            let iduser = userjuara[x].idUser;
-            let ranking = userjuara[x].ranking;
-            let score = userjuara[x].score;
-            let lastRank = userjuara[x].lastRank;
-            let idBadge = userjuara[x].idBadge;
-            let idSubChallenges = userjuara[x].idSubChallenge;
-            let databadge = null;
-            try {
-              databadge = await this.userbadgeService.getUserbadge(iduser.toString(), idSubChallenges.toString());
-            } catch (e) {
-              databadge = null;
-            }
+    if (datasubchalange !== null) {
 
-            if (databadge == null && databadge == undefined) {
-              if (status == "BERAKHIR") {
-                let Userbadge_ = new Userbadge();
-                Userbadge_.SubChallengeId = idSubChallenges;
-                Userbadge_.idBadge = idBadge;
-                Userbadge_.createdAt = timedate;
-                Userbadge_.isActive = true;
-                Userbadge_.userId = iduser;
-                Userbadge_.session = session;
-                Userbadge_.startDatetime = endDatetime;
-                Userbadge_.endDatetime = timedatesm;
+      for (let x = 0; x < datasubchalange.length; x++) {
+        idsub = datasubchalange[x]._id.toString();
+        try {
+          datachallengejuara = await this.subchallenge.getjuara2(idsub);
+        } catch (e) {
+          datachallengejuara = null;
+        }
 
-                await this.userbadgeService.create(Userbadge_);
+        if (datachallengejuara !== null && datachallengejuara.length > 0) {
+          for (let i = 0; i < datachallengejuara.length; i++) {
+            status = datachallengejuara[i].status;
+            idsubchallenge = datachallengejuara[i]._id;
+            idchallenge = datachallengejuara[i].challengeId;
+            session = datachallengejuara[i].session;
+            startDatetime = datachallengejuara[i].startDatetime;
+            endDatetime = datachallengejuara[i].endDatetime;
+            userjuara = datachallengejuara[i].getlastrank;
+            let lengtjuara = userjuara.length;
+            let end = new Date(endDatetime);
+            end.setHours(dt.getHours() + 12); // timestamp
+            end = new Date(end);
+            let getseminngu = new Date(new Date(end).setDate(new Date(end).getDate() + 7));
+            let strdateseminggu = getseminngu.toISOString();
+            var repdatesm = strdateseminggu.replace('T', ' ');
+            var splitdatesm = repdatesm.split('.');
+            var timedatesm = splitdatesm[0];
+            if (lengtjuara > 0) {
+              for (let x = 0; x < lengtjuara; x++) {
+                let iduser = userjuara[x].idUser;
+                let ranking = userjuara[x].ranking;
+                let score = userjuara[x].score;
+                let lastRank = userjuara[x].lastRank;
+                let idBadge = userjuara[x].idBadge;
+                let idSubChallenges = userjuara[x].idSubChallenge;
+                let databadge = null;
+                try {
+                  databadge = await this.userbadgeService.getUserbadge(iduser.toString(), idSubChallenges.toString());
+                } catch (e) {
+                  databadge = null;
+                }
+
+                if (databadge == null && databadge == undefined) {
+                  if (status == "BERAKHIR") {
+                    let Userbadge_ = new Userbadge();
+                    Userbadge_.SubChallengeId = idSubChallenges;
+                    Userbadge_.idBadge = idBadge;
+                    Userbadge_.createdAt = timedate;
+                    Userbadge_.isActive = true;
+                    Userbadge_.userId = iduser;
+                    Userbadge_.session = session;
+                    Userbadge_.startDatetime = endDatetime;
+                    Userbadge_.endDatetime = timedatesm;
+
+                    await this.userbadgeService.create(Userbadge_);
+
+                  }
+
+                }
 
               }
-
             }
 
           }
-        }
 
+        }
       }
 
     }
+
+
   }
 
   async updateUserbadge() {
@@ -2732,41 +2751,60 @@ export class ChallengeService {
     var splitdate = repdate.split('.');
     var timedate = splitdate[0];
     var datachallengejuara = null;
+
+    var datasubchalange = null;
+
+    var idsub = null;
     try {
-      datachallengejuara = await this.subchallenge.getjuara();
+      datasubchalange = await this.subchallenge.findsub();
+
     } catch (e) {
-      datachallengejuara = null;
+      datasubchalange = null;
     }
 
-    if (datachallengejuara !== null && datachallengejuara.length > 0) {
-      for (let i = 0; i < datachallengejuara.length; i++) {
-        status = datachallengejuara[i].status;
-        idsubchallenge = datachallengejuara[i]._id;
-        idchallenge = datachallengejuara[i].challengeId;
-        session = datachallengejuara[i].session;
-        startDatetime = datachallengejuara[i].startDatetime;
-        endDatetime = datachallengejuara[i].endDatetime;
-        isActive = datachallengejuara[i].isActive;
-        let end = new Date(endDatetime);
-        end.setHours(dt.getHours() + 12); // timestamp
-        end = new Date(end);
-        let getseminngu = new Date(new Date(end).setDate(new Date(end).getDate() + 7));
-        let strdateseminggu = getseminngu.toISOString();
-        var repdatesm = strdateseminggu.replace('T', ' ');
-        var splitdatesm = repdatesm.split('.');
-        var timedatesm = splitdatesm[0];
-        if (timedate >= timedatesm) {
-          if (isActive == true) {
-            let CreateSubChallengeDto_ = new CreateSubChallengeDto();
-            CreateSubChallengeDto_.isActive = false;
-            await this.subchallenge.update(idsubchallenge.toString(), CreateSubChallengeDto_);
+    if (datasubchalange !== null) {
+      for (let x = 0; x < datasubchalange.length; x++) {
+        idsub = datasubchalange[x]._id.toString();
+        try {
+          datachallengejuara = await this.subchallenge.getjuara2(idsub);
+        } catch (e) {
+          datachallengejuara = null;
+        }
+        if (datachallengejuara !== null && datachallengejuara.length > 0) {
+          for (let i = 0; i < datachallengejuara.length; i++) {
+            status = datachallengejuara[i].status;
+            idsubchallenge = datachallengejuara[i]._id;
+            idchallenge = datachallengejuara[i].challengeId;
+            session = datachallengejuara[i].session;
+            startDatetime = datachallengejuara[i].startDatetime;
+            endDatetime = datachallengejuara[i].endDatetime;
+            isActive = datachallengejuara[i].isActive;
+            let end = new Date(endDatetime);
+            end.setHours(dt.getHours() + 12); // timestamp
+            end = new Date(end);
+            let getseminngu = new Date(new Date(end).setDate(new Date(end).getDate() + 7));
+            let strdateseminggu = getseminngu.toISOString();
+            var repdatesm = strdateseminggu.replace('T', ' ');
+            var splitdatesm = repdatesm.split('.');
+            var timedatesm = splitdatesm[0];
+            if (timedate >= timedatesm) {
+              if (isActive == true) {
+                let CreateSubChallengeDto_ = new CreateSubChallengeDto();
+                CreateSubChallengeDto_.isActive = false;
+                await this.subchallenge.update(idsubchallenge.toString(), CreateSubChallengeDto_);
+
+              }
+
+            }
 
           }
-
         }
-
       }
+
     }
+
+
+
 
   }
 
