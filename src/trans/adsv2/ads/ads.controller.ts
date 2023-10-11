@@ -1617,11 +1617,22 @@ export class AdsController {
                     $inc: { 'viewed': 1 },
                     $push: { "updateAt": current_date },
                 }
-                if (((ceckData.viewed != undefined ? ceckData.viewed : 0) + 1) == (data_ads.audiensFrekuensi != undefined ? data_ads.audiensFrekuensi : 0)) {
+                if (((ceckData.viewed != undefined ? ceckData.viewed : 0) + 1) == (data_ads[0].audiensFrekuensi != undefined ? data_ads[0].audiensFrekuensi : 0)) {
                     data_Update_UserAds["isActive"] = false;
                 }
                 await this.userAdsService.updateData(ceckData._id.toString(), data_Update_UserAds)
             }
+
+            //update Ads
+            var data_Update_Ads = {}
+            if ((data_ads[0].totalView + 1) <= data_ads[0].tayang) {
+                data_Update_Ads["$inc"] = { 'usedCredit': Number(data_ads[0].CPV), 'totalView': 1 };
+            }
+            if (data_ads[0].tayang == (data_ads[0].totalView + 1)) {
+                data_Update_Ads["status"] = "IN_ACTIVE";
+                data_Update_Ads["isActive"] = false;
+            }
+            await this.adsService.updateData(data_ads[0]._id.toString(), data_Update_Ads)
 
             //Get Pict User Ads
             var get_profilePict = null;
@@ -2083,7 +2094,7 @@ export class AdsController {
             //update Ads
             var data_Update_Ads = {}
             if ((dataAds.totalView + 1) <= dataAds.tayang) {
-                data_Update_Ads["$inc"] = { 'usedCredit': Number(dataAds.CPA), 'totalView': 1 };
+                data_Update_Ads["$inc"] = { 'usedCredit': Number(dataAds.CPA), 'totalClick': 1 };
             }
             if (dataAds.tayang == (dataAds.totalView + 1)) {
                 data_Update_Ads["status"] = "IN_ACTIVE";

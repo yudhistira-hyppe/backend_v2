@@ -4176,7 +4176,7 @@ export class AdsService {
                 },
                 {
                     $set: {
-                        "tayang": {
+                        "tayangStart": {
                             $concat: [
                                 "$liveAt",
                                 " 00:00:00"
@@ -4763,7 +4763,7 @@ export class AdsService {
                             },
                             {
                                 $expr: {
-                                    $lt: ["$tayang", "$testDate"]
+                                    $lt: ["$tayangStart", "$testDate"]
                                 }
                             },
                             {
@@ -5677,6 +5677,9 @@ export class AdsService {
                 },
                 {
                     $project: {
+                        _id: 1,
+                        totalView: 1,
+                        CPV: 1,
                         audiensFrekuensi: 1,
                         balances: "$userBasic.balances",
                         totalSaldo: "$balancesReplace",
@@ -5712,6 +5715,7 @@ export class AdsService {
                         testDate: 1,
                         skipTime: { $ifNull: ["$skipTime", 0] },
                         tayang: 1,
+                        tayangStart: 1,
                         tayangEnd: 1,
                         adsUserId: 1,
                         adsUser: 1,
