@@ -60,6 +60,10 @@ export class CreateAdsDto {
     mediaThumUri: string;
     width: number;
     height: number;
+    
+    adspricecredits: number;
+    CPA: number;
+    CPV: number;
 }
 
 export class MediaimageadsDto {

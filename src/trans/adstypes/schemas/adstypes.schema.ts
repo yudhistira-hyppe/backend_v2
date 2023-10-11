@@ -52,6 +52,8 @@ export class Adstypes {
     creditValue: number;
     @Prop()
     AdsSkip: number;
+    @Prop()
+    idRewards: mongoose.Types.ObjectId;
 
 }
 

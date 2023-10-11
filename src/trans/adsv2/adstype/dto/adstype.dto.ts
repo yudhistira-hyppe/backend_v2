@@ -37,4 +37,5 @@ export class AdsTypeDto {
 
     creditValue: number;
     AdsSkip: number;
+    idRewards: mongoose.Types.ObjectId;
 }

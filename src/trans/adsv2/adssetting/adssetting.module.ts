@@ -13,9 +13,11 @@ import { AdslogsModule } from '../adslog/adslogs.module';
 import { AdsObjectivitasModule } from '../adsobjectivitas/adsobjectivitas.module';
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { AdsPriceCreditsModule } from '../adspricecredits/adspricecredits.module';
+import { AdsRewardsModule } from '../adsrewards/adsrewards.module';
 
 @Module({
     imports: [
+        AdsRewardsModule,
         LogapisModule,
         AdsPriceCreditsModule,
         AdsObjectivitasModule,

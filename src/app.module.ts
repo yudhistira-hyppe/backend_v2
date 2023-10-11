@@ -118,8 +118,10 @@ import { MediastikerModule } from './content/mediastiker/mediastiker.module';
 import { StickerCategoryModule } from './trans/stickercategory/stickercategory.module';
 import { AdsPriceCreditsModule } from './trans/adsv2/adspricecredits/adspricecredits.module';
 import { UserbasicnewModule } from './trans/userbasicnew/userbasicnew.module';
+import { AdsRewardsModule } from './trans/adsv2/adsrewards/adsrewards.module';
 @Module({
   imports: [
+    AdsRewardsModule,
     UserbasicnewModule,
     BannerModule,
     MediastikerModule,
