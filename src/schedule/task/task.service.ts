@@ -18,15 +18,15 @@ export class TaskService {
   //   this.logger.debug('Called when the current second is 45');
   // }
 
-  // @Cron('*/10 * * * * *')
-  // challengeJob() {
-  //   this.logger.debug('Challenge JOB START');
-  //   this.challengeService.userbadge();
-  //   this.challengeService.updateUserbadge();
-  //   this.challengeService.sendNotifeChallenge();
-  //   //this.postContentService.cronJobSeaweedProfileStart();
-  //   //this.postContentService.cronJobSeaweedPictStart();
-  //   //this.postContentService.cronJobSeaweedVidStart();
-  //   //this.postContentService.cronJobSeaweedDiariesStart();
-  // }
+  @Cron('*/10 * * * * *')
+  challengeJob() {
+    this.logger.debug('Challenge JOB START');
+    this.challengeService.userbadge();
+    this.challengeService.updateUserbadge();
+    // this.challengeService.sendNotifeChallenge();
+    //this.postContentService.cronJobSeaweedProfileStart();
+    //this.postContentService.cronJobSeaweedPictStart();
+    //this.postContentService.cronJobSeaweedVidStart();
+    //this.postContentService.cronJobSeaweedDiariesStart();
+  }
 }
