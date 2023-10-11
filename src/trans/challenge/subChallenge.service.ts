@@ -16315,7 +16315,8 @@ export class subChallengeService {
                                 "hadiahPemenang": 1,
                                 "bannerSearch": 1,
                                 "popUp": 1,
-                                "notifikasiPush": 1
+                                "notifikasiPush": 1,
+                                "listParticipant": 1
                             }
                         }
                     ]
@@ -16440,7 +16441,34 @@ export class subChallengeService {
                     "timenow": 1,
                     "getlastrank": 1,
                     "status": 1,
-                    "joined": 1,
+                    //"joined": 1,
+                    "joined":
+                    {
+                        $cond: {
+                            if: {
+                                $eq: [{
+                                    $arrayElemAt: [{
+                                        $arrayElemAt: ["$challenge_data.peserta.caraGabung", 0]
+                                    }, 0]
+                                }, "SEMUA PENGGUNA"]
+                            },
+                            then: "$joined",
+                            else:
+                            {
+                                $cond: {
+                                    if: {
+                                        $in: ["$joinUser._id", {
+                                            $arrayElemAt: ["$challenge_data.listParticipant", 0]
+                                        }]
+                                    },
+                                    else: "NOT ALLOWED",
+                                    then: "ALLOWED"
+                                }
+                            },
+
+                        },
+
+                    },
                     "challenge_data": 1,
                     subChallenges: 1,
                     testColi: "$getlastrank.isUserLogin",
@@ -18794,7 +18822,8 @@ export class subChallengeService {
                                 "hadiahPemenang": 1,
                                 "bannerSearch": 1,
                                 "popUp": 1,
-                                "notifikasiPush": 1
+                                "notifikasiPush": 1,
+                                "listParticipant": 1
                             }
                         }
                     ]
@@ -18919,7 +18948,34 @@ export class subChallengeService {
                     "timenow": 1,
                     "getlastrank": 1,
                     "status": 1,
-                    "joined": 1,
+                    //"joined": 1,
+                    "joined":
+                    {
+                        $cond: {
+                            if: {
+                                $eq: [{
+                                    $arrayElemAt: [{
+                                        $arrayElemAt: ["$challenge_data.peserta.caraGabung", 0]
+                                    }, 0]
+                                }, "SEMUA PENGGUNA"]
+                            },
+                            then: "$joined",
+                            else:
+                            {
+                                $cond: {
+                                    if: {
+                                        $in: ["$joinUser._id", {
+                                            $arrayElemAt: ["$challenge_data.listParticipant", 0]
+                                        }]
+                                    },
+                                    else: "NOT ALLOWED",
+                                    then: "ALLOWED"
+                                }
+                            },
+
+                        },
+
+                    },
                     "challenge_data": 1,
                     subChallenges: 1,
                     testColi: "$getlastrank.isUserLogin",

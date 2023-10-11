@@ -11802,7 +11802,11 @@ export class TagCountService {
         pipeline.push(
             {
                 $match: {
-                    _id: tag
+                    _id: {
+                        $regex: tag,
+                        $options: 'i'
+                    },
+
                 }
             },
             {
@@ -14487,44 +14491,44 @@ export class TagCountService {
                                                     "urluserBadge":
                                                     {
                                                         "$ifNull":
-                                                        [
-                                                            {
-                                                                "$filter":
+                                                            [
                                                                 {
-                                                                    input: "$userBadge",
-                                                                    as: "listbadge",
-                                                                    cond:
+                                                                    "$filter":
                                                                     {
-                                                                        "$and":
-                                                                            [
-                                                                                {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$$listbadge.isActive", true
-                                                                                        ]
-                                                                                },
-                                                                                {
-                                                                                    "$lte": [
-                                                                                        {
-                                                                                            "$dateToString": {
-                                                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                                                "date": {
-                                                                                                    "$add": [
-                                                                                                        new Date(),
-                                                                                                        25200000
-                                                                                                    ]
+                                                                        input: "$userBadge",
+                                                                        as: "listbadge",
+                                                                        cond:
+                                                                        {
+                                                                            "$and":
+                                                                                [
+                                                                                    {
+                                                                                        "$eq":
+                                                                                            [
+                                                                                                "$$listbadge.isActive", true
+                                                                                            ]
+                                                                                    },
+                                                                                    {
+                                                                                        "$lte": [
+                                                                                            {
+                                                                                                "$dateToString": {
+                                                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                                                    "date": {
+                                                                                                        "$add": [
+                                                                                                            new Date(),
+                                                                                                            25200000
+                                                                                                        ]
+                                                                                                    }
                                                                                                 }
-                                                                                            }
-                                                                                        },
-                                                                                        "$$listbadge.endDatetime"
-                                                                                    ]
-                                                                                }
-                                                                            ]
-                                                                    }
+                                                                                            },
+                                                                                            "$$listbadge.endDatetime"
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                        }
+                                                                    },
                                                                 },
-                                                            },
-                                                            []
-                                                        ]
+                                                                []
+                                                            ]
                                                     },
                                                 }
                                             }
@@ -15285,44 +15289,44 @@ export class TagCountService {
                                                     "urluserBadge":
                                                     {
                                                         "$ifNull":
-                                                        [
-                                                            {
-                                                                "$filter":
+                                                            [
                                                                 {
-                                                                    input: "$userBadge",
-                                                                    as: "listbadge",
-                                                                    cond:
+                                                                    "$filter":
                                                                     {
-                                                                        "$and":
-                                                                            [
-                                                                                {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$$listbadge.isActive", true
-                                                                                        ]
-                                                                                },
-                                                                                {
-                                                                                    "$lte": [
-                                                                                        {
-                                                                                            "$dateToString": {
-                                                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                                                "date": {
-                                                                                                    "$add": [
-                                                                                                        new Date(),
-                                                                                                        25200000
-                                                                                                    ]
+                                                                        input: "$userBadge",
+                                                                        as: "listbadge",
+                                                                        cond:
+                                                                        {
+                                                                            "$and":
+                                                                                [
+                                                                                    {
+                                                                                        "$eq":
+                                                                                            [
+                                                                                                "$$listbadge.isActive", true
+                                                                                            ]
+                                                                                    },
+                                                                                    {
+                                                                                        "$lte": [
+                                                                                            {
+                                                                                                "$dateToString": {
+                                                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                                                    "date": {
+                                                                                                        "$add": [
+                                                                                                            new Date(),
+                                                                                                            25200000
+                                                                                                        ]
+                                                                                                    }
                                                                                                 }
-                                                                                            }
-                                                                                        },
-                                                                                        "$$listbadge.endDatetime"
-                                                                                    ]
-                                                                                }
-                                                                            ]
-                                                                    }
+                                                                                            },
+                                                                                            "$$listbadge.endDatetime"
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                        }
+                                                                    },
                                                                 },
-                                                            },
-                                                            []
-                                                        ]
+                                                                []
+                                                            ]
                                                     },
                                                 }
                                             }
@@ -16080,44 +16084,44 @@ export class TagCountService {
                                                     "urluserBadge":
                                                     {
                                                         "$ifNull":
-                                                        [
-                                                            {
-                                                                "$filter":
+                                                            [
                                                                 {
-                                                                    input: "$userBadge",
-                                                                    as: "listbadge",
-                                                                    cond:
+                                                                    "$filter":
                                                                     {
-                                                                        "$and":
-                                                                            [
-                                                                                {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$$listbadge.isActive", true
-                                                                                        ]
-                                                                                },
-                                                                                {
-                                                                                    "$lte": [
-                                                                                        {
-                                                                                            "$dateToString": {
-                                                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                                                "date": {
-                                                                                                    "$add": [
-                                                                                                        new Date(),
-                                                                                                        25200000
-                                                                                                    ]
+                                                                        input: "$userBadge",
+                                                                        as: "listbadge",
+                                                                        cond:
+                                                                        {
+                                                                            "$and":
+                                                                                [
+                                                                                    {
+                                                                                        "$eq":
+                                                                                            [
+                                                                                                "$$listbadge.isActive", true
+                                                                                            ]
+                                                                                    },
+                                                                                    {
+                                                                                        "$lte": [
+                                                                                            {
+                                                                                                "$dateToString": {
+                                                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                                                    "date": {
+                                                                                                        "$add": [
+                                                                                                            new Date(),
+                                                                                                            25200000
+                                                                                                        ]
+                                                                                                    }
                                                                                                 }
-                                                                                            }
-                                                                                        },
-                                                                                        "$$listbadge.endDatetime"
-                                                                                    ]
-                                                                                }
-                                                                            ]
-                                                                    }
+                                                                                            },
+                                                                                            "$$listbadge.endDatetime"
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                        }
+                                                                    },
                                                                 },
-                                                            },
-                                                            []
-                                                        ]
+                                                                []
+                                                            ]
                                                     },
                                                 }
                                             }
@@ -16880,44 +16884,44 @@ export class TagCountService {
                                                     "urluserBadge":
                                                     {
                                                         "$ifNull":
-                                                        [
-                                                            {
-                                                                "$filter":
+                                                            [
                                                                 {
-                                                                    input: "$userBadge",
-                                                                    as: "listbadge",
-                                                                    cond:
+                                                                    "$filter":
                                                                     {
-                                                                        "$and":
-                                                                            [
-                                                                                {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$$listbadge.isActive", true
-                                                                                        ]
-                                                                                },
-                                                                                {
-                                                                                    "$lte": [
-                                                                                        {
-                                                                                            "$dateToString": {
-                                                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                                                "date": {
-                                                                                                    "$add": [
-                                                                                                        new Date(),
-                                                                                                        25200000
-                                                                                                    ]
+                                                                        input: "$userBadge",
+                                                                        as: "listbadge",
+                                                                        cond:
+                                                                        {
+                                                                            "$and":
+                                                                                [
+                                                                                    {
+                                                                                        "$eq":
+                                                                                            [
+                                                                                                "$$listbadge.isActive", true
+                                                                                            ]
+                                                                                    },
+                                                                                    {
+                                                                                        "$lte": [
+                                                                                            {
+                                                                                                "$dateToString": {
+                                                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                                                    "date": {
+                                                                                                        "$add": [
+                                                                                                            new Date(),
+                                                                                                            25200000
+                                                                                                        ]
+                                                                                                    }
                                                                                                 }
-                                                                                            }
-                                                                                        },
-                                                                                        "$$listbadge.endDatetime"
-                                                                                    ]
-                                                                                }
-                                                                            ]
-                                                                    }
+                                                                                            },
+                                                                                            "$$listbadge.endDatetime"
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                        }
+                                                                    },
                                                                 },
-                                                            },
-                                                            []
-                                                        ]
+                                                                []
+                                                            ]
                                                     },
                                                 }
                                             }
@@ -17657,44 +17661,44 @@ export class TagCountService {
                                                     "urluserBadge":
                                                     {
                                                         "$ifNull":
-                                                        [
-                                                            {
-                                                                "$filter":
+                                                            [
                                                                 {
-                                                                    input: "$userBadge",
-                                                                    as: "listbadge",
-                                                                    cond:
+                                                                    "$filter":
                                                                     {
-                                                                        "$and":
-                                                                            [
-                                                                                {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$$listbadge.isActive", true
-                                                                                        ]
-                                                                                },
-                                                                                {
-                                                                                    "$lte": [
-                                                                                        {
-                                                                                            "$dateToString": {
-                                                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                                                "date": {
-                                                                                                    "$add": [
-                                                                                                        new Date(),
-                                                                                                        25200000
-                                                                                                    ]
+                                                                        input: "$userBadge",
+                                                                        as: "listbadge",
+                                                                        cond:
+                                                                        {
+                                                                            "$and":
+                                                                                [
+                                                                                    {
+                                                                                        "$eq":
+                                                                                            [
+                                                                                                "$$listbadge.isActive", true
+                                                                                            ]
+                                                                                    },
+                                                                                    {
+                                                                                        "$lte": [
+                                                                                            {
+                                                                                                "$dateToString": {
+                                                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                                                    "date": {
+                                                                                                        "$add": [
+                                                                                                            new Date(),
+                                                                                                            25200000
+                                                                                                        ]
+                                                                                                    }
                                                                                                 }
-                                                                                            }
-                                                                                        },
-                                                                                        "$$listbadge.endDatetime"
-                                                                                    ]
-                                                                                }
-                                                                            ]
-                                                                    }
+                                                                                            },
+                                                                                            "$$listbadge.endDatetime"
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                        }
+                                                                    },
                                                                 },
-                                                            },
-                                                            []
-                                                        ]
+                                                                []
+                                                            ]
                                                     },
                                                 }
                                             }
@@ -18456,44 +18460,44 @@ export class TagCountService {
                                                     "urluserBadge":
                                                     {
                                                         "$ifNull":
-                                                        [
-                                                            {
-                                                                "$filter":
+                                                            [
                                                                 {
-                                                                    input: "$userBadge",
-                                                                    as: "listbadge",
-                                                                    cond:
+                                                                    "$filter":
                                                                     {
-                                                                        "$and":
-                                                                            [
-                                                                                {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$$listbadge.isActive", true
-                                                                                        ]
-                                                                                },
-                                                                                {
-                                                                                    "$lte": [
-                                                                                        {
-                                                                                            "$dateToString": {
-                                                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                                                "date": {
-                                                                                                    "$add": [
-                                                                                                        new Date(),
-                                                                                                        25200000
-                                                                                                    ]
+                                                                        input: "$userBadge",
+                                                                        as: "listbadge",
+                                                                        cond:
+                                                                        {
+                                                                            "$and":
+                                                                                [
+                                                                                    {
+                                                                                        "$eq":
+                                                                                            [
+                                                                                                "$$listbadge.isActive", true
+                                                                                            ]
+                                                                                    },
+                                                                                    {
+                                                                                        "$lte": [
+                                                                                            {
+                                                                                                "$dateToString": {
+                                                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                                                    "date": {
+                                                                                                        "$add": [
+                                                                                                            new Date(),
+                                                                                                            25200000
+                                                                                                        ]
+                                                                                                    }
                                                                                                 }
-                                                                                            }
-                                                                                        },
-                                                                                        "$$listbadge.endDatetime"
-                                                                                    ]
-                                                                                }
-                                                                            ]
-                                                                    }
+                                                                                            },
+                                                                                            "$$listbadge.endDatetime"
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                        }
+                                                                    },
                                                                 },
-                                                            },
-                                                            []
-                                                        ]
+                                                                []
+                                                            ]
                                                     },
                                                 }
                                             }
@@ -19233,44 +19237,44 @@ export class TagCountService {
                                                     "urluserBadge":
                                                     {
                                                         "$ifNull":
-                                                        [
-                                                            {
-                                                                "$filter":
+                                                            [
                                                                 {
-                                                                    input: "$userBadge",
-                                                                    as: "listbadge",
-                                                                    cond:
+                                                                    "$filter":
                                                                     {
-                                                                        "$and":
-                                                                            [
-                                                                                {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$$listbadge.isActive", true
-                                                                                        ]
-                                                                                },
-                                                                                {
-                                                                                    "$lte": [
-                                                                                        {
-                                                                                            "$dateToString": {
-                                                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                                                "date": {
-                                                                                                    "$add": [
-                                                                                                        new Date(),
-                                                                                                        25200000
-                                                                                                    ]
+                                                                        input: "$userBadge",
+                                                                        as: "listbadge",
+                                                                        cond:
+                                                                        {
+                                                                            "$and":
+                                                                                [
+                                                                                    {
+                                                                                        "$eq":
+                                                                                            [
+                                                                                                "$$listbadge.isActive", true
+                                                                                            ]
+                                                                                    },
+                                                                                    {
+                                                                                        "$lte": [
+                                                                                            {
+                                                                                                "$dateToString": {
+                                                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                                                    "date": {
+                                                                                                        "$add": [
+                                                                                                            new Date(),
+                                                                                                            25200000
+                                                                                                        ]
+                                                                                                    }
                                                                                                 }
-                                                                                            }
-                                                                                        },
-                                                                                        "$$listbadge.endDatetime"
-                                                                                    ]
-                                                                                }
-                                                                            ]
-                                                                    }
+                                                                                            },
+                                                                                            "$$listbadge.endDatetime"
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                        }
+                                                                    },
                                                                 },
-                                                            },
-                                                            []
-                                                        ]
+                                                                []
+                                                            ]
                                                     },
                                                 }
                                             }
@@ -20008,44 +20012,44 @@ export class TagCountService {
                                                     "urluserBadge":
                                                     {
                                                         "$ifNull":
-                                                        [
-                                                            {
-                                                                "$filter":
+                                                            [
                                                                 {
-                                                                    input: "$userBadge",
-                                                                    as: "listbadge",
-                                                                    cond:
+                                                                    "$filter":
                                                                     {
-                                                                        "$and":
-                                                                            [
-                                                                                {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$$listbadge.isActive", true
-                                                                                        ]
-                                                                                },
-                                                                                {
-                                                                                    "$lte": [
-                                                                                        {
-                                                                                            "$dateToString": {
-                                                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                                                "date": {
-                                                                                                    "$add": [
-                                                                                                        new Date(),
-                                                                                                        25200000
-                                                                                                    ]
+                                                                        input: "$userBadge",
+                                                                        as: "listbadge",
+                                                                        cond:
+                                                                        {
+                                                                            "$and":
+                                                                                [
+                                                                                    {
+                                                                                        "$eq":
+                                                                                            [
+                                                                                                "$$listbadge.isActive", true
+                                                                                            ]
+                                                                                    },
+                                                                                    {
+                                                                                        "$lte": [
+                                                                                            {
+                                                                                                "$dateToString": {
+                                                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                                                    "date": {
+                                                                                                        "$add": [
+                                                                                                            new Date(),
+                                                                                                            25200000
+                                                                                                        ]
+                                                                                                    }
                                                                                                 }
-                                                                                            }
-                                                                                        },
-                                                                                        "$$listbadge.endDatetime"
-                                                                                    ]
-                                                                                }
-                                                                            ]
-                                                                    }
+                                                                                            },
+                                                                                            "$$listbadge.endDatetime"
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                        }
+                                                                    },
                                                                 },
-                                                            },
-                                                            []
-                                                        ]
+                                                                []
+                                                            ]
                                                     },
                                                 }
                                             }
@@ -20807,44 +20811,44 @@ export class TagCountService {
                                                     "urluserBadge":
                                                     {
                                                         "$ifNull":
-                                                        [
-                                                            {
-                                                                "$filter":
+                                                            [
                                                                 {
-                                                                    input: "$userBadge",
-                                                                    as: "listbadge",
-                                                                    cond:
+                                                                    "$filter":
                                                                     {
-                                                                        "$and":
-                                                                            [
-                                                                                {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$$listbadge.isActive", true
-                                                                                        ]
-                                                                                },
-                                                                                {
-                                                                                    "$lte": [
-                                                                                        {
-                                                                                            "$dateToString": {
-                                                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                                                "date": {
-                                                                                                    "$add": [
-                                                                                                        new Date(),
-                                                                                                        25200000
-                                                                                                    ]
+                                                                        input: "$userBadge",
+                                                                        as: "listbadge",
+                                                                        cond:
+                                                                        {
+                                                                            "$and":
+                                                                                [
+                                                                                    {
+                                                                                        "$eq":
+                                                                                            [
+                                                                                                "$$listbadge.isActive", true
+                                                                                            ]
+                                                                                    },
+                                                                                    {
+                                                                                        "$lte": [
+                                                                                            {
+                                                                                                "$dateToString": {
+                                                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                                                    "date": {
+                                                                                                        "$add": [
+                                                                                                            new Date(),
+                                                                                                            25200000
+                                                                                                        ]
+                                                                                                    }
                                                                                                 }
-                                                                                            }
-                                                                                        },
-                                                                                        "$$listbadge.endDatetime"
-                                                                                    ]
-                                                                                }
-                                                                            ]
-                                                                    }
+                                                                                            },
+                                                                                            "$$listbadge.endDatetime"
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                        }
+                                                                    },
                                                                 },
-                                                            },
-                                                            []
-                                                        ]
+                                                                []
+                                                            ]
                                                     },
                                                 }
                                             }
@@ -21584,44 +21588,44 @@ export class TagCountService {
                                                     "urluserBadge":
                                                     {
                                                         "$ifNull":
-                                                        [
-                                                            {
-                                                                "$filter":
+                                                            [
                                                                 {
-                                                                    input: "$userBadge",
-                                                                    as: "listbadge",
-                                                                    cond:
+                                                                    "$filter":
                                                                     {
-                                                                        "$and":
-                                                                            [
-                                                                                {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$$listbadge.isActive", true
-                                                                                        ]
-                                                                                },
-                                                                                {
-                                                                                    "$lte": [
-                                                                                        {
-                                                                                            "$dateToString": {
-                                                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                                                "date": {
-                                                                                                    "$add": [
-                                                                                                        new Date(),
-                                                                                                        25200000
-                                                                                                    ]
+                                                                        input: "$userBadge",
+                                                                        as: "listbadge",
+                                                                        cond:
+                                                                        {
+                                                                            "$and":
+                                                                                [
+                                                                                    {
+                                                                                        "$eq":
+                                                                                            [
+                                                                                                "$$listbadge.isActive", true
+                                                                                            ]
+                                                                                    },
+                                                                                    {
+                                                                                        "$lte": [
+                                                                                            {
+                                                                                                "$dateToString": {
+                                                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                                                    "date": {
+                                                                                                        "$add": [
+                                                                                                            new Date(),
+                                                                                                            25200000
+                                                                                                        ]
+                                                                                                    }
                                                                                                 }
-                                                                                            }
-                                                                                        },
-                                                                                        "$$listbadge.endDatetime"
-                                                                                    ]
-                                                                                }
-                                                                            ]
-                                                                    }
+                                                                                            },
+                                                                                            "$$listbadge.endDatetime"
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                        }
+                                                                    },
                                                                 },
-                                                            },
-                                                            []
-                                                        ]
+                                                                []
+                                                            ]
                                                     },
                                                 }
                                             }
@@ -22383,44 +22387,44 @@ export class TagCountService {
                                                     "urluserBadge":
                                                     {
                                                         "$ifNull":
-                                                        [
-                                                            {
-                                                                "$filter":
+                                                            [
                                                                 {
-                                                                    input: "$userBadge",
-                                                                    as: "listbadge",
-                                                                    cond:
+                                                                    "$filter":
                                                                     {
-                                                                        "$and":
-                                                                            [
-                                                                                {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$$listbadge.isActive", true
-                                                                                        ]
-                                                                                },
-                                                                                {
-                                                                                    "$lte": [
-                                                                                        {
-                                                                                            "$dateToString": {
-                                                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                                                "date": {
-                                                                                                    "$add": [
-                                                                                                        new Date(),
-                                                                                                        25200000
-                                                                                                    ]
+                                                                        input: "$userBadge",
+                                                                        as: "listbadge",
+                                                                        cond:
+                                                                        {
+                                                                            "$and":
+                                                                                [
+                                                                                    {
+                                                                                        "$eq":
+                                                                                            [
+                                                                                                "$$listbadge.isActive", true
+                                                                                            ]
+                                                                                    },
+                                                                                    {
+                                                                                        "$lte": [
+                                                                                            {
+                                                                                                "$dateToString": {
+                                                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                                                    "date": {
+                                                                                                        "$add": [
+                                                                                                            new Date(),
+                                                                                                            25200000
+                                                                                                        ]
+                                                                                                    }
                                                                                                 }
-                                                                                            }
-                                                                                        },
-                                                                                        "$$listbadge.endDatetime"
-                                                                                    ]
-                                                                                }
-                                                                            ]
-                                                                    }
+                                                                                            },
+                                                                                            "$$listbadge.endDatetime"
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                        }
+                                                                    },
                                                                 },
-                                                            },
-                                                            []
-                                                        ]
+                                                                []
+                                                            ]
                                                     },
                                                 }
                                             }
@@ -23151,44 +23155,44 @@ export class TagCountService {
                                                     "urluserBadge":
                                                     {
                                                         "$ifNull":
-                                                        [
-                                                            {
-                                                                "$filter":
+                                                            [
                                                                 {
-                                                                    input: "$userBadge",
-                                                                    as: "listbadge",
-                                                                    cond:
+                                                                    "$filter":
                                                                     {
-                                                                        "$and":
-                                                                            [
-                                                                                {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$$listbadge.isActive", true
-                                                                                        ]
-                                                                                },
-                                                                                {
-                                                                                    "$lte": [
-                                                                                        {
-                                                                                            "$dateToString": {
-                                                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                                                "date": {
-                                                                                                    "$add": [
-                                                                                                        new Date(),
-                                                                                                        25200000
-                                                                                                    ]
+                                                                        input: "$userBadge",
+                                                                        as: "listbadge",
+                                                                        cond:
+                                                                        {
+                                                                            "$and":
+                                                                                [
+                                                                                    {
+                                                                                        "$eq":
+                                                                                            [
+                                                                                                "$$listbadge.isActive", true
+                                                                                            ]
+                                                                                    },
+                                                                                    {
+                                                                                        "$lte": [
+                                                                                            {
+                                                                                                "$dateToString": {
+                                                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                                                    "date": {
+                                                                                                        "$add": [
+                                                                                                            new Date(),
+                                                                                                            25200000
+                                                                                                        ]
+                                                                                                    }
                                                                                                 }
-                                                                                            }
-                                                                                        },
-                                                                                        "$$listbadge.endDatetime"
-                                                                                    ]
-                                                                                }
-                                                                            ]
-                                                                    }
+                                                                                            },
+                                                                                            "$$listbadge.endDatetime"
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                        }
+                                                                    },
                                                                 },
-                                                            },
-                                                            []
-                                                        ]
+                                                                []
+                                                            ]
                                                     },
                                                 }
                                             }

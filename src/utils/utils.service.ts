@@ -1754,7 +1754,7 @@ export class UtilsService {
           const SETTING_TUTOR = this.configService.get("SETTING_TUTOR");
           const getSettingTutor = await this.getSettingMixed(SETTING_TUTOR);
           if (await this.ceckData(getSettingTutor)) {
-            if (Array.isArray(getSettingTutor.value) && Array.isArray(get_userbasic.tutor)){
+            if (Array.isArray(getSettingTutor.value) && Array.isArray(get_userbasic.tutor)) {
               if (getSettingTutor.value.length == get_userbasic.tutor.length) {
                 let arrayTutor = get_userbasic.tutor;
                 let arraySetting = getSettingTutor.value;
@@ -2269,7 +2269,7 @@ export class UtilsService {
 
           title: titlein,
           body: bodyin,
-          postID: postID_,
+          postID: postID_.toString(),
           postType: postType
         }
       }
@@ -2282,12 +2282,18 @@ export class UtilsService {
 
 
       var arraydevice = [];
+      var adm = null;
       datadevice = await this.userdevicesService.findActive(emailuserbasic);
       for (var i = 0; i < datadevice.length; i++) {
         var deviceid = datadevice[i].deviceID;
-        var adm = await admin.messaging().sendToDevice(deviceid, payload, option);
-        console.log(adm);
-        arraydevice.push(deviceid);
+        try {
+          adm = await admin.messaging().sendToDevice(deviceid, payload, option);
+          console.log(adm);
+          arraydevice.push(deviceid);
+        } catch (e) {
+          e.toString();
+        }
+
 
       }
       var generateID = await this.generateId();
@@ -2525,7 +2531,7 @@ export class UtilsService {
       if (data['email'] != undefined) {
         const Userbasic_: Userbasic = await this.userbasicsService.findOne(data['email'])
         return Userbasic_;
-      }else{
+      } else {
         return null;
       }
     } else {
