@@ -102,8 +102,7 @@ export class notifChallengeService {
                     "typeChallenge": { $arrayElemAt: ['$challengedata.objectChallenge', 0] },
 
                 }
-            },
-            { $limit: 100 }
+            }
         );
         var query = await this.notifChallengeModel.aggregate(pipeline);
         return query;
