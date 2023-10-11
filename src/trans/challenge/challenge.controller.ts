@@ -3148,54 +3148,54 @@ export class ChallengeController {
 
         }
 
-        if (timenow == new Date(datetime)) {
+        // if (timenow == new Date(datetime)) {
 
-          if (type == "untukPemenang") {
+        if (type == "untukPemenang") {
+          try {
+            datapemenang = await this.subchallenge.getpemenang(challengeID.toString());
+          } catch (e) {
+            datapemenang = null;
+          }
+          if (datapemenang !== null && datapemenang.length > 0) {
+
             try {
-              datapemenang = await this.subchallenge.getpemenang(challengeID.toString());
+              getlastrank = datapemenang[0].getlastrank;
             } catch (e) {
-              datapemenang = null;
+              getlastrank = null;
             }
-            if (datapemenang !== null && datapemenang.length > 0) {
+            if (getlastrank !== null && getlastrank.length > 0) {
+              for (let i = 0; i < getlastrank.length; i++) {
+                let emailmenang = getlastrank[i].email
 
-              try {
-                getlastrank = datapemenang[0].getlastrank;
-              } catch (e) {
-                getlastrank = null;
-              }
-              if (getlastrank !== null && getlastrank.length > 0) {
-                for (let i = 0; i < getlastrank.length; i++) {
-                  let emailmenang = getlastrank[i].email
-
-                  if (langIso == "id") {
-                    await this.util.sendNotifChallenge(emailmenang, title, body, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
-                    await this.notifChallengeService.updateStatussend(id.toString(), email);
-                  } else {
-                    await this.util.sendNotifChallenge(emailmenang, titleEN, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
-                    await this.notifChallengeService.updateStatussend(id.toString(), email);
-                  }
-
-
+                if (langIso == "id") {
+                  await this.util.sendNotifChallenge(emailmenang, title, body, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                  await this.notifChallengeService.updateStatussend(id.toString(), email);
+                } else {
+                  await this.util.sendNotifChallenge(emailmenang, titleEN, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                  await this.notifChallengeService.updateStatussend(id.toString(), email);
                 }
 
+
               }
 
-            }
-
-
-          } else {
-
-            if (langIso == "id") {
-              await this.util.sendNotifChallenge(email, title, body, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
-              await this.notifChallengeService.updateStatussend(id.toString(), email);
-            } else {
-              await this.util.sendNotifChallenge(email, titleEN, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
-              await this.notifChallengeService.updateStatussend(id.toString(), email);
             }
 
           }
 
+
+        } else {
+
+          if (langIso == "id") {
+            await this.util.sendNotifChallenge(email, title, body, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+            await this.notifChallengeService.updateStatussend(id.toString(), email);
+          } else {
+            await this.util.sendNotifChallenge(email, titleEN, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+            await this.notifChallengeService.updateStatussend(id.toString(), email);
+          }
+
         }
+
+        //}
 
       }
 
