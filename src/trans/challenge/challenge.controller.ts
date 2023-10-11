@@ -2736,7 +2736,7 @@ export class ChallengeController {
               notifChallenge_.nameChallenge = nameChallenge;
               notifChallenge_.type = "akanDatang";
               notifChallenge_.userID = arrdata;
-
+              notifChallenge_.createdAt = timedate;
               await this.notifChallengeService.create(notifChallenge_);
             }
 
@@ -2790,7 +2790,7 @@ export class ChallengeController {
               notifChallenge_.nameChallenge = nameChallenge;
               notifChallenge_.type = "challengeDimulai";
               notifChallenge_.userID = arrdata;
-
+              notifChallenge_.createdAt = timedate;
               await this.notifChallengeService.create(notifChallenge_);
             }
           }
@@ -2859,7 +2859,7 @@ export class ChallengeController {
                 notifChallenge_.nameChallenge = nameChallenge;
                 notifChallenge_.type = "updateLeaderboard";
                 notifChallenge_.userID = arrdata;
-
+                notifChallenge_.createdAt = timedate;
                 await this.notifChallengeService.create(notifChallenge_);
 
               }
@@ -2919,7 +2919,7 @@ export class ChallengeController {
               notifChallenge_.nameChallenge = nameChallenge;
               notifChallenge_.type = "challengeAkanBerakhir";
               notifChallenge_.userID = arrdata;
-
+              notifChallenge_.createdAt = timedate;
               await this.notifChallengeService.create(notifChallenge_);
             }
           }
@@ -2977,7 +2977,7 @@ export class ChallengeController {
               notifChallenge_.nameChallenge = nameChallenge;
               notifChallenge_.type = "challengeBerakhir";
               notifChallenge_.userID = arrdata;
-
+              notifChallenge_.createdAt = timedate;
               await this.notifChallengeService.create(notifChallenge_);
             }
           }
@@ -3045,7 +3045,7 @@ export class ChallengeController {
               notifChallenge_.nameChallenge = nameChallenge;
               notifChallenge_.type = "untukPemenang";
               notifChallenge_.userID = userID;
-
+              notifChallenge_.createdAt = timedate;
               await this.notifChallengeService.create(notifChallenge_);
             }
           }

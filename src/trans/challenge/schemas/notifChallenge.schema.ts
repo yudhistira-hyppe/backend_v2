@@ -22,6 +22,8 @@ export class notifChallenge {
 
     @Prop()
     datetime: string;
+    @Prop()
+    createdAt: string;
 
     @Prop()
     userID: any[];
