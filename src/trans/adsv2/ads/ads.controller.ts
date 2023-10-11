@@ -30,6 +30,7 @@ import { AdsBalaceCreditService } from '../adsbalacecredit/adsbalacecredit.servi
 import { AdsPriceCreditsService } from '../adspricecredits/adspricecredits.service';
 import { UservouchersService } from 'src/trans/uservouchers/uservouchers.service';
 import { CreateUservouchersDto } from 'src/trans/uservouchers/dto/create-uservouchers.dto';
+import { AdsRewardsService } from '../adsrewards/adsrewards.service';
 const sharp = require('sharp');
 
 @Controller('api/adsv2/ads')
@@ -55,6 +56,7 @@ export class AdsController {
         private adsBalaceCreditService: AdsBalaceCreditService,
         private readonly adsPriceCreditsService: AdsPriceCreditsService,
         private readonly uservouchersService: UservouchersService,
+        private readonly adsRewardsService: AdsRewardsService, 
         private readonly adsService: AdsService) {
         this.locks = new Map();
     }
@@ -2015,6 +2017,17 @@ export class AdsController {
             );
         }
 
+        const dataRewards = await this.adsRewardsService.findStatusActive(dataAds.typeAdsID.toString());
+        if (!(await this.utilsService.ceckData(dataRewards))) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed rewards not found' });
+            await this.adslogsService.create(AdsLogsDto_);
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed rewards not found'
+            );
+        }
+
         //Ceck Data AdsType
         const dataTypeAds = await this.adsTypeService.findOne(dataAds.typeAdsID.toString());
         if (!(await this.utilsService.ceckData(dataTypeAds))) {
@@ -2082,7 +2095,7 @@ export class AdsController {
             var CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
             CreateAccountbalancesDto_.iduser = data_userbasic._id;
             CreateAccountbalancesDto_.debet = 0;
-            CreateAccountbalancesDto_.kredit = dataTypeAds.rewards;
+            CreateAccountbalancesDto_.kredit = dataRewards.rewardPrice;
             CreateAccountbalancesDto_.type = "rewards";
             CreateAccountbalancesDto_.timestamp = current_date.toISOString();
             CreateAccountbalancesDto_.description = "rewards form ads view";
@@ -2092,13 +2105,13 @@ export class AdsController {
             //Send Fcm
             var eventType = "TRANSACTION";
             var event = "ADS VIEW";
-            this.utilsService.sendFcmV2(data_userbasic.email.toString(), data_userbasic.email.toString(), eventType, event, "REWARDS", null, null, null, dataTypeAds.rewards.toString());
+            this.utilsService.sendFcmV2(data_userbasic.email.toString(), data_userbasic.email.toString(), eventType, event, "REWARDS", null, null, null, dataRewards.rewardPrice.toString());
 
             //Set Response
             var response = {
                 response_code: 202,
                 data: {
-                    nominal: Number(dataTypeAds.rewards),
+                    nominal: Number(dataRewards.rewardPrice),
                     rewards: true,
                 },
                 messages: {
