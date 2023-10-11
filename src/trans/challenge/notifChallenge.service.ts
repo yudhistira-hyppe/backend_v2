@@ -70,6 +70,70 @@ export class notifChallengeService {
         var pipeline = [];
         pipeline.push(
             {
+                $set: {
+                    "timenow":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [
+                                    new Date(),
+                                    25200000
+                                ]
+                            }
+                        }
+                    },
+                    "timenowplus":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [
+                                    new Date(),
+                                    25500000
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+
+                            {
+                                $expr:
+                                {
+                                    $gte:
+                                        [
+                                            "$datetime",
+                                            "$timenow",
+
+
+                                        ]
+                                },
+
+                            },
+                            {
+                                $expr:
+                                {
+                                    $lte:
+                                        [
+
+                                            "$datetime",
+                                            "$timenowplus",
+
+                                        ]
+                                },
+
+                            },
+
+                        ]
+                }
+            },
+            {
                 $unwind: {
                     path: '$userID',
                     preserveNullAndEmptyArrays: true
@@ -99,8 +163,11 @@ export class notifChallengeService {
                     "datetime": 1,
                     "session": 1,
                     "isSend": 1,
-                    "typeChallenge": { $arrayElemAt: ['$challengedata.objectChallenge', 0] },
-
+                    "typeChallenge": {
+                        $arrayElemAt: ['$challengedata.objectChallenge', 0]
+                    },
+                    timenowplus: '$timenowplus',
+                    timenow: '$timenow'
                 }
             }
         );
