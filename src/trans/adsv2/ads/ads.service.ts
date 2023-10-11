@@ -963,7 +963,8 @@ export class AdsService {
                                                 }
                                             }, {
                                                 "$project": {
-                                                    "CPV": {
+                                                    "CPV":1,
+                                                    "CPV_adstypes": {
                                                         "$let": {
                                                             "vars": {
                                                                 "tmp": {
@@ -1047,7 +1048,8 @@ export class AdsService {
                                                 }
                                             }, {
                                                 "$project": {
-                                                    "CPA": {
+                                                    "CPA":1,
+                                                    "CPA_adstypes": {
                                                         "$let": {
                                                             "vars": {
                                                                 "tmp": {

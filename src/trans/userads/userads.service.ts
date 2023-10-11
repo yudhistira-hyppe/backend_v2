@@ -3415,7 +3415,8 @@ export class UserAdsService {
                             {
                                 $project:
                                 {
-                                    CPV: {
+                                    CPV:1,
+                                    CPV_adstypes: {
                                         "$let": {
                                             "vars": {
                                                 "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
@@ -3516,7 +3517,8 @@ export class UserAdsService {
                             {
                                 $project:
                                 {
-                                    CPA: {
+                                    CPA: 1,
+                                    CPA_adstypes: {
                                         "$let": {
                                             "vars": {
                                                 "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
@@ -3881,7 +3883,8 @@ export class UserAdsService {
             {
                 $project: {
                     _id: 1,
-                    creditPrice: {
+                    creditPrice: "$adspricecredits",
+                    creditPrice_backup: {
                         "$let": {
                             "vars": {
                                 "tmp": { "$arrayElemAt": ["$adspricecredits_data", 0] },
@@ -4401,7 +4404,8 @@ export class UserAdsService {
                             {
                                 $project:
                                 {
-                                    CPV: {
+                                    CPV:1,
+                                    CPV_adstypes: {
                                         "$let": {
                                             "vars": {
                                                 "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
@@ -4502,7 +4506,8 @@ export class UserAdsService {
                             {
                                 $project:
                                 {
-                                    CPA: {
+                                    CPA:1,
+                                    CPA_adstypes: {
                                         "$let": {
                                             "vars": {
                                                 "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },

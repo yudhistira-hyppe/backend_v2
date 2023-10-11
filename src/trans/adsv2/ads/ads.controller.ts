@@ -276,6 +276,10 @@ export class AdsController {
             );
         }
         AdsDto_.typeAdsID = new mongoose.Types.ObjectId(AdsDto_.typeAdsID.toString());
+        if (await this.utilsService.ceckData(getAdsType)) {
+            AdsDto_.CPA = getAdsType.CPA;
+            AdsDto_.CPV = getAdsType.CPV;
+        }
 
         //VALIDASI PARAM name
         var ceck_name = await this.utilsService.validateParam("name", AdsDto_.name, "string")
@@ -659,6 +663,7 @@ export class AdsController {
             var getSetting_CreditPrice = await this.adsPriceCreditsService.findStatusActive();
             if (await this.utilsService.ceckData(getSetting_CreditPrice)) {
                 AdsDto_.idAdspricecredits = getSetting_CreditPrice._id;
+                AdsDto_.adspricecredits = getSetting_CreditPrice.creditPrice;
             }
             let data = await this.adsService.create(AdsDto_);
             if (AdsDto_.status == "UNDER_REVIEW") {
@@ -1833,13 +1838,13 @@ export class AdsController {
         }
 
         //Get CPV
-        if (dataTypeAds.CPV == undefined || dataTypeAds.CPV == undefined) {
+        if (dataTypeAds.CPV == undefined || dataTypeAds.CPA == undefined) {
             AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed typeAds CPV not found' });
             await this.adslogsService.create(AdsLogsDto_);
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
             await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed typeAds CPV not found'
+                'Unabled to proceed typeAds CPV And CPA not found'
             );
         }
 
@@ -1859,7 +1864,7 @@ export class AdsController {
             //update Ads
             var data_Update_Ads = {}
             if ((dataAds.totalView + 1) <= dataAds.tayang) {
-                data_Update_Ads["$inc"] = { 'usedCredit': Number(dataTypeAds.CPV), 'totalView': 1 };
+                data_Update_Ads["$inc"] = { 'usedCredit': Number(dataAds.CPV), 'totalView': 1 };
             }
             if (dataAds.tayang == (dataAds.totalView + 1)) {
                 data_Update_Ads["status"] = "IN_ACTIVE";
@@ -2065,7 +2070,7 @@ export class AdsController {
             //update Ads
             var data_Update_Ads = {}
             if ((dataAds.totalView + 1) <= dataAds.tayang) {
-                data_Update_Ads["$inc"] = { 'usedCredit': Number(dataTypeAds.CPA), 'totalView': 1 };
+                data_Update_Ads["$inc"] = { 'usedCredit': Number(dataAds.CPA), 'totalView': 1 };
             }
             if (dataAds.tayang == (dataAds.totalView + 1)) {
                 data_Update_Ads["status"] = "IN_ACTIVE";

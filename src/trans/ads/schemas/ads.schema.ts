@@ -178,6 +178,13 @@ export class Ads {
     height: number;
     @Prop()
     idAdspricecredits: mongoose.Types.ObjectId;
+    
+    @Prop()
+    adspricecredits: number;
+    @Prop()
+    CPA: number;
+    @Prop()
+    CPV: number;
 }
 
 export const AdsSchema = SchemaFactory.createForClass(Ads);
