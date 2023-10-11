@@ -157,6 +157,8 @@ export class notifChallengeService {
                     "ranking": "$userID.ranking",
                     "title": "$userID.title",
                     "notification": "$userID.notification",
+                    "titleEN": "$userID.titleEN",
+                    "notificationEN": "$userID.notificationEN",
                     "challengeID": 1,
                     "subChallengeID": 1,
                     "type": 1,
