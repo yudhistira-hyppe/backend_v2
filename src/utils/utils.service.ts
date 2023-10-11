@@ -2181,7 +2181,7 @@ export class UtilsService {
     }
   }
 
-  async sendNotifChallenge(email: string, titlein: string, bodyin: any, eventType: string, event: string, postID_?: string, postType?: string) {
+  async sendNotifChallenge(email: string, titlein: string, bodyin: any, bodyeng: any, eventType: string, event: string, postID_?: string, postType?: string) {
 
     console.log(postID_);
     var emailuserbasic = null;
@@ -2263,21 +2263,62 @@ export class UtilsService {
         },
         username: user_userAuth.username.toString()
       };
+      try {
+        languages = datauserbasicsService.languages;
+        idlanguages = languages.oid.toString();
+        datalanguage = await this.languagesService.findOne(idlanguages)
+        langIso = datalanguage.langIso;
 
-      payload = {
-        data: {
-
-          title: titlein,
-          body: bodyin,
-          postID: postID_.toString(),
-          postType: postType
-        }
+        console.log(idlanguages)
+      } catch (e) {
+        languages = null;
+        idlanguages = "";
+        datalanguage = null;
+        langIso = "";
       }
+
       var option = {
         priority: "high",
         contentAvailable: true
       }
 
+
+      if (langIso === "id") {
+
+        payload = {
+          data: {
+
+            title: titlein,
+            body: bodyin,
+            postID: postID_.toString(),
+            postType: postType
+          }
+        }
+
+
+      }
+      else if (langIso === "en") {
+
+        payload = {
+          data: {
+
+            title: titlein,
+            body: bodyeng,
+            postID: postID_.toString(),
+            postType: postType
+          }
+        }
+      } else {
+        payload = {
+          data: {
+
+            title: titlein,
+            body: bodyin,
+            postID: postID_.toString(),
+            postType: postType
+          }
+        }
+      }
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
 
 
@@ -2304,8 +2345,9 @@ export class UtilsService {
       createNotificationsDto.event = event;
       createNotificationsDto.mate = emailuserbasic;
       createNotificationsDto.devices = arraydevice;
-      createNotificationsDto.title = titlein.toString();
-      createNotificationsDto.body = bodyin;
+      // createNotificationsDto.title = titlein.toString();
+      createNotificationsDto.title = payload.data.title;
+      createNotificationsDto.body = bodyeng;
       createNotificationsDto.bodyId = bodyin;
       createNotificationsDto.active = true;
       createNotificationsDto.flowIsDone = true;

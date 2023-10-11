@@ -3186,10 +3186,10 @@ export class ChallengeController {
         } else {
 
           if (langIso == "id") {
-            await this.util.sendNotifChallenge(email, title, body, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+            await this.util.sendNotifChallenge(email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
             await this.notifChallengeService.updateStatussend(id.toString(), email);
           } else {
-            await this.util.sendNotifChallenge(email, titleEN, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+            await this.util.sendNotifChallenge(email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
             await this.notifChallengeService.updateStatussend(id.toString(), email);
           }
 

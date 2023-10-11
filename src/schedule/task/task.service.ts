@@ -23,7 +23,7 @@ export class TaskService {
     this.logger.debug('Challenge JOB START');
     this.challengeService.userbadge();
     this.challengeService.updateUserbadge();
-    // this.challengeService.sendNotifeChallenge();
+    this.challengeService.sendNotifeChallenge();
     //this.postContentService.cronJobSeaweedProfileStart();
     //this.postContentService.cronJobSeaweedPictStart();
     //this.postContentService.cronJobSeaweedVidStart();
