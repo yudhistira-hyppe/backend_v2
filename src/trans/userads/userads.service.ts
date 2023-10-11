@@ -54,7 +54,7 @@ export class UserAdsService {
     }
 
     async getAdsUser(id: string): Promise<UserAds> {
-        return this.userAdsModel.findOne({ _id: new ObjectId(id), isActive:true }).exec();
+        return this.userAdsModel.findOne({ _id: new ObjectId(id) }).exec();
     }
 
     async findOneByuserIDAds(userID: string, adsId: string): Promise<UserAds> {
@@ -4558,10 +4558,10 @@ export class UserAdsService {
                 }
             });
 
-        //------------FACET CLICK PRICE COUNT------------
-        var priceClickFacet = [];
+        //------------FACET CLICKTIME------------
+        var priceTot = [];
         if (start_date != undefined && end_date != undefined) {
-            priceClickFacet.push({
+            priceTot.push({
                 $match: {
                     clickTime: {
                         $elemMatch: {
@@ -4572,7 +4572,7 @@ export class UserAdsService {
                 }
             });
         }
-        priceClickFacet.push(
+        priceTot.push(
             {
                 $lookup:
                 {
@@ -4598,26 +4598,13 @@ export class UserAdsService {
                                 },
                             },
                             {
-                                $lookup: {
-                                    from: "adstypes",
-                                    localField: "typeAdsID",
-                                    foreignField: "_id",
-                                    as: "adstypes_data"
-                                }
-                            },
-                            {
                                 $project:
                                 {
                                     adspricecredits: 1,
                                     CPA: 1,
-                                    CPA_adstypes: {
-                                        "$let": {
-                                            "vars": {
-                                                "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
-                                            },
-                                            "in": "$$tmp.CPA"
-                                        }
-                                    },
+                                    CPV: 1,
+                                    totalClick: 1,
+                                    totalView: 1,
                                 }
                             }
                         ]
@@ -4631,7 +4618,7 @@ export class UserAdsService {
                 }
             });
         if (start_date != undefined && end_date != undefined) {
-            priceClickFacet.push({
+            priceTot.push({
                 $match: {
                     clickTime: {
                         $gte: start_date.toISOString(),
@@ -4640,185 +4627,348 @@ export class UserAdsService {
                 }
             });
         }
-        priceClickFacet.push(
+        priceTot.push(
             {
                 $project: {
-                    adspricecredits: {
-                        "$let": {
-                            "vars": {
-                                "tmp": { "$arrayElemAt": ["$adsTable", 0] },
-                            },
-                            "in": "$$tmp.adspricecredits"
-                        }
-                    },
-                    CPA: {
-                        "$let": {
-                            "vars": {
-                                "tmp": { "$arrayElemAt": ["$adsTable", 0] },
-                            },
-                            "in": "$$tmp.CPA"
-                        }
-                    },
-                    tot: {
-                        $multiply: [
+                    total: {
+                        $sum : [
                             {
-                                "$let": {
-                                    "vars": {
-                                        "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                                $multiply: [
+                                    {
+                                        $multiply: [
+                                            {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                                                    },
+                                                    "in": "$$tmp.CPV"
+                                                }
+                                            },
+                                            {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                                                    },
+                                                    "in": "$$tmp.totalView"
+                                                }
+                                            },
+                                        ]
                                     },
-                                    "in": "$$tmp.adspricecredits"
-                                }
+                                    {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                                            },
+                                            "in": "$$tmp.adspricecredits"
+                                        }
+                                    }
+                                ]
                             },
                             {
-                                "$let": {
-                                    "vars": {
-                                        "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                                $multiply: [
+                                    {
+                                        $multiply: [
+                                            {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                                                    },
+                                                    "in": "$$tmp.CPA"
+                                                }
+                                            },
+                                            {
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                                                    },
+                                                    "in": "$$tmp.totalClick"
+                                                }
+                                            },
+                                        ]
                                     },
-                                    "in": "$$tmp.CPA"
-                                }
+                                    {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+                                            },
+                                            "in": "$$tmp.adspricecredits"
+                                        }
+                                    }
+                                ]
                             }
                         ]
-                    },
+                    }
                 }
             },
             {
                 $group: {
                     _id: null,
-                    count: { $sum: "$tot" }
+                    count: { $sum: "$total" }
                 }
             }
         );
 
-        //------------FACET VIEW PRICE COUNT------------
-        var priceViewFacet = [];
-        if (start_date != undefined && end_date != undefined) {
-            priceViewFacet.push({
-                $match: {
-                    updateAt: {
-                        $elemMatch: {
-                            $gte: start_date.toISOString(),
-                            $lte: end_date.toISOString()
-                        }
-                    }
-                }
-            });
-        }
-        priceViewFacet.push(
-            {
-                $lookup:
-                {
-                    from: "ads",
-                    as: "adsTable",
-                    let:
-                    {
-                        type_fk: "$adsID"
-                    },
-                    pipeline:
-                        [
-                            {
-                                $match:
-                                {
-                                    $expr:
-                                    {
-                                        $eq:
-                                            [
-                                                "$_id",
-                                                "$$type_fk"
-                                            ]
-                                    }
-                                },
-                            },
-                            {
-                                $lookup: {
-                                    from: "adstypes",
-                                    localField: "typeAdsID",
-                                    foreignField: "_id",
-                                    as: "adstypes_data"
-                                }
-                            },
-                            {
-                                $project:
-                                {
-                                    adspricecredits: 1,
-                                    CPV: 1,
-                                    CPV_adstypes: {
-                                        "$let": {
-                                            "vars": {
-                                                "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
-                                            },
-                                            "in": "$$tmp.CPV"
-                                        }
-                                    },
-                                }
-                            }
-                        ]
-                }
-            },
-            {
-                $unwind:
-                {
-                    path: "$updateAt",
-                    includeArrayIndex: 'updateAt_index',
-                }
-            });
-        if (start_date != undefined && end_date != undefined) {
-            priceViewFacet.push({
-                $match: {
-                    updateAt: {
-                        $gte: start_date.toISOString(),
-                        $lte: end_date.toISOString()
-                    }
-                }
-            });
-        }
-        priceViewFacet.push(
-            {
-                $project: {
-                    adspricecredits: {
-                        "$let": {
-                            "vars": {
-                                "tmp": { "$arrayElemAt": ["$adsTable", 0] },
-                            },
-                            "in": "$$tmp.adspricecredits"
-                        }
-                    },
-                    CPV: {
-                        "$let": {
-                            "vars": {
-                                "tmp": { "$arrayElemAt": ["$adsTable", 0] },
-                            },
-                            "in": "$$tmp.CPV"
-                        }
-                    },
-                    tot: {
-                        $multiply: [
-                            {
-                                "$let": {
-                                    "vars": {
-                                        "tmp": { "$arrayElemAt": ["$adsTable", 0] },
-                                    },
-                                    "in": "$$tmp.adspricecredits"
-                                }
-                            },
-                            {
-                                "$let": {
-                                    "vars": {
-                                        "tmp": { "$arrayElemAt": ["$adsTable", 0] },
-                                    },
-                                    "in": "$$tmp.CPV"
-                                }
-                            }
-                        ]
-                    },
-                }
-            },
-            {
-                $group: {
-                    _id: null,
-                    count: { $sum: "$tot" }
-                }
-            }
-            );
+        // //------------FACET CLICK PRICE COUNT------------
+        // var priceClickFacet = [];
+        // if (start_date != undefined && end_date != undefined) {
+        //     priceClickFacet.push({
+        //         $match: {
+        //             clickTime: {
+        //                 $elemMatch: {
+        //                     $gte: start_date.toISOString(),
+        //                     $lte: end_date.toISOString()
+        //                 }
+        //             }
+        //         }
+        //     });
+        // }
+        // priceClickFacet.push(
+        //     {
+        //         $lookup:
+        //         {
+        //             from: "ads",
+        //             as: "adsTable",
+        //             let:
+        //             {
+        //                 type_fk: "$adsID"
+        //             },
+        //             pipeline:
+        //                 [
+        //                     {
+        //                         $match:
+        //                         {
+        //                             $expr:
+        //                             {
+        //                                 $eq:
+        //                                     [
+        //                                         "$_id",
+        //                                         "$$type_fk"
+        //                                     ]
+        //                             }
+        //                         },
+        //                     },
+        //                     {
+        //                         $lookup: {
+        //                             from: "adstypes",
+        //                             localField: "typeAdsID",
+        //                             foreignField: "_id",
+        //                             as: "adstypes_data"
+        //                         }
+        //                     },
+        //                     {
+        //                         $project:
+        //                         {
+        //                             adspricecredits: 1,
+        //                             CPA: 1,
+        //                             CPA_adstypes: {
+        //                                 "$let": {
+        //                                     "vars": {
+        //                                         "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
+        //                                     },
+        //                                     "in": "$$tmp.CPA"
+        //                                 }
+        //                             },
+        //                         }
+        //                     }
+        //                 ]
+        //         }
+        //     },
+        //     {
+        //         $unwind:
+        //         {
+        //             path: "$clickTime",
+        //             includeArrayIndex: 'clickTime_index',
+        //         }
+        //     });
+        // if (start_date != undefined && end_date != undefined) {
+        //     priceClickFacet.push({
+        //         $match: {
+        //             clickTime: {
+        //                 $gte: start_date.toISOString(),
+        //                 $lte: end_date.toISOString()
+        //             }
+        //         }
+        //     });
+        // }
+        // priceClickFacet.push(
+        //     {
+        //         $project: {
+        //             adspricecredits: {
+        //                 "$let": {
+        //                     "vars": {
+        //                         "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+        //                     },
+        //                     "in": "$$tmp.adspricecredits"
+        //                 }
+        //             },
+        //             CPA: {
+        //                 "$let": {
+        //                     "vars": {
+        //                         "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+        //                     },
+        //                     "in": "$$tmp.CPA"
+        //                 }
+        //             },
+        //             tot: {
+        //                 $multiply: [
+        //                     {
+        //                         "$let": {
+        //                             "vars": {
+        //                                 "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+        //                             },
+        //                             "in": "$$tmp.adspricecredits"
+        //                         }
+        //                     },
+        //                     {
+        //                         "$let": {
+        //                             "vars": {
+        //                                 "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+        //                             },
+        //                             "in": "$$tmp.CPA"
+        //                         }
+        //                     }
+        //                 ]
+        //             },
+        //         }
+        //     },
+        //     {
+        //         $group: {
+        //             _id: null,
+        //             count: { $sum: "$tot" }
+        //         }
+        //     }
+        // );
+
+        // //------------FACET VIEW PRICE COUNT------------
+        // var priceViewFacet = [];
+        // if (start_date != undefined && end_date != undefined) {
+        //     priceViewFacet.push({
+        //         $match: {
+        //             updateAt: {
+        //                 $elemMatch: {
+        //                     $gte: start_date.toISOString(),
+        //                     $lte: end_date.toISOString()
+        //                 }
+        //             }
+        //         }
+        //     });
+        // }
+        // priceViewFacet.push(
+        //     {
+        //         $lookup:
+        //         {
+        //             from: "ads",
+        //             as: "adsTable",
+        //             let:
+        //             {
+        //                 type_fk: "$adsID"
+        //             },
+        //             pipeline:
+        //                 [
+        //                     {
+        //                         $match:
+        //                         {
+        //                             $expr:
+        //                             {
+        //                                 $eq:
+        //                                     [
+        //                                         "$_id",
+        //                                         "$$type_fk"
+        //                                     ]
+        //                             }
+        //                         },
+        //                     },
+        //                     {
+        //                         $lookup: {
+        //                             from: "adstypes",
+        //                             localField: "typeAdsID",
+        //                             foreignField: "_id",
+        //                             as: "adstypes_data"
+        //                         }
+        //                     },
+        //                     {
+        //                         $project:
+        //                         {
+        //                             adspricecredits: 1,
+        //                             CPV: 1,
+        //                             CPV_adstypes: {
+        //                                 "$let": {
+        //                                     "vars": {
+        //                                         "tmp": { "$arrayElemAt": ["$adstypes_data", 0] },
+        //                                     },
+        //                                     "in": "$$tmp.CPV"
+        //                                 }
+        //                             },
+        //                         }
+        //                     }
+        //                 ]
+        //         }
+        //     },
+        //     {
+        //         $unwind:
+        //         {
+        //             path: "$updateAt",
+        //             includeArrayIndex: 'updateAt_index',
+        //         }
+        //     });
+        // if (start_date != undefined && end_date != undefined) {
+        //     priceViewFacet.push({
+        //         $match: {
+        //             updateAt: {
+        //                 $gte: start_date.toISOString(),
+        //                 $lte: end_date.toISOString()
+        //             }
+        //         }
+        //     });
+        // }
+        // priceViewFacet.push(
+        //     {
+        //         $project: {
+        //             adspricecredits: {
+        //                 "$let": {
+        //                     "vars": {
+        //                         "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+        //                     },
+        //                     "in": "$$tmp.adspricecredits"
+        //                 }
+        //             },
+        //             CPV: {
+        //                 "$let": {
+        //                     "vars": {
+        //                         "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+        //                     },
+        //                     "in": "$$tmp.CPV"
+        //                 }
+        //             },
+        //             tot: {
+        //                 $multiply: [
+        //                     {
+        //                         "$let": {
+        //                             "vars": {
+        //                                 "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+        //                             },
+        //                             "in": "$$tmp.adspricecredits"
+        //                         }
+        //                     },
+        //                     {
+        //                         "$let": {
+        //                             "vars": {
+        //                                 "tmp": { "$arrayElemAt": ["$adsTable", 0] },
+        //                             },
+        //                             "in": "$$tmp.CPV"
+        //                         }
+        //                     }
+        //                 ]
+        //             },
+        //         }
+        //     },
+        //     {
+        //         $group: {
+        //             _id: null,
+        //             count: { $sum: "$tot" }
+        //         }
+        //     }
+        //     );
             
         var aggregateData = [];
         aggregateData.push(
@@ -4845,8 +4995,9 @@ export class UserAdsService {
                     CTACount: CTACountFacet,
                     viewTime: viewTimeFacet,
                     clickTime: clickTimeFacet, 
-                    priceViewFacet: priceViewFacet,
-                    priceClickFacet: priceClickFacet,
+                    priceTot: priceTot,
+                    // priceViewFacet: priceViewFacet,
+                    // priceClickFacet: priceClickFacet,
                     ads: [
                         {
                             $group: {
@@ -5054,28 +5205,36 @@ export class UserAdsService {
                     //         }
                     //     },]
                     // },
-                    totalIncome:{
-                        $sum: [
-                            {
-                                $convert: {
-                                    input: { "$arrayElemAt": ['$priceViewFacet.count', 0] },
-                                    to: "int",
-                                    onError: 0,
-                                    onNull: 0
-                                }
-                            },
-                            {
-                                $convert: {
-                                    input: { "$arrayElemAt": ['$priceClickFacet.count', 0] },
-                                    to: "int",
-                                    onError: 0,
-                                    onNull: 0
-                                }
-                            }
-                        ]
-                    }
+                    // totalIncome:{
+                    //     $sum: [
+                    //         {
+                    //             $convert: {
+                    //                 input: { "$arrayElemAt": ['$priceViewFacet.count', 0] },
+                    //                 to: "int",
+                    //                 onError: 0,
+                    //                 onNull: 0
+                    //             }
+                    //         },
+                    //         {
+                    //             $convert: {
+                    //                 input: { "$arrayElemAt": ['$priceClickFacet.count', 0] },
+                    //                 to: "int",
+                    //                 onError: 0,
+                    //                 onNull: 0
+                    //             }
+                    //         }
+                    //     ]
+                    // }
                     // priceViewFacet: 1,
                     // priceClickFacet:1
+                    totalIncome: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$priceTot", 0] },
+                            },
+                            "in": "$$tmp.count"
+                        }
+                    },
                 }
             }
         );
