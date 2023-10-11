@@ -889,13 +889,13 @@ export class AdsSettingController {
             //     AdsTypeDto_.rewards = body.EconomySharingInContent;
             //     nameActivitas.push("EconomySharingInContent");
             // }
-            // try {
-            //     await this.adsTypeService.update(_id_InContentAds, AdsTypeDto_);
-            // } catch (e) {
-            //     await this.errorHandler.generateNotAcceptableException(
-            //         'Unabled to proceed, ' + e.toString(),
-            //     );
-            // }
+            try {
+                await this.adsTypeService.update(_id_InContentAds, AdsTypeDto_);
+            } catch (e) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, ' + e.toString(),
+                );
+            }
         }
 
         if ((body.EconomySharingInContent != undefined)){
@@ -1024,16 +1024,16 @@ export class AdsSettingController {
             //     AdsTypeDto_.rewards = body.EconomySharingInBetween;
             //     nameActivitas.push("EconomySharingInBetween");
             // }
-            // try {
-            //     await this.adsTypeService.update(_id_InBetweenAds, AdsTypeDto_);
-            // } catch (e) {
-            //     var timestamps_end = await this.utilsService.getDateTimeString();
-            //     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+            try {
+                await this.adsTypeService.update(_id_InBetweenAds, AdsTypeDto_);
+            } catch (e) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
 
-            //     await this.errorHandler.generateNotAcceptableException(
-            //         'Unabled to proceed, ' + e.toString(),
-            //     );
-            // }
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, ' + e.toString(),
+                );
+            }
         }
 
         if ((body.EconomySharingInBetween != undefined)) {
@@ -1162,16 +1162,16 @@ export class AdsSettingController {
             //     AdsTypeDto_.rewards = body.EconomySharingSPonsorPopUp;
             //     nameActivitas.push("EconomySharingSPonsorPopUp");
             // }
-            // try {
-            //     await this.adsTypeService.update(_id_PopUpAds, AdsTypeDto_);
-            // } catch (e) {
-            //     var timestamps_end = await this.utilsService.getDateTimeString();
-            //     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+            try {
+                await this.adsTypeService.update(_id_PopUpAds, AdsTypeDto_);
+            } catch (e) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
 
-            //     await this.errorHandler.generateNotAcceptableException(
-            //         'Unabled to proceed, ' + e.toString(),
-            //     );
-            // }
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, ' + e.toString(),
+                );
+            }
         }
 
         if ((body.EconomySharingSPonsorPopUp != undefined)) {
