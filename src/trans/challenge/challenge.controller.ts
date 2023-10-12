@@ -2168,8 +2168,8 @@ export class ChallengeController {
   @Post('userbadge')
   async userbadges() {
 
-    // this.sendNotifeChallenge();
-    this.updateUserbadge();
+    this.sendNotifeChallenge();
+    //this.updateUserbadge();
 
     const messages = {
       "info": ["The proses successful"],
@@ -2528,11 +2528,12 @@ export class ChallengeController {
             var splitdatesm = repdatesm.split('.');
             var timedatesm = splitdatesm[0];
             if (timedate >= timedatesm) {
+              await this.userbadgeService.updateNonactive(idUser.toString(), idsubchallenge.toString());
               if (isActive == true) {
                 let CreateSubChallengeDto_ = new CreateSubChallengeDto();
                 CreateSubChallengeDto_.isActive = false;
                 await this.subchallenge.update(idsubchallenge.toString(), CreateSubChallengeDto_);
-                await this.userbadgeService.updateNonactive(idUser.toString(), idsubchallenge.toString());
+
               }
 
             }
@@ -3343,7 +3344,7 @@ export class ChallengeController {
     var bodyEN = null;
     var title = null;
     var titleEN = null;
-    var timenow = null;
+    //var timenow = null;
     var datetime = null;
     var challengeID = null;
     var typeChallenge = null;
@@ -3361,7 +3362,7 @@ export class ChallengeController {
     } catch (e) {
       datanotif = null;
     }
-    timenow = new Date(Date.now());
+    // timenow = new Date(Date.now());
     if (datanotif !== null && datanotif.length > 0) {
 
       for (let i = 0; i < datanotif.length; i++) {
@@ -3453,7 +3454,6 @@ export class ChallengeController {
     }
 
   }
-
 
   @UseGuards(JwtAuthGuard)
   @Post('join/currentstatus')

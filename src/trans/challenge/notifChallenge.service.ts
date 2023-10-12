@@ -78,7 +78,7 @@ export class notifChallengeService {
                             "date": {
                                 $add: [
                                     new Date(),
-                                    25200000
+                                    25140000
                                 ]
                             }
                         }
@@ -90,7 +90,7 @@ export class notifChallengeService {
                             "date": {
                                 $add: [
                                     new Date(),
-                                    25500000
+                                    25260000
                                 ]
                             }
                         }

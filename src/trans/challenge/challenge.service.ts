@@ -3949,7 +3949,12 @@ export class ChallengeService {
             status = datachallengejuara[i].status;
             idsubchallenge = datachallengejuara[i]._id;
             idchallenge = datachallengejuara[i].challengeId;
-            session = datachallengejuara[i].session;
+
+            try {
+              session = datachallengejuara[i].session;
+            } catch (e) {
+              session = 1;
+            }
             startDatetime = datachallengejuara[i].startDatetime;
             endDatetime = datachallengejuara[i].endDatetime;
             userjuara = datachallengejuara[i].getlastrank;
@@ -4026,6 +4031,7 @@ export class ChallengeService {
     var endDatetime = null;
     var isActive = null;
     var status = null;
+    var idUser = null;
     var dt = new Date(Date.now());
     dt.setHours(dt.getHours() + 7); // timestamp
     dt = new Date(dt);
@@ -4059,6 +4065,7 @@ export class ChallengeService {
             status = datachallengejuara[i].status;
             idsubchallenge = datachallengejuara[i]._id;
             idchallenge = datachallengejuara[i].challengeId;
+            idUser = datachallengejuara[i].idUser;
             session = datachallengejuara[i].session;
             startDatetime = datachallengejuara[i].startDatetime;
             endDatetime = datachallengejuara[i].endDatetime;
@@ -4072,6 +4079,7 @@ export class ChallengeService {
             var splitdatesm = repdatesm.split('.');
             var timedatesm = splitdatesm[0];
             if (timedate >= timedatesm) {
+              await this.userbadgeService.updateNonactive(idUser.toString(), idsubchallenge.toString());
               if (isActive == true) {
                 let CreateSubChallengeDto_ = new CreateSubChallengeDto();
                 CreateSubChallengeDto_.isActive = false;
@@ -4100,7 +4108,7 @@ export class ChallengeService {
     var bodyEN = null;
     var title = null;
     var titleEN = null;
-    var timenow = null;
+    //var timenow = null;
     var datetime = null;
     var challengeID = null;
     var typeChallenge = null;
@@ -4118,7 +4126,7 @@ export class ChallengeService {
     } catch (e) {
       datanotif = null;
     }
-    timenow = new Date(Date.now());
+    // timenow = new Date(Date.now());
     if (datanotif !== null && datanotif.length > 0) {
 
       for (let i = 0; i < datanotif.length; i++) {
