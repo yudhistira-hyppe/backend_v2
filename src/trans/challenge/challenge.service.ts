@@ -3925,7 +3925,7 @@ export class ChallengeService {
     var splitdate = repdate.split('.');
     var timedate = splitdate[0];
     var datasubchalange = null;
-
+    var idBadge = null;
     var idsub = null;
     try {
       datasubchalange = await this.subchallenge.findsub();
@@ -3964,11 +3964,17 @@ export class ChallengeService {
             var timedatesm = splitdatesm[0];
             if (lengtjuara > 0) {
               for (let x = 0; x < lengtjuara; x++) {
+
                 let iduser = userjuara[x].idUser;
                 let ranking = userjuara[x].ranking;
                 let score = userjuara[x].score;
                 let lastRank = userjuara[x].lastRank;
-                let idBadge = userjuara[x].idBadge;
+
+                try {
+                  idBadge = userjuara[x].idBadge;
+                } catch (e) {
+                  idBadge = null;
+                }
                 let idSubChallenges = userjuara[x].idSubChallenge;
                 let databadge = null;
                 try {
@@ -3979,17 +3985,21 @@ export class ChallengeService {
 
                 if (databadge == null && databadge == undefined) {
                   if (status == "BERAKHIR") {
-                    let Userbadge_ = new Userbadge();
-                    Userbadge_.SubChallengeId = idSubChallenges;
-                    Userbadge_.idBadge = idBadge;
-                    Userbadge_.createdAt = timedate;
-                    Userbadge_.isActive = true;
-                    Userbadge_.userId = iduser;
-                    Userbadge_.session = session;
-                    Userbadge_.startDatetime = endDatetime;
-                    Userbadge_.endDatetime = timedatesm;
 
-                    await this.userbadgeService.create(Userbadge_);
+                    if (idBadge !== null && idBadge !== undefined) {
+                      let Userbadge_ = new Userbadge();
+                      Userbadge_.SubChallengeId = idSubChallenges;
+                      Userbadge_.idBadge = idBadge;
+                      Userbadge_.createdAt = timedate;
+                      Userbadge_.isActive = true;
+                      Userbadge_.userId = iduser;
+                      Userbadge_.session = session;
+                      Userbadge_.startDatetime = endDatetime;
+                      Userbadge_.endDatetime = timedatesm;
+
+                      await this.userbadgeService.create(Userbadge_);
+
+                    }
 
                   }
 
@@ -4199,6 +4209,47 @@ export class ChallengeService {
 
     }
 
+  }
+
+  async sendnotifmasalchallenge(notifid: string, title: string, titleEN: string, bodyin: any, bodyeng: any, challengeid: string, type: string)
+  {
+     var mongo = require('mongoose');
+     var limit = 100;
+     var totalall = null;
+     
+     var gettotaluser = await this.userbasicsSS.getcount();
+     try {
+          totalall = gettotaluser[0].totalpost / limit;
+      } catch (e) {
+        gettotaluser = null;
+          totalall = 0;
+      }
+      var totalpage = 0;
+      var tpage2 = (totalall).toFixed(0);
+      var tpage = (totalall % limit);
+      if (tpage > 0 && tpage < 5) {
+          totalpage = parseInt(tpage2) + 1;
+
+      } else {
+          totalpage = parseInt(tpage2);
+      }
+      console.log(totalpage);
+
+      for(let i = 0; i < totalpage; i++)
+      {
+        var data = await this.userbasicsSS.getuser(i, limit);
+        for(var j = 0; j < data.length; j++)
+        {
+          var language = data[i].languages;
+          if (language.id == new mongo.Types.ObjectId("613bc5daf9438a7564ca798a")) {
+            await this.util.sendNotifChallenge(data[i].email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type);
+          } else {
+            await this.util.sendNotifChallenge(data[i].email.toString(), titleEN, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type);
+          }
+        }
+      }
+
+      await this.notifChallengeService.updateStatussend(notifid, data[0].email.toString());
   }
 
 }
