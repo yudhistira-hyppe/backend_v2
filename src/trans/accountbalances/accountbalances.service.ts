@@ -46,6 +46,7 @@ export class AccountbalancesService {
     }
 
     async getReward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], similarity: any[], page: number, limit: number, sorting: boolean, idtransaction: string) {
+        
         var paramaggregate = [];
         var $match = {};
 
@@ -183,6 +184,7 @@ export class AccountbalancesService {
         if (similarity != undefined) {
             if (similarity.length > 0) {
                 var similarityFilter = [];
+                console.log(similarity);
                 if (similarity.includes("show_smaller_than_25")) {
                     similarityFilter.push({
                         commonality: {
@@ -193,7 +195,7 @@ export class AccountbalancesService {
                     //     $gt: 0, $lt: 14
                     // }
                 }
-                if (age.includes("show_25_smaller_than_50")) {
+                if (similarity.includes("show_25_smaller_than_50")) {
                     similarityFilter.push({
                         commonality: {
                             $gte: 25, $lt: 50
@@ -203,7 +205,7 @@ export class AccountbalancesService {
                     //     $gte: 14, $lte: 28
                     // }
                 }
-                if (age.includes("show_50_smaller_than_75")) {
+                if (similarity.includes("show_50_smaller_than_75")) {
                     similarityFilter.push({
                         commonality: {
                             $gte: 50, $lt: 75
@@ -213,7 +215,7 @@ export class AccountbalancesService {
                     //     $gte: 29, $lte: 43
                     // }
                 }
-                if (age.includes("show_75_smaller_than_100")) {
+                if (similarity.includes("show_75_smaller_than_100")) {
                     similarityFilter.push({
                         commonality: {
                             $gte: 75, $lte: 100
@@ -736,7 +738,7 @@ export class AccountbalancesService {
                 "$limit": limit
             });
         }
-        //console.log(JSON.stringify(paramaggregate));
+        console.log(JSON.stringify(paramaggregate));
         const query = await this.accountbalancesModel.aggregate(paramaggregate);
         // const query = await this.accountbalancesModel.aggregate([
         //     {
