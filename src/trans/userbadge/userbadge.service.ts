@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId, Types } from 'mongoose';
+import mongoose, { Model, ObjectId, Types } from 'mongoose';
 import { Userbadge, UserbadgeDocument } from './schemas/userbadge.schema';
 
 @Injectable()
@@ -31,7 +31,16 @@ export class UserbadgeService {
         }
         return data;
     }
+    async updateNonactive(iduser: string, SubChallengeId: string): Promise<Object> {
+        let data = await this.UserbadgeModel.updateOne({ "userId": new mongoose.Types.ObjectId(iduser), "SubChallengeId": new mongoose.Types.ObjectId(SubChallengeId) },
+            {
+                $set: {
+                    "isActive": false,
 
+                }
+            });
+        return data;
+    }
     async getUserbadge(iduser: string, idsubchallenge: string) {
         var query = await this.UserbadgeModel.aggregate(
             [
