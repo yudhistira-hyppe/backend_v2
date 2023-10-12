@@ -2168,8 +2168,8 @@ export class ChallengeController {
   @Post('userbadge')
   async userbadges() {
 
-    //  this.sendNotifeChallenge();
-    this.updateUserbadge();
+    this.sendNotifeChallenge();
+    //this.updateUserbadge();
 
     const messages = {
       "info": ["The proses successful"],
@@ -3405,14 +3405,14 @@ export class ChallengeController {
               getlastrank = null;
             }
             if (getlastrank !== null && getlastrank.length > 0) {
-              for (let i = 0; i < getlastrank.length; i++) {
-                let emailmenang = getlastrank[i].email
+              for (let x = 0; x < getlastrank.length; x++) {
+                let emailmenang = getlastrank[x].email
 
                 if (langIso == "id") {
-                  await this.util.sendNotifChallenge(emailmenang, title, body, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                  await this.util.sendNotifChallenge(emailmenang, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
                   await this.notifChallengeService.updateStatussend(id.toString(), email);
                 } else {
-                  await this.util.sendNotifChallenge(emailmenang, titleEN, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                  await this.util.sendNotifChallenge(emailmenang, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
                   await this.notifChallengeService.updateStatussend(id.toString(), email);
                 }
 
@@ -3443,6 +3443,7 @@ export class ChallengeController {
     }
 
   }
+
 
   @UseGuards(JwtAuthGuard)
   @Post('join/currentstatus')

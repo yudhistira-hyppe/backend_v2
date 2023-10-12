@@ -4162,8 +4162,8 @@ export class ChallengeService {
               getlastrank = null;
             }
             if (getlastrank !== null && getlastrank.length > 0) {
-              for (let i = 0; i < getlastrank.length; i++) {
-                let emailmenang = getlastrank[i].email
+              for (let x = 0; x < getlastrank.length; x++) {
+                let emailmenang = getlastrank[x].email
 
                 if (langIso == "id") {
                   await this.util.sendNotifChallenge(emailmenang, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
