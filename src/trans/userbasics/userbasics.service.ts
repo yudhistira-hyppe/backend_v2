@@ -617,6 +617,45 @@ export class UserbasicsService {
     return this.userbasicModel.find().where('email').in(username).exec();
   }
 
+  async findInbyid(userid: any[]) {
+    var result = await this.userbasicModel.aggregate([
+      {
+        "$match":
+        {
+          "_id":
+          {
+            "$in":userid
+          }
+        }
+      },
+      {
+        "$lookup": 
+        {
+          from: 'userauths',
+          localField: 'email',
+          foreignField: 'email',
+          as: 'userAuth_data',
+        },
+      },
+      {
+        "$project":
+        {
+          _id:1,
+          email:1,
+          username:
+          {
+            "$arrayElemAt":
+            [
+              "$userAuth_data.username", 0
+            ]
+          }
+        }
+      }
+    ]);
+    
+    return result;
+  }
+
   async findByProfileId(mediaprofilepicts: any): Promise<Userbasic> {
     return this.userbasicModel.findOne({ "profilePict": mediaprofilepicts }).exec();
   }
