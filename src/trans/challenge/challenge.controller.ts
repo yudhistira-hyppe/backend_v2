@@ -2168,8 +2168,8 @@ export class ChallengeController {
   @Post('userbadge')
   async userbadges() {
 
-    this.sendNotifeChallenge();
-    //this.updateUserbadge();
+    // this.sendNotifeChallenge();
+    this.updateUserbadge();
 
     const messages = {
       "info": ["The proses successful"],
@@ -2378,7 +2378,7 @@ export class ChallengeController {
     var splitdate = repdate.split('.');
     var timedate = splitdate[0];
     var datasubchalange = null;
-
+    var idBadge = null;
     var idsub = null;
     try {
       datasubchalange = await this.subchallenge.findsub();
@@ -2417,11 +2417,17 @@ export class ChallengeController {
             var timedatesm = splitdatesm[0];
             if (lengtjuara > 0) {
               for (let x = 0; x < lengtjuara; x++) {
+
                 let iduser = userjuara[x].idUser;
                 let ranking = userjuara[x].ranking;
                 let score = userjuara[x].score;
                 let lastRank = userjuara[x].lastRank;
-                let idBadge = userjuara[x].idBadge;
+
+                try {
+                  idBadge = userjuara[x].idBadge;
+                } catch (e) {
+                  idBadge = null;
+                }
                 let idSubChallenges = userjuara[x].idSubChallenge;
                 let databadge = null;
                 try {
@@ -2432,17 +2438,21 @@ export class ChallengeController {
 
                 if (databadge == null && databadge == undefined) {
                   if (status == "BERAKHIR") {
-                    let Userbadge_ = new Userbadge();
-                    Userbadge_.SubChallengeId = idSubChallenges;
-                    Userbadge_.idBadge = idBadge;
-                    Userbadge_.createdAt = timedate;
-                    Userbadge_.isActive = true;
-                    Userbadge_.userId = iduser;
-                    Userbadge_.session = session;
-                    Userbadge_.startDatetime = endDatetime;
-                    Userbadge_.endDatetime = timedatesm;
 
-                    await this.userbadgeService.create(Userbadge_);
+                    if (idBadge !== null && idBadge !== undefined) {
+                      let Userbadge_ = new Userbadge();
+                      Userbadge_.SubChallengeId = idSubChallenges;
+                      Userbadge_.idBadge = idBadge;
+                      Userbadge_.createdAt = timedate;
+                      Userbadge_.isActive = true;
+                      Userbadge_.userId = iduser;
+                      Userbadge_.session = session;
+                      Userbadge_.startDatetime = endDatetime;
+                      Userbadge_.endDatetime = timedatesm;
+
+                      await this.userbadgeService.create(Userbadge_);
+
+                    }
 
                   }
 
