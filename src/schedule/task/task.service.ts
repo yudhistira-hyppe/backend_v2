@@ -20,8 +20,9 @@ export class TaskService {
 
   @Cron('*/10 * * * * *')
   challengeJob() {
-    this.logger.debug('Challenge JOB START');
+    this.logger.debug('Challenge JOB START userbadge');
     this.challengeService.userbadge();
+    // this.logger.debug('Challenge JOB START updateUserbadge');
     // this.challengeService.updateUserbadge();
     // this.challengeService.sendNotifeChallenge();
     //this.postContentService.cronJobSeaweedProfileStart();
@@ -33,7 +34,6 @@ export class TaskService {
   @Cron('*/240 * * * * *')
   challengeJob2() {
     this.logger.debug('Challenge JOB START');
-
     this.challengeService.sendNotifeChallenge();
 
   }
