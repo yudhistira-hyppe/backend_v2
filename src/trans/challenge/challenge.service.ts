@@ -4121,6 +4121,8 @@ export class ChallengeService {
     var langIso = null;
     var datapemenang = null;
     var getlastrank = null;
+    var username = null;
+    var ranking = null;
     try {
       datanotif = await this.notifChallengeService.listnotifchallenge();
     } catch (e) {
@@ -4133,6 +4135,8 @@ export class ChallengeService {
         id = datanotif[i]._id;
         challengeID = datanotif[i].challengeID;
         email = datanotif[i].email;
+        username = datanotif[i].username;
+        ranking = datanotif[i].ranking;
         title = datanotif[i].title;
         titleEN = datanotif[i].titleEN;
         body = datanotif[i].notification;
@@ -4167,6 +4171,11 @@ export class ChallengeService {
         // if (timenow == new Date(datetime)) {
 
         if (type == "untukPemenang") {
+
+          let ket2 = body.replace("$ranking", ranking);
+
+          let ket2EN = bodyEN.replace("$ranking", ranking);
+
           try {
             datapemenang = await this.subchallenge.getpemenang(challengeID.toString());
           } catch (e) {
@@ -4184,10 +4193,10 @@ export class ChallengeService {
                 let emailmenang = getlastrank[x].email
 
                 if (langIso == "id") {
-                  await this.util.sendNotifChallenge(emailmenang, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                  await this.util.sendNotifChallenge(emailmenang, title, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
                   await this.notifChallengeService.updateStatussend(id.toString(), email);
                 } else {
-                  await this.util.sendNotifChallenge(emailmenang, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                  await this.util.sendNotifChallenge(emailmenang, titleEN, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
                   await this.notifChallengeService.updateStatussend(id.toString(), email);
                 }
 

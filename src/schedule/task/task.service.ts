@@ -21,12 +21,20 @@ export class TaskService {
   @Cron('*/10 * * * * *')
   challengeJob() {
     this.logger.debug('Challenge JOB START');
-    this.challengeService.userbadge();
-    this.challengeService.updateUserbadge();
-    this.challengeService.sendNotifeChallenge();
+    // this.challengeService.userbadge();
+    // this.challengeService.updateUserbadge();
+    // this.challengeService.sendNotifeChallenge();
     //this.postContentService.cronJobSeaweedProfileStart();
     //this.postContentService.cronJobSeaweedPictStart();
     //this.postContentService.cronJobSeaweedVidStart();
     //this.postContentService.cronJobSeaweedDiariesStart();
+  }
+
+  @Cron('60 * * * * *')
+  challengeJob2() {
+    this.logger.debug('Challenge JOB START');
+
+    this.challengeService.sendNotifeChallenge();
+
   }
 }

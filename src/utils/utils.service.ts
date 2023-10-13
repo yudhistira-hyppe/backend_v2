@@ -2337,6 +2337,14 @@ export class UtilsService {
 
 
       }
+
+      var datanotif = null;
+
+      try {
+
+      } catch (e) {
+
+      }
       var generateID = await this.generateId();
       createNotificationsDto._id = generateID;
       createNotificationsDto.notificationID = generateID;
