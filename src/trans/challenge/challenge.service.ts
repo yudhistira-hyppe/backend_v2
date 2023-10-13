@@ -4194,10 +4194,10 @@ export class ChallengeService {
                 let emailmenang = getlastrank[x].email
 
                 if (langIso == "id") {
-                  await this.util.sendNotifChallenge(emailmenang, title, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                  await this.util.sendNotifChallenge("PEMENANG", emailmenang, title, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
                   await this.notifChallengeService.updateStatussend(id.toString(), email);
                 } else {
-                  await this.util.sendNotifChallenge(emailmenang, titleEN, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                  await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
                   await this.notifChallengeService.updateStatussend(id.toString(), email);
                 }
 
@@ -4212,10 +4212,10 @@ export class ChallengeService {
         } else {
 
           if (langIso == "id") {
-            await this.util.sendNotifChallenge(email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+            await this.util.sendNotifChallenge("", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
             await this.notifChallengeService.updateStatussend(id.toString(), email);
           } else {
-            await this.util.sendNotifChallenge(email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+            await this.util.sendNotifChallenge("", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
             await this.notifChallengeService.updateStatussend(id.toString(), email);
           }
 
@@ -4257,9 +4257,9 @@ export class ChallengeService {
       for (var j = 0; j < data.length; j++) {
         var language = data[i].languages;
         if (language.id == new mongo.Types.ObjectId("613bc5daf9438a7564ca798a")) {
-          await this.util.sendNotifChallenge(data[i].email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type);
+          await this.util.sendNotifChallenge("", data[i].email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type);
         } else {
-          await this.util.sendNotifChallenge(data[i].email.toString(), titleEN, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type);
+          await this.util.sendNotifChallenge("", data[i].email.toString(), titleEN, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type);
         }
       }
     }
