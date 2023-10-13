@@ -3943,7 +3943,7 @@ export class ChallengeService {
         } catch (e) {
           datachallengejuara = null;
         }
-        console.log("datachallengejuara", datachallengejuara)
+        //console.log("datachallengejuara", datachallengejuara)
 
         if (datachallengejuara !== null && datachallengejuara.length > 0) {
           for (let i = 0; i < datachallengejuara.length; i++) {
