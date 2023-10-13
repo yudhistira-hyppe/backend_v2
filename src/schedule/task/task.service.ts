@@ -34,7 +34,6 @@ export class TaskService {
   @Cron('*/240 * * * * *')
   challengeJob2() {
     this.logger.debug('Challenge JOB START');
-
     this.challengeService.sendNotifeChallenge();
 
   }
