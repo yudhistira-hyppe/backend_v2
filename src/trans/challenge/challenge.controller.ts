@@ -2476,8 +2476,10 @@ export class ChallengeController {
     var splitdate = repdate.split('.');
     var timedate = splitdate[0];
     var datachallengejuara = null;
+    var getlastrank = null;
 
     var datasubchalange = null;
+    var idSubChallenge2 = null;
 
     var idsub = null;
     try {
@@ -2500,7 +2502,7 @@ export class ChallengeController {
             status = datachallengejuara[i].status;
             idsubchallenge = datachallengejuara[i]._id;
             idchallenge = datachallengejuara[i].challengeId;
-            //idUser = datachallengejuara[i].idUser;
+            getlastrank = datachallengejuara[i].getlastrank;
             session = datachallengejuara[i].session;
             startDatetime = datachallengejuara[i].startDatetime;
             endDatetime = datachallengejuara[i].endDatetime;
@@ -2514,7 +2516,16 @@ export class ChallengeController {
             var splitdatesm = repdatesm.split('.');
             var timedatesm = splitdatesm[0];
             if (timedate >= timedatesm) {
-              await this.userbadgeService.updateNonactive(idUser.toString(), idsubchallenge.toString());
+
+              if (getlastrank !== null && getlastrank.length > 0) {
+                for (let x = 0; x < getlastrank.length; x++) {
+                  idUser = getlastrank[x].idUser;
+                  idSubChallenge2 = getlastrank[x].idSubChallenge;
+
+                  await this.userbadgeService.updateNonactive(idUser.toString(), idSubChallenge2.toString());
+                }
+              }
+
               if (isActive == true) {
                 let CreateSubChallengeDto_ = new CreateSubChallengeDto();
                 CreateSubChallengeDto_.isActive = false;
