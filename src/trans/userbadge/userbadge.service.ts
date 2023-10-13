@@ -31,8 +31,8 @@ export class UserbadgeService {
         }
         return data;
     }
-    async updateNonactive(iduser: string, SubChallengeId: string): Promise<Object> {
-        let data = await this.UserbadgeModel.updateOne({ "userId": new mongoose.Types.ObjectId(iduser), "SubChallengeId": new mongoose.Types.ObjectId(SubChallengeId) },
+    async updateNonactive(id: string): Promise<Object> {
+        let data = await this.UserbadgeModel.updateOne({ "_id": id },
             {
                 $set: {
                     "isActive": false,

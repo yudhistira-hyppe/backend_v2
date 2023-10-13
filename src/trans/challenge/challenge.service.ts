@@ -4046,7 +4046,7 @@ export class ChallengeService {
     var databadge = null;
     var datasubchalange = null;
     var idSubChallenge2 = null;
-
+    var idusbadge = null;
     var idsub = null;
     try {
       datasubchalange = await this.subchallenge.findsub();
@@ -4091,8 +4091,15 @@ export class ChallengeService {
                   databadge = await this.userbadgeService.getUserbadge(idUser.toString(), idSubChallenge2.toString());
 
                   if (databadge !== null) {
-                    await this.userbadgeService.updateNonactive(idUser.toString(), idSubChallenge2.toString());
-                    console.log("iduser: " + idUser.toString() + " berhasil update " + idSubChallenge2.toString());
+                    idusbadge = databadge._id;
+                    try {
+                      await this.userbadgeService.updateNonactive(idusbadge.toString());
+                      console.log("iduser: " + idUser.toString() + " berhasil update " + idusbadge.toString());
+                    } catch (e) {
+                      console.log("iduser: " + idUser.toString() + " gagal update " + idusbadge.toString());
+                    }
+
+
                   }
 
 

@@ -2458,93 +2458,93 @@ export class ChallengeController {
   }
 
 
-  async updateUserbadge() {
-    var idsubchallenge = null;
-    var idchallenge = null;
-    var session = null;
-    var startDatetime = null;
-    var endDatetime = null;
-    var isActive = null;
-    var status = null;
-    var idUser = null;
-    var dt = new Date(Date.now());
-    dt.setHours(dt.getHours() + 7); // timestamp
-    dt = new Date(dt);
+  // async updateUserbadge() {
+  //   var idsubchallenge = null;
+  //   var idchallenge = null;
+  //   var session = null;
+  //   var startDatetime = null;
+  //   var endDatetime = null;
+  //   var isActive = null;
+  //   var status = null;
+  //   var idUser = null;
+  //   var dt = new Date(Date.now());
+  //   dt.setHours(dt.getHours() + 7); // timestamp
+  //   dt = new Date(dt);
 
-    var strdate = dt.toISOString();
-    var repdate = strdate.replace('T', ' ');
-    var splitdate = repdate.split('.');
-    var timedate = splitdate[0];
-    var datachallengejuara = null;
-    var getlastrank = null;
+  //   var strdate = dt.toISOString();
+  //   var repdate = strdate.replace('T', ' ');
+  //   var splitdate = repdate.split('.');
+  //   var timedate = splitdate[0];
+  //   var datachallengejuara = null;
+  //   var getlastrank = null;
 
-    var datasubchalange = null;
-    var idSubChallenge2 = null;
+  //   var datasubchalange = null;
+  //   var idSubChallenge2 = null;
 
-    var idsub = null;
-    try {
-      datasubchalange = await this.subchallenge.findsub();
+  //   var idsub = null;
+  //   try {
+  //     datasubchalange = await this.subchallenge.findsub();
 
-    } catch (e) {
-      datasubchalange = null;
-    }
+  //   } catch (e) {
+  //     datasubchalange = null;
+  //   }
 
-    if (datasubchalange !== null) {
-      for (let x = 0; x < datasubchalange.length; x++) {
-        idsub = datasubchalange[x]._id.toString();
-        try {
-          datachallengejuara = await this.subchallenge.getjuara2("6512ebd820acdf349afa1e4d");
-        } catch (e) {
-          datachallengejuara = null;
-        }
-        if (datachallengejuara !== null && datachallengejuara.length > 0) {
-          for (let i = 0; i < datachallengejuara.length; i++) {
-            status = datachallengejuara[i].status;
-            idsubchallenge = datachallengejuara[i]._id;
-            idchallenge = datachallengejuara[i].challengeId;
-            getlastrank = datachallengejuara[i].getlastrank;
-            session = datachallengejuara[i].session;
-            startDatetime = datachallengejuara[i].startDatetime;
-            endDatetime = datachallengejuara[i].endDatetime;
-            isActive = datachallengejuara[i].isActive;
-            let end = new Date(endDatetime);
-            end.setHours(dt.getHours() + 12); // timestamp
-            end = new Date(end);
-            let getseminngu = new Date(new Date(end).setDate(new Date(end).getDate() + 7));
-            let strdateseminggu = getseminngu.toISOString();
-            var repdatesm = strdateseminggu.replace('T', ' ');
-            var splitdatesm = repdatesm.split('.');
-            var timedatesm = splitdatesm[0];
-            if (timedate >= timedatesm) {
+  //   if (datasubchalange !== null) {
+  //     for (let x = 0; x < datasubchalange.length; x++) {
+  //       idsub = datasubchalange[x]._id.toString();
+  //       try {
+  //         datachallengejuara = await this.subchallenge.getjuara2("6512ebd820acdf349afa1e4d");
+  //       } catch (e) {
+  //         datachallengejuara = null;
+  //       }
+  //       if (datachallengejuara !== null && datachallengejuara.length > 0) {
+  //         for (let i = 0; i < datachallengejuara.length; i++) {
+  //           status = datachallengejuara[i].status;
+  //           idsubchallenge = datachallengejuara[i]._id;
+  //           idchallenge = datachallengejuara[i].challengeId;
+  //           getlastrank = datachallengejuara[i].getlastrank;
+  //           session = datachallengejuara[i].session;
+  //           startDatetime = datachallengejuara[i].startDatetime;
+  //           endDatetime = datachallengejuara[i].endDatetime;
+  //           isActive = datachallengejuara[i].isActive;
+  //           let end = new Date(endDatetime);
+  //           end.setHours(dt.getHours() + 12); // timestamp
+  //           end = new Date(end);
+  //           let getseminngu = new Date(new Date(end).setDate(new Date(end).getDate() + 7));
+  //           let strdateseminggu = getseminngu.toISOString();
+  //           var repdatesm = strdateseminggu.replace('T', ' ');
+  //           var splitdatesm = repdatesm.split('.');
+  //           var timedatesm = splitdatesm[0];
+  //           if (timedate >= timedatesm) {
 
-              if (getlastrank !== null && getlastrank.length > 0) {
-                for (let x = 0; x < getlastrank.length; x++) {
-                  idUser = getlastrank[x].idUser;
-                  idSubChallenge2 = getlastrank[x].idSubChallenge;
+  //             if (getlastrank !== null && getlastrank.length > 0) {
+  //               for (let x = 0; x < getlastrank.length; x++) {
+  //                 idUser = getlastrank[x].idUser;
+  //                 idSubChallenge2 = getlastrank[x].idSubChallenge;
 
-                  await this.userbadgeService.updateNonactive(idUser.toString(), idSubChallenge2.toString());
-                }
-              }
+  //                 await this.userbadgeService.updateNonactive(idUser.toString(), idSubChallenge2.toString());
+  //               }
+  //             }
 
-              if (isActive == true) {
-                let CreateSubChallengeDto_ = new CreateSubChallengeDto();
-                CreateSubChallengeDto_.isActive = false;
-                await this.subchallenge.update(idsubchallenge.toString(), CreateSubChallengeDto_);
+  //             if (isActive == true) {
+  //               let CreateSubChallengeDto_ = new CreateSubChallengeDto();
+  //               CreateSubChallengeDto_.isActive = false;
+  //               await this.subchallenge.update(idsubchallenge.toString(), CreateSubChallengeDto_);
 
-              }
+  //             }
 
-            }
+  //           }
 
-          }
-        }
-      }
+  //         }
+  //       }
+  //     }
 
-    }
-
-
+  //   }
 
 
-  }
+
+
+  // }
   @UseGuards(JwtAuthGuard)
   @Post('listleaderboard2')
   async listleaderboaard2(@Req() request: Request, @Headers() headers) {
@@ -3663,7 +3663,7 @@ export class ChallengeController {
   async userbadges() {
 
     // this.sendNotifeChallenge();
-    this.updateUserbadge();
+    //this.updateUserbadge();
 
     const messages = {
       "info": ["The proses successful"],
