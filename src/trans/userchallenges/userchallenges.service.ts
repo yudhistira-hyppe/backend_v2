@@ -24,6 +24,32 @@ export class UserchallengesService {
         return this.UserchallengesModel.findOne({ _id: new Types.ObjectId(id), idSubChallenge: new Types.ObjectId(idSubChallenge) }).exec();
     }
 
+    async findByChallengeandUser(challenge:string, user:string)
+    {
+        var mongo = require('mongoose');
+        var data = await this.UserchallengesModel.aggregate([
+            {
+                "$match":
+                {
+                    "$and":
+                    [
+                        {
+                            "idChallenge": new mongo.Types.ObjectId(challenge),
+                        },
+                        {
+                            "idUser": new mongo.Types.ObjectId(user),
+                        },
+                        {
+                            "isActive":true
+                        }
+                    ]
+                }
+            }
+        ]);
+
+        return data;
+    }
+
     async find(): Promise<Userchallenges[]> {
         return this.UserchallengesModel.find().exec();
     }
@@ -73,23 +99,21 @@ export class UserchallengesService {
         );
     }
 
-    async delete(challenge: string, user:string) 
+    async delete(userchallenge: any[], user:string, data:Userchallenges) 
     {
         var mongo = require('mongoose');
-        var result = await this.UserchallengesModel.updateMany(
+        return await this.UserchallengesModel.updateMany(
             {
-                "idChallenge":mongo.Types.ObjectId(challenge),
+                "_id":
+                {
+                    "$in":userchallenge
+                },
                 "idUser":mongo.Types.ObjectId(user),
             },
             {
-                "$set":
-                {
-                    "isActive":false
-                }
+                "$set":data
             }
         );
-        
-        return result;
     }
 
     async userChallengebyIdChall(iduser: string, idchallenge: string) {
