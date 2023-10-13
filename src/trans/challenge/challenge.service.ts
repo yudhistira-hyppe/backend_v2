@@ -4084,11 +4084,12 @@ export class ChallengeService {
             if (timedate >= timedatesm) {
 
               if (getlastrank !== null && getlastrank.length > 0) {
-                for (let x = 0; x < getlastrank.length; x++) {
-                  idUser = getlastrank[x].idUser;
-                  idSubChallenge2 = getlastrank[x].idSubChallenge;
+                for (let y = 0; y < getlastrank.length; y++) {
+                  idUser = getlastrank[y].idUser;
+                  //idSubChallenge2 = getlastrank[y].idSubChallenge;
 
-                  await this.userbadgeService.updateNonactive(idUser.toString(), idSubChallenge2.toString());
+                  await this.userbadgeService.updateNonactive(idUser.toString(), idsubchallenge.toString());
+                  console.log(idUser.toString() + "berhasil update" + idsubchallenge.toString());
                 }
               }
 
