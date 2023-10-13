@@ -6178,7 +6178,7 @@ export class subChallengeService {
                                                     },
 
                                                 ],
-                                            default: "Anda Kurang Beruntung.. COBA LAGI !!!"
+                                            default: ""
                                         }
                                     },
 
@@ -6892,7 +6892,11 @@ export class subChallengeService {
 
                 }
             },
-
+            {
+                $match: {
+                    status: "BERAKHIR"
+                }
+            },
         );
         var query = await this.subChallengeModel.aggregate(pipeline);
         return query;
