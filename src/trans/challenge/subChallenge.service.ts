@@ -6263,12 +6263,13 @@ export class subChallengeService {
         return query;
     }
 
-    async getpemenang(idchallenge: string) {
+    async getpemenang(idchallenge: string, idSubChallenge: string) {
         var pipeline = []
         pipeline.push(
             {
                 $match: {
-                    challengeId: new Types.ObjectId(idchallenge)
+                    challengeId: new Types.ObjectId(idchallenge),
+                    _id: new Types.ObjectId(idSubChallenge),
                 }
             },
             {
@@ -6813,7 +6814,7 @@ export class subChallengeService {
                                                     },
 
                                                 ],
-                                            default: "Anda Kurang Beruntung.. COBA LAGI !!!"
+                                            default: ""
                                         }
                                     },
 
@@ -6897,6 +6898,7 @@ export class subChallengeService {
                     status: "BERAKHIR"
                 }
             },
+            { $sort: { endDatetime: -1 } }
         );
         var query = await this.subChallengeModel.aggregate(pipeline);
         return query;

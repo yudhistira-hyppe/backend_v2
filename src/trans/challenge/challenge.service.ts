@@ -12,6 +12,7 @@ import { notifChallengeService } from './notifChallenge.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { UserbasicsService } from '../userbasics/userbasics.service';
 import { LanguagesService } from '../../infra/languages/languages.service';
+import { UserchallengesService } from '../userchallenges/userchallenges.service';
 import { Pipeline } from 'ioredis';
 
 @Injectable()
@@ -25,6 +26,7 @@ export class ChallengeService {
     private readonly util: UtilsService,
     private readonly userbasicsSS: UserbasicsService,
     private readonly languagesService: LanguagesService,
+    private readonly UserchallengesService: UserchallengesService,
   ) { }
 
   async create(Challenge_: CreateChallengeDto) {
@@ -4126,6 +4128,8 @@ export class ChallengeService {
     var getlastrank = null;
     var username = null;
     var ranking = null;
+    var idUser = null;
+    var subChallengeID = null;
     try {
       datanotif = await this.notifChallengeService.listnotifchallenge();
     } catch (e) {
@@ -4139,6 +4143,7 @@ export class ChallengeService {
         challengeID = datanotif[i].challengeID;
         email = datanotif[i].email;
         username = datanotif[i].username;
+        idUser = datanotif[i].idUser;
         ranking = datanotif[i].ranking;
         title = datanotif[i].title;
         titleEN = datanotif[i].titleEN;
@@ -4146,6 +4151,7 @@ export class ChallengeService {
         bodyEN = datanotif[i].notificationEN;
         datetime = datanotif[i].datetime;
         type = datanotif[i].type;
+        subChallengeID = datanotif[i].subChallengeID;
         typeChallenge = datanotif[i].typeChallenge;
 
         try {
@@ -4174,7 +4180,7 @@ export class ChallengeService {
         // if (timenow == new Date(datetime)) {
 
         if (type == "untukPemenang") {
-          var ket2 = null;
+          let ket2 = null;
 
           try {
             ket2 = body.replace("$ranking", ranking);
@@ -4183,7 +4189,7 @@ export class ChallengeService {
           }
 
 
-          var ket2EN = null;
+          let ket2EN = null;
 
           try {
             ket2EN = bodyEN.replace("$ranking", ranking);
@@ -4191,7 +4197,7 @@ export class ChallengeService {
             ket2EN = body;
           }
           try {
-            datapemenang = await this.subchallenge.getpemenang(challengeID.toString());
+            datapemenang = await this.subchallenge.getpemenang(challengeID.toString(), subChallengeID.toString());
           } catch (e) {
             datapemenang = null;
           }
@@ -4222,7 +4228,51 @@ export class ChallengeService {
           }
 
 
-        } else {
+        } else if (type == "updateLeaderboard") {
+
+          var datauserchall = null;
+          let rank = null;
+          let ket2 = null;
+          let ket2EN = null;
+          try {
+            datauserchall = await this.UserchallengesService.findByChallengeandUser2(challengeID.toString(), idUser.toString(), subChallengeID.toString());
+          } catch (e) {
+            datauserchall = null;
+          }
+
+          if (datauserchall !== null && datauserchall !== undefined) {
+            try {
+              rank = datauserchall.ranking;
+            } catch (e) {
+              rank = 0;
+            }
+
+          }
+
+
+          try {
+            ket2 = body.replace("$ranking", rank);
+          } catch (e) {
+            ket2 = body;
+          }
+
+
+          try {
+            ket2EN = bodyEN.replace("$ranking", rank);
+          } catch (e) {
+            ket2EN = body;
+          }
+
+          if (langIso == "id") {
+            await this.util.sendNotifChallenge("", email, title, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+            await this.notifChallengeService.updateStatussend(id.toString(), email);
+          } else {
+            await this.util.sendNotifChallenge("", email, titleEN, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+            await this.notifChallengeService.updateStatussend(id.toString(), email);
+          }
+
+        }
+        else {
 
           if (langIso == "id") {
             await this.util.sendNotifChallenge("", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
