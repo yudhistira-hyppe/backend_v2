@@ -21,7 +21,7 @@ export class notifChallengeService {
     }
 
     async findChild(id: string): Promise<notifChallenge[]> {
-        return this.notifChallengeModel.find({ challengeId: new Types.ObjectId(id) }).exec();
+        return this.notifChallengeModel.find({ challengeID: new Types.ObjectId(id) }).exec();
     }
 
     async find(): Promise<notifChallenge[]> {
