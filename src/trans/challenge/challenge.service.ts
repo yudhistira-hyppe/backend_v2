@@ -4091,13 +4091,22 @@ export class ChallengeService {
                   databadge = await this.userbadgeService.getUserbadge(idUser.toString(), idSubChallenge2.toString());
 
                   if (databadge !== null) {
-                    idusbadge = databadge._id;
+
                     try {
-                      await this.userbadgeService.updateNonactive(idusbadge.toString());
-                      console.log("iduser: " + idUser.toString() + " berhasil update " + idusbadge.toString());
+                      idusbadge = databadge._id;
                     } catch (e) {
-                      console.log("iduser: " + idUser.toString() + " gagal update " + idusbadge.toString());
+                      idusbadge = null;
                     }
+
+                    if (idusbadge !== null && idusbadge !== undefined) {
+                      try {
+                        await this.userbadgeService.updateNonactive(idusbadge.toString());
+                        console.log("iduser: " + idUser.toString() + " berhasil update " + idusbadge.toString());
+                      } catch (e) {
+                        console.log("iduser: " + idUser.toString() + " gagal update " + idusbadge.toString());
+                      }
+                    }
+
 
 
                   }
