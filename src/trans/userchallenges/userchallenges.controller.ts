@@ -40,7 +40,7 @@ export class UserchallengesController {
         }
 
         var exileUser = await this.basicSS.findOne(email);
-        var admin = await this.basicSS.findbyid(idadmin.toString());
+        var admin = await this.basicSS.findbyid(idadmin);
 
         var getuserchallenge = await this.userChallengeSS.findByChallengeandUser(idchallenge, exileUser._id.toString());
 
