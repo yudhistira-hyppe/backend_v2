@@ -73,11 +73,23 @@ export class UserchallengesService {
         );
     }
 
-
-
-    async delete(id: string) {
-        const data = await this.UserchallengesModel.findByIdAndRemove({ _id: new Types.ObjectId(id) }).exec();
-        return data;
+    async delete(challenge: string, user:string) 
+    {
+        var mongo = require('mongoose');
+        var result = await this.UserchallengesModel.updateMany(
+            {
+                "idChallenge":mongo.Types.ObjectId(challenge),
+                "idUser":mongo.Types.ObjectId(user),
+            },
+            {
+                "$set":
+                {
+                    "isActive":false
+                }
+            }
+        );
+        
+        return result;
     }
 
     async userChallengebyIdChall(iduser: string, idchallenge: string) {
@@ -388,6 +400,15 @@ export class UserchallengesService {
                                         ]
                                 }
                             },
+                            {
+                                "$expr":
+                                {
+                                    "$eq":
+                                        [
+                                            "$isActive", true   
+                                        ]
+                                }
+                            }
                         ]
                 }
             },

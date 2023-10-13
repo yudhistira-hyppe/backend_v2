@@ -1759,7 +1759,7 @@ export class ChallengeController {
       if (getsubdata.length != 0 && firstdata != null && parentdata.objectChallenge == "KONTEN") {
         this.beforejoinchallenge(getuserbasic, firstdata);
       }
-      this.insertuserintonotifchallenge(listjoin);
+      await this.insertuserintonotifchallenge(listjoin);
       return res.status(HttpStatus.OK).json({
         response_code: 202,
         "data": listjoin,
@@ -3123,78 +3123,10 @@ export class ChallengeController {
             var getdata = pushnotifikasi[getkey];
             var getdata = getdata[0];
             if (getdata.include == "YES") {
-              console.log(getkey);
-              if (getkey == "updateLeaderboard") {
-                var loopleaderboard = getdata.aturWaktu;
-                for (var i = 0; i < loopleaderboard.length; i++) {
-                  let dt = new Date(subchallenge[loopsub].startDatetime);
-                  dt.setHours(dt.getHours() + 7 + loopleaderboard[i]); // timestamp
-                  dt = new Date(dt);
-                  let strdate = dt.toISOString();
-                  let repdate = strdate.replace('T', ' ');
-                  let splitdate = repdate.split('.');
-                  let timedate = splitdate[0];
-  
-                  var loopinsertpartisipan = [];
-                  if (listpartisipan != null && listpartisipan.length != 0) {
-                    for (var j = 0; j < result.length; j++) {
-                      var setnotif = {};
-                      setnotif['idUser'] = result[j]._id;
-                      setnotif['email'] = result[j].email;
-                      setnotif['username'] = result[j].username;
-                      setnotif['title'] = getdata.title;
-                      setnotif['titleEN'] = getdata.titleEN;
-                      setnotif['notification'] = getdata.description;
-                      setnotif['notificationEN'] = getdata.descriptionEN;
-                      setnotif['ranking'] = 0;
-                      loopinsertpartisipan.push(setnotif);
-                    }
-                  }
-                  else
-                  {
-                    var setnotif = {};
-                    setnotif['idUser'] = "SEMUA PENGGUNA";
-                    setnotif['email'] = "SEMUA PENGGUNA";
-                    setnotif['username'] = "SEMUA PENGGUNA";
-                    setnotif['title'] = getdata.title;
-                    setnotif['titleEN'] = getdata.titleEN;
-                    setnotif['notification'] = getdata.description;
-                    setnotif['notificationEN'] = getdata.descriptionEN;
-                    setnotif['ranking'] = 0;
-                    loopinsertpartisipan.push(setnotif);
-                  }
-  
-                  var setdata = new notifChallenge();
-                  setdata._id = mongo.Types.ObjectId();
-                  setdata.challengeID = subchallenge[loopsub].challengeId;
-                  setdata.subChallengeID = subchallenge[loopsub]._id;
-                  setdata.title = getdata.title;
-                  setdata.description = getdata.description;
-                  setdata.type = getkey;
-                  setdata.userID = loopinsertpartisipan;
-                  setdata.session = subchallenge[loopsub].session;
-                  setdata.isSend = false;
-                  setdata.nameChallenge = detail.nameChallenge;
-                  setdata.createdAt = await this.util.getDateTimeString();
-                  setdata.datetime = timedate;
-                  console.log(setdata);
-                  insertdatamany.push(setdata);
-              try {
-                    await this.notifChallengeService.create(setdata);
-                  }
-              catch (e) {
-                    console.log(e);
-                  }
-                }
-              }
-          else if (getkey != "challengeDimulai") {
+              // console.log(getkey);
+          if (getkey == "akanDatang") {
                 let dt = null;
-            if (getkey == "akanDatang") {
-                  dt = new Date(subchallenge[loopsub].startDatetime);
-                }
-            else {
-                  dt = new Date(subchallenge[loopsub].endDatetime);
-                }
+                dt = new Date(subchallenge[loopsub].startDatetime);
                 dt.setHours(dt.getHours() + 7 + getdata.aturWaktu); // timestamp
                 dt = new Date(dt);
                 let strdate = dt.toISOString();
@@ -3210,12 +3142,10 @@ export class ChallengeController {
                     setnotif['email'] = result[j].email;
                     setnotif['username'] = result[j].username;
                     setnotif['ranking'] = 0;
-                if (getkey != 'untukPemenang') {
-                      setnotif['title'] = getdata.title;
-                      setnotif['titleEN'] = getdata.titleEN;
-                      setnotif['notification'] = getdata.description;
-                      setnotif['notificationEN'] = getdata.descriptionEN;
-                    }
+                    setnotif['title'] = getdata.title;
+                    setnotif['titleEN'] = getdata.titleEN;
+                    setnotif['notification'] = getdata.description;
+                    setnotif['notificationEN'] = getdata.descriptionEN;
                     setinsertpartisipan.push(setnotif);
                   }
                 }
@@ -3226,13 +3156,10 @@ export class ChallengeController {
                   setnotif['email'] = "SEMUA PENGGUNA";
                   setnotif['username'] = "SEMUA PENGGUNA";
                   setnotif['ranking'] = 0;
-                  if(getkey != 'untukPemenang')
-                  {
-                    setnotif['title'] = getdata.title;
-                    setnotif['titleEN'] = getdata.titleEN;
-                    setnotif['notification'] = getdata.description;
-                    setnotif['notificationEN'] = getdata.descriptionEN;
-                  }
+                  setnotif['title'] = getdata.title;
+                  setnotif['titleEN'] = getdata.titleEN;
+                  setnotif['notification'] = getdata.description;
+                  setnotif['notificationEN'] = getdata.descriptionEN;
                   setinsertpartisipan.push(setnotif);
                 }
 
@@ -3249,7 +3176,7 @@ export class ChallengeController {
                 setdata.nameChallenge = detail.nameChallenge;
                 setdata.datetime = timedate;
                 setdata.createdAt = await this.util.getDateTimeString();
-                console.log(setdata);
+                // console.log(setdata);
                 insertdatamany.push(setdata);
             try {
                   await this.notifChallengeService.create(setdata);
@@ -3301,13 +3228,56 @@ export class ChallengeController {
                 setdata.nameChallenge = detail.nameChallenge;
                 setdata.datetime = subchallenge[loopsub].startDatetime;
                 setdata.createdAt = await this.util.getDateTimeString();
-                console.log(setdata);
+                // console.log(setdata);
                 insertdatamany.push(setdata);
-            try {
+                try {
                   await this.notifChallengeService.create(setdata);
                 }
-            catch (e) {
+                catch (e) {
                   console.log(e);
+                }
+                
+                if (listpartisipan != null && listpartisipan.length != 0) 
+                {
+                  var setinsertpartisipan = [];
+                  for (var j = 0; j < result.length; j++) {
+                      var setnotif = {};
+                      var titleID = 'Undangan challenge ' + detail.nameChallenge;
+                      var titleEN = detail.nameChallenge + " Challenge Invitation";
+                      var bodyID = 'Hai ' + result[j].username + ', kamu telah diundang untuk mengikuti challenge ' + detail.nameChallenge + '. Klik di sini!';
+                      var bodyEN = 'Hi ' + result[j].username + ', you have been invited to participate in The ' + detail.nameChallenge + ' challenge. Click here!';
+                      setnotif['idUser'] = result[j]._id;
+                      setnotif['email'] = result[j].email;
+                      setnotif['username'] = result[j].username;
+                      setnotif['title'] = titleID;
+                      setnotif['titleEN'] = titleEN;
+                      setnotif['notification'] = bodyID;
+                      setnotif['notificationEN'] = bodyEN;
+                      setnotif['ranking'] = 0;
+                      setinsertpartisipan.push(setnotif);
+                  }
+                  var setdata = new notifChallenge();
+                  setdata._id = mongo.Types.ObjectId();
+                  setdata.challengeID = subchallenge[loopsub].challengeId;
+                  setdata.subChallengeID = subchallenge[loopsub]._id;
+                  setdata.title = getdata.title;
+                  setdata.description = getdata.description;
+                  setdata.type = getkey;
+                  setdata.userID = setinsertpartisipan;
+                  setdata.session = subchallenge[loopsub].session;
+                  setdata.isSend = false;
+                  setdata.nameChallenge = detail.nameChallenge;
+                  setdata.datetime = subchallenge[loopsub].startDatetime;
+                  setdata.createdAt = await this.util.getDateTimeString();
+                  // console.log(setdata);
+                  insertdatamany.push(setdata);
+
+                  try {
+                    await this.notifChallengeService.create(setdata);
+                  }
+                  catch (e) {
+                    console.log(e);
+                  }
                 }
               }
             }
@@ -3316,38 +3286,162 @@ export class ChallengeController {
   }
 
   async insertuserintonotifchallenge(listjoin: any[]) {
+    var targetlist = ['updateLeaderboard', 'challengeAkanBerakhir', 'challengeBerakhir', 'untukPemenang'];
     if (listjoin.length != 0) {
       var getuserbasic = listjoin[0].idUser;
-      var basicdata = await this.userbasicsSS.getUserDetails(getuserbasic);
       var getchallenge = listjoin[0].idChallenge;
-      var detailchallenge = await this.challengeService.findOne(getchallenge);
+      var basicdata = await this.userbasicsSS.getUserDetails(getuserbasic);
+      var subdata = await this.subchallenge.findChild(getchallenge.toString());
+      var detailchallenge = await this.challengeService.findOne(getchallenge.toString());
+      var pushnotifikasi = detailchallenge.notifikasiPush[0];
       var listnotif = await this.notifChallengeService.findChild(getchallenge.toString());
+
+      for(var i = 0; i < targetlist.length; i++)
+      {
+        var checkexist = false;
+        for(var j = 0; j < listnotif.length; j++)
+        {
+          if(listnotif[j].type == targetlist[i])
+          {
+            checkexist = true;
+          }
+        }
+
+        if(checkexist == false)
+        {
+          var mongo = require('mongoose');
+          var timenow = await this.util.getDateTimeString();
+          var getpushnotif = pushnotifikasi[targetlist[i]];
+          var aturWaktu = getpushnotif[0].aturWaktu;
+          for(var loopsub = 0; loopsub < subdata.length; loopsub++)
+          {
+            var insertdata = new notifChallenge();
+            insertdata.challengeID = subdata[loopsub].challengeId;
+            insertdata.subChallengeID = new mongo.Types.ObjectId(subdata[loopsub]._id);
+            insertdata.createdAt = timenow;
+            insertdata.isSend = false;
+            insertdata.title = getpushnotif[0].title;
+            insertdata.description = getpushnotif[0].description;
+            insertdata.userID = [];
+            insertdata.session = subdata[loopsub].session;
+            insertdata.nameChallenge = detailchallenge.nameChallenge;
+            insertdata.type = targetlist[i];
+
+            if(targetlist[i] == 'updateLeaderboard')
+            {
+              for(var loopleaderboard = 0; loopleaderboard < aturWaktu.length; loopleaderboard++)
+              {
+                insertdata._id = new mongo.Types.ObjectId();
+                let dt = new Date(subdata[loopsub].startDatetime);
+                dt.setHours(dt.getHours() + 7 + aturWaktu[loopleaderboard]); // timestamp
+                dt = new Date(dt);
+                let strdate = dt.toISOString();
+                let repdate = strdate.replace('T', ' ');
+                let splitdate = repdate.split('.');
+                let timedate = splitdate[0];
+                insertdata.datetime = timedate;
+                await this.notifChallengeService.create(insertdata);
+              }
+            }
+            else
+            {
+              insertdata._id = new mongo.Types.ObjectId();
+              let dt = new Date(subdata[loopsub].endDatetime);
+              dt.setHours(dt.getHours() + 7 + aturWaktu); // timestamp
+              dt = new Date(dt);
+              let strdate = dt.toISOString();
+              let repdate = strdate.replace('T', ' ');
+              let splitdate = repdate.split('.');
+              let timedate = splitdate[0];
+              insertdata.datetime = timedate;
+              await this.notifChallengeService.create(insertdata);
+            }
+          }
+          checkexist = true;
+        }
+      }
+
+      var listnotif = await this.notifChallengeService.findChild(getchallenge.toString());
+
+      console.log(listnotif);
 
       for (var i = 0; i < listjoin.length; i++) {
         for (var j = 0; j < listnotif.length; j++) {
-          if (listnotif[j].subChallengeID.toString() == listjoin[i].idSubChallenge.toString()) {
-            // console.log(listnotif[j]);
-            var listuser = listnotif[j].userID;
-            var typenotif = listnotif[j].type;
-            var getnotifdata = detailchallenge.notifikasiPush[0][typenotif];
-            var setobject = {};
-            setobject['idUser'] = getuserbasic;
-            setobject['email'] = basicdata[0].email;
-            setobject['username'] = basicdata[0].username;
-            setobject['ranking'] = listjoin[i].ranking;
-            if (typenotif != 'untukPemenang') {
-              setobject['title'] = getnotifdata[0].title;
-              setobject['titleEN'] = getnotifdata[0].titleEN;
-              setobject['notification'] = getnotifdata[0].description;
-              setobject['notificationEN'] = getnotifdata[0].descriptionEN;
+          if(listnotif[j].type != "akanDatang" && listnotif[j].type != "challengeDimulai")
+          {
+            if (listnotif[j].subChallengeID.toString() == listjoin[i].idSubChallenge.toString()) {
+              // console.log(listnotif[j]);
+              var listuser = listnotif[j].userID;
+              var typenotif = listnotif[j].type;
+              var getnotifdata = detailchallenge.notifikasiPush[0][typenotif];
+              console.log(getnotifdata);
+              var setobject = {};
+              setobject['idUser'] = getuserbasic;
+              setobject['email'] = basicdata[0].email;
+              setobject['username'] = basicdata[0].username;
+              setobject['ranking'] = listjoin[i].ranking;
+              if(typenotif == 'untukPemenang' || typenotif == 'updateLeaderboard')
+              {
+                var gettitle = getnotifdata[0].title;
+                var converttitle = null;
+                try
+                {
+                  converttitle = gettitle.replaceAll("$username", basicdata[0].username);
+                }
+                catch(e)
+                {
+                  converttitle = gettitle;
+                }
+                var gettitleEN = getnotifdata[0].titleEN;
+                var converttitleEN = null;
+                try
+                {
+                  converttitleEN = gettitleEN.replaceAll("$username", basicdata[0].username);
+                }
+                catch(e)
+                {
+                  converttitleEN = gettitleEN;
+                }
+                var getdesc = getnotifdata[0].description;
+                var convertdesc = null;
+                try
+                {
+                  convertdesc = getdesc.replaceAll("$username", basicdata[0].username);
+                }
+                catch(e)
+                {
+                  convertdesc = getdesc;
+                }
+                var getdescEN = getnotifdata[0].descriptionEN;
+                var convertdescEN = null;
+                try
+                {
+                  convertdescEN = getdescEN.replaceAll("$username", basicdata[0].username);
+                }
+                catch(e)
+                {
+                  convertdescEN = getdescEN;
+                }
+                setobject['title'] = converttitle;
+                setobject['titleEN'] = converttitleEN;
+                setobject['notification'] = convertdesc;
+                setobject['notificationEN'] = convertdescEN;
+              }
+              else
+              {
+                setobject['title'] = getnotifdata[0].title;
+                setobject['titleEN'] = getnotifdata[0].titleEN;
+                setobject['notification'] = getnotifdata[0].description;
+                setobject['notificationEN'] = getnotifdata[0].descriptionEN;
+              }
+              listuser.push(setobject);
+  
+              var updatedata = new notifChallenge();
+              updatedata.userID = listuser;
+              // console.log(listuser);
+  
+              await this.notifChallengeService.update(listnotif[j]._id.toString(), updatedata);
             }
-            listuser.push(setobject);
-
-            var updatedata = new notifChallenge();
-            updatedata.userID = listuser;
-            // console.log(listuser);
-
-            await this.notifChallengeService.update(listnotif[j]._id.toString(), updatedata);
           }
         }
       }

@@ -4065,7 +4065,7 @@ export class ChallengeService {
             status = datachallengejuara[i].status;
             idsubchallenge = datachallengejuara[i]._id;
             idchallenge = datachallengejuara[i].challengeId;
-            idUser = datachallengejuara[i].idUser;
+            //idUser = datachallengejuara[i].idUser;
             session = datachallengejuara[i].session;
             startDatetime = datachallengejuara[i].startDatetime;
             endDatetime = datachallengejuara[i].endDatetime;
@@ -4079,7 +4079,7 @@ export class ChallengeService {
             var splitdatesm = repdatesm.split('.');
             var timedatesm = splitdatesm[0];
             if (timedate >= timedatesm) {
-              await this.userbadgeService.updateNonactive(idUser.toString(), idsubchallenge.toString());
+              //await this.userbadgeService.updateNonactive(idUser.toString(), idsubchallenge.toString());
               if (isActive == true) {
                 let CreateSubChallengeDto_ = new CreateSubChallengeDto();
                 CreateSubChallengeDto_.isActive = false;
@@ -4219,45 +4219,42 @@ export class ChallengeService {
 
   }
 
-  async sendnotifmasalchallenge(notifid: string, title: string, titleEN: string, bodyin: any, bodyeng: any, challengeid: string, type: string)
-  {
-     var mongo = require('mongoose');
-     var limit = 100;
-     var totalall = null;
-     
-     var gettotaluser = await this.userbasicsSS.getcount();
-     try {
-          totalall = gettotaluser[0].totalpost / limit;
-      } catch (e) {
-        gettotaluser = null;
-          totalall = 0;
-      }
-      var totalpage = 0;
-      var tpage2 = (totalall).toFixed(0);
-      var tpage = (totalall % limit);
-      if (tpage > 0 && tpage < 5) {
-          totalpage = parseInt(tpage2) + 1;
+  async sendnotifmasalchallenge(notifid: string, title: string, titleEN: string, bodyin: any, bodyeng: any, challengeid: string, type: string) {
+    var mongo = require('mongoose');
+    var limit = 100;
+    var totalall = null;
 
-      } else {
-          totalpage = parseInt(tpage2);
-      }
-      console.log(totalpage);
+    var gettotaluser = await this.userbasicsSS.getcount();
+    try {
+      totalall = gettotaluser[0].totalpost / limit;
+    } catch (e) {
+      gettotaluser = null;
+      totalall = 0;
+    }
+    var totalpage = 0;
+    var tpage2 = (totalall).toFixed(0);
+    var tpage = (totalall % limit);
+    if (tpage > 0 && tpage < 5) {
+      totalpage = parseInt(tpage2) + 1;
 
-      for(let i = 0; i < totalpage; i++)
-      {
-        var data = await this.userbasicsSS.getuser(i, limit);
-        for(var j = 0; j < data.length; j++)
-        {
-          var language = data[i].languages;
-          if (language.id == new mongo.Types.ObjectId("613bc5daf9438a7564ca798a")) {
-            await this.util.sendNotifChallenge(data[i].email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type);
-          } else {
-            await this.util.sendNotifChallenge(data[i].email.toString(), titleEN, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type);
-          }
+    } else {
+      totalpage = parseInt(tpage2);
+    }
+    console.log(totalpage);
+
+    for (let i = 0; i < totalpage; i++) {
+      var data = await this.userbasicsSS.getuser(i, limit);
+      for (var j = 0; j < data.length; j++) {
+        var language = data[i].languages;
+        if (language.id == new mongo.Types.ObjectId("613bc5daf9438a7564ca798a")) {
+          await this.util.sendNotifChallenge(data[i].email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type);
+        } else {
+          await this.util.sendNotifChallenge(data[i].email.toString(), titleEN, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type);
         }
       }
+    }
 
-      await this.notifChallengeService.updateStatussend(notifid, data[0].email.toString());
+    await this.notifChallengeService.updateStatussend(notifid, data[0].email.toString());
   }
 
 }
