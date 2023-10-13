@@ -12,49 +12,42 @@ import mongoose, { mongo } from 'mongoose';
 export class UserchallengesController {
     constructor(private readonly userChallengeSS: UserchallengesService,
         private readonly utils: UtilsService,
-        private readonly basicSS:UserbasicsService) {}
-    
+        private readonly basicSS: UserbasicsService) { }
+
     @UseGuards(JwtAuthGuard)
     @Post('delete')
-    async delete(@Res() res, @Req() request: Request, @Headers() headers) 
-    {
+    async delete(@Res() res, @Req() request: Request, @Headers() headers) {
         var request_json = JSON.parse(JSON.stringify(request.body));
         var idchallenge = request_json['idChallenge'];
         var email = request_json['email'];
         var idadmin = request_json['idAdmin'];
         var reason = request_json['reason'];
 
-        if(idchallenge == null && idchallenge == undefined)
-        {
+        if (idchallenge == null && idchallenge == undefined) {
             throw new BadRequestException("Unabled to proceed, challenge id field is required");
         }
 
-        if(email == null && email == undefined)
-        {
+        if (email == null && email == undefined) {
             throw new BadRequestException("Unabled to proceed, user id field is required");
         }
 
-        if(idadmin == null && idadmin == undefined)
-        {
+        if (idadmin == null && idadmin == undefined) {
             throw new BadRequestException("Unabled to proceed, admin id field is required");
         }
 
-        if(reason == null && reason == undefined)
-        {
+        if (reason == null && reason == undefined) {
             throw new BadRequestException("Unabled to proceed, reason field is required");
         }
 
         var exileUser = await this.basicSS.findOne(email);
-        var admin = await this.basicSS.findbyid(idadmin);
+        var admin = await this.basicSS.findbyid(idadmin.toString());
 
         var getuserchallenge = await this.userChallengeSS.findByChallengeandUser(idchallenge, exileUser._id.toString());
 
-        if(getuserchallenge.length != 0)
-        {
+        if (getuserchallenge.length != 0) {
             var insertid = [];
             var getarray = getuserchallenge[0].rejectRemark;
-            if(getarray == null || getarray == undefined)
-            {
+            if (getarray == null || getarray == undefined) {
                 getarray = [];
             }
             var insertreject = {};
@@ -69,13 +62,11 @@ export class UserchallengesController {
             updatedata.rejectRemark = getarray;
             updatedata.updatedAt = await this.utils.getDateTimeString();
 
-            for(var i = 0; i < getuserchallenge.length; i++)
-            {
+            for (var i = 0; i < getuserchallenge.length; i++) {
                 insertid.push(getuserchallenge[i]._id.toString());
             }
 
-            try
-            {
+            try {
                 await this.userChallengeSS.delete(insertid, exileUser._id.toString(), updatedata);
 
                 const messages = {
@@ -87,8 +78,7 @@ export class UserchallengesController {
                     "message": messages
                 });
             }
-            catch(e)
-            {
+            catch (e) {
                 console.log(e);
             }
         }
