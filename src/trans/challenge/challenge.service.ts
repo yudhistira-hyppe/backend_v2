@@ -4089,7 +4089,7 @@ export class ChallengeService {
                   //idSubChallenge2 = getlastrank[y].idSubChallenge;
 
                   await this.userbadgeService.updateNonactive(idUser.toString(), idsubchallenge.toString());
-                  console.log(idUser.toString() + "berhasil update" + idsubchallenge.toString());
+                  console.log("iduser: " + idUser.toString() + " berhasil update " + idsubchallenge.toString());
                 }
               }
 
