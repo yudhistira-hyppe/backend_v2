@@ -4043,7 +4043,7 @@ export class ChallengeService {
     var timedate = splitdate[0];
     var datachallengejuara = null;
     var getlastrank = null;
-
+    var databadge = null;
     var datasubchalange = null;
     var idSubChallenge2 = null;
 
@@ -4088,8 +4088,14 @@ export class ChallengeService {
                   idUser = getlastrank[y].idUser;
                   idSubChallenge2 = getlastrank[y].idSubChallenge;
 
-                  await this.userbadgeService.updateNonactive(idUser.toString(), idSubChallenge2.toString());
-                  console.log("iduser: " + idUser.toString() + " berhasil update " + idSubChallenge2.toString());
+                  databadge = await this.userbadgeService.getUserbadge(idUser.toString(), idSubChallenge2.toString());
+
+                  if (databadge !== null) {
+                    await this.userbadgeService.updateNonactive(idUser.toString(), idSubChallenge2.toString());
+                    console.log("iduser: " + idUser.toString() + " berhasil update " + idSubChallenge2.toString());
+                  }
+
+
                 }
               }
 
