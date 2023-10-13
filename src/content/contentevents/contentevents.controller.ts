@@ -4089,7 +4089,9 @@ export class ContenteventsController {
                           } else if (postType == "diary") {
                             poin = poinViewDiary;
                           }
-
+                          else {
+                            poin = 0;
+                          }
 
                           await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                           await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
@@ -4155,7 +4157,9 @@ export class ContenteventsController {
                           } else if (postType == "diary") {
                             poin = poinViewDiary;
                           }
-
+                          else {
+                            poin = 0;
+                          }
 
                           await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                           await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
@@ -4271,6 +4275,8 @@ export class ContenteventsController {
                       poin = poinViewVid;
                     } else if (postTypeParent == "diary") {
                       poin = poinViewDiary;
+                    } else {
+                      poin = 0;
                     }
 
                     await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
@@ -4332,6 +4338,8 @@ export class ContenteventsController {
                       poin = poinViewVid;
                     } else if (postTypeParent == "diary") {
                       poin = poinViewDiary;
+                    } else {
+                      poin = 0;
                     }
 
                     await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
@@ -4549,7 +4557,9 @@ export class ContenteventsController {
                           } else if (postType == "pict") {
                             poin = poinPict;
                           }
-
+                          else {
+                            poin = 0;
+                          }
                           await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                           await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
                           var detail = await this.userchallengesService.findOne(iduserchall.toString());
@@ -4614,6 +4624,8 @@ export class ContenteventsController {
                             poin = poinViewDiary;
                           } else if (postType == "pict") {
                             poin = poinPict;
+                          } else {
+                            poin = 0;
                           }
                           await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                           await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
@@ -4732,7 +4744,9 @@ export class ContenteventsController {
                     } else if (postTypeParent == "pict") {
                       poin = poinPict;
                     }
-
+                    else {
+                      poin = 0;
+                    }
                     await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                     await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
                     var detail = await this.userchallengesService.findOne(iduserchall.toString());
@@ -4794,6 +4808,8 @@ export class ContenteventsController {
                       poin = poinViewDiary;
                     } else if (postTypeParent == "pict") {
                       poin = poinPict;
+                    } else {
+                      poin = 0;
                     }
                     await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                     await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
@@ -5010,6 +5026,8 @@ export class ContenteventsController {
                             poin = poinViewDiary;
                           } else if (postType == "pict") {
                             poin = poinPict;
+                          } else {
+                            poin = 0;
                           }
 
                           await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
@@ -5094,6 +5112,8 @@ export class ContenteventsController {
                             poin = poinViewDiary;
                           } else if (postType == "pict") {
                             poin = poinPict;
+                          } else {
+                            poin = 0;
                           }
                           await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                           await this.userchallengesService.updateUnUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
@@ -5230,7 +5250,9 @@ export class ContenteventsController {
                     } else if (postTypeParent == "pict") {
                       poin = poinPict;
                     }
-
+                    else {
+                      poin = 0;
+                    }
                     await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                     await this.userchallengesService.updateUnUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
                     var detail = await this.userchallengesService.findOne(iduserchall.toString());
@@ -5310,6 +5332,8 @@ export class ContenteventsController {
                       poin = poinViewDiary;
                     } else if (postTypeParent == "pict") {
                       poin = poinPict;
+                    } else {
+                      poin = 0;
                     }
                     await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                     await this.userchallengesService.updateUnUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);

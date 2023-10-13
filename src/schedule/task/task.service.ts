@@ -30,7 +30,7 @@ export class TaskService {
     //this.postContentService.cronJobSeaweedDiariesStart();
   }
 
-  @Cron('60 * * * * *')
+  @Cron('*/120 * * * * *')
   challengeJob2() {
     this.logger.debug('Challenge JOB START');
 
