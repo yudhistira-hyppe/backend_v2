@@ -57,6 +57,65 @@ export class UserbadgeService {
 
     }
 
+    async getUserbadgeExpired() {
+        var query = await this.UserbadgeModel.aggregate(
+            [
+
+                {
+                    $set: {
+                        "timenow":
+                        {
+                            "$dateToString": {
+                                "format": "%Y-%m-%d %H:%M:%S",
+                                "date": {
+                                    $add: [
+                                        new Date(),
+                                        25200000
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "$match":
+                    {
+                        "$and":
+                            [
+
+                                {
+                                    $expr:
+                                    {
+                                        $gte:
+                                            [
+                                                "$timenow",
+                                                "$endDatetime",
+
+                                            ]
+                                    },
+
+                                },
+                                {
+                                    $expr:
+                                    {
+                                        $eq:
+                                            [
+                                                "$isActive", true
+
+                                            ]
+                                    },
+
+                                },
+
+                            ]
+                    }
+                },
+            ]
+        );
+        return query;
+
+    }
+
     async getBadgeByuser(iduser: string, page: number, limit: number) {
         var pipeline = [];
 

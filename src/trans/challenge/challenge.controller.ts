@@ -2517,28 +2517,28 @@ export class ChallengeController {
             var timedatesm = splitdatesm[0];
             if (timedate >= timedatesm) {
 
-              if (getlastrank !== null && getlastrank.length > 0) {
-                for (let y = 0; y < getlastrank.length; y++) {
-                  idUser = getlastrank[y].idUser;
-                  idSubChallenge2 = getlastrank[y].idSubChallenge;
+              // if (getlastrank !== null && getlastrank.length > 0) {
+              //   for (let y = 0; y < getlastrank.length; y++) {
+              //     idUser = getlastrank[y].idUser;
+              //     idSubChallenge2 = getlastrank[y].idSubChallenge;
 
-                  databadge = await this.userbadgeService.getUserbadge(idUser.toString(), idSubChallenge2.toString());
+              //     databadge = await this.userbadgeService.getUserbadge(idUser.toString(), idSubChallenge2.toString());
 
-                  if (databadge !== null) {
-                    idusbadge = databadge._id;
-                    try {
-                      await this.userbadgeService.updateNonactive(idusbadge.toString());
-                      console.log("iduser: " + idUser.toString() + " berhasil update " + idusbadge.toString());
-                    } catch (e) {
-                      console.log("iduser: " + idUser.toString() + " gagal update " + idusbadge.toString());
-                    }
-
-
-                  }
+              //     if (databadge !== null) {
+              //       idusbadge = databadge._id;
+              //       try {
+              //         await this.userbadgeService.updateNonactive(idusbadge.toString());
+              //         console.log("iduser: " + idUser.toString() + " berhasil update " + idusbadge.toString());
+              //       } catch (e) {
+              //         console.log("iduser: " + idUser.toString() + " gagal update " + idusbadge.toString());
+              //       }
 
 
-                }
-              }
+              //     }
+
+
+              //   }
+              // }
 
               if (isActive == true) {
                 let CreateSubChallengeDto_ = new CreateSubChallengeDto();
@@ -3687,5 +3687,51 @@ export class ChallengeController {
       response_code: 202,
       "message": messages
     }
+  }
+
+  async updateBadgeex() {
+
+    var idUser = null;
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var timedate = splitdate[0];
+
+    var datasubchalange = null;
+
+    var idusbadge = null;
+
+    try {
+      datasubchalange = await this.userbadgeService.getUserbadgeExpired();
+
+    } catch (e) {
+      datasubchalange = null;
+    }
+
+    if (datasubchalange !== null) {
+      for (let x = 0; x < datasubchalange.length; x++) {
+        try {
+          idusbadge = datasubchalange[x]._id.toString();
+        } catch (e) {
+          idusbadge = null;
+        }
+
+        if (idusbadge !== null && idusbadge !== undefined) {
+          try {
+            await this.userbadgeService.updateNonactive(idusbadge.toString());
+            console.log("iduser: " + idUser.toString() + " berhasil update " + idusbadge.toString());
+          } catch (e) {
+            console.log("iduser: " + idUser.toString() + " gagal update " + idusbadge.toString());
+          }
+        }
+      }
+
+    }
+
+
   }
 }

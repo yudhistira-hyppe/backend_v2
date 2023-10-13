@@ -20890,4 +20890,74 @@ export class subChallengeService {
 
         return data;
     }
+
+    async getSubchallengeExpired() {
+        var query = await this.subChallengeModel.aggregate(
+            [
+
+                {
+                    $set: {
+                        "timenow":
+                        {
+                            "$dateToString": {
+                                "format": "%Y-%m-%d %H:%M:%S",
+                                "date": {
+                                    $add: [
+                                        new Date(),
+                                        25200000
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "$match":
+                    {
+                        "$and":
+                            [
+
+                                {
+                                    $expr:
+                                    {
+                                        $gte:
+                                            [
+                                                "$timenow",
+                                                "$endDatetime",
+
+                                            ]
+                                    },
+
+                                },
+                                {
+                                    $expr:
+                                    {
+                                        $eq:
+                                            [
+                                                "$isActive", true
+
+                                            ]
+                                    },
+
+                                },
+
+                            ]
+                    }
+                },
+            ]
+        );
+        return query;
+
+    }
+
+    async updateNonactive(id: string): Promise<Object> {
+        let data = await this.subChallengeModel.updateOne({ "_id": id },
+            {
+                $set: {
+                    "isActive": false,
+
+                }
+            });
+        return data;
+    }
 }

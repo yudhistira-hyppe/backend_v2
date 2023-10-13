@@ -4083,38 +4083,6 @@ export class ChallengeService {
             var timedatesm = splitdatesm[0];
             if (timedate >= timedatesm) {
 
-              if (getlastrank !== null && getlastrank.length > 0) {
-                for (let y = 0; y < getlastrank.length; y++) {
-                  idUser = getlastrank[y].idUser;
-                  idSubChallenge2 = getlastrank[y].idSubChallenge;
-
-                  databadge = await this.userbadgeService.getUserbadge(idUser.toString(), idSubChallenge2.toString());
-
-                  if (databadge !== null) {
-
-                    try {
-                      idusbadge = databadge._id;
-                    } catch (e) {
-                      idusbadge = null;
-                    }
-
-                    if (idusbadge !== null && idusbadge !== undefined) {
-                      try {
-                        await this.userbadgeService.updateNonactive(idusbadge.toString());
-                        console.log("iduser: " + idUser.toString() + " berhasil update " + idusbadge.toString());
-                      } catch (e) {
-                        console.log("iduser: " + idUser.toString() + " gagal update " + idusbadge.toString());
-                      }
-                    }
-
-
-
-                  }
-
-
-                }
-              }
-
               if (isActive == true) {
                 let CreateSubChallengeDto_ = new CreateSubChallengeDto();
                 CreateSubChallengeDto_.isActive = false;
@@ -4206,11 +4174,22 @@ export class ChallengeService {
         // if (timenow == new Date(datetime)) {
 
         if (type == "untukPemenang") {
+          var ket2 = null;
 
-          let ket2 = body.replace("$ranking", ranking);
+          try {
+            ket2 = body.replace("$ranking", ranking);
+          } catch (e) {
+            ket2 = body;
+          }
 
-          let ket2EN = bodyEN.replace("$ranking", ranking);
 
+          var ket2EN = null;
+
+          try {
+            ket2EN = bodyEN.replace("$ranking", ranking);
+          } catch (e) {
+            ket2EN = body;
+          }
           try {
             datapemenang = await this.subchallenge.getpemenang(challengeID.toString());
           } catch (e) {
@@ -4299,6 +4278,98 @@ export class ChallengeService {
     }
 
     await this.notifChallengeService.updateStatussend(notifid, data[0].email.toString());
+  }
+
+  async updateBadgeex() {
+
+
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var timedate = splitdate[0];
+
+    var datasubchalange = null;
+
+    var idusbadge = null;
+
+    try {
+      datasubchalange = await this.userbadgeService.getUserbadgeExpired();
+
+    } catch (e) {
+      datasubchalange = null;
+    }
+
+    if (datasubchalange !== null && datasubchalange.length > 0) {
+      for (let x = 0; x < datasubchalange.length; x++) {
+        try {
+          idusbadge = datasubchalange[x]._id.toString();
+        } catch (e) {
+          idusbadge = null;
+        }
+
+        if (idusbadge !== null && idusbadge !== undefined) {
+          try {
+            await this.userbadgeService.updateNonactive(idusbadge.toString());
+            console.log(" berhasil update " + idusbadge.toString());
+          } catch (e) {
+            console.log(" gagal update " + idusbadge.toString());
+          }
+        }
+      }
+
+    }
+
+
+  }
+
+  async updateSubchallengeex() {
+
+
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var timedate = splitdate[0];
+
+    var datasubchalange = null;
+
+    var idusbadge = null;
+
+    try {
+      datasubchalange = await this.subchallenge.getSubchallengeExpired();
+
+    } catch (e) {
+      datasubchalange = null;
+    }
+
+    if (datasubchalange !== null && datasubchalange.length > 0) {
+      for (let x = 0; x < datasubchalange.length; x++) {
+        try {
+          idusbadge = datasubchalange[x]._id.toString();
+        } catch (e) {
+          idusbadge = null;
+        }
+
+        if (idusbadge !== null && idusbadge !== undefined) {
+          try {
+            await this.subchallenge.updateNonactive(idusbadge.toString());
+            console.log(" berhasil update " + idusbadge.toString());
+          } catch (e) {
+            console.log(" gagal update " + idusbadge.toString());
+          }
+        }
+      }
+
+    }
+
+
   }
 
 }
