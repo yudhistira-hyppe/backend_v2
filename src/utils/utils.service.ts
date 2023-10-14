@@ -2291,7 +2291,7 @@ export class UtilsService {
               title: titlein,
               body: bodyin,
               postID: postID_.toString(),
-              postType: postType,
+              postType: eventType,
               winner: true
             }
           }
@@ -2303,7 +2303,7 @@ export class UtilsService {
               title: titlein,
               body: bodyin,
               postID: postID_.toString(),
-              postType: postType
+              postType: eventType
             }
           }
         }
@@ -2319,7 +2319,7 @@ export class UtilsService {
               title: titlein,
               body: bodyeng,
               postID: postID_.toString(),
-              postType: postType,
+              postType: eventType,
               winner: true
             }
           }
@@ -2330,7 +2330,7 @@ export class UtilsService {
               title: titlein,
               body: bodyeng,
               postID: postID_.toString(),
-              postType: postType
+              postType: eventType
             }
           }
         }
@@ -2344,7 +2344,7 @@ export class UtilsService {
             title: titlein,
             body: bodyin,
             postID: postID_.toString(),
-            postType: postType
+            postType: eventType
           }
         }
       }
