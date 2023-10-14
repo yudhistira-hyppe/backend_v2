@@ -2672,19 +2672,19 @@ export class ChallengeService {
         },
 
       },
-      {
-        $expr:
-        {
-          $gte:
-            [
-              "$timenow",
-              {
-                $concat: ["$startChallenge", " ", "$startTime"]
-              }
-            ]
-        },
+      // {
+      //   $expr:
+      //   {
+      //     $gte:
+      //       [
+      //         "$timenow",
+      //         {
+      //           $concat: ["$startChallenge", " ", "$startTime"]
+      //         }
+      //       ]
+      //   },
 
-      },
+      // },
       {
         "statusChallenge": "PUBLISH"
       }
