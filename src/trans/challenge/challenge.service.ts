@@ -4204,7 +4204,12 @@ export class ChallengeService {
             if (getlastrank !== null && getlastrank.length > 0) {
               for (let x = 0; x < getlastrank.length; x++) {
                 let emailmenang = getlastrank[x].email
-                let idBadge = getlastrank[x].idBadge;
+                let idBadge = null;
+                try {
+                  idBadge = getlastrank[x].idBadge;
+                } catch (e) {
+                  idBadge = null;
+                }
                 let rank = null;
 
                 try {
@@ -4213,15 +4218,23 @@ export class ChallengeService {
                   rank = 0;
                 }
 
-                try {
-                  databadge = await this.BadgeService.findByid(idBadge.toString());
-                } catch (e) {
-                  databadge = null;
-                }
-                if (databadge !== null && databadge !== undefined) {
-                  nameBadges = databadge.name;
+                if (idBadge !== null && idBadge !== "") {
+                  try {
+                    databadge = await this.BadgeService.findByid(idBadge.toString());
+                  } catch (e) {
+                    databadge = null;
+                  }
+                  if (databadge !== null && databadge !== undefined) {
+                    nameBadges = databadge.name;
 
+                  } else {
+                    nameBadges = "NO BADGE"
+                  }
+                } else {
+                  nameBadges = "NO BADGE"
                 }
+
+
                 let ket2 = null;
                 let ket2EN = null;
                 let title1 = null;
