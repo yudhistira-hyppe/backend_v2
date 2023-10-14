@@ -13,6 +13,7 @@ import { UtilsService } from 'src/utils/utils.service';
 import { UserbasicsService } from '../userbasics/userbasics.service';
 import { LanguagesService } from '../../infra/languages/languages.service';
 import { UserchallengesService } from '../userchallenges/userchallenges.service';
+import { BadgeService } from '../badge/badge.service';
 import { Pipeline } from 'ioredis';
 
 @Injectable()
@@ -27,6 +28,7 @@ export class ChallengeService {
     private readonly userbasicsSS: UserbasicsService,
     private readonly languagesService: LanguagesService,
     private readonly UserchallengesService: UserchallengesService,
+    private readonly BadgeService: BadgeService,
   ) { }
 
   async create(Challenge_: CreateChallengeDto) {
@@ -4129,6 +4131,8 @@ export class ChallengeService {
     var username = null;
     var ranking = null;
     var idUser = null;
+    var databadge = null;
+    var nameBadges = null;
     var subChallengeID = null;
     try {
       datanotif = await this.notifChallengeService.listnotifchallenge();
@@ -4180,22 +4184,7 @@ export class ChallengeService {
         // if (timenow == new Date(datetime)) {
 
         if (type == "untukPemenang") {
-          let ket2 = null;
 
-          try {
-            ket2 = body.replace("$ranking", ranking);
-          } catch (e) {
-            ket2 = body;
-          }
-
-
-          let ket2EN = null;
-
-          try {
-            ket2EN = bodyEN.replace("$ranking", ranking);
-          } catch (e) {
-            ket2EN = body;
-          }
           try {
             datapemenang = await this.subchallenge.getpemenang(challengeID.toString(), subChallengeID.toString());
           } catch (e) {
@@ -4211,12 +4200,53 @@ export class ChallengeService {
             if (getlastrank !== null && getlastrank.length > 0) {
               for (let x = 0; x < getlastrank.length; x++) {
                 let emailmenang = getlastrank[x].email
+                let idBadge = getlastrank[x].idBadge;
+                let rank = null;
 
+                try {
+                  rank = getlastrank[x].ranking;
+                } catch (e) {
+                  rank = 0;
+                }
+
+                try {
+                  databadge = await this.BadgeService.findByid(idBadge.toString());
+                } catch (e) {
+                  databadge = null;
+                }
+                if (databadge !== null && databadge !== undefined) {
+                  nameBadges = databadge.name;
+
+                }
+                let ket2 = null;
+                let ket2EN = null;
+                let title1 = null;
+                let titleEN1 = null;
+                try {
+                  ket2 = body.replace("$badge", nameBadges);
+                } catch (e) {
+                  ket2 = body;
+                }
+                try {
+                  ket2EN = bodyEN.replace("$badge", nameBadges);
+                } catch (e) {
+                  ket2EN = body;
+                }
+                try {
+                  title1 = title.replace("$ranking", rank);
+                } catch (e) {
+                  title1 = title;
+                }
+                try {
+                  titleEN1 = titleEN.replace("$ranking", rank);
+                } catch (e) {
+                  titleEN1 = title;
+                }
                 if (langIso == "id") {
-                  await this.util.sendNotifChallenge("PEMENANG", emailmenang, title, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                  await this.util.sendNotifChallenge("PEMENANG", emailmenang, title1, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
                   await this.notifChallengeService.updateStatussend(id.toString(), email);
                 } else {
-                  await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                  await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN1, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
                   await this.notifChallengeService.updateStatussend(id.toString(), email);
                 }
 
@@ -4232,8 +4262,11 @@ export class ChallengeService {
 
           var datauserchall = null;
           let rank = null;
+          let rankup = null;
           let ket2 = null;
           let ket2EN = null;
+          let title1 = null;
+          let titleEN1 = null;
           try {
             datauserchall = await this.UserchallengesService.findByChallengeandUser2(challengeID.toString(), idUser.toString(), subChallengeID.toString());
           } catch (e) {
@@ -4248,26 +4281,39 @@ export class ChallengeService {
             }
 
           }
-
+          if (rank !== 0) {
+            rankup = rank - 1;
+          } else {
+            rankup = 0;
+          }
 
           try {
-            ket2 = body.replace("$ranking", rank);
+            ket2 = body.replace("$ranking", rankup);
           } catch (e) {
             ket2 = body;
           }
 
 
           try {
-            ket2EN = bodyEN.replace("$ranking", rank);
+            ket2EN = bodyEN.replace("$ranking", rankup);
           } catch (e) {
             ket2EN = body;
           }
-
+          try {
+            title1 = title.replace("$ranking", rank);
+          } catch (e) {
+            title1 = title;
+          }
+          try {
+            titleEN1 = titleEN.replace("$ranking", rank);
+          } catch (e) {
+            titleEN1 = title;
+          }
           if (langIso == "id") {
-            await this.util.sendNotifChallenge("", email, title, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+            await this.util.sendNotifChallenge("", email, title1, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
             await this.notifChallengeService.updateStatussend(id.toString(), email);
           } else {
-            await this.util.sendNotifChallenge("", email, titleEN, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+            await this.util.sendNotifChallenge("", email, titleEN1, ket2, ket2EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
             await this.notifChallengeService.updateStatussend(id.toString(), email);
           }
 
