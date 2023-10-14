@@ -4134,6 +4134,8 @@ export class ChallengeService {
     var databadge = null;
     var nameBadges = null;
     var subChallengeID = null;
+    var titleAsli = null;
+    var description = null;
     try {
       datanotif = await this.notifChallengeService.listnotifchallenge();
     } catch (e) {
@@ -4145,7 +4147,9 @@ export class ChallengeService {
       for (let i = 0; i < datanotif.length; i++) {
         id = datanotif[i]._id;
         challengeID = datanotif[i].challengeID;
+        titleAsli = datanotif[i].titleAsli;
         email = datanotif[i].email;
+        description = datanotif[i].description;
         username = datanotif[i].username;
         idUser = datanotif[i].idUser;
         ranking = datanotif[i].ranking;
@@ -4281,24 +4285,40 @@ export class ChallengeService {
             }
 
           }
-          if (rank !== 0) {
+          if (rank !== 0 && rank > 1) {
             rankup = rank - 1;
           } else {
             rankup = 0;
           }
 
-          try {
-            ket2 = body.replace("$ranking", rankup);
-          } catch (e) {
-            ket2 = body;
-          }
+          if (rank == 1) {
+            try {
+              ket2 = body.replace("$ranking", rank);
+            } catch (e) {
+              ket2 = body;
+            }
 
 
-          try {
-            ket2EN = bodyEN.replace("$ranking", rankup);
-          } catch (e) {
-            ket2EN = body;
+            try {
+              ket2EN = bodyEN.replace("$ranking", rank);
+            } catch (e) {
+              ket2EN = body;
+            }
+          } else {
+            try {
+              ket2 = body.replace("$ranking", rankup);
+            } catch (e) {
+              ket2 = body;
+            }
+
+
+            try {
+              ket2EN = bodyEN.replace("$ranking", rankup);
+            } catch (e) {
+              ket2EN = body;
+            }
           }
+
           try {
             title1 = title.replace("$ranking", rank);
           } catch (e) {
