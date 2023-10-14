@@ -2292,7 +2292,7 @@ export class UtilsService {
               body: bodyin,
               postID: postID_.toString(),
               postType: eventType,
-              winner: true
+              winner: "true"
             }
           }
         } else {
@@ -2320,7 +2320,7 @@ export class UtilsService {
               body: bodyeng,
               postID: postID_.toString(),
               postType: eventType,
-              winner: true
+              winner: "true"
             }
           }
         } else {
