@@ -436,15 +436,6 @@ export class UserchallengesService {
                                             "$idUser", konvertid
                                         ]
                                 }
-                            },
-                            {
-                                "$expr":
-                                {
-                                    "$eq":
-                                        [
-                                            "$isActive", true
-                                        ]
-                                }
                             }
                         ]
                 }
@@ -454,12 +445,7 @@ export class UserchallengesService {
             },
         ]);
 
-        if (query.length == 1) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return query;
     }
 
     async checkuserstatusjoin(target: string) {
