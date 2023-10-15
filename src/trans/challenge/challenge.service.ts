@@ -4285,11 +4285,16 @@ export class ChallengeService {
                   titleEN2 = titleEN1;
                 }
                 if (langIso == "id") {
-                  await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
-                  await this.notifChallengeService.updateStatussend(id.toString(), email);
+                  if (email == emailmenang) {
+                    await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                    await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
+                  }
+
                 } else {
-                  await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
-                  await this.notifChallengeService.updateStatussend(id.toString(), email);
+                  if (email == emailmenang) {
+                    await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+                    await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
+                  }
                 }
 
 
