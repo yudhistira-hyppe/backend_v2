@@ -41,6 +41,15 @@ export class ChallengeService {
 
     var firstmatch = [];
 
+    firstmatch.push(
+      {
+        "statusChallenge":
+        {
+          "$ne":"NONEACTIVE"
+        }
+      }
+    );
+
     if (namachallenge != null && namachallenge != undefined) {
       firstmatch.push(
         {

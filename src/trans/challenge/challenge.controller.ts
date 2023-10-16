@@ -3307,6 +3307,49 @@ export class ChallengeController {
             catch (e) {
               console.log(e);
             }
+
+            if(getkey == "challengeDimulai")
+            {
+              var setinsertpartisipan = [];
+              for (var j = 0; j < result.length; j++) {
+                var setnotif = {};
+                var titleID = 'Undangan challenge ' + detail.nameChallenge;
+                var titleEN = detail.nameChallenge + " Challenge Invitation";
+                var bodyID = 'Hai ' + result[j].username + ', kamu telah diundang untuk mengikuti challenge ' + detail.nameChallenge + '. Klik di sini!';
+                var bodyEN = 'Hi ' + result[j].username + ', you have been invited to participate in The ' + detail.nameChallenge + ' challenge. Click here!';
+                setnotif['idUser'] = result[j]._id;
+                setnotif['email'] = result[j].email;
+                setnotif['username'] = result[j].username;
+                setnotif['title'] = titleID;
+                setnotif['titleEN'] = titleEN;
+                setnotif['notification'] = bodyID;
+                setnotif['notificationEN'] = bodyEN;
+                setnotif['ranking'] = 0;
+                setinsertpartisipan.push(setnotif);
+              }
+              var setdata = new notifChallenge();
+              setdata._id = mongo.Types.ObjectId();
+              setdata.challengeID = subchallenge[loopsub].challengeId;
+              setdata.subChallengeID = subchallenge[loopsub]._id;
+              setdata.title = getdata.title;
+              setdata.description = getdata.description;
+              setdata.type = getkey;
+              setdata.userID = setinsertpartisipan;
+              setdata.session = subchallenge[loopsub].session;
+              setdata.isSend = false;
+              setdata.nameChallenge = detail.nameChallenge;
+              setdata.datetime = subchallenge[loopsub].startDatetime;
+              setdata.createdAt = await this.util.getDateTimeString();
+              // console.log(setdata);
+              insertdatamany.push(setdata);
+
+              try {
+                await this.notifChallengeService.create(setdata);
+              }
+              catch (e) {
+                console.log(e);
+              }
+            }
           }
           // if (getkey == "akanDatang") {
           //   let dt = null;
