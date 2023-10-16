@@ -4573,7 +4573,7 @@ export class ChallengeService {
                     let datanotifchall = null;
                     try {
 
-                      datanotifchall = await this.NotificationsService.findNotifchallenge(emailmenang, "CHALLENGE", challengeID, datetime);
+                      datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
                     } catch (e) {
                       datanotifchall = null;
                     }
@@ -4585,7 +4585,7 @@ export class ChallengeService {
                         // if (email == emailmenang) {
 
                         await this.util.sendNotifChallenge("PEMENANG", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                        await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
+                        await this.notifChallengeService.updateStatussend(id.toString(), email);
 
 
                         //  }
@@ -4593,7 +4593,7 @@ export class ChallengeService {
                       } else {
                         // if (email == emailmenang) {
                         await this.util.sendNotifChallenge("PEMENANG", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                        await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
+                        await this.notifChallengeService.updateStatussend(id.toString(), email);
                         // }
                       }
                     }
