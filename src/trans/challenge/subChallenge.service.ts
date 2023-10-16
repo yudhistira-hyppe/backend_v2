@@ -6423,7 +6423,7 @@ export class subChallengeService {
                                 }
                             },
                             {
-                                $limit: 3
+                                $limit: 10
                             },
                             {
                                 "$lookup":

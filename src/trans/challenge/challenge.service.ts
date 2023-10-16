@@ -4475,13 +4475,16 @@ export class ChallengeService {
           } catch (e) {
             titleEN2 = titleEN1;
           }
-          if (langIso == "id") {
-            await this.util.sendNotifChallenge("", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "");
-            await this.notifChallengeService.updateStatussend(id.toString(), email);
-          } else {
-            await this.util.sendNotifChallenge("", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "");
-            await this.notifChallengeService.updateStatussend(id.toString(), email);
+          if (rank > 1) {
+            if (langIso == "id") {
+              await this.util.sendNotifChallenge("", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "");
+              await this.notifChallengeService.updateStatussend(id.toString(), email);
+            } else {
+              await this.util.sendNotifChallenge("", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "");
+              await this.notifChallengeService.updateStatussend(id.toString(), email);
+            }
           }
+
 
         }
         else if (type == "challengeBerakhir") {
