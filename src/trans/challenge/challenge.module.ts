@@ -20,10 +20,11 @@ import { UserbadgeModule } from '../userbadge/userbadge.module';
 import { LogapisModule } from '../logapis/logapis.module';
 import { LanguagesModule } from '../../infra/languages/languages.module';
 import { PostchallengeModule } from '../postchallenge/postchallenge.module';
-
+import { NotificationsModule } from "src/content/notifications/notifications.module";
 @Module({
   imports: [
     PostchallengeModule,
+    NotificationsModule,
     LogapisModule,
     ConfigModule.forRoot(),
     OssModule,

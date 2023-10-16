@@ -15,6 +15,7 @@ import { LanguagesService } from '../../infra/languages/languages.service';
 import { UserchallengesService } from '../userchallenges/userchallenges.service';
 import { BadgeService } from '../badge/badge.service';
 import { Pipeline } from 'ioredis';
+import { NotificationsService } from "src/content/notifications/notifications.service";
 
 @Injectable()
 export class ChallengeService {
@@ -29,6 +30,7 @@ export class ChallengeService {
     private readonly languagesService: LanguagesService,
     private readonly UserchallengesService: UserchallengesService,
     private readonly BadgeService: BadgeService,
+    private readonly NotificationsService: NotificationsService,
   ) { }
 
   async create(Challenge_: CreateChallengeDto) {
@@ -4363,16 +4365,31 @@ export class ChallengeService {
                     } catch (e) {
                       titleEN2 = titleEN1;
                     }
-                    if (langIso == "id") {
-                      if (email == emailmenang) {
-                        await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                        await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
-                      }
+                    let datanotifchall = null;
+                    try {
 
+                      datanotifchall = await this.NotificationsService.findNotifchallenge(emailmenang, "CHALLENGE", challengeID, datetime);
+                    } catch (e) {
+                      datanotifchall = null;
+                    }
+
+                    if (datanotifchall !== null) {
+                      console.log("==data sudah ada==")
                     } else {
-                      if (email == emailmenang) {
-                        await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                        await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
+                      if (langIso == "id") {
+                        if (email == emailmenang) {
+
+                          await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                          await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
+
+
+                        }
+
+                      } else {
+                        if (email == emailmenang) {
+                          await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                          await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
+                        }
                       }
                     }
 
@@ -4524,34 +4541,70 @@ export class ChallengeService {
             titleEN2 = titleEN1;
           }
           if (rank > 1) {
-            if (langIso == "id") {
-              await this.util.sendNotifChallenge("", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
-              await this.notifChallengeService.updateStatussend(id.toString(), email);
+
+            let datanotifchall = null;
+            try {
+
+              datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
+            } catch (e) {
+              datanotifchall = null;
+            }
+
+            if (datanotifchall !== null) {
+              console.log("==data sudah ada==")
             } else {
-              await this.util.sendNotifChallenge("", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
-              await this.notifChallengeService.updateStatussend(id.toString(), email);
+              if (langIso == "id") {
+                await this.util.sendNotifChallenge("", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
+                await this.notifChallengeService.updateStatussend(id.toString(), email);
+              } else {
+                await this.util.sendNotifChallenge("", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
+                await this.notifChallengeService.updateStatussend(id.toString(), email);
+              }
             }
           }
 
 
         }
         else if (type == "challengeBerakhir") {
-          if (langIso == "id") {
-            await this.util.sendNotifChallenge("BERAKHIR", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-            await this.notifChallengeService.updateStatussend(id.toString(), email);
+          let datanotifchall = null;
+          try {
+
+            datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
+          } catch (e) {
+            datanotifchall = null;
+          }
+
+          if (datanotifchall !== null) {
+            console.log("==data sudah ada==")
           } else {
-            await this.util.sendNotifChallenge("BERAKHIR", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-            await this.notifChallengeService.updateStatussend(id.toString(), email);
+            if (langIso == "id") {
+              await this.util.sendNotifChallenge("BERAKHIR", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+              await this.notifChallengeService.updateStatussend(id.toString(), email);
+            } else {
+              await this.util.sendNotifChallenge("BERAKHIR", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+              await this.notifChallengeService.updateStatussend(id.toString(), email);
+            }
           }
         }
         else {
+          let datanotifchall = null;
+          try {
 
-          if (langIso == "id") {
-            await this.util.sendNotifChallenge("", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
-            await this.notifChallengeService.updateStatussend(id.toString(), email);
+            datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
+          } catch (e) {
+            datanotifchall = null;
+          }
+
+          if (datanotifchall !== null) {
+            console.log("==data sudah ada==")
           } else {
-            await this.util.sendNotifChallenge("", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
-            await this.notifChallengeService.updateStatussend(id.toString(), email);
+            if (langIso == "id") {
+              await this.util.sendNotifChallenge("", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
+              await this.notifChallengeService.updateStatussend(id.toString(), email);
+            } else {
+              await this.util.sendNotifChallenge("", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
+              await this.notifChallengeService.updateStatussend(id.toString(), email);
+            }
           }
 
         }
