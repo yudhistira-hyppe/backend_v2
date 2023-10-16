@@ -4582,19 +4582,19 @@ export class ChallengeService {
                       console.log("==data sudah ada==")
                     } else {
                       if (langIso == "id") {
-                        // if (email == emailmenang) {
+                        if (email == emailmenang) {
 
-                        await this.util.sendNotifChallenge("PEMENANG", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                        await this.notifChallengeService.updateStatussend(id.toString(), email);
+                          await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                          await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
 
 
-                        //  }
+                        }
 
                       } else {
-                        // if (email == emailmenang) {
-                        await this.util.sendNotifChallenge("PEMENANG", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                        await this.notifChallengeService.updateStatussend(id.toString(), email);
-                        // }
+                        if (email == emailmenang) {
+                          await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                          await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
+                        }
                       }
                     }
 
