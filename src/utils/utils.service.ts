@@ -40,6 +40,7 @@ import { ConfigService } from '@nestjs/config';
 import { SettingsDocument, SettingsMixed } from 'src/trans/settings2/schemas/settings2.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
+import { time } from 'console';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -2181,7 +2182,7 @@ export class UtilsService {
     }
   }
 
-  async sendNotifChallenge(type: string, email: string, titlein: string, bodyin: any, bodyeng: any, eventType: string, event: string, postID_: string, postType: string, challengeSession: string) {
+  async sendNotifChallenge(type: string, email: string, titlein: string, bodyin: any, bodyeng: any, eventType: string, event: string, postID_: string, postType: string, challengeSession: string, timesend: string) {
 
     console.log(postID_);
     var emailuserbasic = null;
@@ -2202,6 +2203,7 @@ export class UtilsService {
     var date = splitdt[0].replace("T", " ");
     var mediaprofilepicts = null;
     var bodypayload = null;
+    var datanotifchall = null;
     let createNotificationsDto = new CreateNotificationsDto();
 
     const datauserbasicsService = await this.userbasicsService.findOne(
@@ -2220,7 +2222,12 @@ export class UtilsService {
       const user_userAuth = await this.userauthsService.findOne(
         emailuserbasic
       );
+      try {
 
+        datanotifchall = await this.notificationsService.findNotifchallenge(email, eventType, postID_, timesend);
+      } catch (e) {
+        datanotifchall = null;
+      }
       var mediaUri = null;
       var mediaBasePath = null;
       var mediaType = null;
@@ -2384,69 +2391,75 @@ export class UtilsService {
 
       var arraydevice = [];
       var adm = null;
-      datadevice = await this.userdevicesService.findActive(emailuserbasic);
-      for (var i = 0; i < datadevice.length; i++) {
-        var deviceid = datadevice[i].deviceID;
+
+      if (datanotifchall == null) {
+        datadevice = await this.userdevicesService.findActive(emailuserbasic);
+        for (var i = 0; i < datadevice.length; i++) {
+          var deviceid = datadevice[i].deviceID;
+          try {
+            adm = await admin.messaging().sendToDevice(deviceid, payload, option);
+            console.log(adm);
+            arraydevice.push(deviceid);
+          } catch (e) {
+            e.toString();
+          }
+
+
+        }
+
+        var datanotif = null;
+
         try {
-          adm = await admin.messaging().sendToDevice(deviceid, payload, option);
-          console.log(adm);
-          arraydevice.push(deviceid);
+
         } catch (e) {
-          e.toString();
+
+        }
+        var generateID = await this.generateId();
+        createNotificationsDto._id = generateID;
+        createNotificationsDto.notificationID = generateID;
+        createNotificationsDto.email = emailuserbasic;
+        createNotificationsDto.eventType = eventType;
+        createNotificationsDto.event = event;
+        createNotificationsDto.mate = emailuserbasic;
+        createNotificationsDto.devices = arraydevice;
+        // createNotificationsDto.title = titlein.toString();
+        createNotificationsDto.title = payload.data.title;
+        createNotificationsDto.body = bodyeng;
+        createNotificationsDto.bodyId = bodyin;
+        createNotificationsDto.active = true;
+        createNotificationsDto.flowIsDone = true;
+        createNotificationsDto.createdAt = date;
+        createNotificationsDto.updatedAt = date;
+        createNotificationsDto.sendNotifChallenge = timesend;
+        if (type == "PEMENANG" || type == "BERAKHIR") {
+          createNotificationsDto.contentEventID = payload.data.challengeSession;
+        }
+        else {
+          createNotificationsDto.actionButtons = null;
+        }
+        if (type == "PEMENANG" || type == "BERAKHIR") {
+          createNotificationsDto.contentEventID = payload.data.challengeSession;
+        }
+        else {
+          createNotificationsDto.contentEventID = null;
+        }
+        createNotificationsDto.senderOrReceiverInfo = senderreceiver;
+
+
+        if (postID_ != undefined) {
+          createNotificationsDto.postID = postID_;
+        }
+        if (postID_ != undefined) {
+          createNotificationsDto.postType = postType;
         }
 
 
+        console.log('notif: ' + JSON.stringify(createNotificationsDto));
+        await this.notificationsService.create(createNotificationsDto);
+      } else {
+        console.log("==data sudah ada==")
       }
 
-      var datanotif = null;
-
-      try {
-
-      } catch (e) {
-
-      }
-      var generateID = await this.generateId();
-      createNotificationsDto._id = generateID;
-      createNotificationsDto.notificationID = generateID;
-      createNotificationsDto.email = emailuserbasic;
-      createNotificationsDto.eventType = eventType;
-      createNotificationsDto.event = event;
-      createNotificationsDto.mate = emailuserbasic;
-      createNotificationsDto.devices = arraydevice;
-      // createNotificationsDto.title = titlein.toString();
-      createNotificationsDto.title = payload.data.title;
-      createNotificationsDto.body = bodyeng;
-      createNotificationsDto.bodyId = bodyin;
-      createNotificationsDto.active = true;
-      createNotificationsDto.flowIsDone = true;
-      createNotificationsDto.createdAt = date;
-      createNotificationsDto.updatedAt = date;
-
-      if (type == "PEMENANG" || type == "BERAKHIR") {
-        createNotificationsDto.contentEventID = payload.data.challengeSession;
-      }
-      else {
-        createNotificationsDto.actionButtons = null;
-      }
-      if (type == "PEMENANG" || type == "BERAKHIR") {
-        createNotificationsDto.contentEventID = payload.data.challengeSession;
-      }
-      else {
-        createNotificationsDto.contentEventID = null;
-      }
-      createNotificationsDto.senderOrReceiverInfo = senderreceiver;
-
-
-      if (postID_ != undefined) {
-        createNotificationsDto.postID = postID_;
-      }
-      if (postID_ != undefined) {
-        createNotificationsDto.postType = postType;
-      }
-
-
-      console.log('notif: ' + JSON.stringify(createNotificationsDto));
-      await this.notificationsService.create(createNotificationsDto);
 
 
     }

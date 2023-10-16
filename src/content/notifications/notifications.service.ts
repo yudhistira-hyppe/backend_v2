@@ -77,7 +77,9 @@ export class NotificationsService {
   async findCriteria(email: string, eventType: string, mate: string): Promise<Notifications> {
     return this.NotificationsModel.findOne({ email: email, eventType: eventType, mate: mate }).exec();
   }
-
+  async findNotifchallenge(email: string, eventType: string, postID: string, time: string): Promise<Notifications> {
+    return this.NotificationsModel.findOne({ email: email, eventType: eventType, postID: postID, sendNotifChallenge: time }).exec();
+  }
   async updateNotifiaction(email: string, eventType: string, mate: string, currentDate: string) {
     this.NotificationsModel.updateOne(
       {
@@ -473,44 +475,44 @@ export class NotificationsService {
           },
           urluserBadge:
           {
-              "$ifNull":
+            "$ifNull":
               [
+                {
+                  "$filter":
                   {
-                      "$filter":
-                      {
-                      input: "$userSender.userBadge",
-                      as: "listbadge",
-                      cond:
-                      {
-                          "$and":
-                          [
+                    input: "$userSender.userBadge",
+                    as: "listbadge",
+                    cond:
+                    {
+                      "$and":
+                        [
                           {
-                              "$eq":
+                            "$eq":
                               [
-                              "$$listbadge.isActive", true
+                                "$$listbadge.isActive", true
                               ]
                           },
                           {
-                              "$lte": [
+                            "$lte": [
                               {
-                                  "$dateToString": {
+                                "$dateToString": {
                                   "format": "%Y-%m-%d %H:%M:%S",
                                   "date": {
-                                      "$add": [
+                                    "$add": [
                                       new Date(),
                                       25200000
-                                      ]
+                                    ]
                                   }
-                                  }
+                                }
                               },
                               "$$listbadge.endDatetime"
-                              ]
+                            ]
                           }
-                          ]
-                      }
-                      }
-                  },
-                  []
+                        ]
+                    }
+                  }
+                },
+                []
               ]
           },
           title: 1,
@@ -785,12 +787,12 @@ export class NotificationsService {
           urluserBadge:
           {
             "$ifNull":
-            [
-              {
-                "$arrayElemAt": ["$urluserBadge", 0]
-              },
-              null
-            ]
+              [
+                {
+                  "$arrayElemAt": ["$urluserBadge", 0]
+                },
+                null
+              ]
           },
           content:
           {

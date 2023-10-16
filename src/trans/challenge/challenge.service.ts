@@ -4365,13 +4365,13 @@ export class ChallengeService {
                     }
                     if (langIso == "id") {
                       if (email == emailmenang) {
-                        await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString());
+                        await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
                         await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
                       }
 
                     } else {
                       if (email == emailmenang) {
-                        await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString());
+                        await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
                         await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
                       }
                     }
@@ -4525,10 +4525,10 @@ export class ChallengeService {
           }
           if (rank > 1) {
             if (langIso == "id") {
-              await this.util.sendNotifChallenge("", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "");
+              await this.util.sendNotifChallenge("", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
               await this.notifChallengeService.updateStatussend(id.toString(), email);
             } else {
-              await this.util.sendNotifChallenge("", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "");
+              await this.util.sendNotifChallenge("", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
               await this.notifChallengeService.updateStatussend(id.toString(), email);
             }
           }
@@ -4537,20 +4537,20 @@ export class ChallengeService {
         }
         else if (type == "challengeBerakhir") {
           if (langIso == "id") {
-            await this.util.sendNotifChallenge("BERAKHIR", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString());
+            await this.util.sendNotifChallenge("BERAKHIR", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
             await this.notifChallengeService.updateStatussend(id.toString(), email);
           } else {
-            await this.util.sendNotifChallenge("BERAKHIR", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString());
+            await this.util.sendNotifChallenge("BERAKHIR", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
             await this.notifChallengeService.updateStatussend(id.toString(), email);
           }
         }
         else {
 
           if (langIso == "id") {
-            await this.util.sendNotifChallenge("", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "");
+            await this.util.sendNotifChallenge("", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
             await this.notifChallengeService.updateStatussend(id.toString(), email);
           } else {
-            await this.util.sendNotifChallenge("", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "");
+            await this.util.sendNotifChallenge("", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
             await this.notifChallengeService.updateStatussend(id.toString(), email);
           }
 
@@ -4592,9 +4592,9 @@ export class ChallengeService {
       for (var j = 0; j < data.length; j++) {
         var language = data[i].languages;
         if (language.id == new mongo.Types.ObjectId("613bc5daf9438a7564ca798a")) {
-          await this.util.sendNotifChallenge("", data[i].email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type, "");
+          await this.util.sendNotifChallenge("", data[i].email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type, "", "");
         } else {
-          await this.util.sendNotifChallenge("", data[i].email.toString(), titleEN, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type, "");
+          await this.util.sendNotifChallenge("", data[i].email.toString(), titleEN, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type, "", "");
         }
       }
     }

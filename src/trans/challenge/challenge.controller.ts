@@ -3997,9 +3997,9 @@ export class ChallengeController {
       for (var j = 0; j < data.length; j++) {
         var language = data[i].languages;
         if (language.id == new mongo.Types.ObjectId("613bc5daf9438a7564ca798a")) {
-          await this.util.sendNotifChallenge("", data[i].email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type, "");
+          await this.util.sendNotifChallenge("", data[i].email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type, "", "");
         } else {
-          await this.util.sendNotifChallenge("", data[i].email.toString(), titleEN, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type, "");
+          await this.util.sendNotifChallenge("", data[i].email.toString(), titleEN, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type, "", "");
         }
       }
     }
@@ -4165,7 +4165,7 @@ export class ChallengeController {
       title = "You have been disqualified from the " + detail.nameChallenge;
     }
 
-    await this.util.sendNotifChallenge("REMOVE", userdata.email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", idchallenge, "REMOVE PARTICIPANT", "");
+    await this.util.sendNotifChallenge("REMOVE", userdata.email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", idchallenge, "REMOVE PARTICIPANT", "", "");
 
     var listnotif = await this.notifChallengeService.findChild(idchallenge);
     for (var i = 0; i < listnotif.length; i++) {
