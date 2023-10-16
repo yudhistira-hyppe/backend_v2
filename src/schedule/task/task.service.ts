@@ -32,7 +32,7 @@ export class TaskService {
   //   //this.postContentService.cronJobSeaweedDiariesStart();
   // }
 
-  @Cron('* */10 * * * *')
+  @Cron('* */5 * * * *')
   challengeJob2() {
     this.logger.debug('Challenge JOB START');
     this.challengeService.sendNotifeChallenge();
