@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, Res } from '@nestjs/common';
 import { CreateBadgeDto } from './dto/create-badge.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, mongo } from 'mongoose';
+import { Model, Types, mongo } from 'mongoose';
 import { badge, badgeDocument } from './schemas/badge.schema';
 import { OssService } from 'src/stream/oss/oss.service';
 import { first } from 'rxjs';
@@ -12,7 +12,7 @@ export class BadgeService {
     @InjectModel(badge.name, 'SERVER_FULL')
     private readonly dataModel: Model<badgeDocument>,
     private readonly ossservices: OssService
-  ){ }
+  ) { }
 
   async create(general: Express.Multer.File[], profile: Express.Multer.File[], body: any) {
     var mongoose = require('mongoose');
@@ -29,13 +29,11 @@ export class BadgeService {
     var stringdata = body.type;
     insertdata.type = stringdata.toUpperCase();
 
-    if(general == undefined)
-    {
+    if (general == undefined) {
       throw new BadRequestException("Unabled to proceed. badge general is required");
     }
 
-    if(profile == undefined)
-    {
+    if (profile == undefined) {
       throw new BadRequestException("Unabled to proceed. badge profile is required");
     }
 
@@ -62,29 +60,25 @@ export class BadgeService {
     return data;
   }
 
-  async detailAll(search: string, listjuara: any[], page:number, limit:number)
-  {
+  async detailAll(search: string, listjuara: any[], page: number, limit: number) {
     var pipeline = [];
     var firstmatch = [];
 
-    if(search != null && search != undefined)
-    {
+    if (search != null && search != undefined) {
       firstmatch.push(
         {
           "name":
           {
-            "$regex":search,
-            "$options":"i"
+            "$regex": search,
+            "$options": "i"
           }
         }
       );
     }
 
-    if(listjuara != null && listjuara != undefined)
-    {
+    if (listjuara != null && listjuara != undefined) {
       var convertlistjuara = [];
-      for(var i = 0; i < listjuara.length; i++)
-      {
+      for (var i = 0; i < listjuara.length; i++) {
         var setstringjuara = 'JUARA' + listjuara[i].toString();
         convertlistjuara.push(setstringjuara);
       }
@@ -102,30 +96,27 @@ export class BadgeService {
       );
     }
 
-    if(firstmatch.length != 0)
-    {
+    if (firstmatch.length != 0) {
       pipeline.push(
         {
           "$match":
           {
-            "$and":firstmatch
+            "$and": firstmatch
           }
         }
       );
     }
 
-    if(page > 0)
-    {
-        pipeline.push({
-            "$skip":limit * page
-        });
+    if (page > 0) {
+      pipeline.push({
+        "$skip": limit * page
+      });
     }
 
-    if(limit > 0)
-    {
-        pipeline.push({   
-            "$limit":limit
-        });
+    if (limit > 0) {
+      pipeline.push({
+        "$limit": limit
+      });
     }
 
     var query = await this.dataModel.aggregate(pipeline);
@@ -136,9 +127,11 @@ export class BadgeService {
   async findOne(id: string) {
     var mongoose = require('mongoose');
     var convert = mongoose.Types.ObjectId(id);
-    return await this.dataModel.findOne({ _id : convert }).exec();
+    return await this.dataModel.findOne({ _id: convert }).exec();
   }
-
+  async findByid(id: string): Promise<badge> {
+    return this.dataModel.findOne({ _id: new Types.ObjectId(id) }).exec();
+  }
   async update(id: string, general: Express.Multer.File[], profile: Express.Multer.File[], body: any) {
     var updatedata = new CreateBadgeDto();
     // updatedata.createdAt = convert;
@@ -146,8 +139,7 @@ export class BadgeService {
     var stringdata = body.type;
     updatedata.type = stringdata.toUpperCase();
 
-    if(general != undefined)
-    {
+    if (general != undefined) {
       //upload badge general
       var insertfile = general[0];
       var path = "images/badge/" + id + "_general" + "." + insertfile.originalname.split(".")[1];
@@ -155,8 +147,7 @@ export class BadgeService {
       updatedata.badgeOther = result.url;
     }
 
-    if(profile != undefined)
-    {
+    if (profile != undefined) {
       //upload badge profile
       var insertfile = profile[0];
       var path = "images/badge/" + id + "_profile" + "." + insertfile.originalname.split(".")[1];
@@ -166,18 +157,18 @@ export class BadgeService {
 
     var mongoose = require('mongoose');
     var convert = mongoose.Types.ObjectId(id);
-    
+
     await this.dataModel.updateOne(
       {
-        _id:convert
+        _id: convert
       },
       {
         "$set":
         {
-          "name":updatedata.name,
-          "type":updatedata.type,
-          "badgeProfile":updatedata.badgeProfile,
-          "badgeOther":updatedata.badgeOther,
+          "name": updatedata.name,
+          "type": updatedata.type,
+          "badgeProfile": updatedata.badgeProfile,
+          "badgeOther": updatedata.badgeOther,
         }
       }
     );
@@ -188,7 +179,7 @@ export class BadgeService {
   // async update(id: string, createBadgeData: CreateBadgeDto) {
   //   var mongoose = require('mongoose');
   //   var convert = mongoose.Types.ObjectId(id);
-    
+
   //   return await this.dataModel.updateOne(
   //     {
   //       _id:convert

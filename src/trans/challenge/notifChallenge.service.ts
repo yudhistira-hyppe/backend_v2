@@ -169,7 +169,9 @@ export class notifChallengeService {
                         $arrayElemAt: ['$challengedata.objectChallenge', 0]
                     },
                     timenowplus: '$timenowplus',
-                    timenow: '$timenow'
+                    timenow: '$timenow',
+                    "titleAsli": "$title",
+                    "description": 1,
                 }
             }
         );

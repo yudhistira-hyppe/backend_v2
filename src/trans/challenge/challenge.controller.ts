@@ -1676,17 +1676,31 @@ export class ChallengeController {
     }
 
     var checkdata = await this.userchallengeSS.checkUserjoinchallenge(getsubid, getuserid);
-    if (checkdata == true) {
+    if (checkdata.length == 1) {
       var languages_json = JSON.parse(JSON.stringify(getuserbasic.languages));
 
       var timestamps_end = await this.util.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
 
       if (languages_json.$id == '6152481690f7b2293d0bf653') {
-        throw new BadRequestException("user already registered");
+        if(checkdata[0].isActive == true)
+        {
+          throw new BadRequestException("user already registered");
+        }
+        else
+        {
+          throw new BadRequestException("you have been kicked out of this challenge");
+        }
       }
       else {
-        throw new BadRequestException("pengguna telah melakukan pendaftaran");
+        if(checkdata[0].isActive == true)
+        {
+          throw new BadRequestException("pengguna telah melakukan pendaftaran");
+        }
+        else
+        {
+          throw new BadRequestException("anda sudah dikeluarkan dari challenge");
+        }
       }
     }
     else {
@@ -2476,9 +2490,11 @@ export class ChallengeController {
     var splitdate = repdate.split('.');
     var timedate = splitdate[0];
     var datachallengejuara = null;
-
+    var getlastrank = null;
+    var databadge = null;
     var datasubchalange = null;
-
+    var idSubChallenge2 = null;
+    var idusbadge = null;
     var idsub = null;
     try {
       datasubchalange = await this.subchallenge.findsub();
@@ -2491,7 +2507,7 @@ export class ChallengeController {
       for (let x = 0; x < datasubchalange.length; x++) {
         idsub = datasubchalange[x]._id.toString();
         try {
-          datachallengejuara = await this.subchallenge.getjuara2("6512ebd820acdf349afa1e4d");
+          datachallengejuara = await this.subchallenge.getjuara2(idsub);
         } catch (e) {
           datachallengejuara = null;
         }
@@ -2500,7 +2516,7 @@ export class ChallengeController {
             status = datachallengejuara[i].status;
             idsubchallenge = datachallengejuara[i]._id;
             idchallenge = datachallengejuara[i].challengeId;
-            //idUser = datachallengejuara[i].idUser;
+            getlastrank = datachallengejuara[i].getlastrank;
             session = datachallengejuara[i].session;
             startDatetime = datachallengejuara[i].startDatetime;
             endDatetime = datachallengejuara[i].endDatetime;
@@ -2514,7 +2530,30 @@ export class ChallengeController {
             var splitdatesm = repdatesm.split('.');
             var timedatesm = splitdatesm[0];
             if (timedate >= timedatesm) {
-              await this.userbadgeService.updateNonactive(idUser.toString(), idsubchallenge.toString());
+
+              // if (getlastrank !== null && getlastrank.length > 0) {
+              //   for (let y = 0; y < getlastrank.length; y++) {
+              //     idUser = getlastrank[y].idUser;
+              //     idSubChallenge2 = getlastrank[y].idSubChallenge;
+
+              //     databadge = await this.userbadgeService.getUserbadge(idUser.toString(), idSubChallenge2.toString());
+
+              //     if (databadge !== null) {
+              //       idusbadge = databadge._id;
+              //       try {
+              //         await this.userbadgeService.updateNonactive(idusbadge.toString());
+              //         console.log("iduser: " + idUser.toString() + " berhasil update " + idusbadge.toString());
+              //       } catch (e) {
+              //         console.log("iduser: " + idUser.toString() + " gagal update " + idusbadge.toString());
+              //       }
+
+
+              //     }
+
+
+              //   }
+              // }
+
               if (isActive == true) {
                 let CreateSubChallengeDto_ = new CreateSubChallengeDto();
                 CreateSubChallengeDto_.isActive = false;
@@ -3109,10 +3148,18 @@ export class ChallengeController {
         var getdata = getdata[0];
         if (getdata.include == "YES") {
           // console.log(getkey);
-          if (getkey == "akanDatang") {
+          if(getkey == "akanDatang" || getkey == "challengeDimulai")
+          {
             let dt = null;
             dt = new Date(subchallenge[loopsub].startDatetime);
-            dt.setHours(dt.getHours() + 7 + getdata.aturWaktu); // timestamp
+            if(getkey == "akanDatang")
+            {
+              dt.setHours(dt.getHours() + 7 + getdata.aturWaktu); // timestamp
+            }
+            else
+            {
+              dt.setHours(dt.getHours() + 7); // timestamp
+            }
             dt = new Date(dt);
             let strdate = dt.toISOString();
             let repdate = strdate.replace('T', ' ');
@@ -3127,10 +3174,58 @@ export class ChallengeController {
                 setnotif['email'] = result[j].email;
                 setnotif['username'] = result[j].username;
                 setnotif['ranking'] = 0;
-                setnotif['title'] = getdata.title;
-                setnotif['titleEN'] = getdata.titleEN;
-                setnotif['notification'] = getdata.description;
-                setnotif['notificationEN'] = getdata.descriptionEN;
+                var gettitle = getdata.title;
+                var converttitle = null;
+                try {
+                  var cariusername = gettitle.replaceAll("$username", result[j].username);
+                  var ranking = cariusername.replaceAll("$ranking", "");
+                  var badge = ranking.replaceAll("$badge", "");
+                  converttitle = badge.replaceAll("$title", detail.nameChallenge);
+                }
+                catch (e) {
+                  converttitle = gettitle;
+                }
+                var gettitleEN = getdata.titleEN;
+                var converttitleEN = null;
+                try {
+                  var cariusername = gettitleEN.replaceAll("$username", result[j].username);
+                  var ranking = cariusername.replaceAll("$ranking", "");
+                  var badge = ranking.replaceAll("$badge", "");
+                  converttitleEN = badge.replaceAll("$title", detail.nameChallenge);
+                }
+                catch (e) {
+                  converttitleEN = gettitleEN;
+                }
+                var getdesc = getdata.description;
+                var convertdesc = null;
+                try {
+                  var cariusername = getdesc.replaceAll("$username", result[j].username);
+                  var ranking = cariusername.replaceAll("$ranking", "");
+                  var badge = ranking.replaceAll("$badge", "");
+                  convertdesc = badge.replaceAll("$title", detail.nameChallenge);
+                }
+                catch (e) {
+                  convertdesc = getdesc;
+                }
+                var getdescEN = getdata.descriptionEN;
+                var convertdescEN = null;
+                try {
+                  var cariusername = getdescEN.replaceAll("$username", result[j].username);
+                  var ranking = cariusername.replaceAll("$ranking", "");
+                  var badge = ranking.replaceAll("$badge", "");
+                  convertdescEN = badge.replaceAll("$title", detail.nameChallenge);
+                }
+                catch (e) {
+                  convertdescEN = getdescEN;
+                }
+                setnotif['title'] = converttitle;
+                setnotif['titleEN'] = converttitleEN;
+                setnotif['notification'] = convertdesc;
+                setnotif['notificationEN'] = convertdescEN;
+                // setnotif['title'] = getdata.title;
+                // setnotif['titleEN'] = getdata.titleEN;
+                // setnotif['notification'] = getdata.description;
+                // setnotif['notificationEN'] = getdata.descriptionEN;
                 setinsertpartisipan.push(setnotif);
               }
             }
@@ -3140,13 +3235,57 @@ export class ChallengeController {
               setnotif['email'] = "SEMUA PENGGUNA";
               setnotif['username'] = "SEMUA PENGGUNA";
               setnotif['ranking'] = 0;
-              setnotif['title'] = getdata.title;
-              setnotif['titleEN'] = getdata.titleEN;
-              setnotif['notification'] = getdata.description;
-              setnotif['notificationEN'] = getdata.descriptionEN;
+              var gettitle = getdata.title;
+              var converttitle = null;
+              try {
+                var caribadge = gettitle.replaceAll("$title", detail.nameChallenge);
+                var ranking = caribadge.replaceAll("$ranking", "");
+                converttitle = ranking.replaceAll("$badge", "");
+              }
+              catch (e) {
+                converttitle = gettitle;
+              }
+              var gettitleEN = getdata.titleEN;
+              var converttitleEN = null;
+              try {
+                var caribadge = gettitleEN.replaceAll("$title", detail.nameChallenge);
+                var ranking = caribadge.replaceAll("$ranking", "");
+                converttitleEN = ranking.replaceAll("$badge", "");
+              }
+              catch (e) {
+                converttitleEN = gettitleEN;
+              }
+              var getdesc = getdata.description;
+              var convertdesc = null;
+              try {
+                var caribadge = getdesc.replaceAll("$title", detail.nameChallenge);
+                var ranking = caribadge.replaceAll("$ranking", "");
+                convertdesc = ranking.replaceAll("$badge", "");
+              }
+              catch (e) {
+                convertdesc = getdesc;
+              }
+              var getdescEN = getdata.descriptionEN;
+              var convertdescEN = null;
+              try {
+                var caribadge = getdescEN.replaceAll("$title", detail.nameChallenge);
+                var ranking = caribadge.replaceAll("$ranking", "");
+                convertdescEN = ranking.replaceAll("$badge", "");
+              }
+              catch (e) {
+                convertdescEN = getdescEN;
+              }
+              setnotif['title'] = converttitle;
+              setnotif['titleEN'] = converttitleEN;
+              setnotif['notification'] = convertdesc;
+              setnotif['notificationEN'] = convertdescEN;
+              // setnotif['title'] = getdata.title;
+              // setnotif['titleEN'] = getdata.titleEN;
+              // setnotif['notification'] = getdata.description;
+              // setnotif['notificationEN'] = getdata.descriptionEN;
               setinsertpartisipan.push(setnotif);
             }
-
+  
             var setdata = new notifChallenge();
             setdata._id = mongo.Types.ObjectId();
             setdata.challengeID = subchallenge[loopsub].challengeId;
@@ -3168,59 +3307,9 @@ export class ChallengeController {
             catch (e) {
               console.log(e);
             }
-          }
-          else if (getkey == "challengeDimulai") {
-            var setinsertpartisipan = [];
-            if (listpartisipan != null && listpartisipan.length != 0) {
-              for (var j = 0; j < result.length; j++) {
-                var setnotif = {};
-                setnotif['idUser'] = result[j]._id;
-                setnotif['email'] = result[j].email;
-                setnotif['username'] = result[j].username;
-                setnotif['title'] = getdata.title;
-                setnotif['titleEN'] = getdata.titleEN;
-                setnotif['notification'] = getdata.description;
-                setnotif['notificationEN'] = getdata.descriptionEN;
-                setnotif['ranking'] = 0;
-                setinsertpartisipan.push(setnotif);
-              }
-            }
-            else {
-              var setnotif = {};
-              setnotif['idUser'] = "SEMUA PENGGUNA";
-              setnotif['email'] = "SEMUA PENGGUNA";
-              setnotif['username'] = "SEMUA PENGGUNA";
-              setnotif['title'] = getdata.title;
-              setnotif['titleEN'] = getdata.titleEN;
-              setnotif['notification'] = getdata.description;
-              setnotif['notificationEN'] = getdata.descriptionEN;
-              setnotif['ranking'] = 0;
-              setinsertpartisipan.push(setnotif);
-            }
 
-            var setdata = new notifChallenge();
-            setdata._id = mongo.Types.ObjectId();
-            setdata.challengeID = subchallenge[loopsub].challengeId;
-            setdata.subChallengeID = subchallenge[loopsub]._id;
-            setdata.title = getdata.title;
-            setdata.description = getdata.description;
-            setdata.type = getkey;
-            setdata.userID = setinsertpartisipan;
-            setdata.session = subchallenge[loopsub].session;
-            setdata.isSend = false;
-            setdata.nameChallenge = detail.nameChallenge;
-            setdata.datetime = subchallenge[loopsub].startDatetime;
-            setdata.createdAt = await this.util.getDateTimeString();
-            // console.log(setdata);
-            insertdatamany.push(setdata);
-            try {
-              await this.notifChallengeService.create(setdata);
-            }
-            catch (e) {
-              console.log(e);
-            }
-
-            if (listpartisipan != null && listpartisipan.length != 0) {
+            if(getkey == "challengeDimulai" && listpartisipan != null && listpartisipan.length != 0)
+            {
               var setinsertpartisipan = [];
               for (var j = 0; j < result.length; j++) {
                 var setnotif = {};
@@ -3262,6 +3351,239 @@ export class ChallengeController {
               }
             }
           }
+          // if (getkey == "akanDatang") {
+          //   let dt = null;
+          //   dt = new Date(subchallenge[loopsub].startDatetime);
+          //   dt.setHours(dt.getHours() + 7 + getdata.aturWaktu); // timestamp
+          //   dt = new Date(dt);
+          //   let strdate = dt.toISOString();
+          //   let repdate = strdate.replace('T', ' ');
+          //   let splitdate = repdate.split('.');
+          //   let timedate = splitdate[0];
+
+          //   var setinsertpartisipan = [];
+          //   if (listpartisipan != null && listpartisipan.length != 0) {
+          //     for (var j = 0; j < result.length; j++) {
+          //       var setnotif = {};
+          //       setnotif['idUser'] = result[j]._id;
+          //       setnotif['email'] = result[j].email;
+          //       setnotif['username'] = result[j].username;
+          //       setnotif['ranking'] = 0;
+          //       var gettitle = getdata.title;
+          //       var converttitle = null;
+          //       try {
+          //         var cariusername = gettitle.replaceAll("$username", result[j].username);
+          //         converttitle = cariusername.replaceAll("$title", detail.nameChallenge);
+          //       }
+          //       catch (e) {
+          //         converttitle = gettitle;
+          //       }
+          //       var gettitleEN = getdata.titleEN;
+          //       var converttitleEN = null;
+          //       try {
+          //         var cariusername = gettitleEN.replaceAll("$username", result[j].username);
+          //         converttitleEN = cariusername.replaceAll("$title", detail.nameChallenge);
+          //       }
+          //       catch (e) {
+          //         converttitleEN = gettitleEN;
+          //       }
+          //       var getdesc = getdata.description;
+          //       var convertdesc = null;
+          //       try {
+          //         var cariusername = getdesc.replaceAll("$username", result[j].username);
+          //         convertdesc = cariusername.replaceAll("$title", detail.nameChallenge);
+          //       }
+          //       catch (e) {
+          //         convertdesc = getdesc;
+          //       }
+          //       var getdescEN = getdata.descriptionEN;
+          //       var convertdescEN = null;
+          //       try {
+          //         var cariusername = getdescEN.replaceAll("$username", result[j].username);
+          //         convertdescEN = cariusername.replaceAll("$title", detail.nameChallenge);
+          //       }
+          //       catch (e) {
+          //         convertdescEN = getdescEN;
+          //       }
+          //       setnotif['title'] = converttitle;
+          //       setnotif['titleEN'] = converttitleEN;
+          //       setnotif['notification'] = convertdesc;
+          //       setnotif['notificationEN'] = convertdescEN;
+          //       // setnotif['title'] = getdata.title;
+          //       // setnotif['titleEN'] = getdata.titleEN;
+          //       // setnotif['notification'] = getdata.description;
+          //       // setnotif['notificationEN'] = getdata.descriptionEN;
+          //       setinsertpartisipan.push(setnotif);
+          //     }
+          //   }
+          //   else {
+          //     var setnotif = {};
+          //     setnotif['idUser'] = "SEMUA PENGGUNA";
+          //     setnotif['email'] = "SEMUA PENGGUNA";
+          //     setnotif['username'] = "SEMUA PENGGUNA";
+          //     setnotif['ranking'] = 0;
+          //     var gettitle = getdata.title;
+          //     var converttitle = null;
+          //     try {
+          //       var cariusername = gettitle.replaceAll("$username", result[j].username);
+          //       converttitle = cariusername.replaceAll("$title", detail.nameChallenge);
+          //     }
+          //     catch (e) {
+          //       converttitle = gettitle;
+          //     }
+          //     var gettitleEN = getdata.titleEN;
+          //     var converttitleEN = null;
+          //     try {
+          //       var cariusername = gettitleEN.replaceAll("$username", result[j].username);
+          //       converttitleEN = cariusername.replaceAll("$title", detail.nameChallenge);
+          //     }
+          //     catch (e) {
+          //       converttitleEN = gettitleEN;
+          //     }
+          //     var getdesc = getdata.description;
+          //     var convertdesc = null;
+          //     try {
+          //       var cariusername = getdesc.replaceAll("$username", result[j].username);
+          //       convertdesc = cariusername.replaceAll("$title", detail.nameChallenge);
+          //     }
+          //     catch (e) {
+          //       convertdesc = getdesc;
+          //     }
+          //     var getdescEN = getdata.descriptionEN;
+          //     var convertdescEN = null;
+          //     try {
+          //       var cariusername = getdescEN.replaceAll("$username", result[j].username);
+          //       convertdescEN = cariusername.replaceAll("$title", detail.nameChallenge);
+          //     }
+          //     catch (e) {
+          //       convertdescEN = getdescEN;
+          //     }
+          //     setnotif['title'] = converttitle;
+          //     setnotif['titleEN'] = converttitleEN;
+          //     setnotif['notification'] = convertdesc;
+          //     setnotif['notificationEN'] = convertdescEN;
+          //     // setnotif['title'] = getdata.title;
+          //     // setnotif['titleEN'] = getdata.titleEN;
+          //     // setnotif['notification'] = getdata.description;
+          //     // setnotif['notificationEN'] = getdata.descriptionEN;
+          //     setinsertpartisipan.push(setnotif);
+          //   }
+
+          //   var setdata = new notifChallenge();
+          //   setdata._id = mongo.Types.ObjectId();
+          //   setdata.challengeID = subchallenge[loopsub].challengeId;
+          //   setdata.subChallengeID = subchallenge[loopsub]._id;
+          //   setdata.title = getdata.title;
+          //   setdata.description = getdata.description;
+          //   setdata.type = getkey;
+          //   setdata.userID = setinsertpartisipan;
+          //   setdata.session = subchallenge[loopsub].session;
+          //   setdata.isSend = false;
+          //   setdata.nameChallenge = detail.nameChallenge;
+          //   setdata.datetime = timedate;
+          //   setdata.createdAt = await this.util.getDateTimeString();
+          //   // console.log(setdata);
+          //   insertdatamany.push(setdata);
+          //   try {
+          //     await this.notifChallengeService.create(setdata);
+          //   }
+          //   catch (e) {
+          //     console.log(e);
+          //   }
+          // }
+          // else if (getkey == "challengeDimulai") {
+          //   var setinsertpartisipan = [];
+          //   if (listpartisipan != null && listpartisipan.length != 0) {
+          //     for (var j = 0; j < result.length; j++) {
+          //       var setnotif = {};
+          //       setnotif['idUser'] = result[j]._id;
+          //       setnotif['email'] = result[j].email;
+          //       setnotif['username'] = result[j].username;
+          //       setnotif['title'] = getdata.title;
+          //       setnotif['titleEN'] = getdata.titleEN;
+          //       setnotif['notification'] = getdata.description;
+          //       setnotif['notificationEN'] = getdata.descriptionEN;
+          //       setnotif['ranking'] = 0;
+          //       setinsertpartisipan.push(setnotif);
+          //     }
+          //   }
+          //   else {
+          //     var setnotif = {};
+          //     setnotif['idUser'] = "SEMUA PENGGUNA";
+          //     setnotif['email'] = "SEMUA PENGGUNA";
+          //     setnotif['username'] = "SEMUA PENGGUNA";
+          //     setnotif['title'] = getdata.title;
+          //     setnotif['titleEN'] = getdata.titleEN;
+          //     setnotif['notification'] = getdata.description;
+          //     setnotif['notificationEN'] = getdata.descriptionEN;
+          //     setnotif['ranking'] = 0;
+          //     setinsertpartisipan.push(setnotif);
+          //   }
+
+          //   var setdata = new notifChallenge();
+          //   setdata._id = mongo.Types.ObjectId();
+          //   setdata.challengeID = subchallenge[loopsub].challengeId;
+          //   setdata.subChallengeID = subchallenge[loopsub]._id;
+          //   setdata.title = getdata.title;
+          //   setdata.description = getdata.description;
+          //   setdata.type = getkey;
+          //   setdata.userID = setinsertpartisipan;
+          //   setdata.session = subchallenge[loopsub].session;
+          //   setdata.isSend = false;
+          //   setdata.nameChallenge = detail.nameChallenge;
+          //   setdata.datetime = subchallenge[loopsub].startDatetime;
+          //   setdata.createdAt = await this.util.getDateTimeString();
+          //   // console.log(setdata);
+          //   insertdatamany.push(setdata);
+          //   try {
+          //     await this.notifChallengeService.create(setdata);
+          //   }
+          //   catch (e) {
+          //     console.log(e);
+          //   }
+
+          //   if (listpartisipan != null && listpartisipan.length != 0) {
+          //     var setinsertpartisipan = [];
+          //     for (var j = 0; j < result.length; j++) {
+          //       var setnotif = {};
+          //       var titleID = 'Undangan challenge ' + detail.nameChallenge;
+          //       var titleEN = detail.nameChallenge + " Challenge Invitation";
+          //       var bodyID = 'Hai ' + result[j].username + ', kamu telah diundang untuk mengikuti challenge ' + detail.nameChallenge + '. Klik di sini!';
+          //       var bodyEN = 'Hi ' + result[j].username + ', you have been invited to participate in The ' + detail.nameChallenge + ' challenge. Click here!';
+          //       setnotif['idUser'] = result[j]._id;
+          //       setnotif['email'] = result[j].email;
+          //       setnotif['username'] = result[j].username;
+          //       setnotif['title'] = titleID;
+          //       setnotif['titleEN'] = titleEN;
+          //       setnotif['notification'] = bodyID;
+          //       setnotif['notificationEN'] = bodyEN;
+          //       setnotif['ranking'] = 0;
+          //       setinsertpartisipan.push(setnotif);
+          //     }
+          //     var setdata = new notifChallenge();
+          //     setdata._id = mongo.Types.ObjectId();
+          //     setdata.challengeID = subchallenge[loopsub].challengeId;
+          //     setdata.subChallengeID = subchallenge[loopsub]._id;
+          //     setdata.title = getdata.title;
+          //     setdata.description = getdata.description;
+          //     setdata.type = getkey;
+          //     setdata.userID = setinsertpartisipan;
+          //     setdata.session = subchallenge[loopsub].session;
+          //     setdata.isSend = false;
+          //     setdata.nameChallenge = detail.nameChallenge;
+          //     setdata.datetime = subchallenge[loopsub].startDatetime;
+          //     setdata.createdAt = await this.util.getDateTimeString();
+          //     // console.log(setdata);
+          //     insertdatamany.push(setdata);
+
+          //     try {
+          //       await this.notifChallengeService.create(setdata);
+          //     }
+          //     catch (e) {
+          //       console.log(e);
+          //     }
+          //   }
+          // }
         }
       };
     }
@@ -3287,28 +3609,43 @@ export class ChallengeController {
         }
 
         if (checkexist == false) {
-          var mongo = require('mongoose');
-          var timenow = await this.util.getDateTimeString();
-          var getpushnotif = pushnotifikasi[targetlist[i]];
-          var aturWaktu = getpushnotif[0].aturWaktu;
-          for (var loopsub = 0; loopsub < subdata.length; loopsub++) {
-            var insertdata = new notifChallenge();
-            insertdata.challengeID = subdata[loopsub].challengeId;
-            insertdata.subChallengeID = new mongo.Types.ObjectId(subdata[loopsub]._id);
-            insertdata.createdAt = timenow;
-            insertdata.isSend = false;
-            insertdata.title = getpushnotif[0].title;
-            insertdata.description = getpushnotif[0].description;
-            insertdata.userID = [];
-            insertdata.session = subdata[loopsub].session;
-            insertdata.nameChallenge = detailchallenge.nameChallenge;
-            insertdata.type = targetlist[i];
+          if(pushnotifikasi[targetlist[i]][0].include == "YES")
+          {
+            var mongo = require('mongoose');
+            var timenow = await this.util.getDateTimeString();
+            var getpushnotif = pushnotifikasi[targetlist[i]];
+            var aturWaktu = getpushnotif[0].aturWaktu;
+            for (var loopsub = 0; loopsub < subdata.length; loopsub++) {
+              var insertdata = new notifChallenge();
+              insertdata.challengeID = subdata[loopsub].challengeId;
+              insertdata.subChallengeID = new mongo.Types.ObjectId(subdata[loopsub]._id);
+              insertdata.createdAt = timenow;
+              insertdata.isSend = false;
+              insertdata.title = getpushnotif[0].title;
+              insertdata.description = getpushnotif[0].description;
+              insertdata.userID = [];
+              insertdata.session = subdata[loopsub].session;
+              insertdata.nameChallenge = detailchallenge.nameChallenge;
+              insertdata.type = targetlist[i];
 
-            if (targetlist[i] == 'updateLeaderboard') {
-              for (var loopleaderboard = 0; loopleaderboard < aturWaktu.length; loopleaderboard++) {
+              if (targetlist[i] == 'updateLeaderboard') {
+                for (var loopleaderboard = 0; loopleaderboard < aturWaktu.length; loopleaderboard++) {
+                  insertdata._id = new mongo.Types.ObjectId();
+                  let dt = new Date(subdata[loopsub].startDatetime);
+                  dt.setHours(dt.getHours() + 7 + aturWaktu[loopleaderboard]); // timestamp
+                  dt = new Date(dt);
+                  let strdate = dt.toISOString();
+                  let repdate = strdate.replace('T', ' ');
+                  let splitdate = repdate.split('.');
+                  let timedate = splitdate[0];
+                  insertdata.datetime = timedate;
+                  await this.notifChallengeService.create(insertdata);
+                }
+              }
+              else {
                 insertdata._id = new mongo.Types.ObjectId();
-                let dt = new Date(subdata[loopsub].startDatetime);
-                dt.setHours(dt.getHours() + 7 + aturWaktu[loopleaderboard]); // timestamp
+                let dt = new Date(subdata[loopsub].endDatetime);
+                dt.setHours(dt.getHours() + 7 + aturWaktu); // timestamp
                 dt = new Date(dt);
                 let strdate = dt.toISOString();
                 let repdate = strdate.replace('T', ' ');
@@ -3318,20 +3655,7 @@ export class ChallengeController {
                 await this.notifChallengeService.create(insertdata);
               }
             }
-            else {
-              insertdata._id = new mongo.Types.ObjectId();
-              let dt = new Date(subdata[loopsub].endDatetime);
-              dt.setHours(dt.getHours() + 7 + aturWaktu); // timestamp
-              dt = new Date(dt);
-              let strdate = dt.toISOString();
-              let repdate = strdate.replace('T', ' ');
-              let splitdate = repdate.split('.');
-              let timedate = splitdate[0];
-              insertdata.datetime = timedate;
-              await this.notifChallengeService.create(insertdata);
-            }
           }
-          checkexist = true;
         }
       }
 
@@ -3353,50 +3677,94 @@ export class ChallengeController {
               setobject['email'] = basicdata[0].email;
               setobject['username'] = basicdata[0].username;
               setobject['ranking'] = listjoin[i].ranking;
-              if (typenotif == 'untukPemenang' || typenotif == 'updateLeaderboard') {
-                var gettitle = getnotifdata[0].title;
-                var converttitle = null;
-                try {
-                  converttitle = gettitle.replaceAll("$username", basicdata[0].username);
-                }
-                catch (e) {
-                  converttitle = gettitle;
-                }
-                var gettitleEN = getnotifdata[0].titleEN;
-                var converttitleEN = null;
-                try {
-                  converttitleEN = gettitleEN.replaceAll("$username", basicdata[0].username);
-                }
-                catch (e) {
-                  converttitleEN = gettitleEN;
-                }
-                var getdesc = getnotifdata[0].description;
-                var convertdesc = null;
-                try {
-                  convertdesc = getdesc.replaceAll("$username", basicdata[0].username);
-                }
-                catch (e) {
-                  convertdesc = getdesc;
-                }
-                var getdescEN = getnotifdata[0].descriptionEN;
-                var convertdescEN = null;
-                try {
-                  convertdescEN = getdescEN.replaceAll("$username", basicdata[0].username);
-                }
-                catch (e) {
-                  convertdescEN = getdescEN;
-                }
-                setobject['title'] = converttitle;
-                setobject['titleEN'] = converttitleEN;
-                setobject['notification'] = convertdesc;
-                setobject['notificationEN'] = convertdescEN;
+              var gettitle = getnotifdata[0].title;
+              var converttitle = null;
+              try {
+                var cariusername = gettitle.replaceAll("$username", basicdata[0].username);
+                converttitle = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
               }
-              else {
-                setobject['title'] = getnotifdata[0].title;
-                setobject['titleEN'] = getnotifdata[0].titleEN;
-                setobject['notification'] = getnotifdata[0].description;
-                setobject['notificationEN'] = getnotifdata[0].descriptionEN;
+              catch (e) {
+                converttitle = gettitle;
               }
+              var gettitleEN = getnotifdata[0].titleEN;
+              var converttitleEN = null;
+              try {
+                var cariusername = gettitleEN.replaceAll("$username", basicdata[0].username);
+                converttitleEN = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
+              }
+              catch (e) {
+                converttitleEN = gettitleEN;
+              }
+              var getdesc = getnotifdata[0].description;
+              var convertdesc = null;
+              try {
+                var cariusername = getdesc.replaceAll("$username", basicdata[0].username);
+                convertdesc = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
+              }
+              catch (e) {
+                convertdesc = getdesc;
+              }
+              var getdescEN = getnotifdata[0].descriptionEN;
+              var convertdescEN = null;
+              try {
+                var cariusername = getdescEN.replaceAll("$username", basicdata[0].username);
+                convertdescEN = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
+              }
+              catch (e) {
+                convertdescEN = getdescEN;
+              }
+              setobject['title'] = converttitle;
+              setobject['titleEN'] = converttitleEN;
+              setobject['notification'] = convertdesc;
+              setobject['notificationEN'] = convertdescEN;
+              // if (typenotif == 'untukPemenang' || typenotif == 'updateLeaderboard') {
+              //   var gettitle = getnotifdata[0].title;
+              //   var converttitle = null;
+              //   try {
+              //     var cariusername = gettitle.replaceAll("$username", basicdata[0].username);
+              //     converttitle = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
+              //   }
+              //   catch (e) {
+              //     converttitle = gettitle;
+              //   }
+              //   var gettitleEN = getnotifdata[0].titleEN;
+              //   var converttitleEN = null;
+              //   try {
+              //     var cariusername = gettitleEN.replaceAll("$username", basicdata[0].username);
+              //     converttitleEN = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
+              //   }
+              //   catch (e) {
+              //     converttitleEN = gettitleEN;
+              //   }
+              //   var getdesc = getnotifdata[0].description;
+              //   var convertdesc = null;
+              //   try {
+              //     var cariusername = getdesc.replaceAll("$username", basicdata[0].username);
+              //     convertdesc = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
+              //   }
+              //   catch (e) {
+              //     convertdesc = getdesc;
+              //   }
+              //   var getdescEN = getnotifdata[0].descriptionEN;
+              //   var convertdescEN = null;
+              //   try {
+              //     var cariusername = getdescEN.replaceAll("$username", basicdata[0].username);
+              //     convertdescEN = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
+              //   }
+              //   catch (e) {
+              //     convertdescEN = getdescEN;
+              //   }
+              //   setobject['title'] = converttitle;
+              //   setobject['titleEN'] = converttitleEN;
+              //   setobject['notification'] = convertdesc;
+              //   setobject['notificationEN'] = convertdescEN;
+              // }
+              // else {
+              //   setobject['title'] = getnotifdata[0].title;
+              //   setobject['titleEN'] = getnotifdata[0].titleEN;
+              //   setobject['notification'] = getnotifdata[0].description;
+              //   setobject['notificationEN'] = getnotifdata[0].descriptionEN;
+              // }
               listuser.push(setobject);
 
               var updatedata = new notifChallenge();
@@ -3435,124 +3803,124 @@ export class ChallengeController {
     }
   }
 
-  async sendNotifeChallenge() {
+  // async sendNotifeChallenge() {
 
-    var datanotif = null;
-    var email = null;
-    var body = null;
-    var bodyEN = null;
-    var title = null;
-    var titleEN = null;
-    //var timenow = null;
-    var datetime = null;
-    var challengeID = null;
-    var typeChallenge = null;
-    var databasic = null;
-    var id = null;
-    var type = null;
-    var languages = null;
-    var idlanguages = null;
-    var datalanguage = null;
-    var langIso = null;
-    var datapemenang = null;
-    var getlastrank = null;
-    try {
-      datanotif = await this.notifChallengeService.listnotifchallenge();
-    } catch (e) {
-      datanotif = null;
-    }
-    // timenow = new Date(Date.now());
-    if (datanotif !== null && datanotif.length > 0) {
+  //   var datanotif = null;
+  //   var email = null;
+  //   var body = null;
+  //   var bodyEN = null;
+  //   var title = null;
+  //   var titleEN = null;
+  //   //var timenow = null;
+  //   var datetime = null;
+  //   var challengeID = null;
+  //   var typeChallenge = null;
+  //   var databasic = null;
+  //   var id = null;
+  //   var type = null;
+  //   var languages = null;
+  //   var idlanguages = null;
+  //   var datalanguage = null;
+  //   var langIso = null;
+  //   var datapemenang = null;
+  //   var getlastrank = null;
+  //   try {
+  //     datanotif = await this.notifChallengeService.listnotifchallenge();
+  //   } catch (e) {
+  //     datanotif = null;
+  //   }
+  //   // timenow = new Date(Date.now());
+  //   if (datanotif !== null && datanotif.length > 0) {
 
-      for (let i = 0; i < datanotif.length; i++) {
-        id = datanotif[i]._id;
-        challengeID = datanotif[i].challengeID;
-        email = datanotif[i].email;
-        title = datanotif[i].title;
-        titleEN = datanotif[i].titleEN;
-        body = datanotif[i].notification;
-        bodyEN = datanotif[i].notificationEN;
-        datetime = datanotif[i].datetime;
-        type = datanotif[i].type;
-        typeChallenge = datanotif[i].typeChallenge;
+  //     for (let i = 0; i < datanotif.length; i++) {
+  //       id = datanotif[i]._id;
+  //       challengeID = datanotif[i].challengeID;
+  //       email = datanotif[i].email;
+  //       title = datanotif[i].title;
+  //       titleEN = datanotif[i].titleEN;
+  //       body = datanotif[i].notification;
+  //       bodyEN = datanotif[i].notificationEN;
+  //       datetime = datanotif[i].datetime;
+  //       type = datanotif[i].type;
+  //       typeChallenge = datanotif[i].typeChallenge;
 
-        try {
-          databasic = await this.userbasicsSS.findOne(email);
-        } catch (e) {
-          databasic = null;
-        }
+  //       try {
+  //         databasic = await this.userbasicsSS.findOne(email);
+  //       } catch (e) {
+  //         databasic = null;
+  //       }
 
-        if (databasic !== null) {
-          try {
-            languages = databasic.languages;
-            idlanguages = languages.oid.toString();
-            datalanguage = await this.languagesService.findOne(idlanguages)
-            langIso = datalanguage.langIso;
+  //       if (databasic !== null) {
+  //         try {
+  //           languages = databasic.languages;
+  //           idlanguages = languages.oid.toString();
+  //           datalanguage = await this.languagesService.findOne(idlanguages)
+  //           langIso = datalanguage.langIso;
 
-            console.log(idlanguages)
-          } catch (e) {
-            languages = null;
-            idlanguages = "";
-            datalanguage = null;
-            langIso = "";
-          }
+  //           console.log(idlanguages)
+  //         } catch (e) {
+  //           languages = null;
+  //           idlanguages = "";
+  //           datalanguage = null;
+  //           langIso = "";
+  //         }
 
-        }
+  //       }
 
-        // if (timenow == new Date(datetime)) {
+  //       // if (timenow == new Date(datetime)) {
 
-        if (type == "untukPemenang") {
-          try {
-            datapemenang = await this.subchallenge.getpemenang(challengeID.toString());
-          } catch (e) {
-            datapemenang = null;
-          }
-          if (datapemenang !== null && datapemenang.length > 0) {
+  //       if (type == "untukPemenang") {
+  //         try {
+  //           datapemenang = await this.subchallenge.getpemenang(challengeID.toString());
+  //         } catch (e) {
+  //           datapemenang = null;
+  //         }
+  //         if (datapemenang !== null && datapemenang.length > 0) {
 
-            try {
-              getlastrank = datapemenang[0].getlastrank;
-            } catch (e) {
-              getlastrank = null;
-            }
-            if (getlastrank !== null && getlastrank.length > 0) {
-              for (let x = 0; x < getlastrank.length; x++) {
-                let emailmenang = getlastrank[x].email
+  //           try {
+  //             getlastrank = datapemenang[0].getlastrank;
+  //           } catch (e) {
+  //             getlastrank = null;
+  //           }
+  //           if (getlastrank !== null && getlastrank.length > 0) {
+  //             for (let x = 0; x < getlastrank.length; x++) {
+  //               let emailmenang = getlastrank[x].email
 
-                if (langIso == "id") {
-                  await this.util.sendNotifChallenge(emailmenang, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
-                  await this.notifChallengeService.updateStatussend(id.toString(), email);
-                } else {
-                  await this.util.sendNotifChallenge(emailmenang, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
-                  await this.notifChallengeService.updateStatussend(id.toString(), email);
-                }
-
-
-              }
-
-            }
-
-          }
+  //               if (langIso == "id") {
+  //                 await this.util.sendNotifChallenge(emailmenang, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+  //                 await this.notifChallengeService.updateStatussend(id.toString(), email);
+  //               } else {
+  //                 await this.util.sendNotifChallenge(emailmenang, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+  //                 await this.notifChallengeService.updateStatussend(id.toString(), email);
+  //               }
 
 
-        } else {
+  //             }
 
-          if (langIso == "id") {
-            await this.util.sendNotifChallenge(email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
-            await this.notifChallengeService.updateStatussend(id.toString(), email);
-          } else {
-            await this.util.sendNotifChallenge(email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
-            await this.notifChallengeService.updateStatussend(id.toString(), email);
-          }
+  //           }
 
-        }
+  //         }
 
-        //}
 
-      }
+  //       } else {
 
-    }
+  //         if (langIso == "id") {
+  //           await this.util.sendNotifChallenge(email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+  //           await this.notifChallengeService.updateStatussend(id.toString(), email);
+  //         } else {
+  //           await this.util.sendNotifChallenge(email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge);
+  //           await this.notifChallengeService.updateStatussend(id.toString(), email);
+  //         }
 
-  }
+  //       }
+
+  //       //}
+
+  //     }
+
+  //   }
+
+  // }
 
   @UseGuards(JwtAuthGuard)
   @Post('join/currentstatus')
@@ -3663,4 +4031,192 @@ export class ChallengeController {
       "message": messages
     }
   }
+
+  async updateBadgeex() {
+
+    var idUser = null;
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+
+    var strdate = dt.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var timedate = splitdate[0];
+
+    var datasubchalange = null;
+
+    var idusbadge = null;
+
+    try {
+      datasubchalange = await this.userbadgeService.getUserbadgeExpired();
+
+    } catch (e) {
+      datasubchalange = null;
+    }
+
+    if (datasubchalange !== null) {
+      for (let x = 0; x < datasubchalange.length; x++) {
+        try {
+          idusbadge = datasubchalange[x]._id.toString();
+        } catch (e) {
+          idusbadge = null;
+        }
+
+        if (idusbadge !== null && idusbadge !== undefined) {
+          try {
+            await this.userbadgeService.updateNonactive(idusbadge.toString());
+            console.log("iduser: " + idUser.toString() + " berhasil update " + idusbadge.toString());
+          } catch (e) {
+            console.log("iduser: " + idUser.toString() + " gagal update " + idusbadge.toString());
+          }
+        }
+      }
+
+    }
+
+
+  }
+
+  @UseGuards(JwtAuthGuard)
+    @Post('user/delete')
+    async delete(@Res() res, @Req() request: Request, @Headers() headers) 
+    {
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var idchallenge = request_json['idChallenge'];
+        var email = request_json['email'];
+        var idadmin = request_json['idAdmin'];
+        var reason = request_json['reason'];
+
+        if(idchallenge == null && idchallenge == undefined)
+        {
+            throw new BadRequestException("Unabled to proceed, challenge id field is required");
+        }
+
+        if(email == null && email == undefined)
+        {
+            throw new BadRequestException("Unabled to proceed, user id field is required");
+        }
+
+        if(idadmin == null && idadmin == undefined)
+        {
+            throw new BadRequestException("Unabled to proceed, admin id field is required");
+        }
+
+        if(reason == null && reason == undefined)
+        {
+            throw new BadRequestException("Unabled to proceed, reason field is required");
+        }
+
+        var exileUser = await this.userbasicsSS.findOne(email);
+        var admin = await this.userbasicsSS.findbyid(idadmin);
+
+        var getuserchallenge = await this.userchallengeSS.findByChallengeandUser(idchallenge, exileUser._id.toString());
+
+        if(getuserchallenge.length != 0)
+        {
+            var insertid = [];
+            var getarray = getuserchallenge[0].rejectRemark;
+            if(getarray == null || getarray == undefined)
+            {
+                getarray = [];
+            }
+            var insertreject = {};
+            insertreject['idAdmin'] = idadmin;
+            insertreject['time'] = await this.util.getDateTimeString();
+            insertreject['emailAdmin'] = admin.email;
+            insertreject['remark'] = reason;
+            getarray.push(insertreject);
+
+            var updatedata = new Userchallenges();
+            updatedata.isActive = false;
+            updatedata.ranking = null;
+            updatedata.rejectRemark = getarray;
+            updatedata.updatedAt = await this.util.getDateTimeString();
+
+            for(var i = 0; i < getuserchallenge.length; i++)
+            {
+                insertid.push(getuserchallenge[i]._id.toString());
+            }
+
+            try
+            {
+                await this.userchallengeSS.delete(insertid, exileUser._id.toString(), updatedata);
+
+                this.deleteDataviaBelakang(exileUser, idchallenge);
+                
+                const messages = {
+                    "info": ["The create successful"],
+                };
+
+                res.status(HttpStatus.OK).json({
+                    response_code: 202,
+                    "message": messages
+                });
+            }
+            catch(e)
+            {
+                console.log(e);
+            }
+        }
+        else
+        {
+          res.status(HttpStatus.OK).json({
+              response_code: 202,
+              "message": "data not found"
+          });
+        }
+    }
+
+    async deleteDataviaBelakang(userdata:any, idchallenge:string)
+    {
+        var detail = await this.challengeService.detailchallenge(idchallenge);
+        var mongo = require('mongoose');
+        var language = JSON.parse(JSON.stringify(userdata.languages));
+        var title = null;
+        var bodyin = "Sayang sekali, kamu telah didiskualifikasi karena melanggar syarat dan ketentuan challenge. Klik disini untuk melihat ketentuan";
+        var bodyeng = "Unfortunately, you have been disqualified for violating the terms and conditions of the challenge. Click here to view the terms and conditions!";
+        if (language.$id.toString() == "613bc5daf9438a7564ca798a") {
+            title = "Diskualifikasi dari challenge " + detail.nameChallenge;
+        } else {
+            title = "You have been disqualified from the " + detail.nameChallenge;
+        }
+
+        await this.util.sendNotifChallenge("REMOVE", userdata.email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", idchallenge, "REMOVE PARTICIPANT");
+
+        var listnotif = await this.notifChallengeService.findChild(idchallenge);
+        for(var i = 0; i < listnotif.length; i++)
+        {
+            var temparray = [];
+            var getuserid = listnotif[i].userID;
+            for(var j = 0; j < getuserid.length; j++)
+            {
+                var getlistuser = getuserid[j];
+                if(getlistuser.email != userdata.email)
+                {
+                    temparray.push(getlistuser);
+                }
+            }
+
+            var updatedata = new notifChallenge();
+            updatedata.userID = temparray;
+
+            await this.notifChallengeService.update(listnotif[i]._id.toString(), updatedata);
+        }
+
+        var subdata = await this.subchallenge.findbyid(idchallenge);
+        var timenow = await this.util.getDateTimeString();
+
+        for(var i = 0; i < subdata.length; i++)
+        {
+            var getsubdata = subdata[i]._id;
+            var listuserchallenge = await this.userchallengeSS.datauserchallbyidchall(idchallenge, getsubdata);
+            for(var j = 0; j < listuserchallenge.length; j++)
+            {
+                var updaterank = j + 1;
+                await this.userchallengeSS.updateRangking(listuserchallenge[j]._id.toString(), updaterank, timenow); 
+            }
+        }
+
+    }
 }

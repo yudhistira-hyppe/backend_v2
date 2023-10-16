@@ -2181,7 +2181,7 @@ export class UtilsService {
     }
   }
 
-  async sendNotifChallenge(email: string, titlein: string, bodyin: any, bodyeng: any, eventType: string, event: string, postID_?: string, postType?: string) {
+  async sendNotifChallenge(type: string, email: string, titlein: string, bodyin: any, bodyeng: any, eventType: string, event: string, postID_?: string, postType?: string) {
 
     console.log(postID_);
     var emailuserbasic = null;
@@ -2284,14 +2284,27 @@ export class UtilsService {
 
 
       if (langIso === "id") {
+        if (type == "PEMENANG") {
+          payload = {
+            data: {
 
-        payload = {
-          data: {
+              title: titlein,
+              body: bodyin,
+              postID: postID_.toString(),
+              postType: eventType,
+              winner: "true"
+            }
+          }
+        } else {
 
-            title: titlein,
-            body: bodyin,
-            postID: postID_.toString(),
-            postType: postType
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: postID_.toString(),
+              postType: eventType
+            }
           }
         }
 
@@ -2299,15 +2312,31 @@ export class UtilsService {
       }
       else if (langIso === "en") {
 
-        payload = {
-          data: {
+        if (type == "PEMENANG") {
+          payload = {
+            data: {
 
-            title: titlein,
-            body: bodyeng,
-            postID: postID_.toString(),
-            postType: postType
+              title: titlein,
+              body: bodyeng,
+              postID: postID_.toString(),
+              postType: eventType,
+              winner: "true"
+            }
+          }
+        } else {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyeng,
+              postID: postID_.toString(),
+              postType: eventType
+            }
           }
         }
+
+
+
       } else {
         payload = {
           data: {
@@ -2315,7 +2344,7 @@ export class UtilsService {
             title: titlein,
             body: bodyin,
             postID: postID_.toString(),
-            postType: postType
+            postType: eventType
           }
         }
       }

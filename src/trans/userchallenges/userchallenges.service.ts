@@ -24,6 +24,46 @@ export class UserchallengesService {
         return this.UserchallengesModel.findOne({ _id: new Types.ObjectId(id), idSubChallenge: new Types.ObjectId(idSubChallenge) }).exec();
     }
 
+    async findByChallengeandUser(challenge: string, user: string) {
+        var mongo = require('mongoose');
+        var data = await this.UserchallengesModel.aggregate([
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+                            {
+                                "idChallenge": new mongo.Types.ObjectId(challenge),
+                            },
+                            {
+                                "idUser": new mongo.Types.ObjectId(user),
+                            },
+                            {
+                                "isActive": true
+                            }
+                        ]
+                }
+            }
+        ]);
+
+        return data;
+    }
+
+    async findByChallengeandUser2(challenge: string, user: string, idSubChallenge: string) {
+
+        var data = await this.UserchallengesModel.aggregate([
+            {
+                $match: {
+                    "idChallenge": new Types.ObjectId(challenge),
+                    "idSubChallenge": new Types.ObjectId(idSubChallenge),
+                    "idUser": new Types.ObjectId(user),
+                }
+            }
+        ]);
+
+        return data[0];
+    }
+
     async find(): Promise<Userchallenges[]> {
         return this.UserchallengesModel.find().exec();
     }
@@ -73,23 +113,20 @@ export class UserchallengesService {
         );
     }
 
-    async delete(challenge: string, user:string) 
-    {
+    async delete(userchallenge: any[], user: string, data: Userchallenges) {
         var mongo = require('mongoose');
-        var result = await this.UserchallengesModel.updateMany(
+        return await this.UserchallengesModel.updateMany(
             {
-                "idChallenge":mongo.Types.ObjectId(challenge),
-                "idUser":mongo.Types.ObjectId(user),
+                "_id":
+                {
+                    "$in": userchallenge
+                },
+                "idUser": mongo.Types.ObjectId(user),
             },
             {
-                "$set":
-                {
-                    "isActive":false
-                }
+                "$set": data
             }
         );
-        
-        return result;
     }
 
     async userChallengebyIdChall(iduser: string, idchallenge: string) {
@@ -399,15 +436,6 @@ export class UserchallengesService {
                                             "$idUser", konvertid
                                         ]
                                 }
-                            },
-                            {
-                                "$expr":
-                                {
-                                    "$eq":
-                                        [
-                                            "$isActive", true   
-                                        ]
-                                }
                             }
                         ]
                 }
@@ -417,23 +445,17 @@ export class UserchallengesService {
             },
         ]);
 
-        if (query.length == 1) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return query;
     }
 
-    async checkuserstatusjoin(target:string)
-    {
+    async checkuserstatusjoin(target: string) {
         var mongo = require('mongoose');
         var konvertid = new mongo.Types.ObjectId(target);
         var result = await this.UserchallengesModel.aggregate([
             {
                 "$match":
                 {
-                    "idUser":konvertid
+                    "idUser": konvertid
                 }
             },
             {
@@ -441,10 +463,10 @@ export class UserchallengesService {
                 {
                     "datenow":
                     {
-                        "$dateToString": 
+                        "$dateToString":
                         {
                             "format": "%Y-%m-%d %H:%M:%S",
-                            "date": 
+                            "date":
                             {
                                 $add: [new Date(), + 25200000]
                             }
@@ -455,87 +477,87 @@ export class UserchallengesService {
             {
                 "$lookup":
                 {
-                    from:"challenge",
-                    as:"challengedata",
+                    from: "challenge",
+                    as: "challengedata",
                     let:
                     {
-                        "fk_challenge":"$idChallenge",
-                        "now":"$datenow"
+                        "fk_challenge": "$idChallenge",
+                        "now": "$datenow"
                     },
                     pipeline:
-                    [
-                        {
-                            "$addFields":
+                        [
                             {
-                                "setend":
+                                "$addFields":
                                 {
-                                    "$concat":
-                                    [
-                                        "$endChallenge",
-                                        " ",
-                                        "$startTime"
-                                    ]
-                                },
-                            }
-                        },
-                        {
-                            "$match":
+                                    "setend":
+                                    {
+                                        "$concat":
+                                            [
+                                                "$endChallenge",
+                                                " ",
+                                                "$startTime"
+                                            ]
+                                    },
+                                }
+                            },
                             {
-                                "$and":
-                                [
-                                    {
-                                        "$expr":
-                                        {
-                                            "$eq":
-                                            [
-                                                "$_id","$$fk_challenge"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        "$expr":
-                                        {
-                                            "$eq":
-                                            [
-                                                "$statusChallenge","PUBLISH"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        "$expr":
-                                        {
-                                            "$gt":
-                                            [
-                                                "$setend", "$$now"
-                                            ]
-                                        }
-                                    }
-                                ]
+                                "$match":
+                                {
+                                    "$and":
+                                        [
+                                            {
+                                                "$expr":
+                                                {
+                                                    "$eq":
+                                                        [
+                                                            "$_id", "$$fk_challenge"
+                                                        ]
+                                                }
+                                            },
+                                            {
+                                                "$expr":
+                                                {
+                                                    "$eq":
+                                                        [
+                                                            "$statusChallenge", "PUBLISH"
+                                                        ]
+                                                }
+                                            },
+                                            {
+                                                "$expr":
+                                                {
+                                                    "$gt":
+                                                        [
+                                                            "$setend", "$$now"
+                                                        ]
+                                                }
+                                            }
+                                        ]
+                                }
                             }
-                        }
-                    ]
+                        ]
                 }
             },
             {
                 "$unwind":
                 {
-                    path:"$challengedata"
+                    path: "$challengedata"
                 }
             },
             {
                 "$group":
                 {
-                    _id:null,
+                    _id: null,
                     total:
                     {
-                        "$sum":1
+                        "$sum": 1
                     }
                 }
             },
             {
                 "$project":
                 {
-                    _id:0,
+                    _id: 0,
                     join_status:
                     {
                         "$cond":
@@ -543,12 +565,12 @@ export class UserchallengesService {
                             if:
                             {
                                 "$eq":
-                                [
-                                    "$total", 0
-                                ]
+                                    [
+                                        "$total", 0
+                                    ]
                             },
-                            then:false,
-                            else:true
+                            then: false,
+                            else: true
                         }
                     }
                 }
@@ -558,32 +580,31 @@ export class UserchallengesService {
         return result[0];
     }
 
-    async wilayahpengguna(id:string)
-    {
+    async wilayahpengguna(id: string) {
         var mongo = require('mongoose');
         var data = await this.UserchallengesModel.aggregate([
             {
                 "$match":
                 {
                     "$and":
-                    [
-                        {
-                            idChallenge: new mongo.Types.ObjectId(id)
-                        },
-                        {
-                            isActive:true
-                        }
-                    ]
+                        [
+                            {
+                                idChallenge: new mongo.Types.ObjectId(id)
+                            },
+                            {
+                                isActive: true
+                            }
+                        ]
                 }
             },
             {
                 "$group":
                 {
-                    _id:"$idUser"
+                    _id: "$idUser"
                 }
             },
             {
-                "$lookup": 
+                "$lookup":
                 {
                     from: 'userbasics',
                     localField: '_id',
@@ -597,20 +618,20 @@ export class UserchallengesService {
                     state:
                     {
                         "$ifNull":
-                        [
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$basic_data.states.$id", 0
-                                ]
-                            },
-                            null
-                        ]
+                            [
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$basic_data.states.$id", 0
+                                        ]
+                                },
+                                null
+                            ]
                     }
                 }
             },
             {
-                "$lookup": 
+                "$lookup":
                 {
                     from: 'areas',
                     localField: 'state',
@@ -624,25 +645,25 @@ export class UserchallengesService {
                     stateName:
                     {
                         "$ifNull":
-                        [
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$wilayah.stateName", 0
-                                ]
-                            },
-                            "Lainnya"
-                        ]
+                            [
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$wilayah.stateName", 0
+                                        ]
+                                },
+                                "Lainnya"
+                            ]
                     }
                 }
             },
             {
                 "$group":
                 {
-                    _id:"$stateName",
+                    _id: "$stateName",
                     total:
                     {
-                        "$sum":1
+                        "$sum": 1
                     }
                 }
             },

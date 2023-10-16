@@ -31,8 +31,8 @@ export class UserbadgeService {
         }
         return data;
     }
-    async updateNonactive(iduser: string, SubChallengeId: string): Promise<Object> {
-        let data = await this.UserbadgeModel.updateOne({ "userId": new mongoose.Types.ObjectId(iduser), "SubChallengeId": new mongoose.Types.ObjectId(SubChallengeId) },
+    async updateNonactive(id: string): Promise<Object> {
+        let data = await this.UserbadgeModel.updateOne({ "_id": id },
             {
                 $set: {
                     "isActive": false,
@@ -54,6 +54,65 @@ export class UserbadgeService {
             ]
         );
         return query[0];
+
+    }
+
+    async getUserbadgeExpired() {
+        var query = await this.UserbadgeModel.aggregate(
+            [
+
+                {
+                    $set: {
+                        "timenow":
+                        {
+                            "$dateToString": {
+                                "format": "%Y-%m-%d %H:%M:%S",
+                                "date": {
+                                    $add: [
+                                        new Date(),
+                                        25200000
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "$match":
+                    {
+                        "$and":
+                            [
+
+                                {
+                                    $expr:
+                                    {
+                                        $gte:
+                                            [
+                                                "$timenow",
+                                                "$endDatetime",
+
+                                            ]
+                                    },
+
+                                },
+                                {
+                                    $expr:
+                                    {
+                                        $eq:
+                                            [
+                                                "$isActive", true
+
+                                            ]
+                                    },
+
+                                },
+
+                            ]
+                    }
+                },
+            ]
+        );
+        return query;
 
     }
 

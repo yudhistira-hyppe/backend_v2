@@ -647,6 +647,59 @@ export class DisqusService {
 
                 },
                 {
+                    "$addFields":
+                    {
+                        "tempbadgeowner":
+                        {
+                            "$ifNull":
+                            [
+                                {
+                                    "$filter":
+                                    {
+                                        input: 
+                                        {
+                                            "$arrayElemAt":
+                                            [
+                                                "$user.userBadge",0
+                                            ]
+                                        },
+                                        as: "listbadge",
+                                        cond:
+                                        {
+                                            "$and":
+                                                [
+                                                    {
+                                                        "$eq":
+                                                            [
+                                                                "$$listbadge.isActive", true
+                                                            ]
+                                                    },
+                                                    {
+                                                        "$lte": [
+                                                            {
+                                                                "$dateToString": {
+                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                    "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "$$listbadge.endDatetime"
+                                                        ]
+                                                    }
+                                                ]
+                                        }
+                                    }
+                                },
+                                []
+                            ]
+                        },
+                    }
+                },
+                {
                     "$lookup": {
                         from: "disquslogs",
                         as: "disqusLogs",
@@ -759,6 +812,59 @@ export class DisqusService {
 
                                         },
                                         {
+                                            "$set":
+                                            {
+                                                "tempbadge":
+                                                {
+                                                    "$ifNull":
+                                                    [
+                                                        {
+                                                            "$filter":
+                                                            {
+                                                                input:
+                                                                {
+                                                                    "$arrayElemAt":
+                                                                    [
+                                                                        "$detailUserBasic.userBadge",0
+                                                                    ]
+                                                                },
+                                                                as:"listbadge",
+                                                                cond:
+                                                                {
+                                                                    "$and":
+                                                                    [
+                                                                    {
+                                                                        "$eq":
+                                                                        [
+                                                                        "$$listbadge.isActive", true
+                                                                        ]
+                                                                    },
+                                                                    {
+                                                                        "$lte": [
+                                                                        {
+                                                                            "$dateToString": {
+                                                                            "format": "%Y-%m-%d %H:%M:%S",
+                                                                            "date": {
+                                                                                "$add": [
+                                                                                new Date(),
+                                                                                25200000
+                                                                                ]
+                                                                            }
+                                                                            }
+                                                                        },
+                                                                        "$$listbadge.endDatetime"
+                                                                        ]
+                                                                    }
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        []
+                                                    ]
+                                                },
+                                            }
+                                        },
+                                        {
                                             $unwind: {
                                                 path: "$detailUserbasic",
                                                 preserveNullAndEmptyArrays: true
@@ -834,6 +940,19 @@ export class DisqusService {
                                                     },
                                                     "username": "$detailUserAuth.username",
                                                     "avatar": "$detailAvatar",
+                                                    "urluserBadge":
+                                                    {
+                                                        "$ifNull":
+                                                        [
+                                                            {
+                                                                "$arrayElemAt":
+                                                                [
+                                                                    "$tempbadge", 0
+                                                                ]
+                                                            },
+                                                            null
+                                                        ]
+                                                    },
                                                     "isIdVerified": {
                                                         $arrayElemAt: ["$detailUserBasic.isIdVerified", 0]
                                                     },
@@ -976,6 +1095,59 @@ export class DisqusService {
                                 $limit: row
                             },
                             {
+                                "$addFields":
+                                {
+                                    "tempbadge":
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$filter":
+                                                {
+                                                input:
+                                                {
+                                                    "$arrayElemAt":
+                                                    [
+                                                        "$userBasic.userBadge", 0
+                                                    ]
+                                                },
+                                                as:"listbadge",
+                                                cond:
+                                                {
+                                                    "$and":
+                                                    [
+                                                    {
+                                                        "$eq":
+                                                        [
+                                                        "$$listbadge.isActive", true
+                                                        ]
+                                                    },
+                                                    {
+                                                        "$lte": [
+                                                        {
+                                                            "$dateToString": {
+                                                            "format": "%Y-%m-%d %H:%M:%S",
+                                                            "date": {
+                                                                "$add": [
+                                                                new Date(),
+                                                                25200000
+                                                                ]
+                                                            }
+                                                            }
+                                                        },
+                                                        "$$listbadge.endDatetime"
+                                                        ]
+                                                    }
+                                                    ]
+                                                }
+                                                }
+                                            },
+                                            []
+                                        ]
+                                    },
+                                }
+                            },
+                            {
                                 $project: {
                                     disqusLogs: [{
                                         "_id": "$_id",
@@ -991,6 +1163,19 @@ export class DisqusService {
                                             "isIdVerified": {
                                                 $arrayElemAt: ["$userBasic.isIdVerified", 0]
                                             },
+                                            "urluserBadge":
+                                            {
+                                                "$ifNull":
+                                                [
+                                                    {
+                                                        "$arrayElemAt":
+                                                        [
+                                                            "$tempbadge", 0
+                                                        ]
+                                                    },
+                                                    null
+                                                ]
+                                            }
 
                                         },
                                         "receiver": "$receiver",
@@ -1053,49 +1238,19 @@ export class DisqusService {
                         "comment": {
                             $size: "$countLogs"
                         },
-                        urluserBadge:
+                        "urluserBadge":
                         {
                             "$ifNull":
                             [
                                 {
-                                    "$filter":
-                                    {
-                                        input: "$user.userBadge",
-                                        as: "listbadge",
-                                        cond:
-                                        {
-                                            "$and":
-                                                [
-                                                    {
-                                                        "$eq":
-                                                            [
-                                                                "$$listbadge.isActive", true
-                                                            ]
-                                                    },
-                                                    {
-                                                        "$lte": [
-                                                            {
-                                                                "$dateToString": {
-                                                                    "format": "%Y-%m-%d %H:%M:%S",
-                                                                    "date": {
-                                                                        "$add": [
-                                                                            new Date(),
-                                                                            25200000
-                                                                        ]
-                                                                    }
-                                                                }
-                                                            },
-                                                            "$$listbadge.endDatetime"
-                                                        ]
-                                                    }
-                                                ]
-                                        }
-                                    }
+                                    "$arrayElemAt":
+                                    [
+                                        "$tempbadgeowner", 0
+                                    ]
                                 },
-                                []
+                                null
                             ]
-                        },
-
+                        }
                     }
                 },
 
