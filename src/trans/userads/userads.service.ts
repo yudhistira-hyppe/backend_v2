@@ -6,11 +6,13 @@ import { CreateUserAdsDto } from './dto/create-userads.dto';
 import { UserAds, UserAdsDocument } from './schemas/userads.schema';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 import { ConfigService } from '@nestjs/config';
+import { UtilsService } from 'src/utils/utils.service';
 @Injectable()
 export class UserAdsService {
     constructor(@InjectModel(UserAds.name, 'SERVER_FULL')
     private readonly userAdsModel: Model<UserAdsDocument>, 
         private readonly mediaprofilepictsService: MediaprofilepictsService,
+        private readonly utilsService: UtilsService,
         private readonly configService: ConfigService,
     ) { }
 
@@ -3083,8 +3085,8 @@ export class UserAdsService {
                 $match: {
                     updateAt: {
                         $elemMatch: {
-                            $gte: start_date.toISOString(),
-                            $lte: end_date.toISOString()
+                            $gte: await this.utilsService.formatDateString(start_date),
+                            $lte: await this.utilsService.formatDateString(end_date)
                         }
                     }
                 }
@@ -3101,8 +3103,8 @@ export class UserAdsService {
             viewedFacet.push({
                 $match: {
                     updateAt: {
-                        $gte: start_date.toISOString(),
-                        $lte: end_date.toISOString()
+                        $gte: await this.utilsService.formatDateString(start_date),
+                        $lte: await this.utilsService.formatDateString(end_date)
                     }
                 }
             });
@@ -3135,8 +3137,8 @@ export class UserAdsService {
                 $match: {
                     updateAt: {
                         $elemMatch: {
-                            $gte: start_date.toISOString(),
-                            $lte: end_date.toISOString()
+                            $gte: await this.utilsService.formatDateString(start_date),
+                            $lte: await this.utilsService.formatDateString(end_date)
                         }
                     }
                 }
@@ -3153,8 +3155,8 @@ export class UserAdsService {
             reachFacet.push({
                 $match: {
                     updateAt: {
-                        $gte: start_date.toISOString(),
-                        $lte: end_date.toISOString()
+                        $gte: await this.utilsService.formatDateString(start_date),
+                        $lte: await this.utilsService.formatDateString(end_date)
                     }
                 }
             });
@@ -3206,8 +3208,8 @@ export class UserAdsService {
                 $match: {
                     updateAt: {
                         $elemMatch: {
-                            $gte: start_date.toISOString(),
-                            $lte: end_date.toISOString()
+                            $gte: await this.utilsService.formatDateString(start_date),
+                            $lte: await this.utilsService.formatDateString(end_date)
                         }
                     }
                 }
@@ -3224,8 +3226,8 @@ export class UserAdsService {
             impresiFacet.push({
                 $match: {
                     updateAt: {
-                        $gte: start_date.toISOString(),
-                        $lte: end_date.toISOString()
+                        $gte: await this.utilsService.formatDateString(start_date),
+                        $lte: await this.utilsService.formatDateString(end_date)
                     }
                 }
             });
@@ -3258,8 +3260,8 @@ export class UserAdsService {
                 $match: {
                     clickTime: {
                         $elemMatch: {
-                            $gte: start_date.toISOString(),
-                            $lte: end_date.toISOString()
+                            $gte: await this.utilsService.formatDateString(start_date),
+                            $lte: await this.utilsService.formatDateString(end_date)
                         }
                     }
                 }
@@ -3276,8 +3278,8 @@ export class UserAdsService {
             CTAFacet.push({
                 $match: {
                     clickTime: {
-                        $gte: start_date.toISOString(),
-                        $lte: end_date.toISOString()
+                        $gte: await this.utilsService.formatDateString(start_date),
+                        $lte: await this.utilsService.formatDateString(end_date)
                     }
                 }
             });
@@ -3310,8 +3312,8 @@ export class UserAdsService {
                 $match: {
                     clickTime: {
                         $elemMatch: {
-                            $gte: start_date.toISOString(),
-                            $lte: end_date.toISOString()
+                            $gte: await this.utilsService.formatDateString(start_date),
+                            $lte: await this.utilsService.formatDateString(end_date)
                         }
                     }
                 }
@@ -3328,8 +3330,8 @@ export class UserAdsService {
             CTACountFacet.push({
                 $match: {
                     clickTime: {
-                        $gte: start_date.toISOString(),
-                        $lte: end_date.toISOString()
+                        $gte: await this.utilsService.formatDateString(start_date),
+                        $lte: await this.utilsService.formatDateString(end_date)
                     }
                 }
             });
@@ -3372,8 +3374,8 @@ export class UserAdsService {
                 $match: {
                     updateAt: {
                         $elemMatch: {
-                            $gte: start_date.toISOString(),
-                            $lte: end_date.toISOString()
+                            $gte: await this.utilsService.formatDateString(start_date),
+                            $lte: await this.utilsService.formatDateString(end_date)
                         }
                     }
                 }
@@ -3440,8 +3442,8 @@ export class UserAdsService {
             viewTimeFacet.push({
                 $match: {
                     updateAt: {
-                        $gte: start_date.toISOString(),
-                        $lte: end_date.toISOString()
+                        $gte: await this.utilsService.formatDateString(start_date),
+                        $lte: await this.utilsService.formatDateString(end_date)
                     }
                 }
             });
@@ -3474,8 +3476,8 @@ export class UserAdsService {
                 $match: {
                     clickTime: {
                         $elemMatch: {
-                            $gte: start_date.toISOString(),
-                            $lte: end_date.toISOString()
+                            $gte: await this.utilsService.formatDateString(start_date),
+                            $lte: await this.utilsService.formatDateString(end_date)
                         }
                     }
                 }
@@ -3542,8 +3544,8 @@ export class UserAdsService {
             clickTimeFacet.push({
                 $match: {
                     clickTime: {
-                        $gte: start_date.toISOString(),
-                        $lte: end_date.toISOString()
+                        $gte: await this.utilsService.formatDateString(start_date),
+                        $lte: await this.utilsService.formatDateString(end_date)
                     }
                 }
             });
@@ -3568,8 +3570,8 @@ export class UserAdsService {
                     count: { $sum: "$CPA" }
                 }
             });
-
-        // console.log(JSON.stringify([
+        var aggregateData = [];
+        // aggregateData.push(
         //     {
         //         $addFields: {
         //             dateStart: start_date,
@@ -3588,155 +3590,44 @@ export class UserAdsService {
         //             },
         //             pipeline: pipelineMatch
         //         }
-        //     },
-        //     {
-        //         $facet:
+        //     },);
+        // if (userId != undefined) {
+        //     aggregateData.push({
+        //         $lookup:
         //         {
-        //             viewed: viewedFacet,
-        //             reach: reachFacet,
-        //             impresi: impresiFacet,
-        //             CTA: CTAFacet,
-        //             CTACount: CTACountFacet,
-        //             viewTime: viewTimeFacet,
-        //             clickTime: clickTimeFacet,
-        //             status: [
+        //             from: "ads",
+        //             as: "adsUSer",
+        //             let:
+        //             {
+        //                 adsID: '$adsID',
+        //             },
+        //             pipeline: [
         //                 {
-        //                     $group: {
-        //                         _id: "$ads_data",
-        //                         count: { $sum: 1 }
+        //                     $match: {
+        //                         $expr: { $eq: ['$_id', '$$adsID'] }
         //                     }
         //                 },
-        //                 {
-        //                     $group: {
-        //                         _id: null,
-        //                         data: {
-        //                             "$first": "$_id"
-        //                         },
-        //                     }
-        //                 },
-        //             ],
+        //             ]
         //         }
         //     },
-        //     {
-        //         $project: {
-        //             statusIklan: {
-        //                 "$arrayElemAt": [{
+        //         {
+        //             $addFields: {
+        //                 userIdCreate: {
         //                     "$let": {
         //                         "vars": {
-        //                             "tmp": { "$arrayElemAt": ["$status", 0] },
+        //                             "tmp": { "$arrayElemAt": ["$adsUSer", 0] },
         //                         },
-        //                         "in": "$$tmp.data.status"
+        //                         "in": "$$tmp.userID"
         //                     }
-        //                 }, 0]
-        //             },
-        //             saldoKredit: {
-        //                 $sum: [
-        //                     {
-        //                         $convert: {
-        //                             input: { "$arrayElemAt": ['$viewTime.count', 0] },
-        //                             to: "int",
-        //                             onError: 0,
-        //                             onNull: 0
-        //                         }
-        //                     },
-        //                     {
-        //                         $convert: {
-        //                             input: { "$arrayElemAt": ['$clickTime.count', 0] },
-        //                             to: "int",
-        //                             onError: 0,
-        //                             onNull: 0
-        //                         }
-        //                     }
-        //                 ]
-        //             },
-        //             Totalimpresi: {
-        //                 "$let": {
-        //                     "vars": {
-        //                         "tmp": { "$arrayElemAt": ["$viewed", 0] },
-        //                     },
-        //                     "in": "$$tmp.impresi"
         //                 }
-        //             },
-        //             Totalreach: {
-        //                 "$let": {
-        //                     "vars": {
-        //                         "tmp": { "$arrayElemAt": ["$viewed", 0] },
-        //                     },
-        //                     "in": "$$tmp.reach"
-        //                 }
-        //             },
-        //             TotalCTA: {
-        //                 "$let": {
-        //                     "vars": {
-        //                         "tmp": { "$arrayElemAt": ["$CTACount", 0] },
-        //                     },
-        //                     "in": "$$tmp.CTACount"
-        //                 }
-        //             },
-        //             impresi: 1,
-        //             reach: 1,
-        //             CTA: 1
-        //         }
-        //     }
-        // ]))
-        var aggregateData = [];
-        aggregateData.push(
-            {
-                $addFields: {
-                    dateStart: start_date,
-                    dateEnd: end_date
-                }
-            },
-            {
-                $lookup:
-                {
-                    from: "ads",
-                    as: "ads_data",
-                    let:
-                    {
-                        dateStart_: "$dateStart",
-                        dateEnd_: "$dateEnd"
-                    },
-                    pipeline: pipelineMatch
-                }
-            },);
-        if (userId != undefined) {
-            aggregateData.push({
-                $lookup:
-                {
-                    from: "ads",
-                    as: "adsUSer",
-                    let:
-                    {
-                        adsID: '$adsID',
-                    },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: { $eq: ['$_id', '$$adsID'] }
-                            }
-                        },
-                    ]
-                }
-            },
-                {
-                    $addFields: {
-                        userIdCreate: {
-                            "$let": {
-                                "vars": {
-                                    "tmp": { "$arrayElemAt": ["$adsUSer", 0] },
-                                },
-                                "in": "$$tmp.userID"
-                            }
-                        }
-                    }
-                },
-                {
-                    $match: {
-                        userIdCreate: new mongoose.Types.ObjectId(userId)
-                    }
-                },);
-        }
+        //             }
+        //         },
+        //         {
+        //             $match: {
+        //                 userIdCreate: new mongoose.Types.ObjectId(userId)
+        //             }
+        //         },);
+        // }
         aggregateData.push({
             $facet:
             {
@@ -3827,7 +3718,7 @@ export class UserAdsService {
             }
         }
         );
-        //console.log(JSON.stringify(aggregateData));
+        console.log(JSON.stringify(aggregateData));
         let query = await this.userAdsModel.aggregate(aggregateData);
         return query;
     }
