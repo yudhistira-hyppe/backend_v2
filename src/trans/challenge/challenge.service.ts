@@ -4198,6 +4198,213 @@ export class ChallengeService {
 
         // if (timenow == new Date(datetime)) {
 
+        // if (type == "untukPemenang") {
+
+        //   let datasub = null;
+
+        //   try {
+        //     datasub = await this.subchallenge.findOneByChallenge(subChallengeID.toString(), challengeID.toString(),);
+        //   } catch (e) {
+        //     datasub = null;
+        //   }
+
+        //   if (datasub !== null) {
+        //     let endDatetime = null;
+        //     var dt = new Date(Date.now());
+        //     dt.setHours(dt.getHours() + 7); // timestamp
+        //     dt = new Date(dt);
+        //     try {
+        //       endDatetime = new Date(datasub.endDatetime);
+        //       endDatetime.setHours(endDatetime.getHours() + 7); // timestamp
+        //       endDatetime = new Date(endDatetime);
+        //     } catch (e) {
+        //       endDatetime = null;
+        //     }
+
+        //     if (dt > endDatetime) {
+        //       try {
+        //         datapemenang = await this.subchallenge.getpemenang(challengeID.toString(), subChallengeID.toString());
+        //       } catch (e) {
+        //         datapemenang = null;
+        //       }
+        //       if (datapemenang !== null && datapemenang.length > 0) {
+
+        //         try {
+        //           getlastrank = datapemenang[0].getlastrank;
+        //         } catch (e) {
+        //           getlastrank = null;
+        //         }
+        //         if (getlastrank !== null && getlastrank.length > 0) {
+        //           for (let x = 0; x < getlastrank.length; x++) {
+        //             let emailmenang = getlastrank[x].email
+        //             let idBadge = null;
+        //             let nameBadges = null;
+
+
+
+        //             try {
+        //               idBadge = getlastrank[x].idBadge;
+        //             } catch (e) {
+        //               idBadge = null;
+        //             }
+        //             let databadge = null;
+        //             try {
+        //               databadge = await this.userbadgeService.getUserbadge(idUser.toString(), subChallengeID.toString());
+        //             } catch (e) {
+        //               databadge = null;
+        //             }
+
+        //             if (databadge == null && databadge == undefined) {
+
+
+        //               if (idBadge !== undefined && idBadge !== "") {
+
+        //                 let dt = new Date(Date.now());
+        //                 dt.setHours(dt.getHours() + 7); // timestamp
+        //                 dt = new Date(dt);
+
+        //                 let strdate = dt.toISOString();
+        //                 let repdate = strdate.replace('T', ' ');
+        //                 let splitdate = repdate.split('.');
+        //                 let timedate = splitdate[0];
+
+        //                 let end = new Date(endDatetime);
+        //                 end.setHours(dt.getHours() + 12); // timestamp
+        //                 end = new Date(end);
+        //                 let getseminngu = new Date(new Date(end).setDate(new Date(end).getDate() + 7));
+        //                 let strdateseminggu = getseminngu.toISOString();
+        //                 var repdatesm = strdateseminggu.replace('T', ' ');
+        //                 var splitdatesm = repdatesm.split('.');
+        //                 var timedatesm = splitdatesm[0];
+
+        //                 let Userbadge_ = new Userbadge();
+        //                 Userbadge_.SubChallengeId = subChallengeID;
+        //                 Userbadge_.idBadge = idBadge;
+        //                 Userbadge_.createdAt = timedate;
+        //                 Userbadge_.isActive = true;
+        //                 Userbadge_.userId = idUser;
+        //                 Userbadge_.session = session;
+        //                 Userbadge_.startDatetime = datasub.endDatetime;
+        //                 Userbadge_.endDatetime = timedatesm;
+
+        //                 await this.userbadgeService.create(Userbadge_);
+
+        //               }
+
+        //             }
+
+        //             let rank = null;
+        //             try {
+        //               rank = getlastrank[x].ranking;
+        //             } catch (e) {
+        //               rank = 0;
+        //             }
+
+        //             if (idBadge !== null && idBadge !== "") {
+        //               try {
+        //                 databadge = await this.BadgeService.findByid(idBadge.toString());
+        //               } catch (e) {
+        //                 databadge = null;
+        //               }
+        //               if (databadge !== null && databadge !== undefined) {
+        //                 nameBadges = databadge.name;
+
+        //               } else {
+        //                 nameBadges = "NO BADGE"
+        //               }
+        //             } else {
+        //               nameBadges = "NO BADGE"
+        //             }
+
+
+        //             let ket2 = null;
+        //             let ket3 = null;
+        //             let ket2EN = null;
+        //             let ket3EN = null;
+        //             let title1 = null;
+        //             let title2 = null;
+        //             let titleEN1 = null;
+        //             let titleEN2 = null;
+        //             try {
+        //               ket2 = body.replace("$badge", nameBadges);
+        //             } catch (e) {
+        //               ket2 = body;
+        //             }
+        //             try {
+        //               ket3 = ket2.replace("$ranking", rank);
+        //             } catch (e) {
+        //               ket3 = ket2;
+        //             }
+        //             try {
+        //               ket2EN = bodyEN.replace("$badge", nameBadges);
+        //             } catch (e) {
+        //               ket2EN = bodyEN;
+        //             }
+        //             try {
+        //               ket3EN = ket2EN.replace("$ranking", rank);
+        //             } catch (e) {
+        //               ket3EN = ket2EN;
+        //             }
+        //             try {
+        //               title1 = title.replace("$ranking", rank);
+        //             } catch (e) {
+        //               title1 = title;
+        //             }
+        //             try {
+        //               title2 = title1.replace("$badge", nameBadges);
+        //             } catch (e) {
+        //               title2 = title1;
+        //             }
+        //             try {
+        //               titleEN1 = titleEN.replace("$ranking", rank);
+        //             } catch (e) {
+        //               titleEN1 = titleEN;
+        //             }
+        //             try {
+        //               titleEN2 = titleEN1.replace("$badge", nameBadges);
+        //             } catch (e) {
+        //               titleEN2 = titleEN1;
+        //             }
+        //             let datanotifchall = null;
+        //             try {
+
+        //               datanotifchall = await this.NotificationsService.findNotifchallenge(emailmenang, "CHALLENGE", challengeID, datetime);
+        //             } catch (e) {
+        //               datanotifchall = null;
+        //             }
+
+        //             if (datanotifchall !== null) {
+        //               console.log("==data sudah ada==")
+        //             } else {
+        //               if (langIso == "id") {
+        //                 // if (email == emailmenang) {
+
+        //                 await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+        //                 await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
+
+
+        //                 //  }
+
+        //               } else {
+        //                 // if (email == emailmenang) {
+        //                 await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+        //                 await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
+        //                 // }
+        //               }
+        //             }
+
+
+        //           }
+
+        //         }
+
+        //       }
+        //     }
+        //   }
+
+
+        // }
+
         if (type == "untukPemenang") {
 
           let datasub = null;
@@ -4239,8 +4446,6 @@ export class ChallengeService {
                     let emailmenang = getlastrank[x].email
                     let idBadge = null;
                     let nameBadges = null;
-
-
 
                     try {
                       idBadge = getlastrank[x].idBadge;
@@ -4379,7 +4584,7 @@ export class ChallengeService {
                       if (langIso == "id") {
                         // if (email == emailmenang) {
 
-                        await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                        await this.util.sendNotifChallenge("PEMENANG", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
                         await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
 
 
@@ -4387,7 +4592,7 @@ export class ChallengeService {
 
                       } else {
                         // if (email == emailmenang) {
-                        await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                        await this.util.sendNotifChallenge("PEMENANG", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
                         await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
                         // }
                       }
@@ -4401,8 +4606,6 @@ export class ChallengeService {
               }
             }
           }
-
-
 
 
         }
