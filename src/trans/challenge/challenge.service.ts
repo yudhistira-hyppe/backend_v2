@@ -4237,13 +4237,61 @@ export class ChallengeService {
                     let emailmenang = getlastrank[x].email
                     let idBadge = null;
                     let nameBadges = null;
+
+
+
                     try {
                       idBadge = getlastrank[x].idBadge;
                     } catch (e) {
                       idBadge = null;
                     }
-                    let rank = null;
+                    let databadge = null;
+                    try {
+                      databadge = await this.userbadgeService.getUserbadge(idUser.toString(), subChallengeID.toString());
+                    } catch (e) {
+                      databadge = null;
+                    }
 
+                    if (databadge == null && databadge == undefined) {
+
+
+                      if (idBadge !== undefined && idBadge !== "") {
+
+                        let dt = new Date(Date.now());
+                        dt.setHours(dt.getHours() + 7); // timestamp
+                        dt = new Date(dt);
+
+                        let strdate = dt.toISOString();
+                        let repdate = strdate.replace('T', ' ');
+                        let splitdate = repdate.split('.');
+                        let timedate = splitdate[0];
+
+                        let end = new Date(endDatetime);
+                        end.setHours(dt.getHours() + 12); // timestamp
+                        end = new Date(end);
+                        let getseminngu = new Date(new Date(end).setDate(new Date(end).getDate() + 7));
+                        let strdateseminggu = getseminngu.toISOString();
+                        var repdatesm = strdateseminggu.replace('T', ' ');
+                        var splitdatesm = repdatesm.split('.');
+                        var timedatesm = splitdatesm[0];
+
+                        let Userbadge_ = new Userbadge();
+                        Userbadge_.SubChallengeId = subChallengeID;
+                        Userbadge_.idBadge = idBadge;
+                        Userbadge_.createdAt = timedate;
+                        Userbadge_.isActive = true;
+                        Userbadge_.userId = idUser;
+                        Userbadge_.session = session;
+                        Userbadge_.startDatetime = datasub.endDatetime;
+                        Userbadge_.endDatetime = timedatesm;
+
+                        await this.userbadgeService.create(Userbadge_);
+
+                      }
+
+                    }
+
+                    let rank = null;
                     try {
                       rank = getlastrank[x].ranking;
                     } catch (e) {
