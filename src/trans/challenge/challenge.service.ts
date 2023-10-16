@@ -4377,19 +4377,19 @@ export class ChallengeService {
                       console.log("==data sudah ada==")
                     } else {
                       if (langIso == "id") {
-                        if (email == emailmenang) {
+                        // if (email == emailmenang) {
 
-                          await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                          await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
+                        await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                        await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
 
 
-                        }
+                        //  }
 
                       } else {
-                        if (email == emailmenang) {
-                          await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                          await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
-                        }
+                        // if (email == emailmenang) {
+                        await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                        await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
+                        // }
                       }
                     }
 
