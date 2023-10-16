@@ -2222,12 +2222,7 @@ export class UtilsService {
       const user_userAuth = await this.userauthsService.findOne(
         emailuserbasic
       );
-      try {
 
-        datanotifchall = await this.notificationsService.findNotifchallenge(email, eventType, postID_, timesend);
-      } catch (e) {
-        datanotifchall = null;
-      }
       var mediaUri = null;
       var mediaBasePath = null;
       var mediaType = null;
@@ -2391,8 +2386,18 @@ export class UtilsService {
 
       var arraydevice = [];
       var adm = null;
+      try {
 
-      if (datanotifchall == null) {
+        datanotifchall = await this.notificationsService.findNotifchallenge(email, eventType, postID_, timesend);
+      } catch (e) {
+        datanotifchall = null;
+      }
+      console.log(datanotifchall);
+      if (datanotifchall !== null && datanotifchall !== undefined) {
+        console.log("==data sudah ada==")
+      } else {
+
+
         datadevice = await this.userdevicesService.findActive(emailuserbasic);
         for (var i = 0; i < datadevice.length; i++) {
           var deviceid = datadevice[i].deviceID;
@@ -2407,13 +2412,6 @@ export class UtilsService {
 
         }
 
-        var datanotif = null;
-
-        try {
-
-        } catch (e) {
-
-        }
         var generateID = await this.generateId();
         createNotificationsDto._id = generateID;
         createNotificationsDto.notificationID = generateID;
@@ -2456,8 +2454,6 @@ export class UtilsService {
 
         console.log('notif: ' + JSON.stringify(createNotificationsDto));
         await this.notificationsService.create(createNotificationsDto);
-      } else {
-        console.log("==data sudah ada==")
       }
 
 
