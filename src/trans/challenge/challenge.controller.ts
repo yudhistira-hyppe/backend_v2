@@ -1769,7 +1769,7 @@ export class ChallengeController {
       if (getsubdata.length != 0 && firstdata != null && parentdata.objectChallenge == "KONTEN") {
         this.beforejoinchallenge(getuserbasic, firstdata);
       }
-      await this.insertuserintonotifchallenge(listjoin);
+      this.insertuserintonotifchallenge(listjoin);
       return res.status(HttpStatus.OK).json({
         response_code: 202,
         "data": listjoin,
