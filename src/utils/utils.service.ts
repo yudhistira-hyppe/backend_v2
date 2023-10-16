@@ -2181,7 +2181,7 @@ export class UtilsService {
     }
   }
 
-  async sendNotifChallenge(type: string, email: string, titlein: string, bodyin: any, bodyeng: any, eventType: string, event: string, postID_?: string, postType?: string) {
+  async sendNotifChallenge(type: string, email: string, titlein: string, bodyin: any, bodyeng: any, eventType: string, event: string, postID_: string, postType: string, challengeSession: string) {
 
     console.log(postID_);
     var emailuserbasic = null;
@@ -2292,7 +2292,22 @@ export class UtilsService {
               body: bodyin,
               postID: postID_.toString(),
               postType: eventType,
+              challengeSession: challengeSession,
+              index: "1",
               winner: "true"
+            }
+          }
+        }
+        else if (type == "BERAKHIR") {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: postID_.toString(),
+              postType: eventType,
+              challengeSession: challengeSession,
+              index: "1",
             }
           }
         } else {
@@ -2320,7 +2335,23 @@ export class UtilsService {
               body: bodyeng,
               postID: postID_.toString(),
               postType: eventType,
+              challengeSession: challengeSession,
+              index: "1",
               winner: "true"
+            }
+          }
+        }
+        else if (type == "BERAKHIR") {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyeng,
+              postID: postID_.toString(),
+              postType: eventType,
+              challengeSession: challengeSession,
+              index: "1"
+
             }
           }
         } else {
@@ -2390,8 +2421,19 @@ export class UtilsService {
       createNotificationsDto.flowIsDone = true;
       createNotificationsDto.createdAt = date;
       createNotificationsDto.updatedAt = date;
-      createNotificationsDto.actionButtons = null;
-      createNotificationsDto.contentEventID = null;
+
+      if (type == "PEMENANG" || type == "BERAKHIR") {
+        createNotificationsDto.contentEventID = payload.data.challengeSession;
+      }
+      else {
+        createNotificationsDto.actionButtons = null;
+      }
+      if (type == "PEMENANG" || type == "BERAKHIR") {
+        createNotificationsDto.contentEventID = payload.data.challengeSession;
+      }
+      else {
+        createNotificationsDto.contentEventID = null;
+      }
       createNotificationsDto.senderOrReceiverInfo = senderreceiver;
 
 

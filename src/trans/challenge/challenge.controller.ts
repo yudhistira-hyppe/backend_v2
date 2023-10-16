@@ -1683,22 +1683,18 @@ export class ChallengeController {
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
 
       if (languages_json.$id == '6152481690f7b2293d0bf653') {
-        if(checkdata[0].isActive == true)
-        {
+        if (checkdata[0].isActive == true) {
           throw new BadRequestException("user already registered");
         }
-        else
-        {
+        else {
           throw new BadRequestException("you have been kicked out of this challenge");
         }
       }
       else {
-        if(checkdata[0].isActive == true)
-        {
+        if (checkdata[0].isActive == true) {
           throw new BadRequestException("pengguna telah melakukan pendaftaran");
         }
-        else
-        {
+        else {
           throw new BadRequestException("anda sudah dikeluarkan dari challenge");
         }
       }
@@ -3148,16 +3144,13 @@ export class ChallengeController {
         var getdata = getdata[0];
         if (getdata.include == "YES") {
           // console.log(getkey);
-          if(getkey == "akanDatang" || getkey == "challengeDimulai")
-          {
+          if (getkey == "akanDatang" || getkey == "challengeDimulai") {
             let dt = null;
             dt = new Date(subchallenge[loopsub].startDatetime);
-            if(getkey == "akanDatang")
-            {
+            if (getkey == "akanDatang") {
               dt.setHours(dt.getHours() + 7 + getdata.aturWaktu); // timestamp
             }
-            else
-            {
+            else {
               dt.setHours(dt.getHours() + 7); // timestamp
             }
             dt = new Date(dt);
@@ -3285,7 +3278,7 @@ export class ChallengeController {
               // setnotif['notificationEN'] = getdata.descriptionEN;
               setinsertpartisipan.push(setnotif);
             }
-  
+
             var setdata = new notifChallenge();
             setdata._id = mongo.Types.ObjectId();
             setdata.challengeID = subchallenge[loopsub].challengeId;
@@ -3308,8 +3301,7 @@ export class ChallengeController {
               console.log(e);
             }
 
-            if(getkey == "challengeDimulai")
-            {
+            if (getkey == "challengeDimulai") {
               var setinsertpartisipan = [];
               for (var j = 0; j < result.length; j++) {
                 var setnotif = {};
@@ -3609,8 +3601,7 @@ export class ChallengeController {
         }
 
         if (checkexist == false) {
-          if(pushnotifikasi[targetlist[i]][0].include == "YES")
-          {
+          if (pushnotifikasi[targetlist[i]][0].include == "YES") {
             var mongo = require('mongoose');
             var timenow = await this.util.getDateTimeString();
             var getpushnotif = pushnotifikasi[targetlist[i]];
@@ -4006,9 +3997,9 @@ export class ChallengeController {
       for (var j = 0; j < data.length; j++) {
         var language = data[i].languages;
         if (language.id == new mongo.Types.ObjectId("613bc5daf9438a7564ca798a")) {
-          await this.util.sendNotifChallenge(data[i].email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type);
+          await this.util.sendNotifChallenge("", data[i].email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type, "");
         } else {
-          await this.util.sendNotifChallenge(data[i].email.toString(), titleEN, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type);
+          await this.util.sendNotifChallenge("", data[i].email.toString(), titleEN, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type, "");
         }
       }
     }
@@ -4018,9 +4009,13 @@ export class ChallengeController {
 
   @Post('userbadge')
   async userbadges() {
-
+    var endDatetime = null;
+    endDatetime = new Date("2023-10-15 20:34:00");
+    endDatetime.setHours(endDatetime.getHours() + 7); // timestamp
+    endDatetime = new Date(endDatetime);
+    console.log(endDatetime)
     // this.sendNotifeChallenge();
-    this.updateUserbadge();
+    //  this.updateUserbadge();
 
     const messages = {
       "info": ["The proses successful"],
@@ -4079,121 +4074,107 @@ export class ChallengeController {
   }
 
   @UseGuards(JwtAuthGuard)
-    @Post('user/delete')
-    async delete(@Res() res, @Req() request: Request, @Headers() headers) 
-    {
-        var request_json = JSON.parse(JSON.stringify(request.body));
-        var idchallenge = request_json['idChallenge'];
-        var email = request_json['email'];
-        var idadmin = request_json['idAdmin'];
-        var reason = request_json['reason'];
+  @Post('user/delete')
+  async delete(@Res() res, @Req() request: Request, @Headers() headers) {
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var idchallenge = request_json['idChallenge'];
+    var email = request_json['email'];
+    var idadmin = request_json['idAdmin'];
+    var reason = request_json['reason'];
 
-        if(idchallenge == null && idchallenge == undefined)
-        {
-            throw new BadRequestException("Unabled to proceed, challenge id field is required");
-        }
-
-        if(email == null && email == undefined)
-        {
-            throw new BadRequestException("Unabled to proceed, user id field is required");
-        }
-
-        if(idadmin == null && idadmin == undefined)
-        {
-            throw new BadRequestException("Unabled to proceed, admin id field is required");
-        }
-
-        if(reason == null && reason == undefined)
-        {
-            throw new BadRequestException("Unabled to proceed, reason field is required");
-        }
-
-        var exileUser = await this.userbasicsSS.findOne(email);
-        var admin = await this.userbasicsSS.findbyid(idadmin);
-
-        var getuserchallenge = await this.userchallengeSS.findByChallengeandUser(idchallenge, exileUser._id.toString());
-
-        if(getuserchallenge.length != 0)
-        {
-            var insertid = [];
-            var getarray = getuserchallenge[0].rejectRemark;
-            if(getarray == null || getarray == undefined)
-            {
-                getarray = [];
-            }
-            var insertreject = {};
-            insertreject['idAdmin'] = idadmin;
-            insertreject['time'] = await this.util.getDateTimeString();
-            insertreject['emailAdmin'] = admin.email;
-            insertreject['remark'] = reason;
-            getarray.push(insertreject);
-
-            var updatedata = new Userchallenges();
-            updatedata.isActive = false;
-            updatedata.rejectRemark = getarray;
-            updatedata.updatedAt = await this.util.getDateTimeString();
-
-            for(var i = 0; i < getuserchallenge.length; i++)
-            {
-                insertid.push(getuserchallenge[i]._id.toString());
-            }
-
-            try
-            {
-                await this.userchallengeSS.delete(insertid, exileUser._id.toString(), updatedata);
-
-                await this.deleteDataviaBelakang(exileUser, idchallenge);
-                
-                const messages = {
-                    "info": ["The create successful"],
-                };
-
-                res.status(HttpStatus.OK).json({
-                    response_code: 202,
-                    "message": messages
-                });
-            }
-            catch(e)
-            {
-                console.log(e);
-            }
-        }
+    if (idchallenge == null && idchallenge == undefined) {
+      throw new BadRequestException("Unabled to proceed, challenge id field is required");
     }
 
-    async deleteDataviaBelakang(userdata:any, idchallenge:string)
-    {
-        var detail = await this.challengeService.detailchallenge(idchallenge);
-        var mongo = require('mongoose');
-        var language = userdata.languages;
-        var title = null;
-        var bodyin = "Sayang sekali, kamu telah didiskualifikasi karena melanggar syarat dan ketentuan challenge. Klik disini untuk melihat ketentuan";
-        var bodyeng = "Unfortunately, you have been disqualified for violating the terms and conditions of the challenge. Click here to view the terms and conditions!";
-        if (language.id == new mongo.Types.ObjectId("613bc5daf9438a7564ca798a")) {
-            title = "Diskualifikasi dari challenge ";
-        } else {
-            title = "You have been disqualified from the " + detail.nameChallenge;
-        }
-
-        await this.util.sendNotifChallenge("REMOVE", userdata.email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", idchallenge, "REMOVE PARTICIPANT");
-
-        var listnotif = await this.notifChallengeService.findChild(idchallenge);
-        for(var i = 0; i < listnotif.length; i++)
-        {
-            var temparray = [];
-            var getuserid = listnotif[i].userID;
-            for(var j = 0; j < getuserid.length; j++)
-            {
-                var getlistuser = getuserid[j];
-                if(getlistuser.email != userdata.email)
-                {
-                    temparray.push(getlistuser);
-                }
-            }
-
-            var updatedata = new notifChallenge();
-            updatedata.userID = temparray;
-
-            await this.notifChallengeService.update(listnotif[i]._id.toString(), updatedata);
-        }
+    if (email == null && email == undefined) {
+      throw new BadRequestException("Unabled to proceed, user id field is required");
     }
+
+    if (idadmin == null && idadmin == undefined) {
+      throw new BadRequestException("Unabled to proceed, admin id field is required");
+    }
+
+    if (reason == null && reason == undefined) {
+      throw new BadRequestException("Unabled to proceed, reason field is required");
+    }
+
+    var exileUser = await this.userbasicsSS.findOne(email);
+    var admin = await this.userbasicsSS.findbyid(idadmin);
+
+    var getuserchallenge = await this.userchallengeSS.findByChallengeandUser(idchallenge, exileUser._id.toString());
+
+    if (getuserchallenge.length != 0) {
+      var insertid = [];
+      var getarray = getuserchallenge[0].rejectRemark;
+      if (getarray == null || getarray == undefined) {
+        getarray = [];
+      }
+      var insertreject = {};
+      insertreject['idAdmin'] = idadmin;
+      insertreject['time'] = await this.util.getDateTimeString();
+      insertreject['emailAdmin'] = admin.email;
+      insertreject['remark'] = reason;
+      getarray.push(insertreject);
+
+      var updatedata = new Userchallenges();
+      updatedata.isActive = false;
+      updatedata.rejectRemark = getarray;
+      updatedata.updatedAt = await this.util.getDateTimeString();
+
+      for (var i = 0; i < getuserchallenge.length; i++) {
+        insertid.push(getuserchallenge[i]._id.toString());
+      }
+
+      try {
+        await this.userchallengeSS.delete(insertid, exileUser._id.toString(), updatedata);
+
+        await this.deleteDataviaBelakang(exileUser, idchallenge);
+
+        const messages = {
+          "info": ["The create successful"],
+        };
+
+        res.status(HttpStatus.OK).json({
+          response_code: 202,
+          "message": messages
+        });
+      }
+      catch (e) {
+        console.log(e);
+      }
+    }
+  }
+
+  async deleteDataviaBelakang(userdata: any, idchallenge: string) {
+    var detail = await this.challengeService.detailchallenge(idchallenge);
+    var mongo = require('mongoose');
+    var language = userdata.languages;
+    var title = null;
+    var bodyin = "Sayang sekali, kamu telah didiskualifikasi karena melanggar syarat dan ketentuan challenge. Klik disini untuk melihat ketentuan";
+    var bodyeng = "Unfortunately, you have been disqualified for violating the terms and conditions of the challenge. Click here to view the terms and conditions!";
+    if (language.id == new mongo.Types.ObjectId("613bc5daf9438a7564ca798a")) {
+      title = "Diskualifikasi dari challenge ";
+    } else {
+      title = "You have been disqualified from the " + detail.nameChallenge;
+    }
+
+    await this.util.sendNotifChallenge("REMOVE", userdata.email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", idchallenge, "REMOVE PARTICIPANT", "");
+
+    var listnotif = await this.notifChallengeService.findChild(idchallenge);
+    for (var i = 0; i < listnotif.length; i++) {
+      var temparray = [];
+      var getuserid = listnotif[i].userID;
+      for (var j = 0; j < getuserid.length; j++) {
+        var getlistuser = getuserid[j];
+        if (getlistuser.email != userdata.email) {
+          temparray.push(getlistuser);
+        }
+      }
+
+      var updatedata = new notifChallenge();
+      updatedata.userID = temparray;
+
+      await this.notifChallengeService.update(listnotif[i]._id.toString(), updatedata);
+    }
+  }
 }

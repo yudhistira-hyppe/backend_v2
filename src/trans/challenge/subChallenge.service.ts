@@ -20,7 +20,9 @@ export class subChallengeService {
     async findOne(id: string): Promise<subChallenge> {
         return this.subChallengeModel.findOne({ _id: new Types.ObjectId(id) }).exec();
     }
-
+    async findOneByChallenge(id: string, challengeId: string): Promise<subChallenge> {
+        return this.subChallengeModel.findOne({ _id: new Types.ObjectId(id), challengeId: new Types.ObjectId(challengeId) }).exec();
+    }
     async findChild(id: string): Promise<subChallenge[]> {
         return this.subChallengeModel.find({ challengeId: new Types.ObjectId(id) }).exec();
     }
