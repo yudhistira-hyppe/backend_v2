@@ -18,7 +18,7 @@ export class TaskService {
   //   this.logger.debug('Called when the current second is 45');
   // }
 
-  @Cron('*/120 * * * * *')
+  @Cron('* */2 * * * *')
   challengeJob() {
     this.logger.debug('Challenge JOB START userbadge');
     this.challengeService.userbadge();
@@ -32,7 +32,7 @@ export class TaskService {
     //this.postContentService.cronJobSeaweedDiariesStart();
   }
 
-  @Cron('*/240 * * * * *')
+  @Cron('* */10 * * * *')
   challengeJob2() {
     this.logger.debug('Challenge JOB START');
     this.challengeService.sendNotifeChallenge();
