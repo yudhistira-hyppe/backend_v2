@@ -18,13 +18,13 @@ export class TaskService {
   //   this.logger.debug('Called when the current second is 45');
   // }
 
-  @Cron('* */2 * * * *')
+  @Cron('* */5 * * * *')
   challengeJob() {
-    //this.logger.debug('Challenge JOB START userbadge');
-    //this.challengeService.userbadge();
+    this.logger.debug('Challenge JOB START userbadge');
+    this.challengeService.userbadge();
     // this.logger.debug('Challenge JOB START updateUserbadge');
-    //this.challengeService.updateBadgeex();
-    //this.challengeService.updateSubchallengeex();
+    this.challengeService.updateBadgeex();
+    this.challengeService.updateSubchallengeex();
     // this.challengeService.sendNotifeChallenge();
     //this.postContentService.cronJobSeaweedProfileStart();
     //this.postContentService.cronJobSeaweedPictStart();
@@ -34,8 +34,8 @@ export class TaskService {
 
   @Cron('* */10 * * * *')
   challengeJob2() {
-    //this.logger.debug('Challenge JOB START');
-    //this.challengeService.sendNotifeChallenge();
+    this.logger.debug('Challenge JOB START');
+    this.challengeService.sendNotifeChallenge();
 
   }
 }
