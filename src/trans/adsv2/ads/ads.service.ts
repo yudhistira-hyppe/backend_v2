@@ -11,6 +11,7 @@ import { PostContentService } from '../../../content/posts/postcontent.service';
 import { AccountbalancesService } from '../../../trans/accountbalances/accountbalances.service';
 import { UserAdsService } from '../../../trans/userads/userads.service';
 import { OssContentPictService } from '../../../content/posts/osscontentpict.service';
+import { UtilsService } from 'src/utils/utils.service';
 
 @Injectable()
 export class AdsService {
@@ -23,6 +24,7 @@ export class AdsService {
         private readonly adsBalaceCreditService: AdsBalaceCreditService,
         private readonly AccountbalancesService: AccountbalancesService,
         private readonly userAdsService: UserAdsService,
+        private readonly utilsService: UtilsService,
         private readonly ossContentPictService: OssContentPictService,
     ) { }
 
@@ -699,8 +701,8 @@ export class AdsService {
                                             }, {
                                                 "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -713,8 +715,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "updateAt": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -748,8 +750,8 @@ export class AdsService {
                                             }, {
                                                 "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -762,8 +764,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "updateAt": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -811,8 +813,8 @@ export class AdsService {
                                             }, {
                                                 "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -825,8 +827,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "updateAt": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -850,8 +852,8 @@ export class AdsService {
                                             }, {
                                                 "clickTime": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -864,8 +866,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -889,8 +891,8 @@ export class AdsService {
                                             }, {
                                                 "clickTime": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -903,8 +905,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -935,8 +937,8 @@ export class AdsService {
                                             }, {
                                                 "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -985,8 +987,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "updateAt": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -1020,8 +1022,8 @@ export class AdsService {
                                             }, {
                                                 "clickTime": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -1070,8 +1072,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -1105,8 +1107,8 @@ export class AdsService {
                                             }, {
                                                 "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -1371,8 +1373,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "updateAt": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -1464,8 +1466,8 @@ export class AdsService {
                                             }, {
                                                 "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -1730,8 +1732,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "updateAt": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -1823,8 +1825,8 @@ export class AdsService {
                                             }, {
                                                 "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -2089,8 +2091,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "updateAt": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -2182,8 +2184,8 @@ export class AdsService {
                                             }, {
                                                 "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -2448,8 +2450,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "updateAt": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -2543,8 +2545,8 @@ export class AdsService {
                                             }, {
                                                 "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -2809,8 +2811,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "updateAt": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -3397,8 +3399,8 @@ export class AdsService {
         }
         $match['adsObjectivitasId'] = { $ne: null };
         $match['timestamp'] = {
-            $gte: start_date.toISOString(),
-            $lte: end_date.toISOString()
+            $gte: await this.utilsService.formatDateString(start_date),
+            $lte: await this.utilsService.formatDateString(end_date)
         };
         var query = await this.adsModel.aggregate(
             [{
@@ -3458,62 +3460,6 @@ export class AdsService {
                 }
             }]
         );
-        console.log(JSON.stringify([{
-            $match
-        }, {
-            "$project": {
-                "status": {
-                    "$switch": {
-                        "branches": [{
-                            "case": {
-                                "$eq": ["$status", "DRAFT"]
-                            },
-                            "then": "DRAFT"
-                        }, {
-                            "case": {
-                                "$or": [{
-                                    "$eq": ["$status", "FINISH"]
-                                }, {
-                                    "$eq": ["$status", "IN_ACTIVE"]
-                                }, {
-                                    "$eq": ["$status", "REPORTED"]
-                                }]
-                            },
-                            "then": "IN_ACTIVE"
-                        }, {
-                            "case": {
-                                "$or": [{
-                                    "$eq": ["$status", "APPROVE"]
-                                }, {
-                                    "$eq": ["$status", "ACTIVE"]
-                                }]
-                            },
-                            "then": "ACTIVE"
-                        }, {
-                            "case": {
-                                "$eq": ["$status", "UNDER_REVIEW"]
-                            },
-                            "then": "UNDER_REVIEW"
-                        }],
-                        "default": "OTHER"
-                    }
-                }
-            }
-        }, {
-            "$facet": {
-                "status": [{
-                    "$group": {
-                        "_id": "$status",
-                        "status": {
-                            "$first": "$status"
-                        },
-                        "count": {
-                            "$sum": 1
-                        }
-                    }
-                }]
-            }
-        }]));
         return query;
     }
 

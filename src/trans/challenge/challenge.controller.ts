@@ -3301,7 +3301,7 @@ export class ChallengeController {
               console.log(e);
             }
 
-            if (getkey == "challengeDimulai") {
+            if (getkey == "challengeDimulai" && listpartisipan != null && listpartisipan.length != 0) {
               var setinsertpartisipan = [];
               for (var j = 0; j < result.length; j++) {
                 var setnotif = {};
@@ -4118,6 +4118,7 @@ export class ChallengeController {
 
       var updatedata = new Userchallenges();
       updatedata.isActive = false;
+      updatedata.ranking = null;
       updatedata.rejectRemark = getarray;
       updatedata.updatedAt = await this.util.getDateTimeString();
 
@@ -4128,7 +4129,7 @@ export class ChallengeController {
       try {
         await this.userchallengeSS.delete(insertid, exileUser._id.toString(), updatedata);
 
-        await this.deleteDataviaBelakang(exileUser, idchallenge);
+        this.deleteDataviaBelakang(exileUser, idchallenge);
 
         const messages = {
           "info": ["The create successful"],
@@ -4143,17 +4144,23 @@ export class ChallengeController {
         console.log(e);
       }
     }
+    else {
+      res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "message": "data not found"
+      });
+    }
   }
 
   async deleteDataviaBelakang(userdata: any, idchallenge: string) {
     var detail = await this.challengeService.detailchallenge(idchallenge);
     var mongo = require('mongoose');
-    var language = userdata.languages;
+    var language = JSON.parse(JSON.stringify(userdata.languages));
     var title = null;
     var bodyin = "Sayang sekali, kamu telah didiskualifikasi karena melanggar syarat dan ketentuan challenge. Klik disini untuk melihat ketentuan";
     var bodyeng = "Unfortunately, you have been disqualified for violating the terms and conditions of the challenge. Click here to view the terms and conditions!";
-    if (language.id == new mongo.Types.ObjectId("613bc5daf9438a7564ca798a")) {
-      title = "Diskualifikasi dari challenge ";
+    if (language.$id.toString() == "613bc5daf9438a7564ca798a") {
+      title = "Diskualifikasi dari challenge " + detail.nameChallenge;
     } else {
       title = "You have been disqualified from the " + detail.nameChallenge;
     }
@@ -4176,5 +4183,18 @@ export class ChallengeController {
 
       await this.notifChallengeService.update(listnotif[i]._id.toString(), updatedata);
     }
+
+    var subdata = await this.subchallenge.findbyid(idchallenge);
+    var timenow = await this.util.getDateTimeString();
+
+    for (var i = 0; i < subdata.length; i++) {
+      var getsubdata = subdata[i]._id;
+      var listuserchallenge = await this.userchallengeSS.datauserchallbyidchall(idchallenge, getsubdata);
+      for (var j = 0; j < listuserchallenge.length; j++) {
+        var updaterank = j + 1;
+        await this.userchallengeSS.updateRangking(listuserchallenge[j]._id.toString(), updaterank, timenow);
+      }
+    }
+
   }
 }

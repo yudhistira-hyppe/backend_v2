@@ -7,9 +7,11 @@ import { UserbasicsService } from '../userbasics/userbasics.service';
 import { SettingsService } from '../settings/settings.service';
 import { LogapisService } from '../logapis/logapis.service';
 import { UtilsService } from 'src/utils/utils.service';
+import { AdsPriceCreditsService } from '../adsv2/adspricecredits/adspricecredits.service';
 @Controller('api/vouchers')
 export class VouchersController {
-    constructor(private readonly vouchersService: VouchersService, private readonly userbasicsService: UserbasicsService, private readonly settingsService: SettingsService, private readonly logapiSS: LogapisService, private readonly utilsService: UtilsService) { }
+    constructor(private readonly vouchersService: VouchersService,
+        private readonly adsPriceCreditsService: AdsPriceCreditsService, private readonly userbasicsService: UserbasicsService, private readonly settingsService: SettingsService, private readonly logapiSS: LogapisService, private readonly utilsService: UtilsService) { }
     @UseGuards(JwtAuthGuard)
     @Post()
     async create(@Res() res, @Headers('x-auth-token') auth: string, @Body() CreateVouchersDto: CreateVouchersDto, @Request() req, @Headers() headers) {
@@ -81,6 +83,9 @@ export class VouchersController {
             var creditpromo = CreateVouchersDto.creditPromo;
             var total = creditValue + creditpromo;
 
+            var getSetting_CreditPrice = await this.adsPriceCreditsService.findStatusActive();
+            var aamount = ((getSetting_CreditPrice.creditPrice != undefined) ? getSetting_CreditPrice.creditPrice : 0) * total;
+
             CreateVouchersDto.creditTotal = total;
             CreateVouchersDto.noVoucher = kodevoucher;
             CreateVouchersDto.createdAt = dt.toISOString();
@@ -88,6 +93,7 @@ export class VouchersController {
             CreateVouchersDto.totalUsed = 0;
             CreateVouchersDto.expiredAt = d.toISOString();
             CreateVouchersDto.pendingUsed = 0;
+            CreateVouchersDto.amount = aamount;
             let data = await this.vouchersService.create(CreateVouchersDto);
 
             var timestamps_end = await this.utilsService.getDateTimeString();
