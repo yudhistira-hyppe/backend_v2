@@ -2419,12 +2419,7 @@ export class UtilsService {
       createNotificationsDto.createdAt = date;
       createNotificationsDto.updatedAt = date;
       createNotificationsDto.sendNotifChallenge = timesend;
-      if (type == "PEMENANG" || type == "BERAKHIR") {
-        createNotificationsDto.contentEventID = payload.data.challengeSession;
-      }
-      else {
-        createNotificationsDto.actionButtons = null;
-      }
+
       if (type == "PEMENANG" || type == "BERAKHIR") {
         createNotificationsDto.contentEventID = payload.data.challengeSession;
       }
@@ -2440,7 +2435,12 @@ export class UtilsService {
       if (postID_ != undefined) {
         createNotificationsDto.postType = postType;
       }
-
+      if (type == "PEMENANG") {
+        createNotificationsDto.actionButtons = "true";
+      }
+      else {
+        createNotificationsDto.actionButtons = null;
+      }
 
       console.log('notif: ' + JSON.stringify(createNotificationsDto));
       await this.notificationsService.create(createNotificationsDto);
