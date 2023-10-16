@@ -4584,16 +4584,16 @@ export class ChallengeService {
                       if (langIso == "id") {
                         if (email == emailmenang) {
 
-                          await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                          await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
+                          await this.util.sendNotifChallenge("PEMENANG", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                          await this.notifChallengeService.updateStatussend(id.toString(), email);
 
 
                         }
 
                       } else {
                         if (email == emailmenang) {
-                          await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                          await this.notifChallengeService.updateStatussend(id.toString(), emailmenang);
+                          await this.util.sendNotifChallenge("PEMENANG", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                          await this.notifChallengeService.updateStatussend(id.toString(), email);
                         }
                       }
                     }
