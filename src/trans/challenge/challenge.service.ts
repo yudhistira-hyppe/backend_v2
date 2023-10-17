@@ -4461,6 +4461,7 @@ export class ChallengeService {
                     let emailmenang = getlastrank[x].email
                     let idBadge = null;
                     let nameBadges = null;
+                    let userid = getlastrank[x].idUser
 
                     try {
                       idBadge = getlastrank[x].idBadge;
@@ -4502,7 +4503,7 @@ export class ChallengeService {
                         Userbadge_.idBadge = idBadge;
                         Userbadge_.createdAt = timedate;
                         Userbadge_.isActive = true;
-                        Userbadge_.userId = idUser;
+                        Userbadge_.userId = userid;
                         Userbadge_.session = session;
                         Userbadge_.startDatetime = datasub.endDatetime;
                         Userbadge_.endDatetime = timedatesm;
