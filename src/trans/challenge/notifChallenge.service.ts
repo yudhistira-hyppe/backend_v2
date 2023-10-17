@@ -108,9 +108,9 @@ export class notifChallengeService {
                                 {
                                     $gte:
                                         [
-                                            "$datetime",
                                             "$timenow",
 
+                                            "$datetime",
 
                                         ]
                                 },
@@ -119,11 +119,11 @@ export class notifChallengeService {
                             {
                                 $expr:
                                 {
-                                    $lte:
+                                    $eq:
                                         [
+                                            "$isSend",
 
-                                            "$datetime",
-                                            "$timenowplus",
+                                            false,
 
                                         ]
                                 },
