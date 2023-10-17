@@ -49,7 +49,13 @@ export class ChallengeService {
         {
           "$ne": "NONEACTIVE"
         }
-      }
+      },
+      {
+        "statusChallenge":
+        {
+          "$ne": "NONACTIVE"
+        }
+      },
     );
 
     if (namachallenge != null && namachallenge != undefined) {
@@ -320,6 +326,15 @@ export class ChallengeService {
                       "$ne":
                         [
                           "$statusChallenge", 'NONACTIVE'
+                        ]
+                    }
+                  },
+                  {
+                    "$expr":
+                    {
+                      "$ne":
+                        [
+                          "$statusChallenge", 'NONEACTIVE'
                         ]
                     }
                   },

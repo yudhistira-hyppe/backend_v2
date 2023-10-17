@@ -1406,6 +1406,10 @@ export class ChallengeController {
         this.insertchildofchallenge(getdata, null);
       }
     }
+    else if(statusChallenge == "NONACTIVE" || statusChallenge == "NONEACTIVE")
+    {
+      this.hapuschallenge(getdata._id.toString());
+    }
 
     var timestamps_end = await this.util.getDateTimeString();
     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
@@ -1675,107 +1679,112 @@ export class ChallengeController {
       throw new NotAcceptableException("Unabled to proceed, user data not found");
     }
 
-    var checkdata = await this.userchallengeSS.checkUserjoinchallenge(getsubid, getuserid);
-    if (checkdata.length == 1) {
-      var languages_json = JSON.parse(JSON.stringify(getuserbasic.languages));
+    var parentdata = await this.challengeService.detailchallenge(getsubid);
+    var getsubdata = await this.subchallenge.subchallengedetailwithlastrank(getsubid);
 
-      var timestamps_end = await this.util.getDateTimeString();
-      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
+    var listjoin = [];
+    var firstdata = null;
+    for (var i = 0; i < getsubdata.length; i++) {
+      var getdatenow = await this.util.getDateTimeString();
+      var convertnow = new Date(getdatenow);
 
-      if (languages_json.$id == '6152481690f7b2293d0bf653') {
-        if (checkdata[0].isActive == true) {
-          throw new BadRequestException("user already registered");
-        }
-        else {
-          throw new BadRequestException("you have been kicked out of this challenge");
-        }
-      }
-      else {
-        if (checkdata[0].isActive == true) {
-          throw new BadRequestException("pengguna telah melakukan pendaftaran");
-        }
-        else {
-          throw new BadRequestException("anda sudah dikeluarkan dari challenge");
+      var getfromdb = new Date(getsubdata[i].endDatetime);
+
+      var datediff = getfromdb.getTime() - convertnow.getTime();
+      if (datediff >= 0) {
+        var createdata = new Userchallenges();
+        var mongo = require('mongoose');
+        createdata._id = mongo.Types.ObjectId();
+        createdata.idChallenge = new mongo.Types.ObjectId(getsubid);
+        createdata.idUser = new mongo.Types.ObjectId(getuserid);
+        createdata.idSubChallenge = new mongo.Types.ObjectId(getsubdata[i]._id);
+        createdata.isActive = true;
+        createdata.score = 0;
+        createdata.ranking = getsubdata[i].lastrank;
+        createdata.startDatetime = getsubdata[i].startDatetime;
+        createdata.endDatetime = getsubdata[i].endDatetime;
+        createdata.objectChallenge = parentdata.objectChallenge;
+        createdata.createdAt = await this.util.getDateTimeString();
+        createdata.updatedAt = await this.util.getDateTimeString();
+        createdata.activity = [];
+        createdata.history = [];
+
+        listjoin.push(createdata);
+        await this.userchallengeSS.create(createdata);
+
+
+        if (firstdata == null) {
+          firstdata = new Userchallenges();
+          firstdata._id = createdata._id;
+          firstdata.idChallenge = createdata.idChallenge;
+          firstdata.idUser = createdata.idUser;
+          firstdata.idSubChallenge = createdata.idSubChallenge;
+          firstdata.isActive = createdata.isActive;
+          firstdata.score = createdata.score;
+          firstdata.ranking = createdata.ranking;
+          firstdata.startDatetime = createdata.startDatetime;
+          firstdata.endDatetime = createdata.endDatetime;
+          firstdata.objectChallenge = createdata.objectChallenge;
+          firstdata.createdAt = createdata.createdAt;
+          firstdata.updatedAt = createdata.updatedAt;
+          firstdata.activity = createdata.activity;
+          firstdata.history = createdata.history;
+          firstdata.session = getsubdata[i].session;
         }
       }
     }
-    else {
-      var parentdata = await this.challengeService.detailchallenge(getsubid);
-      var getsubdata = await this.subchallenge.subchallengedetailwithlastrank(getsubid);
 
-      var listjoin = [];
-      var firstdata = null;
-      for (var i = 0; i < getsubdata.length; i++) {
-        var getdatenow = await this.util.getDateTimeString();
-        var convertnow = new Date(getdatenow);
+    const messages = {
+      "info": ["The create successful"],
+    };
 
-        var getfromdb = new Date(getsubdata[i].endDatetime);
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
 
-        var datediff = getfromdb.getTime() - convertnow.getTime();
-        if (datediff >= 0) {
-          var createdata = new Userchallenges();
-          var mongo = require('mongoose');
-          createdata._id = mongo.Types.ObjectId();
-          createdata.idChallenge = new mongo.Types.ObjectId(getsubid);
-          createdata.idUser = new mongo.Types.ObjectId(getuserid);
-          createdata.idSubChallenge = new mongo.Types.ObjectId(getsubdata[i]._id);
-          createdata.isActive = true;
-          createdata.score = 0;
-          createdata.ranking = getsubdata[i].lastrank;
-          createdata.startDatetime = getsubdata[i].startDatetime;
-          createdata.endDatetime = getsubdata[i].endDatetime;
-          createdata.objectChallenge = parentdata.objectChallenge;
-          createdata.createdAt = await this.util.getDateTimeString();
-          createdata.updatedAt = await this.util.getDateTimeString();
-          createdata.activity = [];
-          createdata.history = [];
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, request_json['idUser'], null, request_json);
 
-          await this.userchallengeSS.create(createdata);
-          listjoin.push(createdata);
+    if (getsubdata.length != 0 && firstdata != null && parentdata.objectChallenge == "KONTEN") {
+      this.beforejoinchallenge(getuserbasic, firstdata);
+    }
 
-
-          if (firstdata == null) {
-            firstdata = new Userchallenges();
-            firstdata._id = createdata._id;
-            firstdata.idChallenge = createdata.idChallenge;
-            firstdata.idUser = createdata.idUser;
-            firstdata.idSubChallenge = createdata.idSubChallenge;
-            firstdata.isActive = createdata.isActive;
-            firstdata.score = createdata.score;
-            firstdata.ranking = createdata.ranking;
-            firstdata.startDatetime = createdata.startDatetime;
-            firstdata.endDatetime = createdata.endDatetime;
-            firstdata.objectChallenge = createdata.objectChallenge;
-            firstdata.createdAt = createdata.createdAt;
-            firstdata.updatedAt = createdata.updatedAt;
-            firstdata.activity = createdata.activity;
-            firstdata.history = createdata.history;
-            firstdata.session = getsubdata[i].session;
-          }
-        }
-      }
-
-      const messages = {
-        "info": ["The create successful"],
-      };
-
-      const messagesEror = {
-        "info": ["Todo is not found!"],
-      };
-
-      var timestamps_end = await this.util.getDateTimeString();
-      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, request_json['idUser'], null, request_json);
-
-      if (getsubdata.length != 0 && firstdata != null && parentdata.objectChallenge == "KONTEN") {
-        this.beforejoinchallenge(getuserbasic, firstdata);
-      }
+    if(listjoin.length != 0)
+    {
       this.insertuserintonotifchallenge(listjoin);
-      return res.status(HttpStatus.OK).json({
-        response_code: 202,
-        "data": listjoin,
-        "message": messages
-      });
     }
+    return res.status(HttpStatus.OK).json({
+      response_code: 202,
+      "data": listjoin,
+      "message": messages
+    });
+    // var checkdata = await this.userchallengeSS.checkUserjoinchallenge(getsubid, getuserid);
+    // if (checkdata.length == 1) {
+    //   var languages_json = JSON.parse(JSON.stringify(getuserbasic.languages));
+
+    //   var timestamps_end = await this.util.getDateTimeString();
+    //   this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
+
+    //   if (languages_json.$id == '6152481690f7b2293d0bf653') {
+    //     if (checkdata[0].isActive == true) {
+    //       throw new BadRequestException("user already registered");
+    //     }
+    //     else {
+    //       throw new BadRequestException("you have been kicked out of this challenge");
+    //     }
+    //   }
+    //   else {
+    //     if (checkdata[0].isActive == true) {
+    //       throw new BadRequestException("pengguna telah melakukan pendaftaran");
+    //     }
+    //     else {
+    //       throw new BadRequestException("anda sudah dikeluarkan dari challenge");
+    //     }
+    //   }
+    // }
+    // else {
+      
+    // }
   }
 
   // @Delete(':id')
@@ -3301,12 +3310,12 @@ export class ChallengeController {
               console.log(e);
             }
 
-            if (getkey == "challengeDimulai" && listpartisipan != null && listpartisipan.length != 0) {
+            if (getkey == "challengeDimulai" && listpartisipan != null && listpartisipan.length != 0 && loopsub == 0) {
               var setinsertpartisipan = [];
               for (var j = 0; j < result.length; j++) {
                 var setnotif = {};
                 var titleID = 'Undangan challenge ' + detail.nameChallenge;
-                var titleEN = detail.nameChallenge + " Challenge Invitation";
+              var titleEN = detail.nameChallenge + " Challenge Invitation";
                 var bodyID = 'Hai ' + result[j].username + ', kamu telah diundang untuk mengikuti challenge ' + detail.nameChallenge + '. Klik di sini!';
                 var bodyEN = 'Hi ' + result[j].username + ', you have been invited to participate in The ' + detail.nameChallenge + ' challenge. Click here!';
                 setnotif['idUser'] = result[j]._id;
@@ -4196,5 +4205,46 @@ export class ChallengeController {
       }
     }
 
+  }
+
+  async hapuschallenge(idchallenge:string)
+  {
+    var dummydate = new Date();
+    var convert = dummydate.toISOString();
+    var resultdummy = convert.split("T")[0] + " 00:00:00";
+    var subdata = await this.subchallenge.findChild(idchallenge);
+    if(subdata.length != 0)
+    {
+      for(var loopsub = 0; loopsub < subdata.length; loopsub++)
+      {
+        var userchallenge = await this.userchallengeSS.datauserchallbyidchall(idchallenge, subdata[loopsub]._id.toString());
+        if(userchallenge.length != 0)
+        {
+          for(var loopchild = 0; loopchild < userchallenge.length; loopchild++)
+          {
+            var updateuser = new Userchallenges();
+            updateuser.isActive = false;
+            updateuser.updatedAt = await this.util.getDateTimeString();
+
+            await this.userchallengeSS.update(userchallenge[loopchild]._id.toString(), updateuser);  
+          }
+        }
+
+        var updatedata = new subChallenge();
+        updatedata.isActive = false;
+
+        await this.subchallenge.updateNonactive(subdata[loopsub]._id.toString());
+      }
+    }
+
+    var notifdata = await this.notifChallengeService.findChild(idchallenge);
+    for(var loopnotif = 0; loopnotif < notifdata.length; loopnotif++)
+    {
+      var getdata = notifdata[loopnotif];
+      var updatenotif = new notifChallenge();
+      updatenotif.isSend = true;
+
+      await this.notifChallengeService.update(getdata._id.toString(), updatenotif);
+    }
   }
 }
