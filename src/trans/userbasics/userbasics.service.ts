@@ -6715,12 +6715,33 @@ export class UserbasicsService {
           as: 'userauth_data',
         },
       },
+			{
+        "$lookup": 
+        {
+          from: 'languages',
+          localField: 'languages.$id',
+          foreignField: '_id',
+          as: 'languages_data',
+        },
+      },
       {
         "$project":
         {
           email:1,
           fullName:1,
-          languages:1,
+          languages:
+					{
+						"$ifNull":
+						[
+							{
+								"$arrayElemAt":
+								[
+									"$languages_data.langIso",0
+								]
+							},
+							"id"
+						]
+					},
           username:
           {
             "$arrayElemAt":

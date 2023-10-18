@@ -4748,31 +4748,20 @@ export class ChallengeService {
               }
 
               var result = null;
-              try {
-                var language = data[loopuser].languages;
-                if (language.$id == new mongo.Types.ObjectId("613bc5daf9438a7564ca798a")) {
-                  result = setconverttitle;
-                  // await this.util.sendNotifChallenge("", data[loopuser].email, setconverttitle, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
-                  // insertobj['title'] = setconverttitle;
-                  // insertobj['notification'] = setconvertdesc;
-                } else {
-                  result = setconverttitleEN;
-                  // await this.util.sendNotifChallenge("", data[loopuser].email, setconverttitleEN, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
-                  // insertobj['titleEN'] = setconverttitleEN;
-                  // insertobj['notificationEN'] = setconvertdescEN;
-                }
+              if (data[loopuser].languages == "en") {
+                result = setconverttitleEN;
               }
-              catch (e) {
+              else {
                 result = setconverttitle;
-                // await this.util.sendNotifChallenge("", data[loopuser].email, setconverttitle, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
-                // insertobj['title'] = setconverttitle;
-                // insertobj['notification'] = setconvertdesc;
               }
 
-              await this.util.sendNotifChallenge("", data[loopuser].email, result, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
+              var checkdata = await this.NotificationsService.findNotifchallenge(data[loopuser].email, "CHALLENGE", getdata.challengeID, datetime);
+              if(checkdata == null) {
+                await this.util.sendNotifChallenge("", data[loopuser].email, result, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
+              }    
+                      
+              // array.push(insertobj);
             }
-
-            // array.push(insertobj);
           }
         }
       }
