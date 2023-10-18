@@ -1379,7 +1379,15 @@ export class ContenteventsController {
               idevent1 = resultdata1._id;
               var dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
 
+              if (idevent1 != null) {
+                try {
+                  this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+                  console.log("sukses hitung score")
+                } catch (e) {
+                  console.log("gagal ngitung skor" + e)
+                }
 
+              }
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
