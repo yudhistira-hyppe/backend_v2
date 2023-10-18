@@ -1406,8 +1406,7 @@ export class ChallengeController {
         this.insertchildofchallenge(getdata, null);
       }
     }
-    else if(statusChallenge == "NONACTIVE" || statusChallenge == "NONEACTIVE")
-    {
+    else if (statusChallenge == "NONACTIVE" || statusChallenge == "NONEACTIVE") {
       this.hapuschallenge(getdata._id.toString());
     }
 
@@ -1749,8 +1748,7 @@ export class ChallengeController {
       this.beforejoinchallenge(getuserbasic, firstdata);
     }
 
-    if(listjoin.length != 0)
-    {
+    if (listjoin.length != 0) {
       this.insertuserintonotifchallenge(listjoin);
     }
     return res.status(HttpStatus.OK).json({
@@ -1783,7 +1781,7 @@ export class ChallengeController {
     //   }
     // }
     // else {
-      
+
     // }
   }
 
@@ -3300,10 +3298,6 @@ export class ChallengeController {
             setdata.isSend = false;
             setdata.nameChallenge = detail.nameChallenge;
             setdata.datetime = timedate;
-            if (listpartisipan == null || listpartisipan.length == 0)
-            {
-              setdata.all = 1;
-            }
             setdata.createdAt = await this.util.getDateTimeString();
             // console.log(setdata);
             insertdatamany.push(setdata);
@@ -3319,7 +3313,7 @@ export class ChallengeController {
               for (var j = 0; j < result.length; j++) {
                 var setnotif = {};
                 var titleID = 'Undangan challenge ' + detail.nameChallenge;
-              var titleEN = detail.nameChallenge + " Challenge Invitation";
+                var titleEN = detail.nameChallenge + " Challenge Invitation";
                 var bodyID = 'Hai ' + result[j].username + ', kamu telah diundang untuk mengikuti challenge ' + detail.nameChallenge + '. Klik di sini!';
                 var bodyEN = 'Hi ' + result[j].username + ', you have been invited to participate in The ' + detail.nameChallenge + ' challenge. Click here!';
                 setnotif['idUser'] = result[j]._id;
@@ -4211,26 +4205,21 @@ export class ChallengeController {
 
   }
 
-  async hapuschallenge(idchallenge:string)
-  {
+  async hapuschallenge(idchallenge: string) {
     var dummydate = new Date();
     var convert = dummydate.toISOString();
     var resultdummy = convert.split("T")[0] + " 00:00:00";
     var subdata = await this.subchallenge.findChild(idchallenge);
-    if(subdata.length != 0)
-    {
-      for(var loopsub = 0; loopsub < subdata.length; loopsub++)
-      {
+    if (subdata.length != 0) {
+      for (var loopsub = 0; loopsub < subdata.length; loopsub++) {
         var userchallenge = await this.userchallengeSS.datauserchallbyidchall(idchallenge, subdata[loopsub]._id.toString());
-        if(userchallenge.length != 0)
-        {
-          for(var loopchild = 0; loopchild < userchallenge.length; loopchild++)
-          {
+        if (userchallenge.length != 0) {
+          for (var loopchild = 0; loopchild < userchallenge.length; loopchild++) {
             var updateuser = new Userchallenges();
             updateuser.isActive = false;
             updateuser.updatedAt = await this.util.getDateTimeString();
 
-            await this.userchallengeSS.update(userchallenge[loopchild]._id.toString(), updateuser);  
+            await this.userchallengeSS.update(userchallenge[loopchild]._id.toString(), updateuser);
           }
         }
 
@@ -4242,8 +4231,7 @@ export class ChallengeController {
     }
 
     var notifdata = await this.notifChallengeService.findChild(idchallenge);
-    for(var loopnotif = 0; loopnotif < notifdata.length; loopnotif++)
-    {
+    for (var loopnotif = 0; loopnotif < notifdata.length; loopnotif++) {
       var getdata = notifdata[loopnotif];
       var updatenotif = new notifChallenge();
       updatenotif.isSend = true;

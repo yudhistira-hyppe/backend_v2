@@ -4190,442 +4190,443 @@ export class ChallengeService {
         typeChallenge = datanotif[i].typeChallenge;
         session = datanotif[i].session;
         all = datanotif[i].all;
-        if (all !== undefined && all == 1) {
-          this.sendnotifmasalchallenge(challengeID.toString(), subChallengeID.toString(), 100);
-        } else {
+        // if (all !== undefined && all == 1) {
+        //   this.sendnotifmasalchallenge(challengeID.toString(), subChallengeID.toString(), 100);
+        // } 
+        // else {
+        try {
+          databasic = await this.userbasicsSS.findOne(email);
+        } catch (e) {
+          databasic = null;
+        }
+
+        if (databasic !== null) {
           try {
-            databasic = await this.userbasicsSS.findOne(email);
+            languages = databasic.languages;
+            idlanguages = languages.oid.toString();
+            datalanguage = await this.languagesService.findOne(idlanguages)
+            langIso = datalanguage.langIso;
+
+            console.log(idlanguages)
           } catch (e) {
-            databasic = null;
-          }
-
-          if (databasic !== null) {
-            try {
-              languages = databasic.languages;
-              idlanguages = languages.oid.toString();
-              datalanguage = await this.languagesService.findOne(idlanguages)
-              langIso = datalanguage.langIso;
-
-              console.log(idlanguages)
-            } catch (e) {
-              languages = null;
-              idlanguages = "";
-              datalanguage = null;
-              langIso = "";
-            }
-
-          }
-
-
-          if (type == "untukPemenang") {
-
-            let datasub = null;
-
-            try {
-              datasub = await this.subchallenge.findOneByChallenge(subChallengeID.toString(), challengeID.toString(),);
-            } catch (e) {
-              datasub = null;
-            }
-
-            if (datasub !== null) {
-              let endDatetime = null;
-              var dt = new Date(Date.now());
-              dt.setHours(dt.getHours() + 7); // timestamp
-              dt = new Date(dt);
-              try {
-                endDatetime = new Date(datasub.endDatetime);
-                endDatetime.setHours(endDatetime.getHours() + 7); // timestamp
-                endDatetime = new Date(endDatetime);
-              } catch (e) {
-                endDatetime = null;
-              }
-
-              if (dt > endDatetime) {
-                try {
-                  datapemenang = await this.subchallenge.getpemenang(challengeID.toString(), subChallengeID.toString());
-                } catch (e) {
-                  datapemenang = null;
-                }
-                if (datapemenang !== null && datapemenang.length > 0) {
-
-                  try {
-                    getlastrank = datapemenang[0].getlastrank;
-                  } catch (e) {
-                    getlastrank = null;
-                  }
-                  if (getlastrank !== null && getlastrank.length > 0) {
-                    for (let x = 0; x < getlastrank.length; x++) {
-                      let emailmenang = getlastrank[x].email
-                      let idBadge = null;
-                      let nameBadges = null;
-                      let userid = getlastrank[x].idUser
-
-                      try {
-                        idBadge = getlastrank[x].idBadge;
-                      } catch (e) {
-                        idBadge = null;
-                      }
-                      let databadge = null;
-                      try {
-                        databadge = await this.userbadgeService.getUserbadge(userid.toString(), subChallengeID.toString());
-                      } catch (e) {
-                        databadge = null;
-                      }
-
-                      if (databadge == null) {
-
-
-                        if (idBadge !== "") {
-
-                          let dt = new Date(Date.now());
-                          dt.setHours(dt.getHours() + 7); // timestamp
-                          dt = new Date(dt);
-
-                          let strdate = dt.toISOString();
-                          let repdate = strdate.replace('T', ' ');
-                          let splitdate = repdate.split('.');
-                          let timedate = splitdate[0];
-
-                          let end = new Date(endDatetime);
-                          end.setHours(dt.getHours() + 12); // timestamp
-                          end = new Date(end);
-                          let getseminngu = new Date(new Date(end).setDate(new Date(end).getDate() + 7));
-                          let strdateseminggu = getseminngu.toISOString();
-                          var repdatesm = strdateseminggu.replace('T', ' ');
-                          var splitdatesm = repdatesm.split('.');
-                          var timedatesm = splitdatesm[0];
-
-                          let Userbadge_ = new Userbadge();
-                          Userbadge_.SubChallengeId = subChallengeID;
-                          Userbadge_.idBadge = idBadge;
-                          Userbadge_.createdAt = timedate;
-                          Userbadge_.isActive = true;
-                          Userbadge_.userId = userid;
-                          Userbadge_.session = session;
-                          Userbadge_.startDatetime = datasub.endDatetime;
-                          Userbadge_.endDatetime = timedatesm;
-
-                          await this.userbadgeService.create(Userbadge_);
-
-                        }
-
-                      }
-
-                      let rank = null;
-                      try {
-                        rank = getlastrank[x].ranking;
-                      } catch (e) {
-                        rank = 0;
-                      }
-
-                      if (idBadge !== null && idBadge !== "") {
-                        try {
-                          databadge = await this.BadgeService.findByid(idBadge.toString());
-                        } catch (e) {
-                          databadge = null;
-                        }
-                        if (databadge !== null && databadge !== undefined) {
-                          nameBadges = databadge.name;
-
-                        } else {
-                          nameBadges = "NO BADGE"
-                        }
-                      } else {
-                        nameBadges = "NO BADGE"
-                      }
-
-
-                      let ket2 = null;
-                      let ket3 = null;
-                      let ket2EN = null;
-                      let ket3EN = null;
-                      let title1 = null;
-                      let title2 = null;
-                      let titleEN1 = null;
-                      let titleEN2 = null;
-                      try {
-                        ket2 = body.replace("$badge", nameBadges);
-                      } catch (e) {
-                        ket2 = body;
-                      }
-                      try {
-                        ket3 = ket2.replace("$ranking", rank);
-                      } catch (e) {
-                        ket3 = ket2;
-                      }
-                      try {
-                        ket2EN = bodyEN.replace("$badge", nameBadges);
-                      } catch (e) {
-                        ket2EN = bodyEN;
-                      }
-                      try {
-                        ket3EN = ket2EN.replace("$ranking", rank);
-                      } catch (e) {
-                        ket3EN = ket2EN;
-                      }
-                      try {
-                        title1 = title.replace("$ranking", rank);
-                      } catch (e) {
-                        title1 = title;
-                      }
-                      try {
-                        title2 = title1.replace("$badge", nameBadges);
-                      } catch (e) {
-                        title2 = title1;
-                      }
-                      try {
-                        titleEN1 = titleEN.replace("$ranking", rank);
-                      } catch (e) {
-                        titleEN1 = titleEN;
-                      }
-                      try {
-                        titleEN2 = titleEN1.replace("$badge", nameBadges);
-                      } catch (e) {
-                        titleEN2 = titleEN1;
-                      }
-                      let datanotifchall = null;
-                      try {
-
-                        datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
-                      } catch (e) {
-                        datanotifchall = null;
-                      }
-
-                      if (datanotifchall !== null) {
-                        console.log("==data sudah ada==")
-                      } else {
-                        if (langIso == "id") {
-                          if (email == emailmenang) {
-
-                            await this.util.sendNotifChallenge("PEMENANG", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                            await this.notifChallengeService.updateStatussend(id.toString(), email);
-
-
-                          }
-
-                        } else {
-                          if (email == emailmenang) {
-                            await this.util.sendNotifChallenge("PEMENANG", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                            await this.notifChallengeService.updateStatussend(id.toString(), email);
-                          }
-                        }
-                      }
-
-
-                    }
-
-                  }
-
-                }
-              }
-            }
-
-
-          }
-          else if (type == "updateLeaderboard") {
-
-            var datauserchall = null;
-            let rank = null;
-            let rankup = null;
-            let ket2 = null;
-            let ket3 = null;
-            let ket2EN = null;
-            let ket3EN = null;
-            let title1 = null;
-            let title2 = null;
-            let titleEN1 = null;
-            let titleEN2 = null;
-            let datachallenges = null;
-            let badge = null;
-            let nameBadges = null;
-            try {
-              datauserchall = await this.UserchallengesService.findByChallengeandUser2(challengeID.toString(), idUser.toString(), subChallengeID.toString());
-            } catch (e) {
-              datauserchall = null;
-            }
-
-            try {
-              datachallenges = await this.findOne(challengeID.toString());
-            } catch (e) {
-              datachallenges = null;
-            }
-
-            if (datachallenges !== null) {
-
-              try {
-                badge = datachallenges.ketentuanHadiah[0].badge[0].juara1;
-              } catch (e) {
-                badge = null;
-              }
-
-              if (badge !== null && badge !== "") {
-                try {
-                  databadge = await this.BadgeService.findByid(badge.toString());
-                } catch (e) {
-                  databadge = null;
-                }
-                if (databadge !== null && databadge !== undefined) {
-                  nameBadges = databadge.name;
-
-                } else {
-                  nameBadges = "NO BADGE"
-                }
-              } else {
-                nameBadges = "NO BADGE"
-              }
-
-            }
-
-            if (datauserchall !== null && datauserchall !== undefined) {
-              try {
-                rank = datauserchall.ranking;
-              } catch (e) {
-                rank = 0;
-              }
-
-            }
-            if (rank !== 0 && rank > 1) {
-              rankup = rank - 1;
-            } else {
-              rankup = 0;
-            }
-
-            if (rank == 1) {
-              try {
-                ket2 = body.replace("$ranking", rank);
-              } catch (e) {
-                ket2 = body;
-              }
-              try {
-                ket3 = ket2.replace("$badge", nameBadges);
-              } catch (e) {
-                ket3 = ket2;
-              }
-
-              try {
-                ket2EN = bodyEN.replace("$ranking", rank);
-              } catch (e) {
-                ket2EN = bodyEN;
-              }
-              try {
-                ket3EN = ket2EN.replace("$badge", nameBadges);
-              } catch (e) {
-                ket3EN = ket2EN;
-              }
-            } else {
-              try {
-                ket2 = body.replace("$ranking", rankup);
-              } catch (e) {
-                ket2 = body;
-              }
-              try {
-                ket3 = ket2.replace("$badge", nameBadges);
-              } catch (e) {
-                ket3 = ket2;
-              }
-
-              try {
-                ket2EN = bodyEN.replace("$ranking", rankup);
-              } catch (e) {
-                ket2EN = bodyEN;
-              }
-              try {
-                ket3EN = ket2EN.replace("$badge", nameBadges);
-              } catch (e) {
-                ket3EN = ket2EN;
-              }
-            }
-
-            try {
-              title1 = title.replace("$ranking", rank);
-            } catch (e) {
-              title1 = title;
-            }
-            try {
-              title2 = title1.replace("$badge", nameBadges);
-            } catch (e) {
-              title2 = title1;
-            }
-            try {
-              titleEN1 = titleEN.replace("$ranking", rank);
-            } catch (e) {
-              titleEN1 = titleEN;
-            }
-            try {
-              titleEN2 = titleEN1.replace("$badge", nameBadges);
-            } catch (e) {
-              titleEN2 = titleEN1;
-            }
-            if (rank > 1) {
-
-              let datanotifchall = null;
-              try {
-
-                datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
-              } catch (e) {
-                datanotifchall = null;
-              }
-
-              if (datanotifchall !== null) {
-                console.log("==data sudah ada==")
-              } else {
-                if (langIso == "id") {
-                  await this.util.sendNotifChallenge("", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
-                  await this.notifChallengeService.updateStatussend(id.toString(), email);
-                } else {
-                  await this.util.sendNotifChallenge("", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
-                  await this.notifChallengeService.updateStatussend(id.toString(), email);
-                }
-              }
-            }
-
-
-          }
-          else if (type == "challengeBerakhir") {
-            let datanotifchall = null;
-            try {
-
-              datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
-            } catch (e) {
-              datanotifchall = null;
-            }
-
-            if (datanotifchall !== null) {
-              console.log("==data sudah ada==")
-            } else {
-              if (langIso == "id") {
-                await this.util.sendNotifChallenge("BERAKHIR", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                await this.notifChallengeService.updateStatussend(id.toString(), email);
-              } else {
-                await this.util.sendNotifChallenge("BERAKHIR", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                await this.notifChallengeService.updateStatussend(id.toString(), email);
-              }
-            }
-          }
-          else {
-            let datanotifchall = null;
-            try {
-
-              datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
-            } catch (e) {
-              datanotifchall = null;
-            }
-
-            if (datanotifchall !== null) {
-              console.log("==data sudah ada==")
-            } else {
-              if (langIso == "id") {
-                await this.util.sendNotifChallenge("", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
-                await this.notifChallengeService.updateStatussend(id.toString(), email);
-              } else {
-                await this.util.sendNotifChallenge("", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
-                await this.notifChallengeService.updateStatussend(id.toString(), email);
-              }
-            }
-
+            languages = null;
+            idlanguages = "";
+            datalanguage = null;
+            langIso = "";
           }
 
         }
+
+
+        if (type == "untukPemenang") {
+
+          let datasub = null;
+
+          try {
+            datasub = await this.subchallenge.findOneByChallenge(subChallengeID.toString(), challengeID.toString(),);
+          } catch (e) {
+            datasub = null;
+          }
+
+          if (datasub !== null) {
+            let endDatetime = null;
+            var dt = new Date(Date.now());
+            dt.setHours(dt.getHours() + 7); // timestamp
+            dt = new Date(dt);
+            try {
+              endDatetime = new Date(datasub.endDatetime);
+              endDatetime.setHours(endDatetime.getHours() + 7); // timestamp
+              endDatetime = new Date(endDatetime);
+            } catch (e) {
+              endDatetime = null;
+            }
+
+            if (dt > endDatetime) {
+              try {
+                datapemenang = await this.subchallenge.getpemenang(challengeID.toString(), subChallengeID.toString());
+              } catch (e) {
+                datapemenang = null;
+              }
+              if (datapemenang !== null && datapemenang.length > 0) {
+
+                try {
+                  getlastrank = datapemenang[0].getlastrank;
+                } catch (e) {
+                  getlastrank = null;
+                }
+                if (getlastrank !== null && getlastrank.length > 0) {
+                  for (let x = 0; x < getlastrank.length; x++) {
+                    let emailmenang = getlastrank[x].email
+                    let idBadge = null;
+                    let nameBadges = null;
+                    let userid = getlastrank[x].idUser
+
+                    try {
+                      idBadge = getlastrank[x].idBadge;
+                    } catch (e) {
+                      idBadge = null;
+                    }
+                    let databadge = null;
+                    try {
+                      databadge = await this.userbadgeService.getUserbadge(userid.toString(), subChallengeID.toString());
+                    } catch (e) {
+                      databadge = null;
+                    }
+
+                    if (databadge == null) {
+
+
+                      if (idBadge !== "") {
+
+                        let dt = new Date(Date.now());
+                        dt.setHours(dt.getHours() + 7); // timestamp
+                        dt = new Date(dt);
+
+                        let strdate = dt.toISOString();
+                        let repdate = strdate.replace('T', ' ');
+                        let splitdate = repdate.split('.');
+                        let timedate = splitdate[0];
+
+                        let end = new Date(endDatetime);
+                        end.setHours(dt.getHours() + 12); // timestamp
+                        end = new Date(end);
+                        let getseminngu = new Date(new Date(end).setDate(new Date(end).getDate() + 7));
+                        let strdateseminggu = getseminngu.toISOString();
+                        var repdatesm = strdateseminggu.replace('T', ' ');
+                        var splitdatesm = repdatesm.split('.');
+                        var timedatesm = splitdatesm[0];
+
+                        let Userbadge_ = new Userbadge();
+                        Userbadge_.SubChallengeId = subChallengeID;
+                        Userbadge_.idBadge = idBadge;
+                        Userbadge_.createdAt = timedate;
+                        Userbadge_.isActive = true;
+                        Userbadge_.userId = userid;
+                        Userbadge_.session = session;
+                        Userbadge_.startDatetime = datasub.endDatetime;
+                        Userbadge_.endDatetime = timedatesm;
+
+                        await this.userbadgeService.create(Userbadge_);
+
+                      }
+
+                    }
+
+                    let rank = null;
+                    try {
+                      rank = getlastrank[x].ranking;
+                    } catch (e) {
+                      rank = 0;
+                    }
+
+                    if (idBadge !== null && idBadge !== "") {
+                      try {
+                        databadge = await this.BadgeService.findByid(idBadge.toString());
+                      } catch (e) {
+                        databadge = null;
+                      }
+                      if (databadge !== null && databadge !== undefined) {
+                        nameBadges = databadge.name;
+
+                      } else {
+                        nameBadges = "NO BADGE"
+                      }
+                    } else {
+                      nameBadges = "NO BADGE"
+                    }
+
+
+                    let ket2 = null;
+                    let ket3 = null;
+                    let ket2EN = null;
+                    let ket3EN = null;
+                    let title1 = null;
+                    let title2 = null;
+                    let titleEN1 = null;
+                    let titleEN2 = null;
+                    try {
+                      ket2 = body.replace("$badge", nameBadges);
+                    } catch (e) {
+                      ket2 = body;
+                    }
+                    try {
+                      ket3 = ket2.replace("$ranking", rank);
+                    } catch (e) {
+                      ket3 = ket2;
+                    }
+                    try {
+                      ket2EN = bodyEN.replace("$badge", nameBadges);
+                    } catch (e) {
+                      ket2EN = bodyEN;
+                    }
+                    try {
+                      ket3EN = ket2EN.replace("$ranking", rank);
+                    } catch (e) {
+                      ket3EN = ket2EN;
+                    }
+                    try {
+                      title1 = title.replace("$ranking", rank);
+                    } catch (e) {
+                      title1 = title;
+                    }
+                    try {
+                      title2 = title1.replace("$badge", nameBadges);
+                    } catch (e) {
+                      title2 = title1;
+                    }
+                    try {
+                      titleEN1 = titleEN.replace("$ranking", rank);
+                    } catch (e) {
+                      titleEN1 = titleEN;
+                    }
+                    try {
+                      titleEN2 = titleEN1.replace("$badge", nameBadges);
+                    } catch (e) {
+                      titleEN2 = titleEN1;
+                    }
+                    let datanotifchall = null;
+                    try {
+
+                      datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
+                    } catch (e) {
+                      datanotifchall = null;
+                    }
+
+                    if (datanotifchall !== null) {
+                      console.log("==data sudah ada==")
+                    } else {
+                      if (langIso == "id") {
+                        if (email == emailmenang) {
+
+                          await this.util.sendNotifChallenge("PEMENANG", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                          await this.notifChallengeService.updateStatussend(id.toString(), email);
+
+
+                        }
+
+                      } else {
+                        if (email == emailmenang) {
+                          await this.util.sendNotifChallenge("PEMENANG", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                          await this.notifChallengeService.updateStatussend(id.toString(), email);
+                        }
+                      }
+                    }
+
+
+                  }
+
+                }
+
+              }
+            }
+          }
+
+
+        }
+        else if (type == "updateLeaderboard") {
+
+          var datauserchall = null;
+          let rank = null;
+          let rankup = null;
+          let ket2 = null;
+          let ket3 = null;
+          let ket2EN = null;
+          let ket3EN = null;
+          let title1 = null;
+          let title2 = null;
+          let titleEN1 = null;
+          let titleEN2 = null;
+          let datachallenges = null;
+          let badge = null;
+          let nameBadges = null;
+          try {
+            datauserchall = await this.UserchallengesService.findByChallengeandUser2(challengeID.toString(), idUser.toString(), subChallengeID.toString());
+          } catch (e) {
+            datauserchall = null;
+          }
+
+          try {
+            datachallenges = await this.findOne(challengeID.toString());
+          } catch (e) {
+            datachallenges = null;
+          }
+
+          if (datachallenges !== null) {
+
+            try {
+              badge = datachallenges.ketentuanHadiah[0].badge[0].juara1;
+            } catch (e) {
+              badge = null;
+            }
+
+            if (badge !== null && badge !== "") {
+              try {
+                databadge = await this.BadgeService.findByid(badge.toString());
+              } catch (e) {
+                databadge = null;
+              }
+              if (databadge !== null && databadge !== undefined) {
+                nameBadges = databadge.name;
+
+              } else {
+                nameBadges = "NO BADGE"
+              }
+            } else {
+              nameBadges = "NO BADGE"
+            }
+
+          }
+
+          if (datauserchall !== null && datauserchall !== undefined) {
+            try {
+              rank = datauserchall.ranking;
+            } catch (e) {
+              rank = 0;
+            }
+
+          }
+          if (rank !== 0 && rank > 1) {
+            rankup = rank - 1;
+          } else {
+            rankup = 0;
+          }
+
+          if (rank == 1) {
+            try {
+              ket2 = body.replace("$ranking", rank);
+            } catch (e) {
+              ket2 = body;
+            }
+            try {
+              ket3 = ket2.replace("$badge", nameBadges);
+            } catch (e) {
+              ket3 = ket2;
+            }
+
+            try {
+              ket2EN = bodyEN.replace("$ranking", rank);
+            } catch (e) {
+              ket2EN = bodyEN;
+            }
+            try {
+              ket3EN = ket2EN.replace("$badge", nameBadges);
+            } catch (e) {
+              ket3EN = ket2EN;
+            }
+          } else {
+            try {
+              ket2 = body.replace("$ranking", rankup);
+            } catch (e) {
+              ket2 = body;
+            }
+            try {
+              ket3 = ket2.replace("$badge", nameBadges);
+            } catch (e) {
+              ket3 = ket2;
+            }
+
+            try {
+              ket2EN = bodyEN.replace("$ranking", rankup);
+            } catch (e) {
+              ket2EN = bodyEN;
+            }
+            try {
+              ket3EN = ket2EN.replace("$badge", nameBadges);
+            } catch (e) {
+              ket3EN = ket2EN;
+            }
+          }
+
+          try {
+            title1 = title.replace("$ranking", rank);
+          } catch (e) {
+            title1 = title;
+          }
+          try {
+            title2 = title1.replace("$badge", nameBadges);
+          } catch (e) {
+            title2 = title1;
+          }
+          try {
+            titleEN1 = titleEN.replace("$ranking", rank);
+          } catch (e) {
+            titleEN1 = titleEN;
+          }
+          try {
+            titleEN2 = titleEN1.replace("$badge", nameBadges);
+          } catch (e) {
+            titleEN2 = titleEN1;
+          }
+          if (rank > 1) {
+
+            let datanotifchall = null;
+            try {
+
+              datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
+            } catch (e) {
+              datanotifchall = null;
+            }
+
+            if (datanotifchall !== null) {
+              console.log("==data sudah ada==")
+            } else {
+              if (langIso == "id") {
+                await this.util.sendNotifChallenge("", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
+                await this.notifChallengeService.updateStatussend(id.toString(), email);
+              } else {
+                await this.util.sendNotifChallenge("", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
+                await this.notifChallengeService.updateStatussend(id.toString(), email);
+              }
+            }
+          }
+
+
+        }
+        else if (type == "challengeBerakhir") {
+          let datanotifchall = null;
+          try {
+
+            datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
+          } catch (e) {
+            datanotifchall = null;
+          }
+
+          if (datanotifchall !== null) {
+            console.log("==data sudah ada==")
+          } else {
+            if (langIso == "id") {
+              await this.util.sendNotifChallenge("BERAKHIR", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+              await this.notifChallengeService.updateStatussend(id.toString(), email);
+            } else {
+              await this.util.sendNotifChallenge("BERAKHIR", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+              await this.notifChallengeService.updateStatussend(id.toString(), email);
+            }
+          }
+        }
+        else {
+          let datanotifchall = null;
+          try {
+
+            datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
+          } catch (e) {
+            datanotifchall = null;
+          }
+
+          if (datanotifchall !== null) {
+            console.log("==data sudah ada==")
+          } else {
+            if (langIso == "id") {
+              await this.util.sendNotifChallenge("", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
+              await this.notifChallengeService.updateStatussend(id.toString(), email);
+            } else {
+              await this.util.sendNotifChallenge("", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
+              await this.notifChallengeService.updateStatussend(id.toString(), email);
+            }
+          }
+
+        }
+
+        //   }
 
         //}
 
