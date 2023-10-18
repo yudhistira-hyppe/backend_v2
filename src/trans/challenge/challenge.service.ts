@@ -2793,18 +2793,6 @@ export class ChallengeService {
         }
       },
       {
-        $sort: {
-          startChallenge: - 1,
-          createdAt: 1
-        }
-      },
-      {
-        $skip: (page * limit)
-      },
-      {
-        $limit: limit
-      },
-      {
         $set:
         {
           co: ["MALE", "Male", " MALE", "Laki-laki", "Pria"]
@@ -3929,7 +3917,20 @@ export class ChallengeService {
           statusChallenge: 1,
           statusFormalChallenge: 1
         }
-      }
+      },
+      {
+        $sort: {
+          statusFormalChallenge: -1,
+          startChallenge: 1,
+          createdAt: 1
+        }
+      },
+      {
+        $skip: (page * limit)
+      },
+      {
+        $limit: limit
+      },
     );
 
     var query = await this.ChallengeModel.aggregate(pipeline);
@@ -4759,7 +4760,7 @@ export class ChallengeService {
               if(checkdata == null) {
                 await this.util.sendNotifChallenge("", data[loopuser].email, result, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
               }    
-                      
+
               // array.push(insertobj);
             }
           }
