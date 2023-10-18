@@ -6670,6 +6670,83 @@ export class UserbasicsService {
   //   return query;
   // }
 
+  async gettotalyopmail(skip:number, limit:number)
+  {
+    var pipeline = [];
+
+    pipeline.push(
+      {
+        "$match":
+        {
+          "email":
+          {
+            "$regex":"yopmail.com",
+            "$options":"i"
+          }
+        }
+      }
+    );
+
+    if(skip != null && skip != undefined && skip > 0)
+    {
+      pipeline.push(
+        {
+          "$skip": skip * limit
+        }
+      );
+    }
+
+    if(limit != null && limit != undefined && limit > 0)
+    {
+      pipeline.push(
+        {
+          "$limit":limit
+        }
+      );
+    }
+
+    pipeline.push(
+      {
+        "$lookup": 
+        {
+          from: 'userauths',
+          localField: 'email',
+          foreignField: 'email',
+          as: 'userauth_data',
+        },
+      },
+      {
+        "$project":
+        {
+          email:1,
+          fullName:1,
+          languages:1,
+          username:
+          {
+            "$arrayElemAt":
+            [
+              "$userauth_data.username", 0
+            ]
+          },
+          akunmati:
+          {
+            "$regexMatch":
+            {
+              input:"$email",
+              regex:"noneactive",
+              options:"i"
+            }
+          }
+        }
+      }
+    );
+
+    // console.log(JSON.stringify(pipeline));
+    var result = await this.userbasicModel.aggregate(pipeline);
+
+    return result;
+  }
+
   async getpanggilanuser(page: number, limit: number)
   {
     var result = await this.userbasicModel.aggregate(

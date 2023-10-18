@@ -4639,9 +4639,11 @@ export class ChallengeService {
     var mongo = require('mongoose');
     var totalall = null;
 
-    var gettotaluser = await this.userbasicsSS.getcount();
+    var gettotaluser = await this.userbasicsSS.gettotalyopmail(null, null);
+    // var gettotaluser = await this.userbasicsSS.getcount();
     try {
-      totalall = gettotaluser[0].totalpost / limit;
+      totalall = gettotaluser.length / limit;
+      // totalall = gettotaluser[0].totalpost / limit; //nanti dibalikin lagi
     } catch (e) {
       gettotaluser = null;
       totalall = 0;
@@ -4692,7 +4694,8 @@ export class ChallengeService {
 
       var array = [];
       for (let i = 0; i < totalpage; i++) {
-        var data = await this.userbasicsSS.getpanggilanuser(i, limit);
+        var data = await this.userbasicsSS.gettotalyopmail(i, limit);
+        // var data = await this.userbasicsSS.getpanggilanuser(i, limit);
         // console.log('page ke - ' + i);
         // console.log(data);
         // var dum = 'page ke - ' + i;
