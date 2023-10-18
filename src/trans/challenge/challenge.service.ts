@@ -4628,9 +4628,8 @@ export class ChallengeService {
 
   }
 
-  async sendnotifmasalchallenge(notifid: string, title: string, titleEN: string, bodyin: any, bodyeng: any, challengeid: string, type: string) {
+  async sendnotifmasalchallenge(challengeid: string, subchallenge: string, limit: number) {
     var mongo = require('mongoose');
-    var limit = 100;
     var totalall = null;
 
     var gettotaluser = await this.userbasicsSS.getcount();
@@ -4651,19 +4650,130 @@ export class ChallengeService {
     }
     console.log(totalpage);
 
-    for (let i = 0; i < totalpage; i++) {
-      var data = await this.userbasicsSS.getuser(i, limit);
-      for (var j = 0; j < data.length; j++) {
-        var language = data[i].languages;
-        if (language.id == new mongo.Types.ObjectId("613bc5daf9438a7564ca798a")) {
-          await this.util.sendNotifChallenge("", data[i].email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type, "", "");
-        } else {
-          await this.util.sendNotifChallenge("", data[i].email.toString(), titleEN, bodyin, bodyeng, "CHALLENGE", "ACCEPT", challengeid, type, "", "");
+    console.log(totalall);
+
+    var title = null;
+    var body = null;
+    var bodyEN = null;
+    var typeChallenge = null;
+    var datetime = null;
+
+    var getdata = null;
+
+    var listnotif = await this.notifChallengeService.findbyChallengeandSub(challengeid, subchallenge);
+    if(listnotif.length != 0)
+    {
+      if(listnotif.length == 1)
+      {
+        getdata = listnotif[0];
+      }
+      else
+      {
+        var getdataakandatang = new Date(listnotif[0].datetime);
+        var getdatadimulai = new Date(listnotif[1].datetime);
+        var timenow = new Date(await this.util.getDateTimeString());
+
+        var selisihdatang = Math.abs(getdataakandatang.getTime() - timenow.getTime());
+        var selisihdimulai = Math.abs(getdatadimulai.getTime() - timenow.getTime());
+
+        if(selisihdatang < selisihdimulai)
+        {
+          getdata = listnotif[0];
+        }
+        else
+        {
+          getdata = listnotif[1];
         }
       }
-    }
 
-    await this.notifChallengeService.updateStatussend(notifid, data[0].email.toString());
+      datetime = getdata.datetime;
+
+      var array = [];
+      for (let i = 0; i < totalpage; i++) {
+        var data = await this.userbasicsSS.getpanggilanuser(i, limit);
+        // console.log('page ke - ' + i);
+        // console.log(data);
+        // var dum = 'page ke - ' + i;
+        // array.push(dum);
+        if(data.length != 0)
+        {
+          for(var loopuser = 0; loopuser < data.length; loopuser++)
+          {
+            if(data[loopuser].akunmati == false && (data[loopuser].username != null && data[loopuser].username != null))
+            {
+              // var insertobj = {};
+              // insertobj['email'] = data[loopuser].email;
+              // insertobj['username'] = data[loopuser].username;
+
+              var setconverttitle = null;
+              var setconverttitleEN = null;
+              var setconvertdesc = null;
+              var setconvertdescEN = null;
+              var getittle = getdata.userID[0].title;
+              try {
+                var cariusername = getittle.replaceAll("$username", data[loopuser].username);
+                setconverttitle = cariusername.replaceAll("$title", getdata.nameChallenge);
+              }
+              catch (e) {
+                setconverttitle = getdata.userID[0].title;
+              }
+              var gettitleEN = getdata.userID[0].titleEN;
+              try {
+                var cariusername = gettitleEN.replaceAll("$username", data[loopuser].username);
+                setconverttitleEN = cariusername.replaceAll("$title", getdata.nameChallenge);
+              }
+              catch (e) {
+                setconverttitleEN = gettitleEN;
+              }
+              var getdesc = getdata.userID[0].notification;
+              try {
+                var cariusername = getdesc.replaceAll("$username", data[loopuser].username);
+                setconvertdesc = cariusername.replaceAll("$title", getdata.nameChallenge);
+              }
+              catch (e) {
+                setconvertdesc = getdesc;
+              }
+              var getdescEN = getdata.userID[0].notificationEN;
+              try {
+                var cariusername = getdescEN.replaceAll("$username", data[loopuser].username);
+                setconvertdescEN = cariusername.replaceAll("$title", getdata.nameChallenge);
+              }
+              catch (e) {
+                setconvertdescEN = getdescEN;
+              }
+
+              try
+              {
+                var language = data[loopuser].languages;
+                if (language.$id == new mongo.Types.ObjectId("613bc5daf9438a7564ca798a")) {
+                  await this.util.sendNotifChallenge("", data[loopuser].email, setconverttitle, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
+                  // insertobj['title'] = setconverttitle;
+                  // insertobj['notification'] = setconvertdesc;
+                } else {
+                  await this.util.sendNotifChallenge("", data[loopuser].email, setconverttitleEN, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
+                  // insertobj['titleEN'] = setconverttitleEN;
+                  // insertobj['notificationEN'] = setconvertdescEN;
+                }
+              }
+              catch(e)
+              {
+                await this.util.sendNotifChallenge("", data[loopuser].email, setconverttitle, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
+                // insertobj['title'] = setconverttitle;
+                // insertobj['notification'] = setconvertdesc;
+              }
+            }
+
+            // array.push(insertobj);
+          }
+        }
+      }
+
+      var updatedata = new notifChallenge();
+      updatedata.isSend = true;
+      await this.notifChallengeService.update(getdata._id.toString(), updatedata);
+
+      // return array;
+    }
   }
 
   async updateBadgeex() {

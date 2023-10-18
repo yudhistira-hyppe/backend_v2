@@ -6670,6 +6670,55 @@ export class UserbasicsService {
   //   return query;
   // }
 
+  async getpanggilanuser(page: number, limit: number)
+  {
+    var result = await this.userbasicModel.aggregate(
+      [
+        {
+          "$skip":page * limit
+        },
+        {
+          "$limit":limit
+        },
+        {
+          "$lookup": 
+          {
+            from: 'userauths',
+            localField: 'email',
+            foreignField: 'email',
+            as: 'userauth_data',
+          },
+        },
+        {
+          "$project":
+          {
+            email:1,
+            fullName:1,
+            languages:1,
+            username:
+            {
+              "$arrayElemAt":
+              [
+                "$userauth_data.username", 0
+              ]
+            },
+            akunmati:
+            {
+              "$regexMatch":
+              {
+                input:"$email",
+                regex:"noneactive",
+                options:"i"
+              }
+            }
+          }
+        },
+      ]
+    );
+
+    return result;
+  }
+
   async getuser(page: number, limit: number) {
     var pipeline = [];
 

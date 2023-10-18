@@ -178,4 +178,36 @@ export class notifChallengeService {
         var query = await this.notifChallengeModel.aggregate(pipeline);
         return query;
     }
+
+    async findbyChallengeandSub(idchallenge:string, subchallenge:string)
+    {
+        var mongo = require('mongoose');
+        var result = await this.notifChallengeModel.aggregate([
+            {
+                "$match":
+                {
+                    "$and":
+                    [
+                        {
+                            "challengeID": mongo.Types.ObjectId(idchallenge)
+                        },
+                        {
+                            "subChallengeID" : mongo.Types.ObjectId(subchallenge)
+                        },
+                        {
+                            "isSend":false
+                        }
+                    ]
+                }
+            },
+            {
+                "$sort":
+                {
+                    "datetime":1
+                }
+            }
+        ]);
+
+        return result;
+    }
 }
