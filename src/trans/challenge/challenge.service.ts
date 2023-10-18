@@ -4475,10 +4475,10 @@ export class ChallengeService {
                       databadge = null;
                     }
 
-                    if (databadge == null && databadge == undefined) {
+                    if (databadge == null) {
 
 
-                      if (idBadge !== undefined && idBadge !== "") {
+                      if (idBadge !== "") {
 
                         let dt = new Date(Date.now());
                         dt.setHours(dt.getHours() + 7); // timestamp
