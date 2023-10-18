@@ -13,7 +13,7 @@ export class LevelticketsService {
     ) { }
 
     async findAll(): Promise<Leveltickets[]> {
-        return this.levelticketsModel.find().exec();
+        return this.levelticketsModel.find().sort({ nameLevel: 1 }).exec();
     }
 
     async findOne(id: string): Promise<Leveltickets> {
