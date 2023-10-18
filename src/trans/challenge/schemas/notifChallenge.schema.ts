@@ -35,6 +35,8 @@ export class notifChallenge {
     isSend: boolean;
     @Prop()
     nameChallenge: string;
+    @Prop()
+    all: number;
 }
 
 export const notifChallengeSchema = SchemaFactory.createForClass(notifChallenge);
