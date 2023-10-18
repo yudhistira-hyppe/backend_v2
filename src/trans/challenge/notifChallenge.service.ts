@@ -196,6 +196,20 @@ export class notifChallengeService {
                             },
                             {
                                 "isSend": false
+                            },
+                            {
+                                "all":1
+                            },
+                            {
+                                "$or":
+                                [
+                                    {
+                                        "type":"akanDatang"
+                                    },
+                                    {
+                                        "type":"challengeDimulai"
+                                    }
+                                ]
                             }
                         ]
                 }
@@ -205,6 +219,9 @@ export class notifChallengeService {
                 {
                     "datetime": 1
                 }
+            },
+            {
+                "$limit":2
             }
         ]);
 

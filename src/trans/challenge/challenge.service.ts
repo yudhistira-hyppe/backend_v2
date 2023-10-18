@@ -4693,6 +4693,8 @@ export class ChallengeService {
 
       datetime = getdata.datetime;
 
+      // console.log(getdata);
+
       var array = [];
       for (let i = 0; i < totalpage; i++) {
         var data = await this.userbasicsSS.gettotalyopmail(i, limit);
@@ -4745,23 +4747,29 @@ export class ChallengeService {
                 setconvertdescEN = getdescEN;
               }
 
+              var result = null;
               try {
                 var language = data[loopuser].languages;
                 if (language.$id == new mongo.Types.ObjectId("613bc5daf9438a7564ca798a")) {
-                  await this.util.sendNotifChallenge("", data[loopuser].email, setconverttitle, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
+                  result = setconverttitle;
+                  // await this.util.sendNotifChallenge("", data[loopuser].email, setconverttitle, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
                   // insertobj['title'] = setconverttitle;
                   // insertobj['notification'] = setconvertdesc;
                 } else {
-                  await this.util.sendNotifChallenge("", data[loopuser].email, setconverttitleEN, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
+                  result = setconverttitleEN;
+                  // await this.util.sendNotifChallenge("", data[loopuser].email, setconverttitleEN, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
                   // insertobj['titleEN'] = setconverttitleEN;
                   // insertobj['notificationEN'] = setconvertdescEN;
                 }
               }
               catch (e) {
-                await this.util.sendNotifChallenge("", data[loopuser].email, setconverttitle, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
+                result = setconverttitle;
+                // await this.util.sendNotifChallenge("", data[loopuser].email, setconverttitle, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
                 // insertobj['title'] = setconverttitle;
                 // insertobj['notification'] = setconvertdesc;
               }
+
+              await this.util.sendNotifChallenge("", data[loopuser].email, result, setconvertdesc, setconvertdescEN, "CHALLENGE", "ACCEPT", getdata.challengeID, getdata.type, "", datetime);
             }
 
             // array.push(insertobj);
