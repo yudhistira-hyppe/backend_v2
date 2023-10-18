@@ -576,6 +576,17 @@ export class UserbasicsService {
     );
     return data;
   }
+  async updateStatusKycFailed(email: string, status: Boolean, statusKyc: string): Promise<Object> {
+    let data = await this.userbasicModel.updateOne({ "email": email },
+      {
+        $set: {
+          "isIdVerified": status,
+          "statusKyc": statusKyc
+        }
+      },
+    );
+    return data;
+  }
   async updatekyc(email: string, listAddKyc: any[]): Promise<Object> {
     let data = await this.userbasicModel.updateOne({ "email": email },
       { $set: { "listAddKyc": listAddKyc } });
