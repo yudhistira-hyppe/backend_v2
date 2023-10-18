@@ -165,6 +165,7 @@ export class notifChallengeService {
                     "datetime": 1,
                     "session": 1,
                     "isSend": 1,
+                    "all": 1,
                     "typeChallenge": {
                         $arrayElemAt: ['$challengedata.objectChallenge', 0]
                     },
@@ -179,31 +180,30 @@ export class notifChallengeService {
         return query;
     }
 
-    async findbyChallengeandSub(idchallenge:string, subchallenge:string)
-    {
+    async findbyChallengeandSub(idchallenge: string, subchallenge: string) {
         var mongo = require('mongoose');
         var result = await this.notifChallengeModel.aggregate([
             {
                 "$match":
                 {
                     "$and":
-                    [
-                        {
-                            "challengeID": mongo.Types.ObjectId(idchallenge)
-                        },
-                        {
-                            "subChallengeID" : mongo.Types.ObjectId(subchallenge)
-                        },
-                        {
-                            "isSend":false
-                        }
-                    ]
+                        [
+                            {
+                                "challengeID": mongo.Types.ObjectId(idchallenge)
+                            },
+                            {
+                                "subChallengeID": mongo.Types.ObjectId(subchallenge)
+                            },
+                            {
+                                "isSend": false
+                            }
+                        ]
                 }
             },
             {
                 "$sort":
                 {
-                    "datetime":1
+                    "datetime": 1
                 }
             }
         ]);
