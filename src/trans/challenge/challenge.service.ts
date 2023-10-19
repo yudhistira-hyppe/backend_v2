@@ -4667,11 +4667,6 @@ export class ChallengeService {
           }
         }
 
-
-        //   }
-
-        //}
-
       }
 
     }
