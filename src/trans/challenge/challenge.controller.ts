@@ -3302,6 +3302,10 @@ export class ChallengeController {
             setdata.isSend = false;
             setdata.nameChallenge = detail.nameChallenge;
             setdata.datetime = timedate;
+            if (listpartisipan.length == 0) 
+            {
+              setdata.all = 1;
+            }
             setdata.createdAt = await this.util.getDateTimeString();
             // console.log(setdata);
             insertdatamany.push(setdata);
