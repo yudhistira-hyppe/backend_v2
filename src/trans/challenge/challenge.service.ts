@@ -4176,36 +4176,38 @@ export class ChallengeService {
       for (let i = 0; i < datanotif.length; i++) {
         id = datanotif[i]._id;
 
-        try {
-          datanotifbyid = await this.notifChallengeService.listnotifchallengeByid(id.toString());
-        } catch (e) {
-          datanotifbyid = null;
+        all = datanotif[i].all;
+        if (all !== undefined && all == 1) {
+          this.sendnotifmasalchallenge(challengeID.toString(), subChallengeID.toString(), 100);
         }
+        else {
+          try {
+            datanotifbyid = await this.notifChallengeService.listnotifchallengeByid(id.toString());
+          } catch (e) {
+            datanotifbyid = null;
+          }
 
-        if (datanotifbyid !== null && datanotifbyid.length > 0) {
-          for (let y = 0; y < datanotifbyid.length; y++) {
+          if (datanotifbyid !== null && datanotifbyid.length > 0) {
+            for (let y = 0; y < datanotifbyid.length; y++) {
 
-            challengeID = datanotif[y].challengeID;
-            titleAsli = datanotif[y].titleAsli;
-            email = datanotif[y].email;
-            description = datanotif[y].description;
-            username = datanotif[y].username;
-            idUser = datanotif[y].idUser;
-            ranking = datanotif[y].ranking;
-            title = datanotif[y].title;
-            titleEN = datanotif[y].titleEN;
-            body = datanotif[y].notification;
-            bodyEN = datanotif[y].notificationEN;
-            datetime = datanotif[y].datetime;
-            type = datanotif[y].type;
-            subChallengeID = datanotif[y].subChallengeID;
-            typeChallenge = datanotif[y].typeChallenge;
-            session = datanotif[y].session;
-            all = datanotif[y].all;
-            if (all !== undefined && all == 1) {
-              this.sendnotifmasalchallenge(challengeID.toString(), subChallengeID.toString(), 100);
-            }
-            else {
+              challengeID = datanotif[y].challengeID;
+              titleAsli = datanotif[y].titleAsli;
+              email = datanotif[y].email;
+              description = datanotif[y].description;
+              username = datanotif[y].username;
+              idUser = datanotif[y].idUser;
+              ranking = datanotif[y].ranking;
+              title = datanotif[y].title;
+              titleEN = datanotif[y].titleEN;
+              body = datanotif[y].notification;
+              bodyEN = datanotif[y].notificationEN;
+              datetime = datanotif[y].datetime;
+              type = datanotif[y].type;
+              subChallengeID = datanotif[y].subChallengeID;
+              typeChallenge = datanotif[y].typeChallenge;
+              session = datanotif[y].session;
+
+
               try {
                 databasic = await this.userbasicsSS.findOne(email);
               } catch (e) {
@@ -4657,11 +4659,12 @@ export class ChallengeService {
                 }
 
               }
+
+
+
             }
 
-
           }
-
         }
 
 
