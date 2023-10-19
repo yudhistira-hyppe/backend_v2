@@ -2368,18 +2368,46 @@ export class UtilsService {
           }
         }
 
-
-
       } else {
-        payload = {
-          data: {
+        if (type == "PEMENANG") {
+          payload = {
+            data: {
 
-            title: titlein,
-            body: bodyin,
-            postID: postID_.toString(),
-            postType: eventType
+              title: titlein,
+              body: bodyin,
+              postID: postID_.toString(),
+              postType: eventType,
+              challengeSession: challengeSession,
+              index: "1",
+              winner: "true"
+            }
           }
         }
+        else if (type == "BERAKHIR") {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: postID_.toString(),
+              postType: eventType,
+              challengeSession: challengeSession,
+              index: "1",
+            }
+          }
+        } else {
+
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: postID_.toString(),
+              postType: eventType
+            }
+          }
+        }
+
       }
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
 
