@@ -16336,19 +16336,31 @@ export class subChallengeService {
                     as: "subChallenges",
                     let: {
                         localID: '$challengeId',
-
+                        timeNow: "$timenow",
                     },
                     pipeline: [
                         {
                             $match: {
-                                $expr: {
-                                    $and: [
+                                $and: [
+                                    {
+                                        $expr:
                                         {
                                             $eq: ["$challengeId", "$$localID"]
                                         },
+                                    },
+                                    {
+                                        $expr:
+                                        {
+                                            $lte:
+                                                [
+                                                    "$$timeNow",
+                                                    "$endDatetime",
 
-                                    ]
-                                }
+                                                ]
+                                        },
+
+                                    },
+                                ]
                             }
                         },
                         {
@@ -18843,19 +18855,31 @@ export class subChallengeService {
                     as: "subChallenges",
                     let: {
                         localID: '$challengeId',
-
+                        timeNow: "$timenow",
                     },
                     pipeline: [
                         {
                             $match: {
-                                $expr: {
-                                    $and: [
+                                $and: [
+                                    {
+                                        $expr:
                                         {
                                             $eq: ["$challengeId", "$$localID"]
                                         },
+                                    },
+                                    {
+                                        $expr:
+                                        {
+                                            $lte:
+                                                [
+                                                    "$$timeNow",
+                                                    "$endDatetime",
 
-                                    ]
-                                }
+                                                ]
+                                        },
+
+                                    },
+                                ]
                             }
                         },
                         {

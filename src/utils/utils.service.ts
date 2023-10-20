@@ -2285,49 +2285,7 @@ export class UtilsService {
       }
 
 
-      if (langIso === "id") {
-        if (type == "PEMENANG") {
-          payload = {
-            data: {
-
-              title: titlein,
-              body: bodyin,
-              postID: postID_.toString(),
-              postType: eventType,
-              challengeSession: challengeSession,
-              index: "1",
-              winner: "true"
-            }
-          }
-        }
-        else if (type == "BERAKHIR") {
-          payload = {
-            data: {
-
-              title: titlein,
-              body: bodyin,
-              postID: postID_.toString(),
-              postType: eventType,
-              challengeSession: challengeSession,
-              index: "1",
-            }
-          }
-        } else {
-
-          payload = {
-            data: {
-
-              title: titlein,
-              body: bodyin,
-              postID: postID_.toString(),
-              postType: eventType
-            }
-          }
-        }
-
-
-      }
-      else if (langIso === "en") {
+      if (langIso === "en") {
 
         if (type == "PEMENANG") {
           payload = {

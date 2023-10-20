@@ -73,8 +73,8 @@ export class TransactionsController {
         private readonly mediavideosService: MediavideosService,
         private readonly mediapictsService: MediapictsService,
         private readonly languagesService: LanguagesService,
-        private readonly adsService: AdsService, 
-        private readonly adsBalaceCreditService: AdsBalaceCreditService, 
+        private readonly adsService: AdsService,
+        private readonly adsBalaceCreditService: AdsBalaceCreditService,
         private readonly voucherpromoService: VoucherpromoService,
         private readonly logapiSS: LogapisService,
         private readonly adsPriceCreditsService: AdsPriceCreditsService,
@@ -85,7 +85,7 @@ export class TransactionsController {
     async create(@Res() res, @Headers('x-auth-token') auth: string, @Headers('x-auth-user') email: string, @Body() CreateTransactionsDto: CreateTransactionsDto, @Request() request) {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = request.get("Host") + request.originalUrl;
-        
+
         const messages = {
             "info": ["The create successful"],
         };
@@ -880,14 +880,14 @@ export class TransactionsController {
                             CreateTransactionsDto.response = datareqva;
 
                             //VOUCHER PROMO
-                            if (CreateTransactionsDto.voucherpromo!=undefined){
+                            if (CreateTransactionsDto.voucherpromo != undefined) {
                                 if (CreateTransactionsDto.voucherpromo.length > 0) {
                                     var valueAllPromo = 0;
                                     var dataVoucherPromo = [];
                                     for (var i = 0; 1 < CreateTransactionsDto.voucherpromo.length; i++) {
                                         var voucherPending = 0;
                                         var dataVoucher = await this.voucherpromoService.findOneActive(CreateTransactionsDto.voucherpromo[i]);
-                                        if (dataVoucher.quantity != undefined){
+                                        if (dataVoucher.quantity != undefined) {
                                             if (dataVoucher.quantity > 0) {
                                                 var ceckPromoUsedPending = await this.transactionsService.findCodePromoUsedPending(CreateTransactionsDto.voucherpromo[i]);
                                                 if (await this.utilsService.ceckData(ceckPromoUsedPending)) {
@@ -1568,7 +1568,7 @@ export class TransactionsController {
                         await this.transactionsService.updateoneVoucher(idtransaction, idbalance, payload);
                         await this.utilsService.sendFcmWebMode(emailseller.toString(), titleinsuksesvoucher, titleensuksesvoucher, bodyinsuksesvoucher, bodyensuksesvoucher, eventType, event, undefined, "TRANSACTION", noinvoice, "TRANSACTION");
                         await this.utilsService.sendFcmWebMode(emailbuyer.toString(), titleinsuksesbelivoucher, titleensuksesbelivoucher, bodyinsuksesbelivoucher, bodyensuksesbelivoucher, eventType, event, postid, "TRANSACTION", noinvoice, "TRANSACTION");
-                        
+
                         for (var i = 0; i < lengtvoucherid; i++) {
                             var postvcid = detail[i].id.toString();
                             var jml = detail[i].qty;
@@ -1609,9 +1609,9 @@ export class TransactionsController {
                         }
 
                         //UPDATE VOUCHER PROMO
-                        if (datatransaksi.voucherpromo!=undefined) {
-                            if (datatransaksi.voucherpromo.length>0) {
-                                for (var i = 0; i < datatransaksi.voucherpromo.length;i++){
+                        if (datatransaksi.voucherpromo != undefined) {
+                            if (datatransaksi.voucherpromo.length > 0) {
+                                for (var i = 0; i < datatransaksi.voucherpromo.length; i++) {
                                     this.voucherpromoService.updateQuantity(datatransaksi.voucherpromo[i]);
                                 }
                             }
@@ -1832,7 +1832,7 @@ export class TransactionsController {
         var setauth = JSON.parse(Buffer.from(auth.split('.')[1], 'base64').toString());
         var setemail = setauth.email;
         var reqbody = JSON.parse(JSON.stringify(OyDisbursements));
-        
+
         if (OyDisbursements.pin != undefined) {
             if (OyDisbursements.email != undefined) {
                 var ubasic = await this.userbasicsService.findOne(OyDisbursements.email);
@@ -1858,7 +1858,7 @@ export class TransactionsController {
                 } else {
                     var timestamps_end = await this.utilsService.getDateTimeString();
                     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
-                    
+
                     await this.errorHandler.generateNotAcceptableException(
                         "Unabled to proceed, User not found",
                     );
@@ -2061,7 +2061,7 @@ export class TransactionsController {
 
                     if (statuscode === "000") {
                         let dtburs = new Date(strdate);
-                        dtburs.setHours(dtburs.getHours() + 14); // timestamp
+                        dtburs.setHours(dtburs.getHours() + 7); // timestamp
                         dtburs = new Date(dtburs);
                         let dtb = dtburs.toISOString();
                         await this.accontbalanceWithdraw(iduser, valuedisbcharge, "disbursement");
@@ -2140,7 +2140,7 @@ export class TransactionsController {
                     }
                     else if (statuscode === "101" || statuscode === "102") {
                         let dtburs = new Date(strdate);
-                        dtburs.setHours(dtburs.getHours() + 14); // timestamp
+                        dtburs.setHours(dtburs.getHours() + 7); // timestamp
                         dtburs = new Date(dtburs);
                         let dtb = dtburs.toISOString();
                         await this.accontbalanceWithdraw(iduser, valuedisbcharge, "disbursement");
@@ -2220,7 +2220,7 @@ export class TransactionsController {
                     }
                     else {
                         let dtburs = new Date();
-                        dtburs.setHours(dtburs.getHours() + 14); // timestamp
+                        dtburs.setHours(dtburs.getHours() + 7); // timestamp
                         dtburs = new Date(dtburs);
                         let dtb = dtburs.toISOString();
                         let datawithdraw = new CreateWithdraws();
@@ -2252,7 +2252,7 @@ export class TransactionsController {
                 else {
                     // throw new BadRequestException("Request is Rejected (API Key is not Valid)");
                     let dtburs = new Date();
-                    dtburs.setHours(dtburs.getHours() + 14); // timestamp
+                    dtburs.setHours(dtburs.getHours() + 7); // timestamp
                     dtburs = new Date(dtburs);
                     let dtb = dtburs.toISOString();
                     let datawithdraw = new CreateWithdraws();
@@ -6085,7 +6085,7 @@ export class TransactionsController {
                 } catch (e) {
                     var timestamps_end = await this.utilsService.getDateTimeString();
                     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
-                    
+
                     throw new BadRequestException("Data not found...!");
                 }
                 try {
@@ -7309,7 +7309,7 @@ export class TransactionsController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var setemail = auth.email;
-        
+
         const messages = {
             "info": ["The process successful"],
         };
@@ -7488,13 +7488,13 @@ export class TransactionsController {
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/historys/voucherused')
     async finddatavoucheruse(@Req() request: Request, @Headers() headers): Promise<any> {
-        
+
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = headers.host + '/api/transactions/historys/voucherused';
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var setemail = auth.email;
-        
+
         const messages = {
             "info": ["The process successful"],
         };
@@ -7621,7 +7621,7 @@ export class TransactionsController {
         if (body.type == undefined) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
-            
+
             await this.errorHandler.generateBadRequestException(
                 'Unabled to proceed type is required',
             );
@@ -7789,7 +7789,7 @@ export class TransactionsController {
             if (!(await this.utilsService.ceckData(post))) {
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
-                
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, post not found',
                 );
@@ -7800,7 +7800,7 @@ export class TransactionsController {
             if (!(await this.utilsService.ceckData(media))) {
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
-                
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, post not found',
                 );
@@ -7810,7 +7810,7 @@ export class TransactionsController {
             if (!(body.paymentmethod)) {
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
-                
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, paymentmethod is required',
                 );
@@ -7821,7 +7821,7 @@ export class TransactionsController {
             if (!(await this.utilsService.ceckData(payment_method))) {
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
-                
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, payment method not found',
                 );
@@ -7832,7 +7832,7 @@ export class TransactionsController {
             if (!(await this.utilsService.ceckData(bank))) {
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
-                
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, Bank not found',
                 );
@@ -8009,7 +8009,8 @@ export class TransactionsController {
                     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
 
                     await this.errorHandler.generateNotAcceptableException("Request is Rejected (Amount type is not supported for the requested bank code)");
-                } else if (Va.status.code == "216") {var timestamps_end = await this.utilsService.getDateTimeString();
+                } else if (Va.status.code == "216") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
                     var timestamps_end = await this.utilsService.getDateTimeString();
                     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
 
@@ -9629,7 +9630,7 @@ export class TransactionsController {
                         } catch (e) {
                             var timestamps_end = await this.utilsService.getDateTimeString();
                             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
-                            
+
                             throw new BadRequestException("Data not found...!");
                         }
                         var dataapsara = null;
@@ -9770,7 +9771,7 @@ export class TransactionsController {
                         } catch (e) {
                             var timestamps_end = await this.utilsService.getDateTimeString();
                             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
-                            
+
                             throw new BadRequestException("Data not found...!");
                         }
                         try {
@@ -9799,7 +9800,7 @@ export class TransactionsController {
                         } catch (e) {
                             var timestamps_end = await this.utilsService.getDateTimeString();
                             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
-                            
+
                             throw new BadRequestException("Data not found...!");
                         }
 
@@ -10821,7 +10822,7 @@ export class TransactionsController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var setemail = auth.email;
-        
+
         var data = null;
         var date = null;
 
@@ -10897,7 +10898,7 @@ export class TransactionsController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var setemail = auth.email;
-        
+
         var startdate = null;
         var enddate = null;
         var iduser = null;
@@ -11112,13 +11113,13 @@ export class TransactionsController {
         await this.utilsService.sendFcmWebMode(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", no, "TRANSACTION");
     }
 
-    async insertBalanceCredit(iduser: string, debet: number, kredit: number, type: String, description: String, idtrans: string, getSetting_CreditPrice: AdsPriceCredits){
+    async insertBalanceCredit(iduser: string, debet: number, kredit: number, type: String, description: String, idtrans: string, getSetting_CreditPrice: AdsPriceCredits) {
         var AdsBalaceCreditDto_ = new AdsBalaceCreditDto();
         AdsBalaceCreditDto_._id = new mongoose.Types.ObjectId;
         AdsBalaceCreditDto_.iduser = new mongoose.Types.ObjectId(iduser);
         AdsBalaceCreditDto_.debet = debet;
         AdsBalaceCreditDto_.kredit = kredit;
-        AdsBalaceCreditDto_.type = type; 
+        AdsBalaceCreditDto_.type = type;
         AdsBalaceCreditDto_.timestamp = await this.utilsService.getDateTimeString();
         AdsBalaceCreditDto_.description = description;
         AdsBalaceCreditDto_.idtrans = new mongoose.Types.ObjectId(idtrans);
