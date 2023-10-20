@@ -4179,6 +4179,7 @@ export class ChallengeService {
         all = datanotif[i].all;
         if (all !== undefined && all == 1) {
           this.sendnotifmasalchallenge(challengeID.toString(), subChallengeID.toString(), 100);
+          // this.sendnotifmasalchallenge(datanotif[i].challengeID.toString(), datanotif[i].subChallengeID.toString(), 100);
         }
         else {
           try {
@@ -4673,7 +4674,7 @@ export class ChallengeService {
 
   }
 
-  async sendnotifmasalchallenge(challengeid: string, subchallenge: string, limit: number) {
+  async sendnotifmasalchallenge(challengeid: string, subchallenge: string, limit: number) {    
     var mongo = require('mongoose');
     var totalall = null;
 
@@ -4709,24 +4710,29 @@ export class ChallengeService {
 
     var listnotif = await this.notifChallengeService.findbyChallengeandSub(challengeid, subchallenge);
     if (listnotif.length != 0) {
-      if (listnotif.length == 1) {
-        getdata = listnotif[0];
-      }
-      else {
-        var getdataakandatang = new Date(listnotif[0].datetime);
-        var getdatadimulai = new Date(listnotif[1].datetime);
-        var timenow = new Date(await this.util.getDateTimeString());
+      getdata = listnotif[0];
+      // if (listnotif.length == 1) {
+      //   getdata = listnotif[0];
+      // }
+      // else {
+      //   var getdataakandatang = new Date(listnotif[0].datetime);
+      //   var getdatadimulai = new Date(listnotif[1].datetime);
+      //   var timenow = new Date(await this.util.getDateTimeString());
 
-        var selisihdatang = Math.abs(getdataakandatang.getTime() - timenow.getTime());
-        var selisihdimulai = Math.abs(getdatadimulai.getTime() - timenow.getTime());
+      //   var selisihdatang = Math.abs(getdataakandatang.getTime() - timenow.getTime());
+      //   var selisihdimulai = Math.abs(getdatadimulai.getTime() - timenow.getTime());
 
-        if (selisihdatang < selisihdimulai) {
-          getdata = listnotif[0];
-        }
-        else {
-          getdata = listnotif[1];
-        }
-      }
+      //   if (selisihdatang < selisihdimulai) {
+      //     getdata = listnotif[0];
+      //   }
+      //   else {
+      //     getdata = listnotif[1];
+      //   }
+      // }
+
+      var updatedata = new notifChallenge();
+      updatedata.isSend = true;
+      await this.notifChallengeService.update(getdata._id.toString(), updatedata);
 
       datetime = getdata.datetime;
 
@@ -4802,10 +4808,6 @@ export class ChallengeService {
           }
         }
       }
-
-      var updatedata = new notifChallenge();
-      updatedata.isSend = true;
-      await this.notifChallengeService.update(getdata._id.toString(), updatedata);
 
       // return array;
     }

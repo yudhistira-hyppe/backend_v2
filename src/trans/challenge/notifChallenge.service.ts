@@ -299,6 +299,34 @@ export class notifChallengeService {
         var mongo = require('mongoose');
         var result = await this.notifChallengeModel.aggregate([
             {
+                $set: {
+                    "timenow":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [
+                                    new Date(),
+                                    25140000
+                                ]
+                            }
+                        }
+                    },
+                    "timenowplus":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [
+                                    new Date(),
+                                    25260000
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
                 "$match":
                 {
                     "$and":
@@ -316,16 +344,42 @@ export class notifChallengeService {
                                 "all": 1
                             },
                             {
-                                "$or":
-                                    [
-                                        {
-                                            "type": "akanDatang"
-                                        },
-                                        {
-                                            "type": "challengeDimulai"
-                                        }
-                                    ]
-                            }
+                                $expr:
+                                {
+                                    $gte:
+                                        [
+                                            "$timenow",
+
+                                            "$datetime",
+
+                                        ]
+                                },
+
+                            },
+                            {
+                                $expr:
+                                {
+                                    $eq:
+                                        [
+                                            "$isSend",
+
+                                            false,
+
+                                        ]
+                                },
+
+                            },
+                            // {
+                            //     "$or":
+                            //         [
+                            //             {
+                            //                 "type": "akanDatang"
+                            //             },
+                            //             {
+                            //                 "type": "challengeDimulai"
+                            //             }
+                            //         ]
+                            // }
                         ]
                 }
             },
@@ -336,7 +390,7 @@ export class notifChallengeService {
                 }
             },
             {
-                "$limit": 2
+                "$limit": 1
             }
         ]);
 
