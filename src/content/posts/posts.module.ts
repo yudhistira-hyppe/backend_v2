@@ -51,7 +51,6 @@ import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
 @Module({
 
     imports: [
-        PostchallengeModule,
         UserbasicnewModule,
         MediastikerModule,
         LogapisModule,
