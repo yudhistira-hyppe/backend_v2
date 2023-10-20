@@ -1379,13 +1379,21 @@ export class ContenteventsController {
               idevent1 = resultdata1._id;
               var dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
 
+              var dataview = await this.contenteventsService.listview(email_user, request.body.postID);
+
               if (idevent1 != null) {
-                try {
-                  this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
-                  console.log("sukses hitung score")
-                } catch (e) {
-                  console.log("gagal ngitung skor" + e)
+
+                if (dataview.length > 0) {
+
+                } else {
+                  try {
+                    this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+                    console.log("sukses hitung score")
+                  } catch (e) {
+                    console.log("gagal ngitung skor" + e)
+                  }
                 }
+
 
               }
             } catch (error) {
