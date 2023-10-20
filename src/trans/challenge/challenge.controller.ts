@@ -3302,7 +3302,7 @@ export class ChallengeController {
             setdata.isSend = false;
             setdata.nameChallenge = detail.nameChallenge;
             setdata.datetime = timedate;
-            if (listpartisipan.length == 0) 
+            if (listpartisipan == null || listpartisipan.length == 0) 
             {
               setdata.all = 1;
             }
