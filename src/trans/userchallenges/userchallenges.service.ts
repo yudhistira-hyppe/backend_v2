@@ -24,12 +24,20 @@ export class UserchallengesService {
         return this.UserchallengesModel.find().exec();
     }
 
+    async findData(userchallenges:Userchallenges): Promise<Userchallenges[]> {
+        return this.UserchallengesModel.find(userchallenges).exec();
+    }
+
     async update(id: string, Userchallenges_: Userchallenges): Promise<Userchallenges> {
         let data = await this.UserchallengesModel.findByIdAndUpdate(id, Userchallenges_, { new: true });
         if (!data) {
             throw new Error('Data is not found!');
         }
         return data;
+    }
+    async updateByUSer(id: string, userchallenges: Userchallenges) {
+        let result = await this.UserchallengesModel.updateOne({ _id: new Types.ObjectId(id) }, userchallenges).exec();
+        return result;
     }
     async updateActionChallenge(id: string, data: {}) {
         let result = await this.UserchallengesModel.updateOne({ _id: new Types.ObjectId(id) }, { $push: { activity: data } }).exec();

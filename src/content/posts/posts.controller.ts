@@ -692,6 +692,9 @@ export class PostsController {
         datapostawal = await this.PostsService.findByPostId(body.postID);
         tags = datapostawal.tags;
         cats = datapostawal.category;
+        if (await this.utilsService.ceckData(datapostawal)){
+          this.PostsService.deletePostChalenge(body.postID);
+        }
 
       } catch (e) {
         datapostawal = null;
