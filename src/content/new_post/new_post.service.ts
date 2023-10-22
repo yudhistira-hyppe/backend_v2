@@ -4508,4 +4508,711 @@ export class NewPostService {
 
       return query;
     }
+
+    async findalldatakontenmultiple(userid:string, email:string, ownership:any, monetesisasi:boolean, buy:boolean, archived:boolean, reported:boolean, postType:string, startdate:string, enddate:string, skip:number, limit:number)
+    {
+      try {
+        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+  
+        var dateend = currentdate.toISOString();
+      } catch (e) {
+        dateend = "";
+      }
+
+      var mongo = require('mongoose');
+      var konvertid = mongo.Types.ObjectId(userid);
+
+      var pipeline = [];
+      if(buy && buy != undefined)
+      {
+        pipeline.push(
+          {
+              "$project":
+              {
+                  "userid":konvertid
+              }
+          },
+          {
+              "$limit":1
+          },
+          {
+              "$lookup":
+              {
+                  from:"transactions",
+                  as:"trans_data",
+                  let:
+                  {
+                      trans_fk:"$userid"
+                  },
+                  pipeline:
+                  [
+                      {
+                          "$match":
+                          {
+                              "$and":
+                              [
+                                  {
+                                      "$expr":
+                                      {
+                                          "$eq":
+                                          [
+                                              "$iduserbuyer","$$trans_fk"
+                                          ]
+                                      }
+                                  },
+                                  {
+                                      "status":"Success"
+                                  }
+                              ]
+                          }
+                      }
+                  ]
+              }
+          },
+          {
+              "$unwind":
+              {
+                  path:"$trans_data",
+                  preserveNullAndEmptyArrays:true
+              }
+          },
+          {
+              "$lookup": 
+              {
+                  "from": "newPosts",
+                  "localField": "trans_data.postid",
+                  "foreignField": "postID",
+                  "as": "post_data"
+              }
+          },
+          {
+              "$unwind":
+              {
+                  path:"$post_data",
+                  // preserveNullAndEmptyArrays:true
+              }
+          },
+          {
+              "$lookup": 
+              {
+                from: 'newUserBasics',
+                localField: 'post_data.email',
+                foreignField: 'email',
+                as: 'basicdata',
+              }
+          },
+          {
+              "$addFields":
+              {
+                  "auth":
+                  {
+                      "$arrayElemAt":
+                      [
+                          "$basicdata", 0
+                      ]
+                  },
+                  "insight":
+                  {
+                      "$arrayElemAt":
+                      [
+                          "$basicdata.insight.$id",0
+                      ]
+                  },
+                  "cleanUri":
+                  {
+                      "$replaceOne":
+                      {
+                          input:
+                          {
+                              "$arrayElemAt":
+                              [
+                                  "$post_data.mediaSource.mediaUri", 0
+                              ]
+                          },
+                          find:"_0001.jpeg",
+                          replacement:""
+                      }
+                  },
+                  "tempmediaSource":
+                  {
+                      "$arrayElemAt":
+                      [
+                          "$post_data.mediaSource", 0
+                      ]
+                  },
+                  "monetize":true,
+                  "trans_data":"$trans_data"
+              }
+          },
+          {
+              "$lookup": 
+              {
+                from: 'insights',
+                localField: 'insight',
+                foreignField: '_id',
+                as: 'insight_data',
+              }
+          },
+          {
+              "$project":
+              {
+                  trans:"$trans_data",
+                  _id:"$post_data._id",
+                  insight:
+                  {
+                      "shares":
+                      {
+                          "$arrayElemAt":
+                          [
+                              "$insight_data.shares", 0
+                          ]
+                      },
+                      "followers":
+                      {
+                          "$arrayElemAt":
+                          [
+                              "$insight_data.followers", 0
+                          ]
+                      },
+                      "comments":
+                      {
+                          "$arrayElemAt":
+                          [
+                              "$insight_data.comments", 0
+                          ]
+                      },
+                      "followings":
+                      {
+                          "$arrayElemAt":
+                          [
+                              "$insight_data.followings", 0
+                          ]
+                      },
+                      "reactions":
+                      {
+                          "$arrayElemAt":
+                          [
+                              "$insight_data.reactions", 0
+                          ]
+                      },
+                      "posts":
+                      {
+                          "$arrayElemAt":
+                          [
+                              "$insight_data.posts", 0
+                          ]
+                      },
+                      "views":
+                      {
+                          "$arrayElemAt":
+                          [
+                              "$insight_data.views", 0
+                          ]
+                      },
+                      "likes":
+                      {
+                          "$arrayElemAt":
+                          [
+                              "$insight_data.likes", 0
+                          ]
+                      },
+                  },
+                  "avatar": 
+                  {
+                      mediaBasePath:"$auth.mediaBasePath",
+                      mediaUri:"$auth.mediaUri",
+                      mediaType:"$auth.mediaType",
+                      mediaEndpoint:"$auth.mediaEndpoint",
+                  },
+                  "fullName":"$auth.fullName",
+                  "username":"$auth.username",
+                  "createdAt": "$post_data.createdAt",
+                  "updatedAt": "$post_data.updatedAt",
+                  "postID": "$post_data.postID",
+                  "email": "$post_data.email",
+                  "postType": "$post_data.postType",
+                  "description": "$post_data.description",
+                  "title": "$post_data.title",
+                  "active": "$post_data.action",
+                  "metadata": "$post_data.metadata",
+                  "location": "$post_data.location",
+                  "tags": "$post_data.tags",
+                  "likes": "$post_data.likes",
+                  "views": "$post_data.views",
+                  "shares": "$post_data.shares",
+                  "comments": "$post_data.comments",
+                  "isOwned": "$post_data.isOwned",
+                  "certified": "$post_data.certified",
+                  "privacy": {
+                      "isPostPrivate": "$auth.isPostPrivate",
+                      "isCelebrity": "$auth.isCelebrity",
+                      "isPrivate": "$auth.isPrivate"
+                  },
+                  "isViewed": 
+                  {
+                      "$cond": 
+                      {
+                        "if": 
+                        {
+                        "$eq": 
+                        [
+                          "$post_data.views",
+                          0
+                        ]
+                      },
+                      "then": false,
+                      "else": true
+                    }
+                },
+                "allowComments": "$post_data.allowComments",
+                "isSafe": "$post_data.isSafe",
+                "saleLike": "$post_data.saleLike",
+                "saleView": "$post_data.saleView",
+                "monetize": "$monetize",
+                "salePrice": "$post_data.salePrice",
+                "rotate": 
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.rotate",
+                        null
+                    ]
+                },
+                "mediaBasePath":
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.mediaBasePath",
+                        null
+                    ]
+                },
+                mediaUri:
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.mediaUri",
+                        null
+                    ]
+                },
+                mediaType:
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.mediaType",
+                        null
+                    ]
+                },
+                mediaThumbEndpoint:
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.mediaThumbEndpoint",
+                        {
+                            "$concat":
+                            [
+                                "/thumb/",
+                                "$cleanUri"
+                            ]
+                        }
+                    ]
+                },
+                mediaEndpoint:
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.mediaEndpoint",
+                        {
+                            "$cond":
+                            {
+                                if:
+                                {
+                                    "$eq":
+                                    [
+                                        "$postType", "pict"
+                                    ]
+                                },
+                                then:
+                                {
+                                    "$concat":
+                                    [
+                                        "/pict/",
+                                        "$cleanUri"
+                                    ]
+                                },
+                                else:
+                                {
+                                    "$concat":
+                                    [
+                                        "/stream/",
+                                        "$cleanUri"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                mediaThumbUri:
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.mediaThumbUri",
+                        null
+                    ]
+                },
+                apsaraId:
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.apsaraId",
+                        null
+                    ]
+                },
+                apsara:
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.apsara",
+                        false
+                    ]
+                },
+            }
+          }
+        );
+      }
+      else{
+        pipeline.push(
+          {
+            $lookup: {
+              from: 'newUserBasics',
+              localField: 'email',
+              foreignField: 'email',
+              as: 'basicdata',
+            }
+          },
+          {
+            $addFields: {
+              'basic': { $arrayElemAt: ['$basicdata', 0] },
+              'insightid': { $arrayElemAt: ['$basicdata.insight.$id', 0] },
+              'isViewed': {
+                '$cond': { if: { '$eq': ['$views', 0] }, then: false, else: true }
+              },
+              salePrice: "$saleAmount",
+              monetize: {
+                $cond: { if: { $eq: ["$saleAmount", 0] }, then: false, else: true }
+              },
+              "tempmediaSource": { $arrayElemAt: ['$mediaSource', 0] }
+            }
+          },
+          {
+            $lookup: {
+              from: 'insights',
+              localField: 'insightid',
+              foreignField: '_id',
+              as: 'insightdata',
+            }
+          },
+          {
+            $addFields: {
+              'avatar': 
+              { 
+                mediaBasePath:"$basic.mediaBasePath",
+                mediaUri:"$basic.mediaUri",
+                mediaType:"$basic.mediaType",
+                mediaEndpoint:"$basic.mediaEndpoint"
+              },
+              'insight': { $arrayElemAt: ['$insightdata', 0] },
+            }
+          },
+          {
+            $project: {
+                _id: 1,
+                insight: {
+                    shares: '$insight.shares',
+                    followers: '$insight.followers',
+                    comments: '$insight.comments',
+                    followings: '$insight.followings',
+                    reactions: '$insight.reactions',
+                    posts: '$insight.posts',
+                    views: '$insight.views',
+                    likes: '$insight.likes'
+                },
+                avatar: "$avatar",
+                fullName: "$basic.fullName",
+                username: "$basic.username",
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                email: 1,
+                postType: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                metadata: 1,
+                location: 1,
+                tags: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                isOwned: 1,
+                certified: 1,
+                privacy: {
+                    isPostPrivate: '$basic.isPostPrivate',
+                    isCelebrity: '$basic.isCelebrity',
+                    isPrivate: '$basic.isPrivate'
+                },
+                isViewed: '$isViewed',
+                allowComments: 1,
+                isSafe: 1,
+                saleLike: 1,
+                saleView: 1,
+                reportedUserCount: 1,
+                monetize: "$monetize",
+                salePrice: "$salePrice",
+                // mediaref: "$mediaref",
+                "rotate": 
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.rotate",
+                        null
+                    ]
+                },
+                "mediaBasePath":
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.mediaBasePath",
+                        null
+                    ]
+                },
+                mediaUri:
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.mediaUri",
+                        null
+                    ]
+                },
+                mediaType:
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.mediaType",
+                        null
+                    ]
+                },
+                mediaThumbEndpoint:
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.mediaThumbEndpoint",
+                        {
+                            "$concat":
+                            [
+                                "/thumb/",
+                                "$cleanUri"
+                            ]
+                        }
+                    ]
+                },
+                mediaEndpoint:
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.mediaEndpoint",
+                        {
+                            "$cond":
+                            {
+                                if:
+                                {
+                                    "$eq":
+                                    [
+                                        "$postType", "pict"
+                                    ]
+                                },
+                                then:
+                                {
+                                    "$concat":
+                                    [
+                                        "/pict/",
+                                        "$cleanUri"
+                                    ]
+                                },
+                                else:
+                                {
+                                    "$concat":
+                                    [
+                                        "/stream/",
+                                        "$cleanUri"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                mediaThumbUri:
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.mediaThumbUri",
+                        null
+                    ]
+                },
+                apsaraId:
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.apsaraId",
+                        null
+                    ]
+                },
+                apsara:
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediaSource.apsara",
+                        false
+                    ]
+                },
+            }
+          },
+          {
+            "$match":
+            {
+                "$and":
+                [
+                    {
+                        email:"qahyppe@gmail.com"
+                    },
+                    {
+                        active:true
+                    },
+                ]
+            }
+          }
+        );
+
+        if (ownership !== undefined && ownership === true) {
+          pipeline.push({ $match: { certified: true } });
+        }
+        if (archived && archived !== undefined) {
+          pipeline.push({ $match: { postType: "story" } });
+        }
+      }
+
+      if (postType && postType !== undefined) {
+        pipeline.push({ $match: { postType: postType } });
+      }
+      if (monetesisasi !== undefined) {
+        pipeline.push({ $match: { monetize: monetesisasi } });
+      }
+      if (startdate && startdate !== undefined) {
+        pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+      }
+      if (enddate && enddate !== undefined) {
+        pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
+      }
+      if (reported !== undefined) {
+        if (reported)
+          pipeline.push({ $match: { "reportedUserCount": { $gt: 0 } } })
+        else
+          pipeline.push({ $match: { "reportedUserCount": 0 } })
+      }
+  
+      if (buy !== undefined) {
+        pipeline.push({ $sort: { "trans.createdAt": -1 } });
+      }
+      else {
+        pipeline.push({ $sort: { createdAt: -1 } });
+      }
+
+      pipeline.push({ $skip: skip });
+      pipeline.push({ $limit: limit });
+      const util = require('util')
+      console.log(util.inspect(pipeline, { showHidden: false, depth: null, colors: true }));
+
+      var query = await this.loaddata.aggregate(pipeline);
+      console.log(query);
+      var listdata = [];
+      var tempresult = null;
+      var tempdata = null;
+      for (var i = 0; i < query.length; i++) {
+        tempdata = query[i];
+        if (tempdata.apsara == true) {
+          listdata.push(tempdata.apsaraId);
+        }
+        else {
+          listdata.push(undefined);
+        }
+      }
+
+      //console.log(listdata);
+      var apsaraimagedata = await this.postContentService.getImageApsara(listdata);
+      console.log(apsaraimagedata);
+      // console.log(resultdata.ImageInfo[0]);
+      tempresult = apsaraimagedata.ImageInfo;
+      for (var i = 0; i < query.length; i++) {
+        for (var j = 0; j < tempresult.length; j++) {
+          if (tempresult[j].ImageId == query[i].apsaraId) {
+            query[i].media =
+            {
+              "ImageInfo": [tempresult[j]]
+            }
+          }
+        }
+        if (query[i].apsara == false && (query[i].mediaType == "image" || query[i].mediaType == "images")) {
+          query[i].media =
+          {
+            "ImageInfo": []
+          }
+        }
+      }
+  
+      var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
+      console.log(apsaravideodata);
+      // console.log(resultdata.ImageInfo[0]);
+      tempresult = apsaravideodata.VideoList;
+      for (var i = 0; i < query.length; i++) {
+        for (var j = 0; j < tempresult.length; j++) {
+          if (tempresult[j].VideoId == query[i].apsaraId) {
+            query[i].media =
+            {
+              "VideoList": [tempresult[j]]
+            }
+          }
+        }
+        if (query[i].apsara == false && query[i].mediaType == "video") {
+          query[i].media =
+          {
+            "VideoList": []
+          }
+        }
+      }
+
+      return query;
+    }
+
+    async findcountfilter(email:string)
+    {
+      const data = await this.loaddata.aggregate([
+        {
+          "$match":
+          {
+            "email":email
+          }
+        },
+        {
+          "$group":
+          {
+            _id:"$email",
+            totalpost:{
+              "$sum":1
+            }
+          }
+        }
+      ]);
+
+      return data;
+    }
 }

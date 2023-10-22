@@ -842,4 +842,74 @@ export class NewPostController {
 
         return { response_code: 202, data, messages };
     }
+
+    @Post('getusercontents/management/konten/group')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagementkontenfilterss(@Req() request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+
+        var email = null;
+        var skip = 0;
+        var limit = 0;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        var ownership = request_json["ownership"];
+        var monetesisasi = request_json["monetesisasi"];
+        var archived = request_json["archived"];
+        var buy = request_json["buy"];
+        var postType = request_json["postType"];
+        var startdate = request_json["startdate"];
+        var enddate = request_json["enddate"];
+        var reported = request_json["reported"];
+
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var ubasic = await this.basic2SS.findbyemail(email);
+        var iduser = ubasic._id;
+        var userid = mongoose.Types.ObjectId(iduser);
+
+        console.log(userid);
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var datatotal = await this.newPostService.findcountfilter(email);
+        var totalAll = datatotal[0].totalpost;
+        let dataFilter = await this.newPostService.findalldatakontenmultiple(userid, email, ownership, monetesisasi, buy, archived, reported, postType, startdate, enddate, 0, totalAll);
+        let data = await this.newPostService.findalldatakontenmultiple(userid, email, ownership, monetesisasi, buy, archived, reported, postType, startdate, enddate, skip, limit);
+        var totalFilter = dataFilter.length;
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        return { response_code: 202, data, skip, limit, totalFilter, totalAll, messages };
+    }
 }

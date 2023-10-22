@@ -3450,6 +3450,247 @@ export class UserticketsService {
 
     return query;
   }
+
+  async detail2(id: object): Promise<object> {
+    var result = await this.userticketsModel.aggregate([
+      {
+        $match: {
+            "_id": id
+        }
+      },
+      {
+        $lookup: {
+          from: "userticketdetails",
+          localField: "_id",
+          foreignField: "IdUserticket",
+          as: "detail"
+        },
+    
+      },
+      {
+        $lookup: {
+          from: "newUserBasics",
+          localField: "IdUser",
+          foreignField: '_id',
+          as: 'userbasics_data'
+        }
+      },
+      {
+        $lookup: {
+          from: "categorytickets",
+          localField: "categoryTicket",
+          foreignField: '_id',
+          as: 'category_data'
+        }
+      },
+      {
+        $lookup: {
+          from: "leveltickets",
+          localField: "levelTicket",
+          foreignField: '_id',
+          as: 'level_data'
+        }
+      },
+      {
+        $lookup: {
+          from: "sourcetickets",
+          localField: "sourceTicket",
+          foreignField: '_id',
+          as: 'source_data'
+        }
+      },
+      {
+        $lookup: {
+          from: 'newUserBasics',
+          localField: 'assignTo',
+          foreignField: '_id',
+          as: 'asignto_data',
+    
+        },
+    
+      },
+      {
+        $project: {
+          user: {
+            $arrayElemAt: ['$userbasics_data', 0]
+          },
+          userasign: {
+            $arrayElemAt: ['$asignto_data', 0]
+          },
+          category: {
+            $arrayElemAt: ['$category_data', 0]
+          },
+          level: {
+            $arrayElemAt: ['$level_data', 0]
+          },
+          source: {
+            $arrayElemAt: ['$source_data', 0]
+          },
+          nomortiket: '$nomortiket',
+          subject: '$subject',
+          body: '$body',
+          status: '$status',
+          isRead: '$isRead',
+          active: '$active',
+          datetime: '$datetime',
+          sourceTicket: '$sourceTicket',
+          levelTicket: '$levelTicket',
+          categoryTicket: '$categoryTicket',
+          mediaBasePath: '$mediaBasePath',
+          mediaMime: '$mediaMime',
+          mediaType: '$mediaType',
+          mediaUri: '$mediaUri',
+          originalName: '$originalName',
+          fsSourceUri: '$fsSourceUri',
+          fsSourceName: '$fsSourceName',
+          fsTargetUri: '$fsTargetUri',
+          version: '$version',
+          OS: '$OS',
+          detail: '$detail'
+        }
+      },
+      {
+        $project: {
+          userasign:1,
+          user:1,
+          nomortiket: '$nomortiket',
+          pengirim: '$user.email',
+          penerima: '$userasign.fullName',
+          subject: '$subject',
+          body: '$body',
+          status: '$status',
+          isRead: '$isRead',
+          active: '$active',
+          datetime: '$datetime',
+          nameCategory: '$category.nameCategory',
+          nameLevel: '$level.nameLevel',
+          sourceName: '$source.sourceName',
+          sourceTicket: '$sourceTicket',
+          levelTicket: '$levelTicket',
+          categoryTicket: '$categoryTicket',
+          mediaBasePath: '$mediaBasePath',
+          mediaMime: '$mediaMime',
+          mediaType: '$mediaType',
+          mediaUri: '$mediaUri',
+          originalName: '$originalName',
+          fsSourceUri: '$fsSourceUri',
+          fsSourceName: '$fsSourceName',
+          fsTargetUri: '$fsTargetUri',
+          version: '$version',
+          OS: '$OS',
+          detail: '$detail'
+        }
+      },
+      {
+        $project: {
+          userasign:1,
+          user:1,
+          nomortiket: '$nomortiket',
+          pengirim: '$pengirim',
+          penerima: '$penerima',
+          subject: '$subject',
+          body: '$body',
+          status: '$status',
+          isRead: '$isRead',
+          active: '$active',
+          datetime: '$datetime',
+          nameCategory: '$nameCategory',
+          nameLevel: '$nameLevel',
+          sourceName: '$sourceName',
+          sourceTicket: '$sourceTicket',
+          levelTicket: '$levelTicket',
+          categoryTicket: '$categoryTicket',
+          mediaBasePath: '$mediaBasePath',
+          mediaMime: '$mediaMime',
+          mediaType: '$mediaType',
+          mediaUri: '$mediaUri',
+          originalName: '$originalName',
+          fsSourceUri: '$fsSourceUri',
+          fsSourceName: '$fsSourceName',
+          fsTargetUri: '$fsTargetUri',
+          version: '$version',
+          OS: '$OS',
+          detail: '$detail'
+        }
+      },
+      {
+        $project: {
+          username: '$user.username',
+          nomortiket: '$nomortiket',
+          pengirim: '$pengirim',
+          penerima: '$penerima',
+          subject: '$subject',
+          body: '$body',
+          status: '$status',
+          isRead: '$isRead',
+          active: '$active',
+          datetime: '$datetime',
+          nameCategory: '$nameCategory',
+          nameLevel: '$nameLevel',
+          sourceName: '$sourceName',
+          sourceTicket: '$sourceTicket',
+          levelTicket: '$levelTicket',
+          categoryTicket: '$categoryTicket',
+          mediaBasePath: '$mediaBasePath',
+          mediaMime: '$mediaMime',
+          mediaType: '$mediaType',
+          mediaUri: '$mediaUri',
+          originalName: '$originalName',
+          fsSourceUri: '$fsSourceUri',
+          fsSourceName: '$fsSourceName',
+          fsTargetUri: '$fsTargetUri',
+          version: '$version',
+          OS: '$OS',
+          detail: '$detail',
+          concats: '/profilepict',
+          pict: {
+            $replaceOne: {
+              input: "$userasign.mediaUri",
+              find: "_0001.jpeg",
+              replacement: ""
+            }
+          },
+          avatar: {
+            mediaBasePath: 
+            {
+              "$ifNull":
+              [
+                '$userasign.mediaBasePath',
+                null
+              ]
+            },
+            mediaUri:
+            {
+              "$ifNull":
+              [
+                '$userasign.mediaUri',
+                null
+              ]
+            },
+            mediaType:
+            {
+              "$ifNull":
+              [
+                '$userasign.mediaType',
+                null
+              ]
+            },
+            mediaEndpoint:
+            {
+              "$ifNull":
+              [
+                // '$userasign.fsTargetUri',
+                '$userasign.mediaEndpoint',
+                null
+              ]
+            }
+          },
+    
+        }
+      }
+    ]);
+    return result;
+  }
   // async dateRange(startDate, endDate, steps = 1) {
   //   const dateArray = [];
   //   let currentDate = new Date(startDate);

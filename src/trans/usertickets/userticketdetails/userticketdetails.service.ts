@@ -283,6 +283,141 @@ export class UserticketdetailsService {
         return query;
     }
 
+    async detailKomentarChat2(id: object, type: string): Promise<any[]>
+    {
+        var query = await this.userticketsModel.aggregate(
+            [
+                {
+                    $match: 
+                    {
+                        "type": type, 
+                        "IdUserticket": id
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "newUserBasics",
+                        localField: "IdUser",
+                        foreignField: "_id",
+                        as: "userdata"
+                    }
+                },
+                {
+                    $project: {
+                        userdata: {
+                            $arrayElemAt: ['$userdata', 0]
+                        },
+                        tiketdata: {
+                            $arrayElemAt: ['$tiketdata', 0]
+                        },
+                        "profilpictid": '$userdata.profilePict.$id',
+                        "IdUserticket": "$IdUserticket",
+                        "type": "$type",
+                        "body": "$body",
+                        "datetime": "$datetime",
+                        "IdUser": "$IdUser",
+                        "status": "$status",
+                        "mediaUri": '$mediaUri',
+                        "originalName": '$originalName',
+                        "fsSourceUri": '$fsSourceUri',
+                        "fsSourceName": '$fsSourceName',
+                        "fsTargetUri": '$fsTargetUri',
+                        "mediaBasePath": '$mediaBasePath',
+                        "mediaMime": '$mediaMime',
+                        "mediaType": '$mediaType',
+            
+            
+                    }
+                },
+                {
+                    $project: {
+            
+                        profilpict: {
+                            $arrayElemAt: ['$profilePict_data', 0]
+                        },
+                        "fullName": "$userdata.fullName",
+                        "email": "$userdata.email",
+                        "IdUserticket": "$IdUserticket",
+                        "type": "$type",
+                        "body": "$body",
+                        "datetime": "$datetime",
+                        "IdUser": "$IdUser",
+                        "status": "$status",
+                        "mediaUri": '$mediaUri',
+                        "originalName": '$originalName',
+                        "fsSourceUri": '$fsSourceUri',
+                        "fsSourceName": '$fsSourceName',
+                        "fsTargetUri": '$fsTargetUri',
+                        "mediaBasePath": '$mediaBasePath',
+                        "mediaMime": '$mediaMime',
+                        "mediaType": '$mediaType',
+                        "avatar": 
+                        {
+                            mediaBasePath:
+                            {
+                                "$ifNull":
+                                [
+                                  '$userdata.mediaBasePath',
+                                  null
+                                ]
+                            },
+                            mediaUri:
+                            {
+                                "$ifNull":
+                                [
+                                  '$userdata.mediaUri',
+                                  null
+                                ]
+                            },
+                            mediaType:
+                            {
+                                "$ifNull":
+                                [
+                                  '$userdata.mediaType',
+                                  null
+                                ]
+                            },
+                            mediaEndpoint:
+                            {
+                                "$ifNull":
+                                [
+                                  '$userdata.mediaEndpoint',
+                                  null
+                                ]
+                            },
+            
+                        },
+                    }
+                },
+                {
+                    $project: {
+            
+            
+                        "fullName": "$fullName",
+                        "email": "$email",
+                        "IdUserticket": "$IdUserticket",
+                        "type": "$type",
+                        "body": "$body",
+                        "datetime": "$datetime",
+                        "IdUser": "$IdUser",
+                        "status": "$status",
+                        "mediaUri": '$mediaUri',
+                        "originalName": '$originalName',
+                        "fsSourceUri": '$fsSourceUri',
+                        "fsSourceName": '$fsSourceName',
+                        "fsTargetUri": '$fsTargetUri',
+                        "mediaBasePath": '$mediaBasePath',
+                        "mediaMime": '$mediaMime',
+                        "mediaType": '$mediaType',
+                        "avatar" : "$avatar"
+                    }
+                },
+                { $sort: { datetime: 1 }, },
+            ]
+        );
+        return query;
+    }
+
     async detailKomentarChatNew(id: object): Promise<any[]> {
 
         const query = await this.userticketsModel.aggregate([
@@ -416,6 +551,107 @@ export class UserticketdetailsService {
 
 
         return query;
+    }
+
+    async detailKomentarChatNew2(id: object): Promise<any[]> {
+        var data = await this.userticketsModel.aggregate([
+            {
+                $match: {
+                    "IdUserticket": id
+                }
+            },
+            {
+                $lookup: {
+                    from: "newUserBasics",
+                    localField: "IdUser",
+                    foreignField: "_id",
+                    as: "userdata"
+                }
+            },
+            {
+                $project: {
+                    userdata: {
+                            $arrayElemAt: ['$userdata', 0]
+                    },
+                    tiketdata: {
+                            $arrayElemAt: ['$tiketdata', 0]
+                    },
+                    // "profilpictid": '$userdata.profilePict.$id',
+                    "IdUserticket": "$IdUserticket",
+                    "type": "$type",
+                    "body": "$body",
+                    "datetime": "$datetime",
+                    "IdUser": "$IdUser",
+                    "status": "$status",
+                    "mediaUri": '$mediaUri',
+                    "originalName": '$originalName',
+                    "fsSourceUri": '$fsSourceUri',
+                    "fsSourceName": '$fsSourceName',
+                    "fsTargetUri": '$fsTargetUri',
+                    "mediaBasePath": '$mediaBasePath',
+                    "mediaMime": '$mediaMime',
+                    "mediaType": '$mediaType',
+                }
+            },
+            {
+                $project: {
+                    "fullName": "$userdata.fullName",
+                    "email": "$userdata.email",
+                    "IdUserticket": "$IdUserticket",
+                    "type": "$type",
+                    "body": "$body",
+                    "datetime": "$datetime",
+                    "IdUser": "$IdUser",
+                    "status": "$status",
+                    "mediaUri": '$mediaUri',
+                    "originalName": '$originalName',
+                    "fsSourceUri": '$fsSourceUri',
+                    "fsSourceName": '$fsSourceName',
+                    "fsTargetUri": '$fsTargetUri',
+                    "mediaBasePath": '$mediaBasePath',
+                    "mediaMime": '$mediaMime',
+                    "mediaType": '$mediaType',
+                    "avatar": {
+                        mediaBasePath:
+                        {
+                            "$ifNull":
+                            [
+                              '$userdata.mediaBasePath',
+                              null
+                            ]
+                        },
+                        mediaUri:
+                        {
+                            "$ifNull":
+                            [
+                              '$userdata.mediaUri',
+                              null
+                            ]
+                        },
+                        mediaType:
+                        {
+                            "$ifNull":
+                            [
+                              '$userdata.mediaType',
+                              null
+                            ]
+                        },
+                        mediaEndpoint:
+                        {
+                            "$ifNull":
+                            [
+                              '$userdata.mediaEndpoint',
+                              null
+                            ]
+                        },
+        
+                    },
+                }
+            },
+            { $sort: { datetime: 1 }, },
+            { $limit: 1 }
+        ]);
+        return data;
     }
     async updatedata(
         id: string,
