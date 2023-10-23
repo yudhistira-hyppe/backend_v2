@@ -116,21 +116,21 @@ export class ChallengeController {
     insertdata.tampilStatusPengguna = request_json['tampilStatusPengguna'];
     insertdata.objectChallenge = request_json['objectChallenge'];
 
-    //nanti balikin lagi
-    // if (request_json['statusChallenge'] == 'PUBLISH') {
-    //   var getdata = await this.challengeService.findAll(null, request_json['jenisChallenge'], null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
-    //   if ((request_json['jenisChallenge'] == '647055de0435000059003462' && getdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && getdata.length >= 5)) {
-    //     insertdata.statusChallenge = 'DRAFT';
-    //   }
-    //   else {
-    //     insertdata.statusChallenge = request_json['statusChallenge'];
-    //   }
-    // }
-    // else {
-    //   insertdata.statusChallenge = request_json['statusChallenge'];
-    // }
+    if (request_json['statusChallenge'] == 'PUBLISH') {
+      var getdata = await this.challengeService.findAll(null, request_json['jenisChallenge'], null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
+      console.log(getdata.length);
+      if ((request_json['jenisChallenge'] == '647055de0435000059003462' && getdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && getdata.length >= 5)) {
+        insertdata.statusChallenge = 'DRAFT';
+      }
+      else {
+        insertdata.statusChallenge = request_json['statusChallenge'];
+      }
+    }
+    else {
+      insertdata.statusChallenge = request_json['statusChallenge'];
+    }
 
-    insertdata.statusChallenge = request_json['statusChallenge'];
+    // insertdata.statusChallenge = request_json['statusChallenge'];
 
     // return res.status(HttpStatus.OK).json({
     //   response_code: 202,
@@ -768,21 +768,20 @@ export class ChallengeController {
       throw new BadRequestException("Unabled to proceed, status challenge field is required");
     }
 
-    //nanti balikin lagi
-    // if (request_json['statusChallenge'] == 'PUBLISH') {
-    //   var setjenischallenge = null;
-    //   if (request_json['jenisChallenge'] == null) {
-    //     setjenischallenge = getdata["jenisChallenge"].toString();
-    //   }
-    //   else {
-    //     setjenischallenge = request_json['jenisChallenge'];
-    //   }
+    if (request_json['statusChallenge'] == 'PUBLISH') {
+      var setjenischallenge = null;
+      if (request_json['jenisChallenge'] == null) {
+        setjenischallenge = getdata["jenisChallenge"].toString();
+      }
+      else {
+        setjenischallenge = request_json['jenisChallenge'];
+      }
 
-    //   var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
-    //   if ((request_json['jenisChallenge'] == '647055de0435000059003462' && cekdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
-    //     request_json['statusChallenge'] = 'DRAFT';
-    //   }
-    // }
+      var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
+      if ((request_json['jenisChallenge'] == '647055de0435000059003462' && cekdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
+        request_json['statusChallenge'] = 'DRAFT';
+      }
+    }
 
     if (getdata["statusChallenge"] == 'DRAFT') {
       // var insertdata = new CreateChallengeDto();
@@ -1383,14 +1382,13 @@ export class ChallengeController {
     // var mongo = require('mongoose');
     // setupdatedata._id = new mongo.Types.ObjectId(id);
 
-    //nanti balikin lagi
-    // if (statusChallenge == 'PUBLISH') {
-    //   var setjenischallenge = getdata["jenisChallenge"].toString();
-    //   var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
-    //   if ((setjenischallenge == '647055de0435000059003462' && cekdata.length >= 3) || (setjenischallenge == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
-    //     statusChallenge = 'DRAFT';
-    //   }
-    // }
+    if (statusChallenge == 'PUBLISH') {
+      var setjenischallenge = getdata["jenisChallenge"].toString();
+      var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
+      if ((setjenischallenge == '647055de0435000059003462' && cekdata.length >= 3) || (setjenischallenge == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
+        statusChallenge = 'DRAFT';
+      }
+    }
 
     getdata.statusChallenge = statusChallenge;
     getdata.updatedAt = await this.util.getDateTimeString();
@@ -1848,7 +1846,7 @@ export class ChallengeController {
     await this.challengeService.update(konvertstring.toString(), parentdata);
 
     if (parentdata.statusChallenge == "PUBLISH") {
-      var satuanhari = parentdata.durasi - 1;
+      var satuanhari = parentdata.durasi;
       // if (parentdata.jenisDurasi == 'WEEK') {
       //   satuanhari = parentdata.durasi * 7;
       // }
@@ -1871,13 +1869,8 @@ export class ChallengeController {
       for (var i = 0; i < parentdata.jumlahSiklusdurasi; i++) {
         var pecahdata = temptanggal.toISOString().split("T");
         var startdatetime = pecahdata[0] + " " + parentdata.startTime;
-
-        if (satuanhari == 0) {
-          temptanggal.setDate(temptanggal.getDate() + 1);
-        }
-        else {
-          temptanggal.setDate(temptanggal.getDate() + satuanhari);
-        }
+        
+        temptanggal.setDate(temptanggal.getDate() + satuanhari);
 
         var pecahdata = temptanggal.toISOString().split("T");
         var enddatetime = pecahdata[0] + " " + parentdata.startTime;
@@ -3358,239 +3351,6 @@ export class ChallengeController {
               }
             }
           }
-          // if (getkey == "akanDatang") {
-          //   let dt = null;
-          //   dt = new Date(subchallenge[loopsub].startDatetime);
-          //   dt.setHours(dt.getHours() + 7 + getdata.aturWaktu); // timestamp
-          //   dt = new Date(dt);
-          //   let strdate = dt.toISOString();
-          //   let repdate = strdate.replace('T', ' ');
-          //   let splitdate = repdate.split('.');
-          //   let timedate = splitdate[0];
-
-          //   var setinsertpartisipan = [];
-          //   if (listpartisipan != null && listpartisipan.length != 0) {
-          //     for (var j = 0; j < result.length; j++) {
-          //       var setnotif = {};
-          //       setnotif['idUser'] = result[j]._id;
-          //       setnotif['email'] = result[j].email;
-          //       setnotif['username'] = result[j].username;
-          //       setnotif['ranking'] = 0;
-          //       var gettitle = getdata.title;
-          //       var converttitle = null;
-          //       try {
-          //         var cariusername = gettitle.replaceAll("$username", result[j].username);
-          //         converttitle = cariusername.replaceAll("$title", detail.nameChallenge);
-          //       }
-          //       catch (e) {
-          //         converttitle = gettitle;
-          //       }
-          //       var gettitleEN = getdata.titleEN;
-          //       var converttitleEN = null;
-          //       try {
-          //         var cariusername = gettitleEN.replaceAll("$username", result[j].username);
-          //         converttitleEN = cariusername.replaceAll("$title", detail.nameChallenge);
-          //       }
-          //       catch (e) {
-          //         converttitleEN = gettitleEN;
-          //       }
-          //       var getdesc = getdata.description;
-          //       var convertdesc = null;
-          //       try {
-          //         var cariusername = getdesc.replaceAll("$username", result[j].username);
-          //         convertdesc = cariusername.replaceAll("$title", detail.nameChallenge);
-          //       }
-          //       catch (e) {
-          //         convertdesc = getdesc;
-          //       }
-          //       var getdescEN = getdata.descriptionEN;
-          //       var convertdescEN = null;
-          //       try {
-          //         var cariusername = getdescEN.replaceAll("$username", result[j].username);
-          //         convertdescEN = cariusername.replaceAll("$title", detail.nameChallenge);
-          //       }
-          //       catch (e) {
-          //         convertdescEN = getdescEN;
-          //       }
-          //       setnotif['title'] = converttitle;
-          //       setnotif['titleEN'] = converttitleEN;
-          //       setnotif['notification'] = convertdesc;
-          //       setnotif['notificationEN'] = convertdescEN;
-          //       // setnotif['title'] = getdata.title;
-          //       // setnotif['titleEN'] = getdata.titleEN;
-          //       // setnotif['notification'] = getdata.description;
-          //       // setnotif['notificationEN'] = getdata.descriptionEN;
-          //       setinsertpartisipan.push(setnotif);
-          //     }
-          //   }
-          //   else {
-          //     var setnotif = {};
-          //     setnotif['idUser'] = "SEMUA PENGGUNA";
-          //     setnotif['email'] = "SEMUA PENGGUNA";
-          //     setnotif['username'] = "SEMUA PENGGUNA";
-          //     setnotif['ranking'] = 0;
-          //     var gettitle = getdata.title;
-          //     var converttitle = null;
-          //     try {
-          //       var cariusername = gettitle.replaceAll("$username", result[j].username);
-          //       converttitle = cariusername.replaceAll("$title", detail.nameChallenge);
-          //     }
-          //     catch (e) {
-          //       converttitle = gettitle;
-          //     }
-          //     var gettitleEN = getdata.titleEN;
-          //     var converttitleEN = null;
-          //     try {
-          //       var cariusername = gettitleEN.replaceAll("$username", result[j].username);
-          //       converttitleEN = cariusername.replaceAll("$title", detail.nameChallenge);
-          //     }
-          //     catch (e) {
-          //       converttitleEN = gettitleEN;
-          //     }
-          //     var getdesc = getdata.description;
-          //     var convertdesc = null;
-          //     try {
-          //       var cariusername = getdesc.replaceAll("$username", result[j].username);
-          //       convertdesc = cariusername.replaceAll("$title", detail.nameChallenge);
-          //     }
-          //     catch (e) {
-          //       convertdesc = getdesc;
-          //     }
-          //     var getdescEN = getdata.descriptionEN;
-          //     var convertdescEN = null;
-          //     try {
-          //       var cariusername = getdescEN.replaceAll("$username", result[j].username);
-          //       convertdescEN = cariusername.replaceAll("$title", detail.nameChallenge);
-          //     }
-          //     catch (e) {
-          //       convertdescEN = getdescEN;
-          //     }
-          //     setnotif['title'] = converttitle;
-          //     setnotif['titleEN'] = converttitleEN;
-          //     setnotif['notification'] = convertdesc;
-          //     setnotif['notificationEN'] = convertdescEN;
-          //     // setnotif['title'] = getdata.title;
-          //     // setnotif['titleEN'] = getdata.titleEN;
-          //     // setnotif['notification'] = getdata.description;
-          //     // setnotif['notificationEN'] = getdata.descriptionEN;
-          //     setinsertpartisipan.push(setnotif);
-          //   }
-
-          //   var setdata = new notifChallenge();
-          //   setdata._id = mongo.Types.ObjectId();
-          //   setdata.challengeID = subchallenge[loopsub].challengeId;
-          //   setdata.subChallengeID = subchallenge[loopsub]._id;
-          //   setdata.title = getdata.title;
-          //   setdata.description = getdata.description;
-          //   setdata.type = getkey;
-          //   setdata.userID = setinsertpartisipan;
-          //   setdata.session = subchallenge[loopsub].session;
-          //   setdata.isSend = false;
-          //   setdata.nameChallenge = detail.nameChallenge;
-          //   setdata.datetime = timedate;
-          //   setdata.createdAt = await this.util.getDateTimeString();
-          //   // console.log(setdata);
-          //   insertdatamany.push(setdata);
-          //   try {
-          //     await this.notifChallengeService.create(setdata);
-          //   }
-          //   catch (e) {
-          //     console.log(e);
-          //   }
-          // }
-          // else if (getkey == "challengeDimulai") {
-          //   var setinsertpartisipan = [];
-          //   if (listpartisipan != null && listpartisipan.length != 0) {
-          //     for (var j = 0; j < result.length; j++) {
-          //       var setnotif = {};
-          //       setnotif['idUser'] = result[j]._id;
-          //       setnotif['email'] = result[j].email;
-          //       setnotif['username'] = result[j].username;
-          //       setnotif['title'] = getdata.title;
-          //       setnotif['titleEN'] = getdata.titleEN;
-          //       setnotif['notification'] = getdata.description;
-          //       setnotif['notificationEN'] = getdata.descriptionEN;
-          //       setnotif['ranking'] = 0;
-          //       setinsertpartisipan.push(setnotif);
-          //     }
-          //   }
-          //   else {
-          //     var setnotif = {};
-          //     setnotif['idUser'] = "SEMUA PENGGUNA";
-          //     setnotif['email'] = "SEMUA PENGGUNA";
-          //     setnotif['username'] = "SEMUA PENGGUNA";
-          //     setnotif['title'] = getdata.title;
-          //     setnotif['titleEN'] = getdata.titleEN;
-          //     setnotif['notification'] = getdata.description;
-          //     setnotif['notificationEN'] = getdata.descriptionEN;
-          //     setnotif['ranking'] = 0;
-          //     setinsertpartisipan.push(setnotif);
-          //   }
-
-          //   var setdata = new notifChallenge();
-          //   setdata._id = mongo.Types.ObjectId();
-          //   setdata.challengeID = subchallenge[loopsub].challengeId;
-          //   setdata.subChallengeID = subchallenge[loopsub]._id;
-          //   setdata.title = getdata.title;
-          //   setdata.description = getdata.description;
-          //   setdata.type = getkey;
-          //   setdata.userID = setinsertpartisipan;
-          //   setdata.session = subchallenge[loopsub].session;
-          //   setdata.isSend = false;
-          //   setdata.nameChallenge = detail.nameChallenge;
-          //   setdata.datetime = subchallenge[loopsub].startDatetime;
-          //   setdata.createdAt = await this.util.getDateTimeString();
-          //   // console.log(setdata);
-          //   insertdatamany.push(setdata);
-          //   try {
-          //     await this.notifChallengeService.create(setdata);
-          //   }
-          //   catch (e) {
-          //     console.log(e);
-          //   }
-
-          //   if (listpartisipan != null && listpartisipan.length != 0) {
-          //     var setinsertpartisipan = [];
-          //     for (var j = 0; j < result.length; j++) {
-          //       var setnotif = {};
-          //       var titleID = 'Undangan challenge ' + detail.nameChallenge;
-          //       var titleEN = detail.nameChallenge + " Challenge Invitation";
-          //       var bodyID = 'Hai ' + result[j].username + ', kamu telah diundang untuk mengikuti challenge ' + detail.nameChallenge + '. Klik di sini!';
-          //       var bodyEN = 'Hi ' + result[j].username + ', you have been invited to participate in The ' + detail.nameChallenge + ' challenge. Click here!';
-          //       setnotif['idUser'] = result[j]._id;
-          //       setnotif['email'] = result[j].email;
-          //       setnotif['username'] = result[j].username;
-          //       setnotif['title'] = titleID;
-          //       setnotif['titleEN'] = titleEN;
-          //       setnotif['notification'] = bodyID;
-          //       setnotif['notificationEN'] = bodyEN;
-          //       setnotif['ranking'] = 0;
-          //       setinsertpartisipan.push(setnotif);
-          //     }
-          //     var setdata = new notifChallenge();
-          //     setdata._id = mongo.Types.ObjectId();
-          //     setdata.challengeID = subchallenge[loopsub].challengeId;
-          //     setdata.subChallengeID = subchallenge[loopsub]._id;
-          //     setdata.title = getdata.title;
-          //     setdata.description = getdata.description;
-          //     setdata.type = getkey;
-          //     setdata.userID = setinsertpartisipan;
-          //     setdata.session = subchallenge[loopsub].session;
-          //     setdata.isSend = false;
-          //     setdata.nameChallenge = detail.nameChallenge;
-          //     setdata.datetime = subchallenge[loopsub].startDatetime;
-          //     setdata.createdAt = await this.util.getDateTimeString();
-          //     // console.log(setdata);
-          //     insertdatamany.push(setdata);
-
-          //     try {
-          //       await this.notifChallengeService.create(setdata);
-          //     }
-          //     catch (e) {
-          //       console.log(e);
-          //     }
-          //   }
-          // }
         }
       };
     }
@@ -3723,54 +3483,6 @@ export class ChallengeController {
               setobject['titleEN'] = converttitleEN;
               setobject['notification'] = convertdesc;
               setobject['notificationEN'] = convertdescEN;
-              // if (typenotif == 'untukPemenang' || typenotif == 'updateLeaderboard') {
-              //   var gettitle = getnotifdata[0].title;
-              //   var converttitle = null;
-              //   try {
-              //     var cariusername = gettitle.replaceAll("$username", basicdata[0].username);
-              //     converttitle = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
-              //   }
-              //   catch (e) {
-              //     converttitle = gettitle;
-              //   }
-              //   var gettitleEN = getnotifdata[0].titleEN;
-              //   var converttitleEN = null;
-              //   try {
-              //     var cariusername = gettitleEN.replaceAll("$username", basicdata[0].username);
-              //     converttitleEN = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
-              //   }
-              //   catch (e) {
-              //     converttitleEN = gettitleEN;
-              //   }
-              //   var getdesc = getnotifdata[0].description;
-              //   var convertdesc = null;
-              //   try {
-              //     var cariusername = getdesc.replaceAll("$username", basicdata[0].username);
-              //     convertdesc = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
-              //   }
-              //   catch (e) {
-              //     convertdesc = getdesc;
-              //   }
-              //   var getdescEN = getnotifdata[0].descriptionEN;
-              //   var convertdescEN = null;
-              //   try {
-              //     var cariusername = getdescEN.replaceAll("$username", basicdata[0].username);
-              //     convertdescEN = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
-              //   }
-              //   catch (e) {
-              //     convertdescEN = getdescEN;
-              //   }
-              //   setobject['title'] = converttitle;
-              //   setobject['titleEN'] = converttitleEN;
-              //   setobject['notification'] = convertdesc;
-              //   setobject['notificationEN'] = convertdescEN;
-              // }
-              // else {
-              //   setobject['title'] = getnotifdata[0].title;
-              //   setobject['titleEN'] = getnotifdata[0].titleEN;
-              //   setobject['notification'] = getnotifdata[0].description;
-              //   setobject['notificationEN'] = getnotifdata[0].descriptionEN;
-              // }
               listuser.push(setobject);
 
               var updatedata = new notifChallenge();
