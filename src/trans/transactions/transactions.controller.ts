@@ -2138,7 +2138,7 @@ export class TransactionsController {
 
 
                     }
-                    else if (statuscode === "101" || statuscode === "102") {
+                    else if (statuscode === "101" || statuscode === "102" || statuscode === "301") {
                         let dtburs = new Date(strdate);
                         dtburs.setHours(dtburs.getHours() + 7); // timestamp
                         dtburs = new Date(dtburs);
