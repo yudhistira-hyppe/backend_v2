@@ -441,6 +441,249 @@ export class DisquslogsService {
     return query;
   }
 
+  async komentar2(postID: string, startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+
+      var dt = dateend.substring(0, 10);
+    } catch (e) {
+      dt = "";
+    }
+
+    var query = await this.DisquslogsModel.aggregate(
+      [
+        {
+          $match: {
+            postID: postID,
+            active: true,
+            createdAt: {
+              $gte: startdate,
+              $lte: dt
+            }
+          }
+        },
+        // {
+        //   "$lookup": {
+        //     "from": "userauths",
+        //     "as": "authsender",
+        //     "let": {
+        //       "local_id": "$sender"
+        //     },
+        //     "pipeline": [
+        //       {
+        //         "$match": {
+        //           "$expr": {
+        //             "$eq": [
+        //               "$email",
+        //               "$$local_id"
+        //             ]
+        //           }
+        //         }
+        //       },
+
+        //     ],
+
+        //   }
+        // },
+        {
+          "$lookup": {
+            "from": "newUserBasics",
+            "as": "authsender",
+            "let": {
+              "local_id": "$sender"
+            },
+            "pipeline": [
+              {
+                "$match": {
+                  "$expr": {
+                    "$eq": [
+                      "$email",
+                      "$$local_id"
+                    ]
+                  }
+                }
+              },
+
+            ],
+
+          }
+        },
+        {
+          $project: {
+            authsender: {
+              $arrayElemAt: ['$authsender', 0]
+            },
+            receiver: '$receiver',
+            postID: '$postID',
+            txtMessages: '$txtMessages',
+            createdAt: '$createdAt',
+            active: '$active'
+          }
+        },
+        // {
+        //   "$lookup": {
+        //     "from": "userauths",
+        //     "as": "authreceiver",
+        //     "let": {
+        //       "local_id": "$receiver"
+        //     },
+        //     "pipeline": [
+        //       {
+        //         "$match": {
+        //           "$expr": {
+        //             "$eq": [
+        //               "$email",
+        //               "$$local_id"
+        //             ]
+        //           }
+        //         }
+        //       },
+
+        //     ],
+
+        //   }
+        // },
+        {
+          "$lookup": {
+            "from": "newUserBasics",
+            "as": "authreceiver",
+            "let": {
+              "local_id": "$receiver"
+            },
+            "pipeline": [
+              {
+                "$match": {
+                  "$expr": {
+                    "$eq": [
+                      "$email",
+                      "$$local_id"
+                    ]
+                  }
+                }
+              },
+
+            ],
+
+          }
+        },
+        {
+          $project: {
+            emailsender: '$authsender.email',
+            sender: '$authsender.username',
+            authreceive: {
+              $arrayElemAt: ['$authreceiver', 0]
+            },
+            postID: 1,
+            txtMessages: 1,
+            receiver: 1,
+            createdAt: 1,
+            active: 1
+          }
+        },
+        {
+          $project: {
+            emailsender: 1,
+            sender: 1,
+            receiver: '$authreceive.username',
+            postID: 1,
+            txtMessages: 1,
+            createdAt: 1,
+            active: 1
+          }
+        },
+        // {
+        //   "$lookup": {
+        //     "from": "userbasics",
+        //     "as": "ubasic",
+        //     "let": {
+        //       "local_id": "$emailsender"
+        //     },
+        //     "pipeline": [
+        //       {
+        //         "$match": {
+        //           "$expr": {
+        //             "$eq": [
+        //               "$email",
+        //               "$$local_id"
+        //             ]
+        //           }
+        //         }
+        //       },
+
+        //     ],
+
+        //   }
+        // },
+        {
+          "$lookup": {
+            "from": "newUserBasics",
+            "as": "ubasic",
+            "let": {
+              "local_id": "$emailsender"
+            },
+            "pipeline": [
+              {
+                "$match": {
+                  "$expr": {
+                    "$eq": [
+                      "$email",
+                      "$$local_id"
+                    ]
+                  }
+                }
+              },
+
+            ],
+
+          }
+        },
+        {
+          $project: {
+            ubasic: {
+              $arrayElemAt: ['$ubasic', 0]
+            },
+            sender: 1,
+            receiver: 1,
+            postID: 1,
+            txtMessages: 1,
+            createdAt: 1,
+            active: 1,
+            emailsender: 1
+          }
+        },
+        {
+          $project: {
+
+            sender: 1,
+            receiver: 1,
+            postID: 1,
+            txtMessages: 1,
+            createdAt: 1,
+            active: 1,
+            emailsender: 1,
+            avatar:[
+              {
+                mediaEndpoint:
+                {
+                  "$ifNull":
+                  [
+                    "$ubasic.mediaEndpoint",
+                    null
+                  ]
+                }
+              }
+            ]
+          }
+        },
+
+      ]
+    );
+
+    return query;
+  }
+
   async noneActiveAllDiscusLog(postID: string, idtransaction: string) {
     var query = await this.DisquslogsModel.updateMany(
       { postID: postID },

@@ -5215,4 +5215,1068 @@ export class NewPostService {
 
       return data;
     }
+
+    async boostdetail2(postID: string, startdate: string, enddate: string, page: number, limit: number) {
+      try {
+        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+  
+        var dateend = currentdate.toISOString();
+  
+        var dt = dateend.substring(0, 10);
+      } catch (e) {
+        dt = "";
+      }
+      var query = await this.loaddata.aggregate(
+        [
+          {
+  
+            $match: {
+              $and: [{
+                boosted: {
+                  $ne: []
+                }
+              }, {
+                boosted: {
+                  $ne: null
+                }
+              }],
+              active: true,
+              postID: "516a3f5a-be7d-9ab9-c085-37bbb974cf8f"
+            }
+          },
+          {
+            $set: {
+              datenow:
+              {
+                "$dateToString": {
+                  "format": "%Y-%m-%d %H:%M:%S",
+                  "date": {
+                    $add: [new Date(), + 25200000]
+                  }
+                }
+              },
+              salePrice: {
+                $cmp: ["$saleAmount", 0]
+              },
+              sComments: {
+                $cmp: ["$comments", 0]
+              },
+        
+            }
+          },
+          {
+            $facet: {
+              "data": [
+                {
+                  "$lookup": {
+                    "from": "interests_repo",
+                    "as": "kategori",
+                    "let": {
+                      "local_id": "$category.$id",
+        
+                    },
+                    "pipeline": [
+                      {
+                        $match:
+                        {
+                          $and: [
+                            {
+                              $expr: {
+        
+                                $in: ['$_id', {
+                                  $ifNull: ['$$local_id', []]
+                                }]
+                              }
+                            },
+        
+                          ]
+                        }
+                      },
+                      {
+                        $project: {
+                          interestName: 1,
+        
+                        }
+                      },
+        
+                    ],
+        
+                  },
+        
+                },
+                {
+                  $project: {
+                    refs: {
+                      $arrayElemAt: ['$contentMedias', 0]
+                    },
+                    createdAt: 1,
+                    updatedAt: 1,
+                    postID: 1,
+                    email: 1,
+                    postType: 1,
+                    description: 1,
+                    title: 1,
+                    likes: 1,
+                    views: 1,
+                    active: 1,
+                    datenow: 1,
+                    kategori: 1,
+                    jangkauan: {
+                      $size: {
+                        $arrayElemAt: ['$boosted.boostViewer', 0]
+                      },
+        
+                    },
+                    typeboost: {
+                      $arrayElemAt: ['$boosted.type', 0]
+                    },
+                    interval: {
+                      $arrayElemAt: ['$boosted.boostInterval.value', 0]
+                    },
+                    start: {
+                      $arrayElemAt: ['$boosted.boostSession.start', 0]
+                    },
+                    end: {
+                      $arrayElemAt: ['$boosted.boostSession.end', 0]
+                    },
+                    boostSessionid: {
+                      $arrayElemAt: ['$boosted.boostSession.id', 0]
+                    },
+                    saleAmount: {
+                      $cond: {
+                        if: {
+                          $or: [{
+                            $eq: ["$salePrice", - 1]
+                          }, {
+                            $eq: ["$salePrice", 0]
+                          }]
+                        },
+                        then: 0,
+                        else: "$saleAmount"
+                      }
+                    },
+                    monetize: {
+                      $cond: {
+                        if: {
+                          $or: [{
+                            $eq: ["$salePrice", - 1]
+                          }, {
+                            $eq: ["$salePrice", 0]
+                          }]
+                        },
+                        then: false,
+                        else: true
+                      }
+                    },
+                    comments: {
+                      $cond: {
+                        if: {
+                          $or: [{
+                            $eq: ["$sComments", - 1]
+                          }, {
+                            $eq: ["$sComments", 0]
+                          }]
+                        },
+                        then: 0,
+                        else: "$sComments"
+                      }
+                    },
+                    mediaSource: {
+                        "$arrayElemAt":
+                        [
+                            "$mediaSource", 0
+                        ]
+                    }
+        
+                  }
+                },
+                {
+                  $lookup: {
+                    from: 'newUserBasics',
+                    localField: 'email',
+                    foreignField: 'email',
+                    as: 'databasic',
+        
+                  },
+        
+                },
+                {
+                  $unwind: {
+                    path: "$databasic",
+        
+                  }
+                },
+                {
+                  $lookup: {
+                    from: 'boostSession',
+                    localField: 'boostSessionid',
+                    foreignField: '_id',
+                    as: 'boostSesidata',
+        
+                  },
+        
+                },
+                {
+                  "$lookup": {
+                    "from": "transactions",
+                    "as": "trans",
+                    "let": {
+                      "local_id": "$postID",
+        
+                    },
+                    "pipeline": [
+                      {
+                        $match:
+                        {
+                          $expr: {
+                            $eq: ['$postid', '$$local_id']
+                          }
+                        }
+                      },
+                      {
+                        $project: {
+                          iduserbuyer: 1,
+                          idusersell: 1,
+                          noinvoice: 1,
+                          status: 1,
+                          amount: 1,
+                          timestamp: 1,
+                          postid: 1
+                        }
+                      },
+                      {
+                        $match: {
+                          idusersell: '$databasic._id',
+                          status: "Success"
+                        }
+                      },
+        
+                    ],
+        
+                  },
+        
+                },
+                {
+                  $project: {
+                    refs: '$refs.$ref',
+                    idmedia: '$refs.$id',
+                    iduser: '$databasic._id',
+                    createdAt: 1,
+                    updatedAt: 1,
+                    postID: 1,
+                    postType: 1,
+                    email: 1,
+                    likes: 1,
+                    views: 1,
+                    comments: 1,
+                    jangkauan: 1,
+                    interval: 1,
+                    start: 1,
+                    end: 1,
+                    typeboost: 1,
+                    kategori: 1,
+                    saleAmount: 1,
+                    statusJual:
+                    {
+                      $cond: {
+                        if: {
+        
+                          $eq: ["$monetize", false]
+                        },
+                        then: "TIDAK",
+                        else: "YA"
+                      }
+                    },
+                    sessionName: {
+                      $arrayElemAt: ['$boostSesidata.name', 0]
+                    },
+                    sessionType: {
+                      $arrayElemAt: ['$boostSesidata.type', 0]
+                    },
+                    sessionStart: {
+                      $arrayElemAt: ['$boostSesidata.start', 0]
+                    },
+                    sessionEnd: {
+                      $arrayElemAt: ['$boostSesidata.end', 0]
+                    },
+                    type: {
+                      $switch: {
+                        branches: [
+                          {
+                            'case': {
+                              '$eq': ['$postType', 'pict']
+                            },
+                            'then': "HyppePic"
+                          },
+                          {
+                            'case': {
+                              '$eq': ['$postType', 'vid']
+                            },
+                            'then': "HyppeVid"
+                          },
+                          {
+                            'case': {
+                              '$eq': ['$postType', 'diary']
+                            },
+                            'then': "HyppeDiary"
+                          },
+                          {
+                            'case': {
+                              '$eq': ['$postType', 'story']
+                            },
+                            'then': "HyppeStory"
+                          },
+        
+                        ],
+                        default: ''
+                      }
+                    },
+                    description: 1,
+                    title: 1,
+                    active: 1,
+                    datenow: 1,
+                    trans: 1,
+                    boostSessionid: 1,
+                    mediaSource:1
+                  }
+                },
+                // {
+                // 	$lookup: {
+                // 		from: 'mediapicts',
+                // 		localField: 'idmedia',
+                // 		foreignField: '_id',
+                // 		as: 'mediaPict_data',
+        
+                // 	},
+        
+                // },
+                // {
+                // 	$lookup: {
+                // 		from: 'mediadiaries',
+                // 		localField: 'idmedia',
+                // 		foreignField: '_id',
+                // 		as: 'mediadiaries_data',
+        
+                // 	},
+        
+                // },
+                // {
+                // 	$lookup: {
+                // 		from: 'mediavideos',
+                // 		localField: 'idmedia',
+                // 		foreignField: '_id',
+                // 		as: 'mediavideos_data',
+        
+                // 	},
+        
+                // },
+                // {
+                // 	$lookup: {
+                // 		from: 'mediastories',
+                // 		localField: 'idmedia',
+                // 		foreignField: '_id',
+                // 		as: 'mediastories_data',
+        
+                // 	},
+        
+                // },
+                {
+                  $project: {
+                    // mediapict: {
+                    // 	$arrayElemAt: ['$mediaPict_data', 0]
+                    // },
+                    // mediadiaries: {
+                    // 	$arrayElemAt: ['$mediadiaries_data', 0]
+                    // },
+                    // mediavideos: {
+                    // 	$arrayElemAt: ['$mediavideos_data', 0]
+                    // },
+                    // mediastories: {
+                    // 	$arrayElemAt: ['$mediastories_data', 0]
+                    // },
+                    refs: 1,
+                    idmedia: 1,
+                    iduser: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    postID: 1,
+                    postType: 1,
+                    email: 1,
+                    type: 1,
+                    description: 1,
+                    title: 1,
+                    active: 1,
+                    jangkauan: 1,
+                    interval: 1,
+                    likes: 1,
+                    views: 1,
+                    comments: 1,
+                    start: 1,
+                    end: 1,
+                    sessionName: 1,
+                    sessionType: 1,
+                    sessionStart: 1,
+                    sessionEnd: 1,
+                    datenow: 1,
+                    typeboost: 1,
+                    boostSessionid: 1,
+                    kategori: 1,
+                    saleAmount: 1,
+                    dataview: 1,
+                    statusJual: 1,
+                    keterangan:
+                    {
+                      $cond: {
+                        if: {
+        
+                          $eq: ["$trans", []]
+                        },
+                        then: 'Belum Terjual',
+                        else: 'Terjual',
+        
+                      }
+                    },
+                    statusPengajuan: {
+                      $switch: {
+                        branches: [
+                          {
+                            'case': {
+                              '$lt': ['$datenow', '$start'],
+        
+                            },
+                            'then': 'Dijadwalkan'
+                          },
+                          {
+                            'case': {
+                              $and: [
+                                {
+                                  '$gt': ['$datenow', '$start'],
+        
+                                },
+                                {
+                                  '$lt': ['$datenow', '$end'],
+        
+                                }
+                              ]
+                            },
+                            'then': 'Sedang Berlangsung'
+                          },
+                          {
+                            'case': {
+                              '$gt': ['$datenow', '$end'],
+        
+                            },
+                            'then': 'Selesai'
+                          },
+        
+                        ],
+                        default: 'Dijadwalkan'
+                      }
+                    },
+                    trans: 1,
+                    mediaSource:1
+                  }
+                },
+                // {
+                // 	$addFields: {
+        
+        
+                // 		pict: {
+                // 			$replaceOne: {
+                // 				input: "$profilpict.mediaUri",
+                // 				find: "_0001.jpeg",
+                // 				replacement: ""
+                // 			}
+                // 		},
+                // 		concatmediapict: '/pict',
+                // 		media_pict: {
+                // 			$replaceOne: {
+                // 				input: "$mediapict.mediaUri",
+                // 				find: "_0001.jpeg",
+                // 				replacement: ""
+                // 			}
+                // 		},
+                // 		concatmediadiari: '/stream',
+                // 		concatthumbdiari: '/thumb',
+                // 		media_diari: '$mediadiaries.mediaUri',
+                // 		concatmediavideo: '/stream',
+                // 		concatthumbvideo: '/thumb',
+                // 		media_video: '$mediavideos.mediaUri',
+                // 		concatmediastory:
+                // 		{
+                // 			$cond: {
+                // 				if: {
+        
+                // 					$eq: ["$mediastories.mediaType", "image"]
+                // 				},
+                // 				then: '/pict',
+                // 				else: '/stream',
+        
+                // 			}
+                // 		},
+                // 		concatthumbstory: '/thumb',
+                // 		media_story: '$mediastories.mediaUri'
+                // 	},
+        
+                // },
+                {
+                    "$addFields":
+                    {
+                        "cleanUri":
+                        { 
+                            $replaceOne: 
+                            { 
+                                input: "$mediaSource.mediaUri", 
+                                find: "_0001.jpeg", 
+                                replacement: "" 
+                            }
+                        }
+                    }
+                },
+                {
+                  $project: {
+                    iduser: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    postID: 1,
+                    postType: 1,
+                    email: 1,
+                    type: 1,
+                    description: 1,
+                    title: 1,
+                    active: 1,
+                    jangkauan: 1,
+                    interval: 1,
+                    likes: 1,
+                    views: 1,
+                    comments: 1,
+                    start: 1,
+                    end: 1,
+                    sessionName: 1,
+                    sessionType: 1,
+                    sessionStart: 1,
+                    sessionEnd: 1,
+                    statusPengajuan: 1,
+                    datenow: 1,
+                    keterangan: 1,
+                    typeboost: 1,
+                    boostSessionid: 1,
+                    kategori: 1,
+                    saleAmount: 1,
+                    statusJual: 1,
+                    dataview: 1,
+                    mediaBasePath:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaBasePath",
+                            null
+                        ]
+                    },
+                    mediaUri:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaUri",
+                            null
+                        ]
+                    },
+                    mediaType:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaType",
+                            null
+                        ]
+                    },
+                    mediaThumbEndpoint:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaThumbEndpoint",
+                            {
+                                "$concat":
+                                [
+                                    "/thumb/",
+                                    "$cleanUri"
+                                ]
+                            }
+                        ]
+                    },
+                    mediaEndpoint:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaEndpoint",
+                            {
+                                "$cond":
+                                {
+                                    if:
+                                    {
+                                        "$eq":
+                                        [
+                                            "$postType", "pict"
+                                        ]
+                                    },
+                                    then:
+                                    {
+                                        "$concat":
+                                        [
+                                            "/pict/",
+                                            "$cleanUri"
+                                        ]
+                                    },
+                                    else:
+                                    {
+                                        "$concat":
+                                        [
+                                            "/stream/",
+                                            "$cleanUri"
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    mediaThumbUri:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaThumbUri",
+                            null
+                        ]
+                    },
+                    apsaraId:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.apsaraId",
+                            null
+                        ]
+                    },
+                    apsara:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.apsara",
+                            false
+                        ]
+                    },
+                  }
+                },
+        
+              ],
+              "gender": [
+                {
+                  $unwind: {
+                    path: "$boosted",
+                    preserveNullAndEmptyArrays: true
+                  }
+                },
+                {
+                  $unwind: {
+                    path: "$boosted.boostViewer",
+                    preserveNullAndEmptyArrays: true
+                  }
+                },
+                {
+                  $project: {
+                    userEmail: "$boosted.boostViewer.email",
+        
+                  }
+                },
+                {
+                  "$lookup": {
+                    "from": "newUserBasics",
+                    "as": "dataview",
+                    let: {
+                      localID: '$userEmail'
+                    },
+                    "pipeline": [
+                      {
+                        $match:
+                        {
+                          $and: [
+                            {
+                              $expr: {
+                                $eq: ["$email", "$$localID"]
+                              }
+                            },
+        
+                          ],
+        
+                        }
+                      },
+                      {
+                        $project: {
+        
+                          gender: 1,
+        
+                        }
+                      },
+        
+                    ],
+        
+                  },
+        
+                },
+                {
+                  $unwind: {
+                    path: "$dataview",
+                    preserveNullAndEmptyArrays: true
+                  }
+                },
+                {
+                  $project: {
+                    gender: {
+                      "$ifNull":
+                      [
+                        "$dataview.gender",
+                        "Other"
+                      ]
+                    },
+        
+                  }
+                },
+                {
+                  "$group": {
+                    "_id": "$gender",
+                    "count": {
+                      "$sum": 1
+                    }
+                  }
+                },
+                {
+                  "$project":
+                  {
+                    _id:
+                    {
+                      "$switch":
+                      {
+                        branches:
+                        [
+                          {
+                            case:
+                            {
+                              "$eq":
+                              [
+                                "$_id", "Laki-laki"
+                              ]
+                            },
+                            then:"MALE"
+                          },
+                          {
+                            case:
+                            {
+                              "$eq":
+                              [
+                                "$_id", "Perempuan"
+                              ]
+                            },
+                            then:"FEMALE"
+                          }
+                        ],
+                        default:"OTHER"
+                      }
+                    },
+                    count:1
+                  }
+                }
+              ],
+              "wilayah": [
+                {
+                  $unwind: {
+                    path: "$boosted",
+                    preserveNullAndEmptyArrays: true
+                  }
+                },
+                {
+                  $unwind: {
+                    path: "$boosted.boostViewer",
+                    preserveNullAndEmptyArrays: true
+                  }
+                },
+                {
+                  $project: {
+                    userEmail: "$boosted.boostViewer.email",
+        
+                  }
+                },
+                {
+                  "$lookup": {
+                    "from": "newUserBasics",
+                    "as": "dataview",
+                    let: {
+                      localID: '$userEmail'
+                    },
+                    "pipeline": [
+                      {
+                        $match:
+                        {
+                          $and: [
+                            {
+                              $expr: {
+                                $eq: ["$email", "$$localID"]
+                              }
+                            },
+        
+                          ],
+        
+                        }
+                      },
+                      {
+                        $project: {
+        
+                          statesName: 1,
+        
+                        }
+                      },
+        
+                    ],
+        
+                  },
+        
+                },
+                {
+                  $unwind: {
+                    path: "$dataview",
+                    preserveNullAndEmptyArrays: true
+                  }
+                },
+                {
+                  $project: {
+                    stateName: '$dataview.statesName'
+                  }
+                },
+                {
+                  "$group": {
+                    "_id": "$stateName",
+                    "count": {
+                      "$sum": 1
+                    }
+                  }
+                }
+              ],
+              "age": [
+                {
+                  $unwind: {
+                    path: "$boosted",
+                    preserveNullAndEmptyArrays: true
+                  }
+                },
+                {
+                  $unwind: {
+                    path: "$boosted.boostViewer",
+                    preserveNullAndEmptyArrays: true
+                  }
+                },
+                {
+                  $project: {
+                    userEmail: "$boosted.boostViewer.email",
+        
+                  }
+                },
+                {
+                  "$lookup": {
+                    "from": "newUserBasics",
+                    "as": "dataview",
+                    let: {
+                      localID: '$userEmail'
+                    },
+                    "pipeline": [
+                      {
+                        $match:
+                        {
+                          $and: [
+                            {
+                              $expr: {
+                                $eq: ["$email", "$$localID"]
+                              }
+                            },
+        
+                          ],
+        
+                        }
+                      },
+                      {
+                        $project: {
+                          dob: 1,
+        
+                        }
+                      },
+                      {
+                        $project: {
+        
+                          age: {
+                            $cond: {
+                              if: {
+                                $and: [
+                                  '$dob',
+                                  {
+                                    $ne: ["$dob", ""]
+                                  }
+                                ]
+                              },
+                              then: {
+                                $toInt: {
+                                  $divide: [{
+                                    $subtract: [new Date(), {
+                                      $toDate: "$dob"
+                                    }]
+                                  }, (365 * 24 * 60 * 60 * 1000)]
+                                }
+                              },
+                              else: 0
+                            }
+                          },
+        
+                        }
+                      },
+        
+                    ],
+        
+                  },
+        
+                },
+                {
+                  $unwind: {
+                    path: "$dataview",
+                    preserveNullAndEmptyArrays: true
+                  }
+                },
+                {
+                  $project: {
+                    _id: 1,
+                    userID: "$dataview._id",
+                    age: "$dataview.age",
+        
+                  }
+                },
+                {
+                  $project: {
+        
+                    ageQualication: {
+                      $switch: {
+                        branches: [
+                          {
+                            case: {
+                              $gt: ["$age", 44]
+                            },
+                            then: "< 44 Tahun"
+                          },
+                          {
+                            case: {
+                              $and: [{
+                                $gte: ["$age", 36]
+                              }, {
+                                $lte: ["$age", 44]
+                              }]
+                            },
+                            then: "35-44 Tahun"
+                          },
+                          {
+                            case: {
+                              $and: [{
+                                $gte: ["$age", 25]
+                              }, {
+                                $lte: ["$age", 35]
+                              }]
+                            },
+                            then: "24-35 Tahun"
+                          },
+                          {
+                            case: {
+                              $and: [{
+                                $gte: ["$age", 14]
+                              }, {
+                                $lte: ["$age", 24]
+                              }]
+                            },
+                            then: "14-24 Tahun"
+                          },
+                          {
+                            case: {
+                              $and: [{
+                                $gte: ["$age", 1]
+                              }, {
+                                $lt: ["$age", 14]
+                              }]
+                            },
+                            then: "< 14 Tahun"
+                          }
+                        ],
+                        "default": "other"
+                      }
+                    },
+        
+                  }
+                },
+                {
+                  "$group": {
+                    "_id": "$ageQualication",
+                    "count": {
+                      "$sum": 1
+                    }
+                  }
+                }
+              ],
+              "summary": [
+                {
+                  $unwind: {
+                    path: "$boosted",
+                    preserveNullAndEmptyArrays: true
+                  }
+                },
+                {
+                  $unwind: {
+                    path: "$boosted.boostViewer",
+                    preserveNullAndEmptyArrays: true
+                  }
+                },
+                {
+                  $project: {
+                    userEmail: "$boosted.boostViewer.email",
+                    createAt: "$boosted.boostViewer.createAt",
+        
+                  }
+                },
+                {
+                  $match: {
+                    createAt: { $gte: startdate, $lt: dt }
+                  }
+                },
+                {
+                  $group: {
+                    _id: {
+                      tgl: {
+                        $substrCP: ['$createAt', 0, 10]
+                      }
+                    },
+                    count: {
+                      $sum: 1
+                    },
+        
+                  },
+        
+                },
+                {
+                  $project: {
+                    _id: 0,
+                    date: "$_id.tgl",
+                    jangkauan: "$count"
+                  }
+                },
+                {
+                  $sort: { date: 1 }
+                }
+              ],
+        
+            }
+          },
+        ]
+  
+      );
+  
+      return query;
+    }
 }
