@@ -17,12 +17,13 @@ import { InterestsRepoModule } from '../../infra/interests_repo/interests_repo.m
 import { ActivityeventsModule } from '../activityevents/activityevents.module';
 import { UtilsModule } from 'src/utils/utils.module';
 import { LogapisModule } from '../logapis/logapis.module';
+import { UserbasicnewModule } from '../userbasicnew/userbasicnew.module';
 
 import { FileSystemStoredFile, FormDataRequest, NestjsFormDataModule } from 'nestjs-form-data';
 @Module({
 
   imports: [
-    ConfigModule.forRoot(), ActivityeventsModule, UserbasicsModule, NestjsFormDataModule, CountriesModule, AreasModule, InterestsRepoModule, UserauthsModule, CitiesModule, MediaprofilepictsModule, InsightsModule, LanguagesModule, InterestsModule, LogapisModule, UtilsModule,
+    ConfigModule.forRoot(), ActivityeventsModule, UserbasicsModule, NestjsFormDataModule, CountriesModule, AreasModule, InterestsRepoModule, UserauthsModule, CitiesModule, MediaprofilepictsModule, InsightsModule, LanguagesModule, InterestsModule, LogapisModule, UtilsModule, UserbasicnewModule,
 
     MongooseModule.forFeature([{ name: Getuserprofiles.name, schema: GetuserprofilesSchema }], 'SERVER_FULL')
   ],

@@ -1127,4 +1127,213 @@ export class UserbasicnewService {
         return query;
     }
 
+    async getUserHyppe3(search: string, startdate:string, enddate:string, jabatan:any[], divisi:any[], status:boolean, skip: number, limit: number, ascending:boolean) {
+        var pipeline = [];
+        pipeline.push(
+            { '$match': { email: /@hyppe.id/i } },
+            {
+            '$lookup': {
+                from: 'group',
+                let: { userName: '$_id' },
+                pipeline: [
+                {
+                    '$match': { '$expr': { '$in': [ '$$userName', '$userbasics' ] } }
+                }
+                ],
+                as: 'group_userbasics'
+            }
+            },
+            {
+            '$project': {
+                idUserAuth:"$id",
+                group_userbasics: {
+                '$ifNull': [ { '$arrayElemAt': [ '$group_userbasics', 0 ] }, null ]
+                },
+                fullName: '$fullName',
+                username: '$username',
+                email: '$email',
+                isIdVerified: '$isIdVerified',
+                createdAt:"$createdAt",
+                roles: { '$ifNull': [ '$roles', [] ] },
+                avatar: {
+                mediaBasePath: { '$ifNull': [ '$mediaBasePath', null ] },
+                mediaUri: { '$ifNull': [ '$mediaUri', null ] },
+                mediaType: { '$ifNull': [ '$mediaType', null ] },
+                mediaEndpoint: { '$ifNull': [ '$mediaEndpoint', null ] }
+                }
+            }
+            },
+            {
+            '$lookup': {
+                from: 'division',
+                localField: 'group_userbasics.divisionId',
+                foreignField: '_id',
+                as: 'division_data'
+            }
+            },
+            {
+            '$project': {
+                idUserAuth:"$idUserAuth",
+                group_userbasics: '$group_userbasics',
+                fullName: '$fullName',
+                username: '$username',
+                email: '$email',
+                isIdVerified: { '$in': [ 'ROLE_ADMIN', '$roles' ] },
+                avatar: '$avatar',
+                createdAt:"$createdAt",
+            }
+            },
+            {
+            '$lookup': {
+                from: 'division',
+                localField: 'group_userbasics.divisionId',
+                foreignField: '_id',
+                as: 'division_data'
+            }
+            },
+            {
+            '$project': {
+                namadivisi: { '$arrayElemAt': [ '$division_data.nameDivision', 0 ] },
+                group: '$group_userbasics.nameGroup',
+                groupId: '$group_userbasics._id',
+                fullName: '$fullName',
+                username: '$username',
+                email: '$email',
+                status: "$isIdVerified",
+                avatar: '$avatar',
+                createdAt:"$createdAt"
+            }
+            },
+        );
+
+        var firstmatch = [];
+        if(search != null)
+        {
+            firstmatch.push({
+                "$or":
+                [
+                    {
+                        "username": 
+                        {
+                            $regex: search, 
+                            $options: 'i'
+                        }
+                    },
+                    {
+                        "email": 
+                        { 
+                            $regex: search, 
+                            $options: 'i' 
+                        } 
+                    },
+                ]
+            });
+        }
+
+        if(startdate != null && enddate != null)
+        {
+            var convertstart = startdate.split(" ")[0];
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+            var convertend = currentdate.toISOString().split("T")[0];
+
+            firstmatch.push({
+                "$expr":
+                {
+                    "$and":
+                    [
+                        {
+                            "$gte":
+                            [
+                                "$createdAt", convertstart
+                            ],
+                        },
+                        {
+                            "$lt":
+                            [
+                                "$createdAt", convertend
+                            ]
+                        }
+                    ]
+                }
+            });
+        }
+
+        if(jabatan != null)
+        {
+            firstmatch.push({
+                "group":
+                {
+                "$in":jabatan
+                }
+            });
+        }
+
+        if(divisi != null)
+        {
+            firstmatch.push({
+                "namadivisi":
+                {
+                "$in":divisi
+                }
+            });
+        }
+
+        if(status != null)
+        {
+            firstmatch.push({
+                "status":status
+            });
+        }
+
+        if(firstmatch.length != 0)
+        {
+            pipeline.push({
+                "$match":
+                {
+                "$and":firstmatch
+                }
+            });
+        }
+
+        if(ascending != null)
+        {
+            var konvertsort = null;
+            if(ascending == true)
+            {
+                konvertsort = 1;
+            }
+            else
+            {
+                konvertsort = -1;
+            }
+            pipeline.push({
+                "$sort":
+                {
+                "createdAt":konvertsort
+                }
+            });
+        }
+
+        if(skip != null && skip > 0)
+        {
+            pipeline.push({
+                "$skip" : (skip * limit)
+            });
+        }
+
+        if(limit != null && limit > 0)
+        {
+            pipeline.push({
+                "$limit":limit
+            });
+        }
+
+        var consol = require('util');
+        console.log(consol.inspect(pipeline, { showHidden:false, depth:null, colors:true}))
+
+        var data = await this.UserbasicnewModel.aggregate(pipeline);
+
+        return data;
+    }
+
 }

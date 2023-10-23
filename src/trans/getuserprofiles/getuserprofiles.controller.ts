@@ -18,6 +18,7 @@ import { PaginationParams } from './utils/paginationParams';
 import { ActivityeventsService } from '../activityevents/activityevents.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { LogapisService } from '../logapis/logapis.service';
+import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
 
 @Controller()
 export class GetuserprofilesController {
@@ -35,7 +36,8 @@ export class GetuserprofilesController {
     private interestsService: InterestsService,
     private activityeventsService: ActivityeventsService,
     private readonly utilsService: UtilsService,
-    private readonly logapiSS: LogapisService
+    private readonly logapiSS: LogapisService,
+    private readonly basic2SS: UserbasicnewService,
 
   ) { }
 
@@ -55,15 +57,60 @@ export class GetuserprofilesController {
     return this.getuserprofilesService.delete(id);
   }
 
+  // @UseGuards(JwtAuthGuard)
+  // @Get('api/getuserhyppe')
+  // @HttpCode(HttpStatus.ACCEPTED)
+  // async userhyppe(
+  //   @Query('skip') skip: number,
+  //   @Query('limit') limit: number,
+  //   @Query('search') search: string,
+  //   @Query('searchemail') searchemail: string,
+  //   @Query('groupId') groupId: string,
+  //   @Headers() headers,
+  //   @Req() req) {
+
+  //   var timestamps_start = await this.utilsService.getDateTimeString();
+  //   var fullurl = req.get("Host") + req.originalUrl;
+  //   var token = headers['x-auth-token'];
+  //   var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+  //   var email = auth.email;
+
+  //   console.log(skip);
+  //   console.log(limit);
+  //   if (search == undefined) {
+  //     search = "";
+  //   }
+  //   if (searchemail == undefined) {
+  //     searchemail = "";
+  //   }
+  //   if (groupId == undefined) {
+  //     groupId = "";
+  //   }
+  //   if (skip == undefined) {
+  //     skip = 0;
+  //   }
+  //   if (limit == undefined) {
+  //     limit = 100;
+  //   }
+  //   var data = await this.getuserprofilesService.getUserHyppe(searchemail, search, Number(skip), Number(limit), groupId);
+  //   //var totalRow = (await this.getuserprofilesService.countUserHyppe(searchemail, search)).length;
+
+  //   var timestamps_end = await this.utilsService.getDateTimeString();
+  //   this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+  //   return {
+  //     response_code: 202, data: data, skip: skip, limit: limit, messages: {
+  //       "info": [
+  //         "successfully"
+  //       ]
+  //     }
+  //   }
+  // }
+
   @UseGuards(JwtAuthGuard)
-  @Get('api/getuserhyppe')
+  @Post('api/getuserhyppe')
   @HttpCode(HttpStatus.ACCEPTED)
-  async userhyppe(
-    @Query('skip') skip: number,
-    @Query('limit') limit: number,
-    @Query('search') search: string,
-    @Query('searchemail') searchemail: string,
-    @Query('groupId') groupId: string,
+  async userhyppe2(
     @Headers() headers,
     @Req() req) {
 
@@ -72,29 +119,110 @@ export class GetuserprofilesController {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var email = auth.email;
+    var request_json = JSON.parse(JSON.stringify(req.body));
+    var startdate = request_json['startdate'];
+    var enddate = request_json['enddate'];
+    var skip = request_json['skip'];
+    var limit = request_json['limit'];
+    var search = request_json['search'];
+    var jabatan = request_json['jabatan'];
+    var divisi = request_json['divisi'];
+    var groupId = request_json['groupId'];
+    var ascending = request_json['ascending'];
+    var status = request_json['status'];
 
-    console.log(skip);
-    console.log(limit);
-    if (search == undefined) {
-      search = "";
+    if(startdate == null || startdate == undefined || enddate == null || enddate == undefined)
+    {
+      startdate = null;
+      enddate = null;
     }
-    if (searchemail == undefined) {
-      searchemail = "";
+
+    if (skip == null || skip == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, skip field is required");
     }
-    if (groupId == undefined) {
-      groupId = "";
+    if (limit == null || limit == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, limit field is required");
     }
-    if (skip == undefined) {
-      skip = 0;
+    if (ascending == null || ascending == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, ascending field is required");
     }
-    if (limit == undefined) {
-      limit = 100;
-    }
-    var data = await this.getuserprofilesService.getUserHyppe(searchemail, search, Number(skip), Number(limit), groupId);
+    var data = await this.getuserprofilesService.getUserHyppe2(search, startdate, enddate, jabatan, divisi, status, skip, limit, ascending);
     //var totalRow = (await this.getuserprofilesService.countUserHyppe(searchemail, search)).length;
 
     var timestamps_end = await this.utilsService.getDateTimeString();
-    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+    return {
+      response_code: 202, data: data, skip: skip, limit: limit, messages: {
+        "info": [
+          "successfully"
+        ]
+      }
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/getuserhyppe/v2')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async userhyppe3(
+    @Headers() headers,
+    @Req() req) {
+
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = req.get("Host") + req.originalUrl;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    var request_json = JSON.parse(JSON.stringify(req.body));
+    var startdate = request_json['startdate'];
+    var enddate = request_json['enddate'];
+    var skip = request_json['skip'];
+    var limit = request_json['limit'];
+    var search = request_json['search'];
+    var jabatan = request_json['jabatan'];
+    var divisi = request_json['divisi'];
+    var groupId = request_json['groupId'];
+    var ascending = request_json['ascending'];
+    var status = request_json['status'];
+
+    if(startdate == null || startdate == undefined || enddate == null || enddate == undefined)
+    {
+      startdate = null;
+      enddate = null;
+    }
+
+    if (skip == null || skip == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, skip field is required");
+    }
+    if (limit == null || limit == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, limit field is required");
+    }
+    if (ascending == null || ascending == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, ascending field is required");
+    }
+    var data = await this.basic2SS.getUserHyppe3(search, startdate, enddate, jabatan, divisi, status, skip, limit, ascending);
+    //var totalRow = (await this.getuserprofilesService.countUserHyppe(searchemail, search)).length;
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
     return {
       response_code: 202, data: data, skip: skip, limit: limit, messages: {

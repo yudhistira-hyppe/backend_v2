@@ -642,7 +642,280 @@ export class GetuserprofilesService {
       // },
       { $sort: { fullName: 1 }, }
     ]).skip(skip).limit(limit);
+
+    // var util = require('util');
+    // console.log(util.inspect(query, { showHidden: false, depth:null, colors:true }));
     return query;
+  }
+
+  async getUserHyppe2(search: string, startdate:string, enddate:string, jabatan:any[], divisi:any[], status:boolean, skip: number, limit: number, ascending:boolean) 
+  {
+    var pipeline = [];
+    pipeline.push({
+        "$addFields":
+        {
+            userAuth_id: "$userAuth.$id",
+            profilePict_id: "$profilePict.$id",
+            concat:"/profilepict",
+            email:"$email",
+            isIdVerified:"$isIdVerified"
+        }
+    },
+    {
+        "$match":
+        {
+            "email":/@hyppe.id/i
+        },
+    },
+    {
+        $lookup: {
+          from: 'mediaprofilepicts',
+          localField: 'profilePict_id',
+          foreignField: '_id',
+          as: 'profilePict_data',
+        },
+    },
+    {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+    },
+    {
+        $lookup:
+        {
+          from: "group",
+          let: { userName: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $in: ["$$userName", "$userbasics"],
+                },
+              },
+            },
+          ],
+          as: 'group_userbasics',
+        }
+    },
+    {
+        "$unwind": {
+          "path": "$userAuth_data",
+          "preserveNullAndEmptyArrays": false
+        }
+    },
+    {
+        $project: {
+          group_userbasics: { $arrayElemAt: ['$group_userbasics', 0] },
+          profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
+          idUserAuth: "$userAuth_data._id",
+          fullName: '$fullName',
+          username: '$userAuth_data.username',
+          email: '$email',
+          isIdVerified: '$isIdVerified',
+          roles: '$userAuth_data.roles',
+          createdAt:"$createdAt",
+        },
+    },
+    {
+        $lookup: {
+          from: 'division',
+          localField: 'group_userbasics.divisionId',
+          foreignField: '_id',
+          as: 'division_data',
+        },
+    },
+    {
+        $project: {
+          group_userbasics: '$group_userbasics',
+          namadivisi:
+          {
+            "$arrayElemAt":
+            [
+                "$division_data.nameDivision", 0
+            ]
+          },
+          createdAt:"$createdAt",
+          profilpict: '$profilpict',
+          idUserAuth: "$userAuth_data._id",
+          fullName: '$fullName',
+          username: '$userAuth_data.username',
+          email: '$email',
+          isIdVerified: {
+            $in: [
+              "ROLE_ADMIN",
+              "$roles"
+            ],
+          },
+          avatar: {
+            mediaBasePath: '$profilpict.mediaBasePath',
+            mediaUri: '$profilpict.mediaUri',
+            mediaType: '$profilpict.mediaType',
+            mediaEndpoint: '$profilpict.fsTargetUri'
+          },
+        },
+    },
+    {
+        $addFields: {
+          concat: '/profilepict',
+          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+        },
+    },
+    {
+        $project: {
+          idUserAuth: '$idUserAuth',
+          username: '$username',
+          fullName: '$fullName',
+          createdAt:"$createdAt",
+          namadivisi:"$namadivisi",
+          group: '$group_userbasics.nameGroup',
+          groupId: '$group_userbasics._id',
+          email: '$email',
+          status: '$isIdVerified',
+          avatar: {
+            $cond: {
+              if: {
+                $eq: ["$pict", null]
+              },
+              then: null,
+              else: {
+                mediaBasePath: '$profilpict.mediaBasePath',
+                mediaUri: '$profilpict.mediaUri',
+                mediaType: '$profilpict.mediaType',
+                mediaEndpoint: { $concat: ["$concat", "/", "$pict"] },
+              }
+            }
+          },
+        }
+    });
+
+    var firstmatch = [];
+    if(search != null)
+    {
+      firstmatch.push({
+        "$or":
+        [
+            {
+                "username": 
+                {
+                    $regex: search, 
+                    $options: 'i'
+                }
+            },
+            {
+                "email": 
+                { 
+                    $regex: search, 
+                    $options: 'i' 
+                } 
+            },
+        ]
+      });
+    }
+
+    if(startdate != null && enddate != null)
+    {
+      var convertstart = startdate.split(" ")[0];
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+      var convertend = currentdate.toISOString().split("T")[0];
+
+      firstmatch.push({
+          "$expr":
+          {
+              "$and":
+              [
+                  {
+                      "$gte":
+                      [
+                          "$createdAt", convertstart
+                      ],
+                  },
+                  {
+                      "$lt":
+                      [
+                          "$createdAt", convertend
+                      ]
+                  }
+              ]
+          }
+      });
+    }
+
+    if(jabatan != null)
+    {
+      firstmatch.push({
+        "group":
+        {
+          "$in":jabatan
+        }
+      });
+    }
+
+    if(divisi != null)
+    {
+      firstmatch.push({
+        "namadivisi":
+        {
+          "$in":divisi
+        }
+      });
+    }
+
+    if(status != null)
+    {
+      firstmatch.push({
+        "status":status
+      });
+    }
+
+    if(firstmatch.length != 0)
+    {
+      pipeline.push({
+        "$match":
+        {
+          "$and":firstmatch
+        }
+      });
+    }
+
+    if(ascending != null)
+    {
+      var konvertsort = null;
+      if(ascending == true)
+      {
+        konvertsort = 1;
+      }
+      else
+      {
+        konvertsort = -1;
+      }
+      pipeline.push({
+        "$sort":
+        {
+          "createdAt":konvertsort
+        }
+      });
+    }
+
+    if(skip != null && skip > 0)
+    {
+      pipeline.push({
+        "$skip" : (skip * limit)
+      });
+    }
+
+    if(limit != null && limit > 0)
+    {
+      pipeline.push({
+        "$limit":limit
+      });
+    }
+
+    var data = await this.getuserprofilesModel.aggregate(pipeline);
+
+    return data;
   }
 
   async countUserHyppe(searchemail: string, search: string) {
