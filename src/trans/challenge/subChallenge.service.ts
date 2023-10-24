@@ -16351,7 +16351,7 @@ export class subChallengeService {
                                     {
                                         $expr:
                                         {
-                                            $lte:
+                                            $gte:
                                                 [
                                                     "$$timeNow",
                                                     "$endDatetime",
@@ -18870,7 +18870,7 @@ export class subChallengeService {
                                     {
                                         $expr:
                                         {
-                                            $lte:
+                                            $gte:
                                                 [
                                                     "$$timeNow",
                                                     "$endDatetime",
