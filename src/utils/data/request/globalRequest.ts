@@ -5,21 +5,15 @@ export class LoginRequest {
     @IsEmail()
     @IsNotEmpty()
     email: string;
-    @IsString()
     @IsNotEmpty()
     password: string;
     location: LocationDTO;
-    @IsString()
     @IsNotEmpty()
     deviceId: string;
     devicetype: string;
-    @IsString()
     referral: string;
-    @IsString()
     imei: string;
-    @IsString()
     lang: string;
-    @IsString()
     regSrc: string;
 } 
 
