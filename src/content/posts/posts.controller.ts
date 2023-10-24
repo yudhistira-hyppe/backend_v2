@@ -698,9 +698,9 @@ export class PostsController {
 
       }
 
-      if (await this.utilsService.ceckData(datapostawal)) {
-        this.PostsService.deletePostChalenge(body.postID);
-      }
+      // if (await this.utilsService.ceckData(datapostawal)) {
+      //   this.PostsService.deletePostChalenge(body.postID);
+      // }
 
 
 
@@ -792,107 +792,105 @@ export class PostsController {
         startDatetime = datapostchallenge.startDatetime;
         endDatetime = datapostchallenge.endDatetime;
 
-        if (datenow >= new Date(startDatetime) && datenow <= new Date(endDatetime)) {
-          // var timestamps_end = await this.utilsService.getDateTimeString();
-          // this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+        // if (datenow >= new Date(startDatetime) && datenow <= new Date(endDatetime)) {
+        //   // var timestamps_end = await this.utilsService.getDateTimeString();
+        //   // this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
 
-          // await this.errorHandler.generateNotAcceptableException(
-          //   'Unabled to proceed, content is participating in the challenge',
-          // );
-
-
-        } else {
-          if (tags.length > 0) {
-            const stringSet = new Set(tags);
-            const uniqstring = [...stringSet];
-
-            console.log(uniqstring)
-
-            for (let i = 0; i < uniqstring.length; i++) {
-              let id = uniqstring[i];
-
-              let datatag2 = null;
-              try {
-                datatag2 = await this.tagCountService.findOneById(id);
-              } catch (e) {
-                datatag2 = null;
-              }
-
-              let total = 0;
-              if (datatag2 !== null) {
-                let postidlist = datatag2.listdata;
-                total = datatag2.total;
-
-                for (let i = 0; i < postidlist.length; i++) {
-                  if (postidlist[i].postID === body.postID) {
-                    postidlist.splice(i, 1);
-                  }
-                }
-                let tagCountDto_ = new TagCountDto();
-                tagCountDto_.total = total - 1;
-                tagCountDto_.listdata = postidlist;
-                await this.tagCountService.update(id, tagCountDto_);
-              }
+        //   // await this.errorHandler.generateNotAcceptableException(
+        //   //   'Unabled to proceed, content is participating in the challenge',
+        //   // );
 
 
+        // } else {
+        if (tags.length > 0) {
+          const stringSet = new Set(tags);
+          const uniqstring = [...stringSet];
+
+          console.log(uniqstring)
+
+          for (let i = 0; i < uniqstring.length; i++) {
+            let id = uniqstring[i];
+
+            let datatag2 = null;
+            try {
+              datatag2 = await this.tagCountService.findOneById(id);
+            } catch (e) {
+              datatag2 = null;
             }
 
-          }
+            let total = 0;
+            if (datatag2 !== null) {
+              let postidlist = datatag2.listdata;
+              total = datatag2.total;
 
-          //interest
-
-          if (cats.length > 0) {
-            const stringSetin = new Set(cats);
-            const uniqstringin = [...stringSetin];
-
-            console.log(uniqstringin)
-
-            for (let i = 0; i < uniqstringin.length; i++) {
-              let idin = uniqstringin[i];
-
-              let datain = null;
-              try {
-                datain = await this.interestCountService.findOneById(idin);
-              } catch (e) {
-                datain = null;
-              }
-
-              let totalin = 0;
-              if (datain !== null) {
-                let postidlistin = datain.listdata;
-                totalin = datain.total;
-
-                for (let i = 0; i < postidlistin.length; i++) {
-                  if (postidlistin[i].postID === body.postID) {
-                    postidlistin.splice(i, 1);
-                  }
+              for (let i = 0; i < postidlist.length; i++) {
+                if (postidlist[i].postID === body.postID) {
+                  postidlist.splice(i, 1);
                 }
-                let tagCountDto_ = new TagCountDto();
-                tagCountDto_.total = totalin - 1;
-                tagCountDto_.listdata = postidlistin;
-                await this.tagCountService.update(idin, tagCountDto_);
               }
-
-
+              let tagCountDto_ = new TagCountDto();
+              tagCountDto_.total = total - 1;
+              tagCountDto_.listdata = postidlist;
+              await this.tagCountService.update(id, tagCountDto_);
             }
-          }
-          data = await this.postContentService.updatePost(body, headers);
-          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
-          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
-          if (saleAmount > 0) {
-            await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
-            //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
-          }
 
-          var timestamps_end = await this.utilsService.getDateTimeString();
-          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
 
-          return data;
+          }
 
         }
+
+        //interest
+
+        if (cats.length > 0) {
+          const stringSetin = new Set(cats);
+          const uniqstringin = [...stringSetin];
+
+          console.log(uniqstringin)
+
+          for (let i = 0; i < uniqstringin.length; i++) {
+            let idin = uniqstringin[i];
+
+            let datain = null;
+            try {
+              datain = await this.interestCountService.findOneById(idin);
+            } catch (e) {
+              datain = null;
+            }
+
+            let totalin = 0;
+            if (datain !== null) {
+              let postidlistin = datain.listdata;
+              totalin = datain.total;
+
+              for (let i = 0; i < postidlistin.length; i++) {
+                if (postidlistin[i].postID === body.postID) {
+                  postidlistin.splice(i, 1);
+                }
+              }
+              let tagCountDto_ = new TagCountDto();
+              tagCountDto_.total = totalin - 1;
+              tagCountDto_.listdata = postidlistin;
+              await this.tagCountService.update(idin, tagCountDto_);
+            }
+
+
+          }
+        }
+        data = await this.postContentService.updatePost(body, headers);
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+        if (saleAmount > 0) {
+          await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+          //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
+        return data;
+
+        //}
       }
-
-
     }
 
     else {
