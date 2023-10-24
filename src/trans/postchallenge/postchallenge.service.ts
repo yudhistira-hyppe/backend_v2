@@ -49,6 +49,18 @@ export class PostchallengeService {
         return data;
     }
 
+
+    async updateByUSer(id: string, idSubChallenge: string, idChallenge: string, postid: string): Promise<Object> {
+        let data = await this.PostchallengeModel.updateOne({ "_id": new Types.ObjectId(id), idChallenge: new Types.ObjectId(idChallenge), idSubChallenge: new Types.ObjectId(idSubChallenge), postID: postid },
+            {
+                $set: {
+                    "score": 0
+
+                }
+            });
+        return data;
+    }
+
     async updatebYpostID(postID: string, Postchallenge_: Postchallenge): Promise<Postchallenge> {
         let data = await this.PostchallengeModel.findByIdAndUpdate(postID, Postchallenge_, { new: true });
         if (!data) {
