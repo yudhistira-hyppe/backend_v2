@@ -16,12 +16,12 @@ export class UserchallengesService {
         return _Userchallenges_;
     }
 
-    async findData(userchallenges:Userchallenges): Promise<Userchallenges[]> {
+    async findData(userchallenges: Userchallenges): Promise<Userchallenges[]> {
         return this.UserchallengesModel.find(userchallenges).exec();
     }
 
-    async updateByUSer(id: string, userchallenges: Userchallenges) {
-        let result = await this.UserchallengesModel.updateOne({ _id: new Types.ObjectId(id) }, userchallenges).exec();
+    async updateByUSer(id: string, idSubChallenge: string, userchallenges: Userchallenges) {
+        let result = await this.UserchallengesModel.updateOne({ _id: new Types.ObjectId(id), idSubChallenge: new Types.ObjectId(idSubChallenge) }, userchallenges).exec();
         return result;
     }
 
