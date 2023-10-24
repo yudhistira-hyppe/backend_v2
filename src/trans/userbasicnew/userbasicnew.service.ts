@@ -1336,4 +1336,245 @@ export class UserbasicnewService {
         return data;
     }
 
+    async listkycsummary2(startdate: string, enddate: string, jenisquery: string, keys: string, status: any[], descending: boolean, page: number, limit: number)
+    {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+      
+            var dateend = currentdate.toISOString();
+          } catch (e) {
+            dateend = "";
+        }
+
+        var pipeline = [];
+        var firstmatch = [];
+        var order = null;
+
+        firstmatch.push(
+            {
+                "kyc.valid":
+                {
+                    "$exists":true
+                }
+            },
+            {
+                "kyc.status":
+                {
+                    "$ne":null
+                }
+            },
+            {
+                "kyc.status":
+                {
+                    "$ne":""
+                }
+            }
+        );
+
+        if(startdate != null && startdate != undefined)
+        {
+            firstmatch.push(
+                {
+                    "kyc.createdAt":
+                    {
+                        "$gte":startdate
+                    }
+                }
+            );
+        }
+
+        if(enddate != null && enddate != undefined)
+        {
+            firstmatch.push(
+                {
+                    "kyc.createdAt":
+                    {
+                        "$lte":dateend
+                    }
+                }
+            );
+        }
+
+        pipeline.push(
+            {
+                "$unwind":
+                {
+                    path:"$kyc"
+                }
+            },
+            {
+                "$match":
+                {
+                    "$and":firstmatch
+                }
+            },
+            {
+                "$project":
+                {
+                    _id:1,
+                    kyc:1,
+                    email:1,
+                    username:1,
+                    userId:"$_id",
+                    jumlahPermohonan:'1',
+                    tahapan: "KTP",
+                    avatar:
+                    {
+                        mediaBasePath:
+                        {
+                            "$ifNull":
+                            [
+                                "$mediaBasePath",
+                                null
+                            ]
+                        },
+                        mediaUri:
+                        {
+                            "$ifNull":
+                            [
+                                "$mediaUri",
+                                null
+                            ]
+                        },
+                        mediaType:
+                        {
+                            "$ifNull":
+                            [
+                                "$mediaType",
+                                null
+                            ]
+                        },
+                        mediaEndpoint:
+                        {
+                            "$ifNull":
+                            [
+                                "$mediaEndpoint",
+                                null
+                            ]
+                        },
+                    }
+                }
+            },
+            {
+                "$project":
+                {
+                    _id:1,
+                    kyc:1,
+                    email:1,
+                    username:1,
+                    userId:1,
+                    jumlahPermohonan:1,
+                    tahapan:1,
+                    avatar:1,
+                    kycHandle:
+                    {
+                        "$ifNull":
+                        [
+                            "$kyc.kycHandle",
+                            []       
+                        ]
+                    },
+                    idcardnumber:"$kyc.idcardnumber",
+                    status:
+                    {
+                        '$switch': {
+                          branches: [
+                            {
+                              case: { '$eq': [ '$kyc.status', 'IN_PROGGRESS' ] },
+                              then: 'BARU'
+                            },
+                            {
+                              case: { '$eq': [ '$kyc.status', 'FAILED' ] },
+                              then: 'DITOLAK'
+                            },
+                            {
+                              case: { '$eq': [ '$kyc.status', 'FINISH' ] },
+                              then: 'BYSYSTEM'
+                            },
+                            {
+                              case: { '$eq': [ '$kyc.status', 'DISETUJUI' ] },
+                              then: 'DISETUJUI'
+                            }
+                          ],
+                          default: ''
+                        }
+                    },
+                    createdAt:"$kyc.createdAt",
+                }
+            }
+        );
+
+        if(jenisquery == 'summary')
+        {
+            pipeline.push(
+                {
+                    "$group":
+                    {
+                        _id:"$status",
+                        myCount:
+                        {
+                            "$sum":1
+                        }
+                    }
+                }
+            );
+        }
+        else
+        {
+            if (keys != null && keys != undefined) {
+                pipeline.push({
+                    $match: {
+            
+                        username: {
+                            $regex: keys, $options: 'i'
+                        },
+                    }
+                });
+            }
+        
+            if (status != null && status !== undefined) {
+                pipeline.push(
+                    {
+                        $match: {
+                            $or: [
+                                {
+                                    status: {
+                                        $in: status
+                                    }
+                                },
+                
+                            ]
+                        }
+                    }
+                );
+            }
+        
+            if (descending === true) {
+                order = -1;
+            } else {
+                order = 1;
+            }
+        
+            pipeline.push(
+                {
+                    $sort: {
+                        createdAt: order
+                    },
+                }
+            );
+        
+            if (page > 0) {
+                pipeline.push({ $skip: (page * limit) });
+            }
+        
+            if (limit > 0) {
+                pipeline.push({ $limit: limit });
+            }
+        }
+
+        var query = await this.UserbasicnewModel.aggregate(pipeline);
+
+        return query;
+    }
+
 }

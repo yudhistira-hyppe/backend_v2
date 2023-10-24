@@ -20,10 +20,12 @@ import { GetusercontentsModule } from '../getusercontents/getusercontents.module
 import { UserbankaccountsModule } from '../userbankaccounts/userbankaccounts.module';
 import { SettingsModule } from '../settings/settings.module';
 import { LogapisModule } from '../logapis/logapis.module';
+import { NewPostModule } from 'src/content/new_post/new_post.module';
+import { UserbasicnewModule } from '../userbasicnew/userbasicnew.module';
 @Module({
 
     imports: [
-        SettingsModule, GetusercontentsModule, UserbankaccountsModule, UserticketsModule, UtilsModule, UserbasicsModule, MediaprofilepictsModule, UserAdsModule, UserauthsModule, TransactionsModule, PostsModule, AdsModule, ReportreasonsModule, MediaproofpictsModule, RemovedreasonsModule, LogapisModule, ConfigModule.forRoot(),
+        SettingsModule, GetusercontentsModule, UserbankaccountsModule, UserticketsModule, UtilsModule, UserbasicsModule, MediaprofilepictsModule, UserAdsModule, UserauthsModule, TransactionsModule, PostsModule, AdsModule, ReportreasonsModule, MediaproofpictsModule, RemovedreasonsModule, LogapisModule, ConfigModule.forRoot(), NewPostModule, UserbasicnewModule,
         MongooseModule.forFeature([{ name: Reportuser.name, schema: ReportuserSchema }], 'SERVER_FULL')
     ],
     controllers: [ReportuserController],

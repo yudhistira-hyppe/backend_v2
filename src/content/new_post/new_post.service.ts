@@ -6279,4 +6279,472 @@ export class NewPostService {
   
       return query;
     }
+
+    async countReportStatus(startdate: string, enddate: string) {
+      try {
+        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+  
+        var dateend = currentdate.toISOString();
+      } catch (e) {
+        dateend = "";
+      }
+  
+      var pipeline = [];
+  
+      if (startdate === undefined && enddate === undefined) {
+        pipeline.push(
+          {
+            $addFields: {
+  
+              statusLast: {
+                $cond: {
+                  if: {
+                    $or: [{
+                      $eq: ["$reportedUserHandle", null]
+                    }, {
+                      $eq: ["$reportedUserHandle", ""]
+                    }, {
+                      $eq: ["$reportedUserHandle", []]
+                    }]
+                  },
+                  then: "BARU",
+                  else: {
+                    $last: "$reportedUserHandle.status"
+                  }
+                },
+  
+              },
+  
+            }
+          },
+          {
+            $facet: {
+              "moderation": [
+                {
+                  $addFields: {
+                    createdAtReportLast: "$createdAt",
+  
+                    reportStatusLast: {
+                      $cond: {
+                        if: {
+                          $or: [{
+                            $eq: ["$statusLast", null]
+                          }, {
+                            $eq: ["$statusLast", ""]
+                          }, {
+                            $eq: ["$statusLast", []]
+                          }, {
+                            $eq: ["$statusLast", "BARU"]
+                          }]
+                        },
+                        then: "BARU",
+                        else: {
+                          $last: "$reportedUserHandle.status"
+                        }
+                      },
+  
+                    },
+  
+                  }
+                },
+                {
+                  $match: {
+  
+  
+                    active: true,
+                    contentModeration: true
+                  }
+                },
+  
+                {
+                  $group: {
+                    _id: "$reportStatusLast",
+                    myCount: {
+                      $sum: 1
+                    },
+  
+                  }
+                },
+  
+              ],
+  
+              "report": [
+                {
+                  "$unwind":
+                  {
+                    path: "$reportedUser"
+                  }
+                },
+                {
+                  $addFields: {
+                    createdAtReportLast: "$reportedUser.createdAt",
+                    reportStatusLast: {
+                      $cond: {
+                        if: {
+                          $or: [{
+                            $eq: ["$statusLast", null]
+                          }, {
+                            $eq: ["$statusLast", ""]
+                          }, {
+                            $eq: ["$statusLast", []]
+                          }, {
+                            $eq: ["$statusLast", "BARU"]
+                          }]
+                        },
+                        then: "BARU",
+                        else: {
+                          $last: "$reportedUserHandle.status"
+                        }
+                      },
+  
+                    },
+  
+                  }
+                },
+                {
+                  $match:
+                  {
+                    "$and":
+                      [
+                        {
+                          reportedUser: {
+                            $ne: null
+                          },
+                        },
+                        {
+                          "reportedUser.active": true
+                        },
+                        {
+                          active: true,
+                        },
+                        // {
+                        //   contentModeration: false
+                        // }
+                      ]
+                  }
+                },
+                // {
+                //   $match: {
+  
+                //     reportedUser: {
+                //       $ne: null
+                //     },
+                //     active: true,
+                //     // contentModeration: false
+                //   }
+                // },
+                // {
+                //   $match: {
+                //     reportedUser: {
+                //       $ne: []
+                //     },
+                //     active: true,
+                //     // contentModeration: false
+                //   }
+                // },
+  
+                {
+                  $group: {
+                    _id: "$reportStatusLast",
+                    myCount: {
+                      $sum: 1
+                    },
+  
+                  }
+                },
+  
+              ],
+              "appeal": [
+                {
+                  $addFields: {
+                    createdAtReportLast: {
+                      $last: "$reportedUserHandle.createdAt"
+                    },
+                    reportStatusLast: {
+                      $cond: {
+                        if: {
+                          $or: [{
+                            $eq: ["$statusLast", null]
+                          }, {
+                            $eq: ["$statusLast", ""]
+                          }, {
+                            $eq: ["$statusLast", []]
+                          }, {
+                            $eq: ["$statusLast", "BARU"]
+                          }]
+                        },
+                        then: "BARU",
+                        else: {
+                          $last: "$reportedUserHandle.status"
+                        }
+                      },
+  
+                    },
+  
+                  }
+                },
+                {
+                  $match: {
+  
+                    reportedUserHandle: {
+                      $ne: null
+                    },
+                    active: true,
+  
+                  }
+                },
+                {
+                  $match: {
+                    reportedUserHandle: {
+                      $ne: []
+                    },
+                    active: true,
+                  }
+                },
+  
+                {
+                  $group: {
+                    _id: "$reportStatusLast",
+                    myCount: {
+                      $sum: 1
+                    }
+                  }
+                },
+  
+              ]
+            },
+  
+          }
+        );
+      }
+      else if (startdate !== undefined && enddate !== undefined) {
+        pipeline.push({
+          $addFields: {
+  
+            statusLast: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$reportedUserHandle", null]
+                  }, {
+                    $eq: ["$reportedUserHandle", ""]
+                  }, {
+                    $eq: ["$reportedUserHandle", []]
+                  }]
+                },
+                then: "BARU",
+                else: {
+                  $last: "$reportedUserHandle.status"
+                }
+              },
+  
+            },
+  
+          }
+        },
+          {
+            $facet: {
+              "moderation": [
+                {
+                  $addFields: {
+                    createdAtReportLast: "$createdAt",
+  
+                    reportStatusLast: {
+                      $cond: {
+                        if: {
+                          $or: [{
+                            $eq: ["$statusLast", null]
+                          }, {
+                            $eq: ["$statusLast", ""]
+                          }, {
+                            $eq: ["$statusLast", []]
+                          }, {
+                            $eq: ["$statusLast", "BARU"]
+                          }]
+                        },
+                        then: "BARU",
+                        else: {
+                          $last: "$reportedUserHandle.status"
+                        }
+                      },
+  
+                    },
+  
+                  }
+                },
+                {
+                  $match: {
+  
+  
+                    active: true,
+                    contentModeration: true
+                  }
+                },
+                { $match: { createdAtReportLast: { "$gte": startdate, "$lte": dateend } } },
+                {
+                  $group: {
+                    _id: "$reportStatusLast",
+                    myCount: {
+                      $sum: 1
+                    },
+  
+                  }
+                },
+  
+              ],
+  
+              "report": [
+                {
+                  "$unwind":
+                  {
+                    path: "$reportedUser"
+                  }
+                },
+                {
+                  $addFields: {
+                    createdAtReportLast: "$reportedUser.createdAt",
+                    reportStatusLast: {
+                      $cond: {
+                        if: {
+                          $or: [{
+                            $eq: ["$statusLast", null]
+                          }, {
+                            $eq: ["$statusLast", ""]
+                          }, {
+                            $eq: ["$statusLast", []]
+                          }, {
+                            $eq: ["$statusLast", "BARU"]
+                          }]
+                        },
+                        then: "BARU",
+                        else: {
+                          $last: "$reportedUserHandle.status"
+                        }
+                      },
+  
+                    },
+  
+                  }
+                },
+                {
+                  $match:
+                  {
+                    "$and":
+                      [
+                        {
+                          reportedUser: {
+                            $ne: null
+                          },
+                        },
+                        {
+                          "reportedUser.active": true
+                        },
+                        {
+                          active: true,
+                        },
+                        // {
+                        //   contentModeration: false
+                        // }
+                      ]
+                  }
+                },
+                // {
+                //   $match: {
+  
+                //     reportedUser: {
+                //       $ne: null
+                //     },
+                //     active: true,
+                //     contentModeration: false
+                //   }
+                // },
+                // {
+                //   $match: {
+                //     reportedUser: {
+                //       $ne: []
+                //     },
+                //     active: true,
+                //     contentModeration: false
+                //   }
+                // },
+                { $match: { createdAtReportLast: { "$gte": startdate, "$lte": dateend } } },
+                {
+                  $group: {
+                    _id: "$reportStatusLast",
+                    myCount: {
+                      $sum: 1
+                    },
+  
+                  }
+                },
+  
+              ],
+              "appeal": [
+                {
+                  $addFields: {
+                    createdAtReportLast: {
+                      $last: "$reportedUserHandle.createdAt"
+                    },
+                    reportStatusLast: {
+                      $cond: {
+                        if: {
+                          $or: [{
+                            $eq: ["$statusLast", null]
+                          }, {
+                            $eq: ["$statusLast", ""]
+                          }, {
+                            $eq: ["$statusLast", []]
+                          }, {
+                            $eq: ["$statusLast", "BARU"]
+                          }]
+                        },
+                        then: "BARU",
+                        else: {
+                          $last: "$reportedUserHandle.status"
+                        }
+                      },
+  
+                    },
+  
+                  }
+                },
+                {
+                  $match: {
+  
+                    reportedUserHandle: {
+                      $ne: null
+                    },
+                    active: true,
+                    contentModeration: false
+                  }
+                },
+                {
+                  $match: {
+                    reportedUserHandle: {
+                      $ne: []
+                    },
+                    active: true,
+                    contentModeration: false
+                  }
+                },
+                { $match: { createdAtReportLast: { "$gte": startdate, "$lte": dateend } } },
+                {
+                  $group: {
+                    _id: "$reportStatusLast",
+                    myCount: {
+                      $sum: 1
+                    }
+                  }
+                },
+  
+              ]
+            },
+  
+          });
+      }
+  
+      let query = await this.loaddata.aggregate(pipeline);
+  
+      return query;
+    }
 }

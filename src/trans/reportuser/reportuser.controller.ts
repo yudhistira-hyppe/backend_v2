@@ -24,6 +24,8 @@ import { GetusercontentsService } from '../getusercontents/getusercontents.servi
 import { UserbankaccountsService } from '../userbankaccounts/userbankaccounts.service';
 import { SettingsService } from '../settings/settings.service';
 import { LogapisService } from '../logapis/logapis.service';
+import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
+import { NewPostService } from 'src/content/new_post/new_post.service';
 @Controller('api/reportuser')
 export class ReportuserController {
 
@@ -44,7 +46,9 @@ export class ReportuserController {
         private readonly getusercontentsService: GetusercontentsService,
         private readonly userbankaccountsService: UserbankaccountsService,
         private readonly settingsService: SettingsService,
-        private readonly logapiSS: LogapisService
+        private readonly logapiSS: LogapisService,
+        private readonly basic2SS: UserbasicnewService,
+        private readonly post2SS: NewPostService,
     ) { }
     @UseGuards(JwtAuthGuard)
     @Get('all')
@@ -3025,6 +3029,834 @@ export class ReportuserController {
 
             //datakyc = await this.mediaproofpictsService.listkycsummary(startdate, enddate);
             datakyc = await this.userbasicsService.listkycsummary2(startdate, enddate, 'summary', null, null, null, null, null);
+            lengkyc = datakyc.length;
+
+        } catch (e) {
+            datakyc = null;
+            lengkyc = 0;
+
+        }
+
+        if (lengkyc > 0) {
+
+            for (let i = 0; i < lengkyc; i++) {
+                summkyc += datakyc[i].myCount;
+
+            }
+        } else {
+            summkyc = 0;
+        }
+
+        if (lengkyc > 0) {
+
+
+            for (let i = 0; i < lengkyc; i++) {
+                let count = datakyc[i].myCount;
+                let id = datakyc[i]._id;
+                persen = count * 100 / summkyc;
+
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "red"
+                    };
+                    arrkyc.push(objbaru);
+                }
+                let objkyc = {}
+                if (id === "DITOLAK") {
+                    objkyc = {
+                        "_id": "DITOLAK",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrkyc.push(objkyc);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "DISETUJUI") {
+                    objtidakditangguhkan = {
+                        "_id": "DISETUJUI",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#71A500D9"
+                    };
+                    arrkyc.push(objtidakditangguhkan);
+                }
+                let objbysystem = {}
+                if (id === "BYSYSTEM") {
+                    objbysystem = {
+                        "_id": "BYSYSTEM",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#71A500D9"
+                    };
+                    arrkyc.push(objbysystem);
+                }
+
+            }
+        } else {
+            arrkyc = [];
+        }
+        var kyc = null;
+
+        kyc = {
+            kyc: [{
+                totalReport: summkyc,
+                data: arrkyc
+            }
+            ],
+        };
+
+        return { response_code: 202, content, ads, userticket, kyc, appealAkunBank, messages };
+
+
+
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('summary/v2')
+    async findsummary2(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+
+        var startdate = null;
+        var enddate = null;
+
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+
+        // Content
+        var datacontentreport = null;
+        var datakyc = null;
+        var reportContent = [];
+        var appealContent = [];
+        var moderationContent = [];
+        var lengreportContent = null;
+        var lengappealContent = null;
+        var lengmoderationContent = null;
+        var sumreportContent = null;
+        var sumappealContent = null;
+        var summoderationContent = null;
+        var objreportContent = {}
+        var arrDataContent = [];
+        var objappealContent = {}
+        var arrDataContentAppeal = [];
+        var objmoderationContent = {}
+        var arrDataContentModeration = [];
+        var arrkyc = [];
+
+        //ads
+        var dataadsreport = null;
+        var reportAds = [];
+        var appealAds = [];
+        var moderationAds = [];
+        var lengreportAds = null;
+        var lengappealAds = null;
+        var lengmoderationAds = null;
+        var sumreportAds = null;
+        var sumappealAds = null;
+        var summoderationAds = null;
+        var summkyc = null;
+        var objreportAds = {}
+        var arrDataAds = [];
+        var objappealAds = {}
+        var arrDataAdsAppeal = [];
+        var objmoderationAds = {}
+        var arrDataAdsModeration = [];
+        var lengkyc = null;
+        var persen = null;
+
+        var dataappealbank = null;
+        var objappealBank = {}
+        var arrDataBankAppeal = [];
+        var sumAppealBank = null;
+        var lengappealbank = 0;
+
+        try {
+
+            dataappealbank = await this.userbankaccountsService.countAppealakunbank(startdate, enddate);
+            lengappealbank = dataappealbank.length;
+
+        } catch (e) {
+            dataappealbank = null;
+            lengappealbank = 0;
+
+        }
+
+        if (lengappealbank > 0) {
+
+            for (let i = 0; i < lengappealbank; i++) {
+                sumAppealBank += dataappealbank[i].myCount;
+
+            }
+
+        } else {
+            sumAppealBank = 0;
+        }
+        if (lengappealbank > 0) {
+
+
+            for (let i = 0; i < lengappealbank; i++) {
+                let count = dataappealbank[i].myCount;
+                let id = dataappealbank[i]._id;
+                persen = count * 100 / sumAppealBank;
+
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "red"
+                    };
+                    arrDataBankAppeal.push(objbaru);
+                }
+                let objkyc = {}
+                if (id === "DITOLAK") {
+                    objkyc = {
+                        "_id": "DITOLAK",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrDataBankAppeal.push(objkyc);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "DISETUJUI") {
+                    objtidakditangguhkan = {
+                        "_id": "DISETUJUI",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#71A500D9"
+                    };
+                    arrDataBankAppeal.push(objtidakditangguhkan);
+                }
+
+            }
+        } else {
+            arrDataBankAppeal = [];
+        }
+        var appealAkunBank = null;
+
+        appealAkunBank = {
+            appealAkunBank: [{
+                totalReport: sumAppealBank,
+                data: arrDataBankAppeal
+            }
+            ],
+        };
+
+
+        try {
+
+            datacontentreport = await this.post2SS.countReportStatus(startdate, enddate);
+            reportContent = datacontentreport[0].report;
+            appealContent = datacontentreport[0].appeal;
+            moderationContent = datacontentreport[0].moderation;
+
+        } catch (e) {
+            datacontentreport = null;
+            reportContent = [];
+            appealContent = [];
+            moderationContent = [];
+        }
+
+        try {
+            lengreportContent = reportContent.length;
+        } catch (e) {
+            lengreportContent = 0;
+        }
+        try {
+            lengappealContent = appealContent.length;
+        } catch (e) {
+            lengappealContent = 0;
+        }
+
+        try {
+            lengmoderationContent = moderationContent.length;
+        } catch (e) {
+            lengmoderationContent = 0;
+        }
+
+
+
+        if (lengreportContent > 0) {
+
+            for (let i = 0; i < lengreportContent; i++) {
+                sumreportContent += reportContent[i].myCount;
+
+            }
+
+        } else {
+            sumreportContent = 0;
+        }
+
+        if (lengreportContent > 0) {
+
+            for (let i = 0; i < lengreportContent; i++) {
+                let count = reportContent[i].myCount;
+                let id = reportContent[i]._id;
+                persen = count * 100 / sumreportContent;
+
+
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#E31D41"
+                    };
+                    arrDataContent.push(objbaru);
+                }
+                let objditangguhkan = {}
+                if (id === "DITANGGUHKAN") {
+                    objditangguhkan = {
+                        "_id": "DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#8DCD03"
+                    };
+                    arrDataContent.push(objditangguhkan);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "TIDAK DITANGGUHKAN") {
+                    objtidakditangguhkan = {
+                        "_id": "TIDAK DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#FF8800"
+                    };
+                    arrDataContent.push(objtidakditangguhkan);
+                }
+
+                let objflagging = {}
+                if (id === "FLAGING") {
+                    objflagging = {
+                        "_id": "DITANDAI SENSITIF",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrDataContent.push(objflagging);
+                }
+
+            }
+
+        } else {
+            arrDataContent = [];
+        }
+
+        if (lengappealContent > 0) {
+
+            for (let i = 0; i < lengappealContent; i++) {
+                sumappealContent += appealContent[i].myCount;
+
+            }
+        } else {
+            sumappealContent = 0;
+        }
+
+        if (lengappealContent > 0) {
+
+
+            for (let i = 0; i < lengappealContent; i++) {
+                let count = appealContent[i].myCount;
+                let id = appealContent[i]._id;
+                persen = count * 100 / sumappealContent;
+
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#E31D41"
+                    };
+                    arrDataContentAppeal.push(objbaru);
+                }
+                let objditangguhkan = {}
+                if (id === "DITANGGUHKAN") {
+                    objditangguhkan = {
+                        "_id": "DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#8DCD03"
+                    };
+                    arrDataContentAppeal.push(objditangguhkan);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "TIDAK DITANGGUHKAN") {
+                    objtidakditangguhkan = {
+                        "_id": "TIDAK DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#FF8800"
+                    };
+                    arrDataContentAppeal.push(objtidakditangguhkan);
+                }
+
+                let objflagging = {}
+                if (id === "FLAGING") {
+                    objflagging = {
+                        "_id": "DITANDAI SENSITIF",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrDataContentAppeal.push(objflagging);
+                }
+
+
+            }
+        } else {
+            arrDataContentAppeal = [];
+        }
+
+        if (lengmoderationContent > 0) {
+
+            for (let i = 0; i < lengmoderationContent; i++) {
+                summoderationContent += moderationContent[i].myCount;
+
+            }
+
+        } else {
+            summoderationContent = 0;
+        }
+
+        if (lengmoderationContent > 0) {
+
+
+            for (let i = 0; i < lengmoderationContent; i++) {
+                let count = moderationContent[i].myCount;
+                let id = moderationContent[i]._id;
+                persen = count * 100 / summoderationContent;
+
+                objmoderationContent = {
+                    "_id": id,
+                    "myCount": count,
+                    "persen": persen.toFixed(2)
+                }
+
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#E31D41"
+                    };
+                    arrDataContentModeration.push(objbaru);
+                }
+                let objditangguhkan = {}
+                if (id === "DITANGGUHKAN") {
+                    objditangguhkan = {
+                        "_id": "DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#8DCD03"
+                    };
+                    arrDataContentModeration.push(objditangguhkan);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "TIDAK DITANGGUHKAN") {
+                    objtidakditangguhkan = {
+                        "_id": "TIDAK DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#FF8800"
+                    };
+                    arrDataContentModeration.push(objtidakditangguhkan);
+                }
+
+                let objflagging = {}
+                if (id === "FLAGING") {
+                    objflagging = {
+                        "_id": "DITANDAI SENSITIF",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrDataContentModeration.push(objflagging);
+                }
+
+
+            }
+        } else {
+            arrDataContentModeration = [];
+        }
+
+        var content = null;
+
+        content = {
+            report: [{
+                totalReport: sumreportContent,
+                data: arrDataContent
+            }
+            ],
+            appeal: [{
+                totalReport: sumappealContent,
+                data: arrDataContentAppeal
+            }
+            ],
+            moderation: [{
+                totalReport: summoderationContent,
+                data: arrDataContentModeration
+            }
+            ],
+        };
+
+
+
+        try {
+
+            dataadsreport = await this.adsService.countReportStatus(startdate, enddate);
+            reportAds = dataadsreport[0].report;
+            appealAds = dataadsreport[0].appeal;
+            moderationAds = dataadsreport[0].moderation;
+
+        } catch (e) {
+            dataadsreport = null;
+            reportAds = [];
+            appealAds = [];
+            moderationAds = [];
+        }
+
+        try {
+            lengreportAds = reportAds.length;
+        } catch (e) {
+            lengreportAds = 0;
+        }
+        try {
+            lengappealAds = appealAds.length;
+        } catch (e) {
+            lengappealAds = 0;
+        }
+
+        try {
+            lengmoderationAds = moderationAds.length;
+        } catch (e) {
+            lengmoderationAds = 0;
+        }
+
+
+
+        if (lengreportAds > 0) {
+
+            for (let i = 0; i < lengreportAds; i++) {
+                sumreportAds += reportAds[i].myCount;
+
+            }
+
+        } else {
+            sumreportAds = 0;
+        }
+
+        if (lengreportAds > 0) {
+
+            for (let i = 0; i < lengreportAds; i++) {
+                let count = reportAds[i].myCount;
+                let id = reportAds[i]._id;
+                persen = count * 100 / sumreportAds;
+
+                objreportAds = {
+                    "_id": id,
+                    "myCount": count,
+                    "persen": persen.toFixed(2)
+                }
+
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#E31D41"
+                    };
+                    arrDataAds.push(objbaru);
+                }
+                let objditangguhkan = {}
+                if (id === "DITANGGUHKAN") {
+                    objditangguhkan = {
+                        "_id": "DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#8DCD03"
+                    };
+                    arrDataAds.push(objditangguhkan);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "TIDAK DITANGGUHKAN") {
+                    objtidakditangguhkan = {
+                        "_id": "TIDAK DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#FF8800"
+                    };
+                    arrDataAds.push(objtidakditangguhkan);
+                }
+
+                let objflagging = {}
+                if (id === "FLAGING") {
+                    objflagging = {
+                        "_id": "DITANDAI SENSITIF",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrDataAds.push(objflagging);
+                }
+
+            }
+
+        } else {
+            arrDataAds = [];
+        }
+
+        if (lengappealAds > 0) {
+
+            for (let i = 0; i < lengappealAds; i++) {
+                sumappealAds += appealAds[i].myCount;
+
+            }
+        } else {
+            sumappealAds = 0;
+        }
+
+        if (lengappealAds > 0) {
+
+
+            for (let i = 0; i < lengappealAds; i++) {
+                let count = appealAds[i].myCount;
+                let id = appealAds[i]._id;
+                persen = count * 100 / sumappealAds;
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#E31D41"
+                    };
+                    arrDataAdsAppeal.push(objbaru);
+                }
+                let objditangguhkan = {}
+                if (id === "DITANGGUHKAN") {
+                    objditangguhkan = {
+                        "_id": "DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#8DCD03"
+                    };
+                    arrDataAdsAppeal.push(objditangguhkan);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "TIDAK DITANGGUHKAN") {
+                    objtidakditangguhkan = {
+                        "_id": "TIDAK DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#FF8800"
+                    };
+                    arrDataAdsAppeal.push(objtidakditangguhkan);
+                }
+
+                let objflagging = {}
+                if (id === "FLAGING") {
+                    objflagging = {
+                        "_id": "DITANDAI SENSITIF",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrDataAdsAppeal.push(objflagging);
+                }
+
+            }
+        } else {
+            arrDataAdsAppeal = [];
+        }
+
+        if (lengmoderationAds > 0) {
+
+            for (let i = 0; i < lengmoderationAds; i++) {
+                summoderationAds += moderationAds[i].myCount;
+
+            }
+
+        } else {
+            summoderationAds = 0;
+        }
+
+        if (lengmoderationAds > 0) {
+
+
+            for (let i = 0; i < lengmoderationAds; i++) {
+                let count = moderationAds[i].myCount;
+                let id = moderationAds[i]._id;
+                persen = count * 100 / summoderationAds;
+
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#E31D41"
+                    };
+                    arrDataAdsModeration.push(objbaru);
+                }
+                let objditangguhkan = {}
+                if (id === "DITANGGUHKAN") {
+                    objditangguhkan = {
+                        "_id": "DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#8DCD03"
+                    };
+                    arrDataAdsModeration.push(objditangguhkan);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "TIDAK DITANGGUHKAN") {
+                    objtidakditangguhkan = {
+                        "_id": "TIDAK DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#FF8800"
+                    };
+                    arrDataAdsModeration.push(objtidakditangguhkan);
+                }
+
+                let objflagging = {}
+                if (id === "FLAGING") {
+                    objflagging = {
+                        "_id": "DITANDAI SENSITIF",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrDataAdsModeration.push(objflagging);
+                }
+
+
+
+            }
+        } else {
+            arrDataAdsModeration = [];
+        }
+
+        var ads = null;
+
+        ads = {
+            report: [{
+                totalReport: sumreportAds,
+                data: arrDataAds
+            }
+            ],
+            appeal: [{
+                totalReport: sumappealAds,
+                data: arrDataAdsAppeal
+            }
+            ],
+            moderation: [{
+                totalReport: summoderationAds,
+                data: arrDataAdsModeration
+            }
+            ],
+        };
+
+        var datauserticket = null;
+        var objusertiket = {};
+        var arrusertiket = [];
+        var lengusertiket = null;
+        var sumusertiket = null;
+
+        try {
+
+            datauserticket = await this.userticketsService.countUserticketStatus(startdate, enddate);
+            lengusertiket = datauserticket.length;
+
+
+        } catch (e) {
+            datauserticket = null;
+            lengusertiket = 0;
+
+        }
+        if (lengusertiket > 0) {
+
+            for (let i = 0; i < lengusertiket; i++) {
+                sumusertiket += datauserticket[i].myCount;
+
+            }
+        } else {
+            sumusertiket = 0;
+        }
+
+        if (lengusertiket > 0) {
+
+
+            for (let i = 0; i < lengusertiket; i++) {
+                let count = datauserticket[i].myCount;
+                let id = datauserticket[i]._id;
+                persen = count * 100 / sumusertiket;
+
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "red"
+                    };
+                    arrusertiket.push(objbaru);
+                }
+                let objditangguhkan = {}
+                if (id === "DALAM PROSES") {
+                    objditangguhkan = {
+                        "_id": "DALAM PROSES",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#FF8C00D9"
+                    };
+                    arrusertiket.push(objditangguhkan);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "SELESAI") {
+                    objtidakditangguhkan = {
+                        "_id": "SELESAI",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#71A500D9"
+                    };
+                    arrusertiket.push(objtidakditangguhkan);
+                }
+
+            }
+        } else {
+            arrusertiket = [];
+        }
+
+        var userticket = null;
+
+        userticket = {
+            ticket: [{
+                totalReport: sumusertiket,
+                data: arrusertiket
+            }
+            ],
+        };
+
+        try {
+
+            //datakyc = await this.mediaproofpictsService.listkycsummary(startdate, enddate);
+            datakyc = await this.basic2SS.listkycsummary2(startdate, enddate, 'summary', null, null, null, null, null);
             lengkyc = datakyc.length;
 
         } catch (e) {

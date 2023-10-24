@@ -25,6 +25,7 @@ import { GetusercontentsModule } from 'src/trans/getusercontents/getusercontents
     MongooseModule.forFeature([{ name: newPosts.name, schema: NewpostsSchema }], 'SERVER_FULL')
   ],
   controllers: [NewPostController],
-  providers: [NewPostService]
+  providers: [NewPostService],
+  exports: [NewPostService]
 })
 export class NewPostModule {}
