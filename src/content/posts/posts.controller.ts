@@ -698,9 +698,9 @@ export class PostsController {
 
       }
 
-      // if (await this.utilsService.ceckData(datapostawal)) {
-      //   this.PostsService.deletePostChalenge(body.postID);
-      // }
+      if (await this.utilsService.ceckData(datapostawal)) {
+        this.PostsService.deletePostChalenge(body.postID);
+      }
 
 
 
