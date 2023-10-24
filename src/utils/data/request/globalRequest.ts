@@ -12,7 +12,6 @@ export class LoginRequest {
     @IsString()
     @IsNotEmpty()
     deviceId: string;
-    @IsString()
     devicetype: string;
     @IsString()
     referral: string;
