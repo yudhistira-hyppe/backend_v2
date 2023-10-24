@@ -14,6 +14,7 @@ import { UserauthsModule } from '../../trans/userauths/userauths.module';
 import { ContenteventsModule } from "../../content/contentevents/contentevents.module";
 import { OssModule } from '../oss/oss.module';
 import { FriendListModule } from "../../content/friend_list/friend_list.module";
+import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
 @Module({
   imports: [
     OssModule,
@@ -29,7 +30,8 @@ import { FriendListModule } from "../../content/friend_list/friend_list.module";
     UtilsModule,
     NestjsFormDataModule,
     ConfigService,
-    ConfigModule.forRoot()
+    ConfigModule.forRoot(),
+    UserbasicnewModule,
   ],
   controllers: [MediaController],
   providers: [MediaService],

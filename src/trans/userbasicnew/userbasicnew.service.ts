@@ -1459,21 +1459,21 @@ export class UserbasicnewService {
                 "$project":
                 {
                     _id:1,
-                    kyc:1,
+                    // kyc:1,
                     email:1,
                     username:1,
                     userId:1,
                     jumlahPermohonan:1,
                     tahapan:1,
                     avatar:1,
-                    kycHandle:
-                    {
-                        "$ifNull":
-                        [
-                            "$kyc.kycHandle",
-                            []       
-                        ]
-                    },
+                    // kycHandle:
+                    // {
+                    //     "$ifNull":
+                    //     [
+                    //         "$kyc.kycHandle",
+                    //         []       
+                    //     ]
+                    // },
                     idcardnumber:"$kyc.idcardnumber",
                     status:
                     {

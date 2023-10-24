@@ -24,6 +24,7 @@ import { OssService } from "../oss/oss.service";
 import { FriendListService } from "../../content/friend_list/friend_list.service";
 import { ConfigService } from "@nestjs/config";
 import { createWriteStream } from "fs";
+import { UserbasicnewService } from "src/trans/userbasicnew/userbasicnew.service";
 
 //import FormData from "form-data";
 const multer = require('multer');
@@ -82,6 +83,7 @@ export class MediaController {
         private readonly mediaprofilepictsService: MediaprofilepictsService,
         private readonly userauthsService: UserauthsService,
         private readonly seaweedfsService: SeaweedfsService,
+        private readonly basic2SS: UserbasicnewService,
         private readonly configService: ConfigService) { }
 
     @UseGuards(JwtAuthGuard)
@@ -2100,6 +2102,69 @@ export class MediaController {
         try {
             // data = await this.mediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, page, limit);
             data = await this.userbasicsService.listkycsummary2(startdate, enddate, 'listing', keys, status, descending, page, limit);
+        } catch (e) {
+            data = null;
+        }
+        // let datasearch = await this.mediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, 0, 0);
+        // var totalsearch = datasearch.length;
+        // var allrow = await this.mediaproofpictsService.listkyc(undefined, undefined, undefined, undefined, descending, 0, 0);
+        // var totalallrow = allrow.length;
+        var totalrow = data.length;
+
+        // var tpage = null;
+        // var tpage2 = null;
+        // var totalpage = null;
+        // tpage2 = (totalsearch / limit).toFixed(0);
+        // tpage = (totalsearch % limit);
+        // if (tpage > 0 && tpage < 5) {
+        //     totalpage = parseInt(tpage2) + 1;
+
+        // } else {
+        //     totalpage = parseInt(tpage2);
+        // }
+
+        return { response_code: 202, data, page, limit, totalrow, totalallrow: 0, totalsearch: 0, totalpage: 0, messages };
+    }
+
+    @Post('api/mediaproofpicts/listkyc/v2')
+    @UseGuards(JwtAuthGuard)
+    async profileuser2(@Req() request: Request): Promise<any> {
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var keys = null;
+        var data = null;
+        var page = null;
+        var limit = null;
+        var startdate = null;
+        var enddate = null;
+        var status = null;
+
+        var descending = null;
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        keys = request_json["keys"];
+        status = request_json["status"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        descending = request_json["descending"];
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        try {
+            // data = await this.mediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, page, limit);
+            data = await this.basic2SS.listkycsummary2(startdate, enddate, 'listing', keys, status, descending, page, limit);
         } catch (e) {
             data = null;
         }
