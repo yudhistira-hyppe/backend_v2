@@ -793,12 +793,12 @@ export class PostsController {
         endDatetime = datapostchallenge.endDatetime;
 
         if (datenow >= new Date(startDatetime) && datenow <= new Date(endDatetime)) {
-          var timestamps_end = await this.utilsService.getDateTimeString();
-          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+          // var timestamps_end = await this.utilsService.getDateTimeString();
+          // this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
 
-          await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed, content is participating in the challenge',
-          );
+          // await this.errorHandler.generateNotAcceptableException(
+          //   'Unabled to proceed, content is participating in the challenge',
+          // );
 
 
         } else {
@@ -1219,7 +1219,8 @@ export class PostsController {
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
 
         return data;
-      } else {
+      }
+      else {
         var datenow = new Date(Date.now());
         startDatetime = datapostchallenge.startDatetime;
         endDatetime = datapostchallenge.endDatetime;
