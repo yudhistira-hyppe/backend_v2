@@ -10,6 +10,7 @@ export class LoginRequest {
     password: string;
     location: LocationDTO;
     @IsString()
+    @IsNotEmpty()
     deviceId: string;
     @IsString()
     devicetype: string;
