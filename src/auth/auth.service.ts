@@ -5369,7 +5369,7 @@ export class AuthService {
         try {
           var data_referral = await this.referralService.findAllByParent(user_email);
           var data_referral_parent = await this.referralService.findAllByChildren(user_email);
-          
+
           var fullurl = req.get("Host") + req.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, null);
@@ -8937,7 +8937,12 @@ export class AuthService {
           CreateReferralDto_._class = "io.melody.core.domain.Referral";
           var insertdata = await this.referralService.create(CreateReferralDto_);
           var idref = insertdata._id;
-          this.userChallenge(iduser.toString(), idref.toString(), "referral", "REFERAL");
+
+          try {
+            this.userChallenge(iduser.toString(), idref.toString(), "referral", "REFERAL");
+          } catch (e) {
+
+          }
 
 
           var _id_1 = (await this.utilsService.generateId());
@@ -9722,7 +9727,11 @@ export class AuthService {
 
                         if (databasic !== null) {
                           var idref = insertdata._id;
-                          this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
+                          try {
+                            this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
+                          } catch (e) {
+
+                          }
                         }
 
                         var _id_1 = (await this.utilsService.generateId());
