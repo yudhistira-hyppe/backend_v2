@@ -118,9 +118,15 @@ export class ChallengeController {
 
     if (request_json['statusChallenge'] == 'PUBLISH') {
       var getdata = await this.challengeService.findAll(null, request_json['jenisChallenge'], null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
-      console.log(getdata.length);
       if ((request_json['jenisChallenge'] == '647055de0435000059003462' && getdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && getdata.length >= 5)) {
-        insertdata.statusChallenge = 'DRAFT';
+        if(request_json['jenisChallenge'] == '647055de0435000059003462')
+        {
+          throw new NotAcceptableException("Challenge Utama yang sudah aktif telah memenuhi batas maksimal (Maksimal: 3 challenge aktif)")
+        }
+        else
+        {
+          throw new NotAcceptableException("Challenge Lainnya yang sudah aktif telah memenuhi batas maksimal (Maksimal: 5 challenge aktif)")
+        }
       }
       else {
         insertdata.statusChallenge = request_json['statusChallenge'];
@@ -776,14 +782,25 @@ export class ChallengeController {
       else {
         setjenischallenge = request_json['jenisChallenge'];
       }
-
-      var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
-      if ((request_json['jenisChallenge'] == '647055de0435000059003462' && cekdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
-        request_json['statusChallenge'] = 'DRAFT';
-      }
     }
 
     if (getdata["statusChallenge"] == 'DRAFT') {
+
+      if (request_json['statusChallenge'] == 'PUBLISH') 
+      {
+        var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
+        if ((request_json['jenisChallenge'] == '647055de0435000059003462' && cekdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
+          if(request_json['jenisChallenge'] == '647055de0435000059003462')
+          {
+            throw new NotAcceptableException("Challenge Utama yang sudah aktif telah memenuhi batas maksimal (Maksimal: 3 challenge aktif)")
+          }
+          else
+          {
+            throw new NotAcceptableException("Challenge Lainnya yang sudah aktif telah memenuhi batas maksimal (Maksimal: 5 challenge aktif)")
+          }
+        }
+      }
+
       // var insertdata = new CreateChallengeDto();
       var insertdata = getdata;
       // var mongo = require('mongoose');
@@ -1386,7 +1403,14 @@ export class ChallengeController {
       var setjenischallenge = getdata["jenisChallenge"].toString();
       var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
       if ((setjenischallenge == '647055de0435000059003462' && cekdata.length >= 3) || (setjenischallenge == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
-        statusChallenge = 'DRAFT';
+        if(setjenischallenge == '647055de0435000059003462')
+        {
+          throw new NotAcceptableException("Challenge Utama yang sudah aktif telah memenuhi batas maksimal (Maksimal: 3 challenge aktif)")
+        }
+        else
+        {
+          throw new NotAcceptableException("Challenge Lainnya yang sudah aktif telah memenuhi batas maksimal (Maksimal: 5 challenge aktif)")
+        }
       }
     }
 
