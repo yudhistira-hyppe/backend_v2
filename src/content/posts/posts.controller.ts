@@ -698,9 +698,6 @@ export class PostsController {
 
       }
 
-      if (await this.utilsService.ceckData(datapostawal)) {
-        this.PostsService.deletePostChalenge(body.postID);
-      }
 
 
 
@@ -879,20 +876,45 @@ export class PostsController {
         data = await this.postContentService.updatePost(body, headers);
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
-        if (saleAmount > 0) {
-          await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
-          //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
-        }
+        // if (saleAmount > 0) {
+        //   await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+        //   //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+        // }
 
         var timestamps_end = await this.utilsService.getDateTimeString();
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
+        let datapostchallenge2 = null;
+        try {
+          datapostchallenge2 = await this.postchallengeService.findOneBypostid(body.postID.toString());
+        } catch (e) {
+          datapostchallenge2 = null;
+        }
+
+        if (datapostchallenge2.length > 0) {
+
+          for (let y = 0; y < datapostchallenge2.length; y++) {
+            let postid = null;
+            let idChallenge = null;
+            let idSubChallenge = null;
+            postid = datapostchallenge2[y].postID;
+            idSubChallenge = datapostchallenge2[y].idSubChallenge;
+            idChallenge = datapostchallenge2[y].idChallenge;
+            await this.PostsService.deletePostChalenge(postid, idChallenge, idSubChallenge);
+          }
+
+        }
+
+
+
+
 
         return data;
 
         //}
       }
-    }
 
+    }
     else {
 
       var datapostawal = null;

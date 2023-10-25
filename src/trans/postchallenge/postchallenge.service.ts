@@ -26,6 +26,24 @@ export class PostchallengeService {
     async findBypostID2(postID: string): Promise<Postchallenge> {
         return this.PostchallengeModel.findOne({ postID: postID }).exec();
     }
+    async findBypostIDnew(postID: string, idChallenge: string, idSubChallenge: string): Promise<Postchallenge> {
+        return this.PostchallengeModel.findOne({ postID: postID, idChallenge: new mongoose.Types.ObjectId(idChallenge), idSubChallenge: new mongoose.Types.ObjectId(idSubChallenge) }).exec();
+    }
+    async findOneBypostid(postID: string) {
+
+        var pipeline = [];
+        pipeline.push({
+            "$match":
+            {
+                postID: postID
+            }
+        },
+        );
+
+        var query = await this.PostchallengeModel.aggregate(pipeline);
+
+        return query;
+    }
 
     async find(): Promise<Postchallenge[]> {
         return this.PostchallengeModel.find().exec();
