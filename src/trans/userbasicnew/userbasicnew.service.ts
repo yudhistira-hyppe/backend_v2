@@ -1577,4 +1577,276 @@ export class UserbasicnewService {
         return query;
     }
 
+    async detailkyc(id:string)
+    {
+        var mongo = require('mongoose');
+        var result = await this.UserbasicnewModel.aggregate([
+            {
+                $unwind: "$kyc"
+            },
+            {
+                  $match: {
+                    $and: [
+                      {
+            
+                        "kyc.status": {
+                          $ne: null
+                        }
+                      },
+                      {
+            
+                        "kyc.status": {
+                          $ne: ""
+                        }
+                      },
+            
+                    ],
+                    _id: mongo.Types.ObjectId(id)
+                  }
+            },
+            {
+                $project: {
+                  email: '$email',
+                  insight_id: '$insight.$id',
+                  isIdVerified: '$isIdVerified',
+                  countries: "$countriesName",
+                  area: "$statesName",
+                  cities: "$citiesName",
+                  fsSourceUri: "$kyc.fsSourceUri",
+                  mediaUri: "$kyc.mediaUri",
+                  SelfiefsSourceUri: "$kyc.SelfiefsSourceUri",
+                  mediaSelfieUri: "$kyc.mediaSelfieUri",
+                  SupportfsSourceUri: "$kyc.SupportfsSourceUri",
+                  mediaSupportUri: "$kyc.mediaSupportUri",
+                  fullName: 1,
+                  username: 1,
+                  userAuth_id: '$_id',
+                  createdAt: "$kyc.createdAt",
+                  status:  "$kyc.status",
+                  idcardnumber:  "$kyc.idcardnumber",
+                  tglLahir: {
+                    "$cond":
+                    {
+                      if:
+                      {
+                        "$or":
+                        [
+                          {
+                            "$eq":
+                            [
+                              "$kyc.tglLahir", null
+                            ]
+                          },
+                          {
+                            "$eq":
+                            [
+                              "$kyc.tglLahir", ""
+                            ]
+                          }
+                        ]
+                      },
+                      then:"$dob",
+                      else:"$kyc.tglLahir"
+                    }
+                  },
+                  nama: "$kyc.nama",
+                  tempatLahir: "$kyc.tempatLahir",
+                  jenisKelamin: "$kyc.jenisKelamin",
+                  alamat: "$kyc.alamat",
+                  agama: "$kyc.agama",
+                  statusPerkawinan: "$kyc.statusPerkawinan",
+                  pekerjaan: "$kyc.pekerjaan",
+                  kewarganegaraan: "$kyc.kewarganegaraan",
+                  mobileNumber: 1,
+                  avatar:
+                  {
+                      mediaBasePath:
+                      {
+                          "$ifNull":
+                          [
+                              "$mediaBasePath", null
+                          ]
+                      },
+                      mediaUri:
+                      {
+                          "$ifNull":
+                          [
+                              "$mediaUri", null
+                          ]
+                      },
+                      mediaEndpoint:
+                      {
+                          "$ifNull":
+                          [
+                              "$mediaEndpoint", null
+                          ]
+                      },
+                      mediaType:
+                      {
+                          "$ifNull":
+                          [
+                              "$mediaType", null
+                          ]
+                      }
+                  },
+                }
+            },
+            {
+                $lookup: {
+                  from: 'insights',
+                  localField: 'insight_id',
+                  foreignField: '_id',
+                  as: 'insight_data',
+                },
+            },
+            {
+                $addFields: {
+          
+                  insights: { $arrayElemAt: ['$insight_data', 0] },
+                },
+          
+            },
+            {
+                $project: {
+                  email: 1,
+                  insights: 1,
+                  isIdVerified: 1,
+                  username: 1,
+                  fullName: 1,
+                  countries: 1,
+                  area: 1,
+                  cities: 1,
+                  createdAt: 1,
+                  // profilpict: {
+                  //   $arrayElemAt: ['$profilePict_data', 0]
+                  // },
+                  status: {
+                    $switch: {
+                      branches: [
+                        {
+                          case: {
+                            $eq: [
+                              "$status",
+                              "IN_PROGGRESS"
+                            ]
+                          },
+                          then: "BARU"
+                        },
+                        {
+                          case: {
+                            $eq: [
+                              "$status",
+                              "FAILED"
+                            ]
+                          },
+                          then: "DITOLAK"
+                        },
+                        {
+                          case: {
+                            $eq: [
+                              "$status",
+                              "FINISH"
+                            ]
+                          },
+                          then: "BYSYSTEM"
+                        },
+                        {
+                          case: {
+                            $eq: [
+                              "$status",
+                              "DISETUJUI"
+                            ]
+                          },
+                          then: "DISETUJUI"
+                        },
+                      ],
+                      default: ""
+                    }
+                  },
+                  tglLahir: 1,
+                  idcardnumber: 1,
+                  jumlahPermohonan: "1",
+                  tahapan: "KTP",
+                  nama: 1,
+                  tempatLahir: 1,
+                  jenisKelamin: 1,
+                  alamat: 1,
+                  agama: 1,
+                  statusPerkawinan: 1,
+                  pekerjaan: 1,
+                  kewarganegaraan: 1,
+                  fsSourceUri: 1,
+                  mediaUri: 1,
+                  SelfiefsSourceUri: 1,
+                  mediaSelfieUri: 1,
+                  SupportfsSourceUri: 1,
+                  mediaSupportUri: 1,
+                  mobileNumber: 1,
+                  avatar:1,
+                  statusUser: {
+                    $cond: {
+                      if: {
+                        $or: [{
+                          $eq: ["$isIdVerified", null]
+                        }, {
+                          $eq: ["$isIdVerified", ""]
+                        }, {
+                          $eq: ["$isIdVerified", []]
+                        }, {
+                          $eq: ["$isIdVerified", false]
+                        }]
+                      },
+                      then: "BASIC",
+                      else: "PREMIUM"
+                    },
+          
+                  },
+          
+                }
+            },
+            {
+                $project: {
+                  email: 1,
+                  isIdVerified: 1,
+                  username: 1,
+                  fullName: 1,
+          
+                  createdAt: 1,
+                  status: 1,
+                  idcardnumber: 1,
+                  jumlahPermohonan: "1",
+                  tahapan: "KTP",
+                  avatar: 1,
+                  nama: 1,
+                  tglLahir: 1,
+                  tempatLahir: 1,
+                  jenisKelamin: 1,
+                  alamat: 1,
+                  agama: 1,
+                  statusPerkawinan: 1,
+                  pekerjaan: 1,
+                  kewarganegaraan: 1,
+                  statusUser: 1,
+                  insight: {
+          
+                    followers: '$insights.followers',
+          
+                    followings: '$insights.followings'
+                  },
+                  fsSourceUri: 1,
+                  SelfiefsSourceUri: 1,
+                  SupportfsSourceUri: 1,
+                  mediaSelfieUri: 1,
+                  mediaUri: 1,
+                  mediaSupportUri: 1,
+                  mobileNumber: 1,
+                  countries: 1,
+                  area: 1,
+                  cities: 1,
+                }
+            },
+        ]);
+        return result;
+    }
+
 }
