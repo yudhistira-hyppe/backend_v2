@@ -1337,6 +1337,223 @@ export class ReportuserController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Post('listreport/v2')
+    async finddata2(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var key = null;
+        var page = null;
+        var type = null;
+        var email = null;
+        var startdate = null;
+        var enddate = null;
+        var limit = null;
+        var iduser = null;
+        var totalpage = null;
+        var postType = null;
+        var totalallrow = null;
+        var datasearch = null;
+        var totalsearch = null;
+        var total = null;
+        var startreport = null;
+        var endreport = null;
+        var status = null;
+        var reason = null;
+        var descending = null;
+        var reasonAppeal = null;
+        var username = null;
+        var jenis = null;
+        var valuemax = null;
+        var idmax = "64b4e15ef578000070003532";
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["jenis"] !== undefined) {
+            jenis = request_json["jenis"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        postType = request_json["postType"];
+        key = request_json["key"];
+
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        startreport = request_json["startreport"];
+        endreport = request_json["endreport"];
+        status = request_json["status"];
+        reason = request_json["reason"];
+        descending = request_json["descending"];
+        reasonAppeal = request_json["reasonAppeal"];
+        username = request_json["username"];
+        email = request_json["email"];
+
+        var datamaxreport = null;
+
+        try {
+            datamaxreport = await this.settingsService.findOne(idmax);
+        } catch (e) {
+            datamaxreport = null;
+        }
+
+        if (type === "content") {
+
+            let datacount200 = null;
+            let dt = new Date(Date.now());
+            dt.setHours(dt.getHours() + 7); // timestamp
+            dt = new Date(dt);
+
+            if (datamaxreport !== null) {
+                valuemax = datamaxreport.value;
+            } else {
+                valuemax = 0;
+            }
+
+            try {
+
+                datacount200 = await this.post2SS.find200(valuemax);
+
+
+            } catch (e) {
+                datacount200 = null;
+
+            }
+
+            if (datacount200 !== null) {
+
+                var lengdatatr = datacount200.length;
+
+                for (var i = 0; i < lengdatatr; i++) {
+
+                    var id = datacount200[i].postID;
+
+                    await this.post2SS.updateStatusOwned(id, dt.toISOString());
+
+                }
+
+
+            }
+
+            let query = await this.post2SS.findreport(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis, email);
+            var data = null;
+            var arrdata = [];
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+
+            for (var i = 0; i < query.length; i++) {
+                let dataquery = await this.getusercontentsService.getapsaraDatabase(query, i);
+                arrdata.push(dataquery[i]);
+            }
+
+            total = query.length;
+            // let datasearch = await this.postsService.findreport(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis, email);
+            // totalsearch = datasearch.length;
+
+            // let dataall = await this.postsService.findreport(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis, email);
+            // totalallrow = dataall.length;
+
+            // var tpage = null;
+            // var tpage2 = null;
+
+            // tpage2 = (totalsearch / limit).toFixed(0);
+            // tpage = (totalsearch % limit);
+            // if (tpage > 0 && tpage < 5) {
+            //     totalpage = parseInt(tpage2) + 1;
+
+            // } else {
+            //     totalpage = parseInt(tpage2);
+            // }
+
+
+        }
+
+        else if (type === "ads") {
+
+            let datacount200 = null;
+            let dt = new Date(Date.now());
+            dt.setHours(dt.getHours() + 7); // timestamp
+            dt = new Date(dt);
+            if (datamaxreport !== null) {
+                valuemax = datamaxreport.value;
+            } else {
+                valuemax = 0;
+            }
+
+
+            try {
+
+                datacount200 = await this.adsService.find200(valuemax);
+
+
+            } catch (e) {
+                datacount200 = null;
+
+            }
+
+            if (datacount200 !== null) {
+
+                var lengdatatr = datacount200.length;
+
+                for (var i = 0; i < lengdatatr; i++) {
+
+                    var id = datacount200[i]._id;
+                    let adsid = mongoose.Types.ObjectId(id);
+
+                    await this.adsService.updateStatusOwned(adsid, dt.toISOString());
+                }
+            }
+            let query = await this.adsService.findreportads2(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis, email);
+
+            var arrdata = [];
+            let pict: String[] = [];
+            var type = null;
+
+            for (var i = 0; i < query.length; i++) {
+                let dataquery = await this.getusercontentsService.getapsaraDatabaseAds(query, i);
+
+                arrdata.push(dataquery[i]);
+            }
+            total = query.length;
+            // let datasearch = await this.adsService.findreportads(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis, email);
+            // totalsearch = datasearch.length;
+            // let dataall = await this.adsService.findreportads(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis, email);
+            // totalallrow = dataall.length;
+
+            // var tpage = null;
+            // var tpage2 = null;
+
+            // tpage2 = (totalsearch / limit).toFixed(0);
+            // tpage = (totalsearch % limit);
+            // if (tpage > 0 && tpage < 5) {
+            //     totalpage = parseInt(tpage2) + 1;
+
+            // } else {
+            //     totalpage = parseInt(tpage2);
+            // }
+
+
+        }
+        return { response_code: 202, arrdata, page, limit, total, totalallrow: 0, totalsearch: 0, totalpage: 0, messages };
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Post('listdetail')
     async finddetail(@Req() request: Request, @Headers() headers): Promise<any> {
         var timestamps_start = await this.utilsService.getDateTimeString();
