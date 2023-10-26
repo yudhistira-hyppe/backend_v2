@@ -14732,7 +14732,7 @@ export class subChallengeService {
                                                                         "$$metriks"
                                                                     ]
                                                             },
-
+                                                            //
                                                         },
 
                                                     ]
@@ -14881,6 +14881,8 @@ export class subChallengeService {
                                             },
                                             {
                                                 $project: {
+                                                    metriks: "$$metriks",
+                                                    score: 1,
                                                     likes: 1,
                                                     postID: "$posted.postID",
                                                     description: "$posted.description",
@@ -16565,6 +16567,8 @@ export class subChallengeService {
         var pipeline = [];
 
         pipeline.push(
+
+
             {
                 $set: {
                     "timenow":
@@ -17251,7 +17255,7 @@ export class subChallengeService {
                                                                         "$$metriks"
                                                                     ]
                                                             },
-
+                                                            //
                                                         },
 
                                                     ]
@@ -17400,6 +17404,8 @@ export class subChallengeService {
                                             },
                                             {
                                                 $project: {
+                                                    metriks: "$$metriks",
+                                                    score: 1,
                                                     likes: 1,
                                                     postID: "$posted.postID",
                                                     description: "$posted.description",
@@ -19052,9 +19058,9 @@ export class subChallengeService {
                     session: 1
                 }
             },
-            //    {
-            //        $limit: 1
-            //    }
+            // {
+            //     $limit: 1
+            // }
         );
 
 
