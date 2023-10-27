@@ -10656,9 +10656,9 @@ export class AuthService {
                   let idChallenges2 = datauschall[x].idChallenge;
                   let rank = x + 1;
 
-                  if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                    await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                  }
+                  //if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                  await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                  // }
 
                 }
               }
