@@ -8938,8 +8938,16 @@ export class AuthService {
           var insertdata = await this.referralService.create(CreateReferralDto_);
           var idref = insertdata._id;
 
+          let userid = null;
+          const databasics = await this.userbasicsService.findOne(
+            user_email_parent
+          );
+          if (databasics !== null) {
+            userid = databasics._id;
+          }
+
           try {
-            this.userChallenge(iduser.toString(), idref.toString(), "referral", "REFERAL");
+            this.userChallenge(userid.toString(), idref.toString(), "referral", "REFERAL");
           } catch (e) {
 
           }
