@@ -1280,7 +1280,7 @@ export class ChallengeService {
                                           {
                                             $dateFromString:
                                             {
-                                              dateString: '$startChallenge'
+                                              dateString: '$startTime'
                                             },
                                           },
                                           {
@@ -1385,7 +1385,7 @@ export class ChallengeService {
                             "$lt":
                               [
                                 "$timenow",
-                                "$startChallenge"
+                                "$startTime"
                               ]
                           },
                           then: "AKAN DATANG",
@@ -1487,7 +1487,7 @@ export class ChallengeService {
                                                 {
                                                   $dateFromString:
                                                   {
-                                                    dateString: '$startChallenge'
+                                                    dateString: '$startTime'
                                                   },
                                                 },
                                                 {
@@ -1550,7 +1550,7 @@ export class ChallengeService {
                                                 {
                                                   $dateFromString:
                                                   {
-                                                    dateString: '$endChallenge'
+                                                    dateString: '$endTime'
                                                   },
                                                 },
                                                 {
@@ -1696,7 +1696,7 @@ export class ChallengeService {
                                           {
                                             $dateFromString:
                                             {
-                                              dateString: '$endChallenge'
+                                              dateString: '$endTime'
                                             },
                                           },
                                           {
@@ -1817,7 +1817,7 @@ export class ChallengeService {
                                           {
                                             $dateFromString:
                                             {
-                                              dateString: '$endChallenge'
+                                              dateString: '$endTime'
                                             },
                                           },
                                           {
@@ -1938,7 +1938,7 @@ export class ChallengeService {
                                           {
                                             $dateFromString:
                                             {
-                                              dateString: '$endChallenge'
+                                              dateString: '$endTime'
                                             },
                                           },
                                           {
