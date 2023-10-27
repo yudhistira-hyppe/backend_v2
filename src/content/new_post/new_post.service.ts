@@ -4921,6 +4921,15 @@ export class NewPostService {
                 mediaEndpoint:"$basic.mediaEndpoint"
               },
               'insight': { $arrayElemAt: ['$insightdata', 0] },
+              "cleanUri":
+              {
+                  "$replaceOne":
+                  {
+                      input:"$tempmediaSource.mediaUri",
+                      find:"_0001.jpeg",
+                      replacement:""
+                  }
+              },
             }
           },
           {
@@ -7608,6 +7617,723 @@ export class NewPostService {
         ]
       );
 
+      return query;
+    }
+
+    async findreportuserdetail(target:string)
+    {
+      var result = await this.loaddata.aggregate([
+        {
+            $match: { postID: target }
+        },
+        {
+            "$lookup":
+            {
+                from:"newUserBasics",
+                localField:"email",
+                foreignField:"email",
+                as:"basicdata",
+            }
+        },
+        {
+            "$addFields":
+            {
+                'salePrice': {
+                    $cmp: ["$saleAmount", 0]
+                },
+                'komen': {
+                    $cmp: ["$comments", 0]
+                },
+                'basic': {
+                    $arrayElemAt: ['$basicdata', 0]
+                },
+                // 'profilepictid': {
+                //     $arrayElemAt: ['$basicdata.profilePict.$id', 0]
+                // },
+                // 'proofpictid': {
+                //     $arrayElemAt: ['$basicdata.proofPict.$id', 0]
+                // },
+                'insightid': {
+                    $arrayElemAt: ['$basicdata.insight.$id', 0]
+                },
+                // 'mediaid': {
+                //     $arrayElemAt: ['$contentMedias.$id', 0]
+                // },
+                // 'mediaref': {
+                //     $arrayElemAt: ['$contentMedias.$ref', 0]
+                // },
+                'isViewed': {
+                    '$cond': {
+                      if: {
+                        '$eq': ['$views', 0]
+                      },
+                      then: false,
+                      else: true
+                    }
+                },
+                'mediaSource': {
+                    '$arrayElemAt': ['$mediaSource', 0]
+                },
+                'listTag':'$tagPeople.$id'
+            }
+        },
+        {
+            "$lookup":
+            {
+                from:"insights",
+                localField:"insightid",
+                foreignField:"_id",
+                as:"insightdata",
+            }
+        },
+        {
+            "$lookup":
+            {
+                from:"newUserBasics",
+                as:"tagpeople_data",
+                let:
+                {
+                    idauth:"$listTag"
+                },
+                pipeline:
+                [
+                    {
+                        "$match":
+                        {
+                            "$expr":
+                            {
+                                "$in":
+                                [
+                                    "$_idAuth", "$$idauth"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "$project":
+                        {
+                            username:1
+                        }
+                    },
+                    {
+                        "$group":
+                        {
+                            _id:null,
+                            username:
+                            {
+                                "$push":"$username"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "$addFields":
+            {
+                'insight': {
+                    '$arrayElemAt': ['$insightdata', 0]
+                },
+                'avatar':{
+                    mediaBasePath:
+                    {
+                        "$ifNull":
+                        [
+                            '$basic.mediaBasePath',
+                            null
+                        ]
+                    },
+                    mediaUri:
+                    {
+                        "$ifNull":
+                        [
+                            '$basic.mediaUri',
+                            null
+                        ]
+                    },
+                    mediaType:
+                    {
+                        "$ifNull":
+                        [
+                            '$basic.mediaType',
+                            null
+                        ]
+                    },
+                    mediaEndpoint:
+                    {
+                        "$ifNull":
+                        [
+                            '$basic.mediaEndpoint',
+                            null
+                        ]
+                    }
+                },
+                'cleanUri':
+                {
+                    "$replaceOne":
+                    {
+                        input:"$mediaSource.mediaUri",
+                        find:"_0001.jpeg",
+                        replacement:""
+                    }
+                },
+            }
+        },
+        {
+            "$project":
+            {
+                _id: 1,
+                insight: 
+                {
+                    shares: '$insight.shares',
+                    followers: '$insight.followers',
+                    comments: '$insight.comments',
+                    followings: '$insight.followings',
+                    reactions: '$insight.reactions',
+                    posts: '$insight.posts',
+                    views: '$insight.views',
+                    likes: '$insight.likes'
+                },
+                avatar:1,
+                fullName: "$basic.fullName",
+                username: "$basic.username",
+                privacy: {
+                    isPostPrivate: '$basic.isPostPrivate',
+                    isCelebrity: '$basic.isCelebrity',
+                    isPrivate: '$basic.isPrivate'
+                },
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                email: 1,
+                postType: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                metadata: 1,
+                location: 1,
+                visibility: 1,
+                tags: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                komen: 1,
+                isOwned: 1,
+                tagPeople: 
+                {
+                    "$ifNull":
+                    [
+                        {
+                            "$arrayElemAt":
+                            [
+                              "$tagpeople_data.username", 0
+                            ]
+                        },
+                        []
+                    ]
+                },
+                reportedUserCount:
+                {
+                    "$ifNull":
+                    [
+                        {
+                            "$filter":
+                            {
+                                input: "$reportedUser",
+                                as: "listuser",
+                                cond:
+                                {
+                                "$eq":
+                                    [
+                                    "$$listuser.active",
+                                    true
+                                    ]
+                                }
+                            }
+                        },
+                        []
+                    ]
+                },
+                reportedUser: 1,
+                isIdVerified: '$basic.isIdVerified',
+                reportedUserHandle: 1,
+                reportedStatus: 1,
+                statusUser:
+                {
+                    $cond: {
+                        if: {
+                            $eq: ["$basic.isIdVerified", true]
+                        },
+                        then: "PREMIUM",
+                        else: "BASIC"
+                    }
+                },
+                isViewed: '$isViewed',
+                allowComments: 1,
+                isSafe: 1,
+                saleLike: 1,
+                saleView: 1,
+                monetize: {
+                    $cond: {
+                        if: {
+                            $eq: ["$salePrice", - 1]
+                        },
+                        then: false,
+                        else: true
+                    }
+                },
+                comments: {
+                    $cond: {
+                        if: {
+                            $eq: ["$komen", - 1]
+                        },
+                        then: 0,
+                        else: '$comments'
+                    }
+                },
+                salePrice: '$salePrice',
+                saleAmount: {
+                    $cond: {
+                        if: {
+                            $eq: ["$salePrice", - 1]
+                            },
+                            then: 0,
+                            else: "$saleAmount"
+                    }
+                },
+                rotate:
+                {
+                    "$ifNull":
+                    [
+                        "$mediaSource.rotate",
+                        null
+                    ]
+                },
+                mediaBasePath:
+                {
+                    "$ifNull":
+                    [
+                        "$mediaSource.mediaBasePath",
+                        null
+                    ]
+                },
+                mediaUri:
+                {
+                    "$ifNull":
+                    [
+                        "$mediaSource.mediaUri",
+                        null
+                    ]
+                },
+                mediaType:
+                {
+                    "$ifNull":
+                    [
+                        "$mediaSource.mediaType",
+                        null
+                    ]
+                },
+                mediaThumbEndpoint:
+                {
+                    "$ifNull":
+                    [
+                        "$mediaSource.mediaThumbEndpoint",
+                        {
+                            "$concat":
+                            [
+                                "/thumb/",
+                                "$cleanUri"
+                            ]
+                        }
+                    ]
+                },
+                mediaEndpoint:
+                {
+                    "$ifNull":
+                    [
+                        "$mediaSource.mediaEndpoint",
+                        {
+                            "$cond":
+                            {
+                                if:
+                                {
+                                    "$eq":
+                                    [
+                                        "$postType", "pict"
+                                    ]
+                                },
+                                then:
+                                {
+                                    "$concat":
+                                    [
+                                        "/pict/",
+                                        "$cleanUri"
+                                    ]
+                                },
+                                else:
+                                {
+                                    "$concat":
+                                    [
+                                        "/stream/",
+                                        "$cleanUri"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                },
+                mediaThumbUri:
+                {
+                    "$ifNull":
+                    [
+                        "$mediaSource.mediaThumbUri",
+                        null
+                    ]
+                },
+                apsaraId:
+                {
+                    "$ifNull":
+                    [
+                        "$mediaSource.apsaraId",
+                        null
+                    ]
+                },
+                apsara:
+                {
+                    "$ifNull":
+                    [
+                        "$mediaSource.apsara",
+                        false
+                    ]
+                },
+                proofpict:
+                [
+                    {
+                        _id:"$basic._id",
+                        createdAt:
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$basic.kyc.createdAt", 0
+                            ]
+                        },
+                        nama:
+                        {
+                            "$arrayElemAt":
+                            [
+                                "$basic.kyc.nama", 0
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "$project":
+            {
+                _id: 1,
+                insight: 1,
+                avatar: 1,
+                fullName: 1,
+                proofpict: 1,
+                username: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                email: 1,
+                postType: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                metadata: 1,
+                location: 1,
+                visibility: 1,
+                isIdVerified: 1,
+                statusUser: 1,
+                tags: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                isOwned: 1,
+                privacy: 1,
+                isViewed: 1,
+                allowComments: 1,
+                isSafe: 1,
+                saleLike: 1,
+                saleView: 1,
+                monetize: 1,
+                saleAmount: 1,
+                mediaref: 1,
+                rotate: 1,
+                mediaBasePath: 1,
+                mediaUri: 1,
+                mediaType: 1,
+                mediaThumbEndpoint: 1,
+                mediaEndpoint: 1,
+                mediaThumbUri: 1,
+                apsaraId: 1,
+                apsara: 1,
+                tagPeople: 1,
+                reportedUserCount:
+                {
+                    "$size": "$reportedUserCount"
+                },
+                reportedUserHandle: 1,
+                reportedUser: 1,
+                reportedStatus: 1,
+                lastReasonReport: {
+                $cond: {
+                    if: {
+                        $or: [{
+                            $eq: ["$reportedUser", null]
+                        }, {
+                            $eq: ["$reportedUser", ""]
+                        }, {
+                            $eq: ["$reportedUser", []]
+                        },]
+                    },
+                    then: "Lainnya",
+                    else: {
+                        $last: "$reportedUser.description"
+                    }
+                },
+    
+                },
+                lastAppeal: {
+                $cond: {
+                    if: {
+                        $or: [{
+                            $eq: ["$reportedUserHandle", null]
+                        }, {
+                            $eq: ["$reportedUserHandle", ""]
+                        }, {
+                            $eq: ["$reportedUserHandle", []]
+                        },]
+                    },
+                    then: "Lainnya",
+                    else: {
+                        $last: "$reportedUserHandle.reason"
+                    }
+                },
+    
+                },
+                lastAppealAdmin: {
+                $cond: {
+                    if: {
+                        $or: [{
+                            $eq: ["$reportedUserHandle", null]
+                        }, {
+                            $eq: ["$reportedUserHandle", ""]
+                        }, {
+                            $eq: ["$reportedUserHandle", []]
+                        },]
+                    },
+                    then: "Lainnya",
+                    else: {
+                        $last: "$reportedUserHandle.reasonAdmin"
+                    }
+                },
+    
+                },
+                createdAtReportLast: {
+                $last: "$reportedUser.createdAt"
+                },
+                createdAtAppealLast: {
+                $last: "$reportedUserHandle.createdAt"
+                },
+                statusLast: {
+                $cond: {
+                    if: {
+                        $or: [{
+                            $eq: ["$reportedUserHandle", null]
+                        }, {
+                            $eq: ["$reportedUserHandle", ""]
+                        }, {
+                            $eq: ["$reportedUserHandle", []]
+                        }]
+                    },
+                    then: "BARU",
+                    else: {
+                        $last: "$reportedUserHandle.status"
+                    }
+                },
+    
+                },
+            }
+        },
+        {
+            "$project":
+            {
+                _id: 1,
+                insight: 1,
+                avatar: 1,
+                fullName: 1,
+                proofpict: 1,
+                username: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                email: 1,
+                postType: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                metadata: 1,
+                location: 1,
+                visibility: 1,
+                isIdVerified: 1,
+                statusUser: 1,
+                tags: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                isOwned: 1,
+                privacy: 1,
+                isViewed: 1,
+                allowComments: 1,
+                isSafe: 1,
+                saleLike: 1,
+                saleView: 1,
+                monetize: 1,
+                saleAmount: 1,
+                mediaref: 1,
+                rotate: 1,
+                mediaBasePath: 1,
+                mediaUri: 1,
+                mediaType: 1,
+                mediaThumbEndpoint: 1,
+                mediaEndpoint: 1,
+                mediaThumbUri: 1,
+                apsaraId: 1,
+                apsara: 1,
+                tagPeople: 1,
+                reportedUserCount: 1,
+                reportedUserHandle: 1,
+                reportedUser: 1,
+                reportedStatus: 1,
+                createdAtReportLast: 1,
+                createdAtAppealLast: 1,
+                lastAppeal: 1,
+                lastAppealAdmin: 1,
+                lastReasonReport: 1,
+                statusLast: 1,
+                reasonLastReport: {
+                $cond: {
+                    if: {
+                        $or: [{
+                            $eq: ["$lastReasonReport", null]
+                        }, {
+                            $eq: ["$lastReasonReport", ""]
+                        }, {
+                            $eq: ["$lastReasonReport", "Lainnya"]
+                        }]
+                    },
+                    then: "Lainnya",
+                    else: {
+                        $last: "$reportedUser.description"
+                    }
+                },
+    
+                },
+                reasonLastAppeal: {
+                $cond: {
+                    if: {
+                        $or: [{
+                            $eq: ["$lastAppeal", null]
+                        }, {
+                            $eq: ["$lastAppeal", ""]
+                        }, {
+                            $eq: ["$lastAppeal", "Lainnya"]
+                        }]
+                    },
+                    then: "Lainnya",
+                    else: {
+                        $last: "$reportedUserHandle.reason"
+                    }
+                },
+    
+                },
+                reasonLastAppealAdmin: {
+                $cond: {
+                    if: {
+                        $or: [{
+                            $eq: ["$lastAppealAdmin", null]
+                        }, {
+                            $eq: ["$lastAppealAdmin", ""]
+                        }, {
+                            $eq: ["$lastAppealAdmin", "Lainnya"]
+                        }]
+                    },
+                    then: "Lainnya",
+                    else: {
+                        $last: "$reportedUserHandle.reasonAdmin"
+                    }
+                },
+    
+                },
+                reportStatusLast: {
+                $cond: {
+                    if: {
+                        $or: [{
+                            $eq: ["$statusLast", null]
+                        }, {
+                            $eq: ["$statusLast", ""]
+                        }, {
+                            $eq: ["$statusLast", []]
+                        }, {
+                            $eq: ["$statusLast", "BARU"]
+                        }]
+                    },
+                    then: "BARU",
+                    else: {
+                        $last: "$reportedUserHandle.status"
+                    }
+                },
+    
+                },
+            }
+        },
+      ]);
+      return result;
+    }
+
+    async countReason(postID: string) {
+      let query = await this.loaddata.aggregate([
+        {
+          $match: {
+  
+            postID: postID
+          }
+        },
+        {
+          $unwind: "$reportedUser"
+        },
+        {
+          $match: {
+  
+            'reportedUser.active': true
+          }
+        },
+        {
+          $group: {
+            _id: "$reportedUser.description",
+  
+            myCount: {
+              $sum: 1
+            }
+          }
+        },
+        {
+          $project: {
+            _id: "$_id",
+            "myCount": "$myCount",
+  
+          }
+        }
+  
+      ]);
       return query;
     }
 }

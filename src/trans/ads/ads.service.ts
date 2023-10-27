@@ -7927,6 +7927,428 @@ export class AdsService {
         return query;
     }
 
+    async detailadsreport2(adsId: Object) {
+        let query = await this.adsModel.aggregate([
+            {
+                $match: {
+                    _id: adsId
+        
+                }
+            },
+            {
+                $lookup: {
+                    from: 'adsplaces',
+                    localField: 'placingID',
+                    foreignField: '_id',
+                    as: 'places',
+        
+                },
+        
+            },
+            {
+                $lookup: {
+                    from: "newUserBasics",
+                    as: "basicdata",
+                    let: {
+                        local_id: '$userID'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+        
+        
+                                $expr: {
+                                    $eq: ['$_id', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                username: '$username',
+                                fullName: '$fullName',
+                                email: '$email',
+                                isIdVerified: '$isIdVerified',
+                                profilepictid: '$profilePict.$id',
+                                proofpictid: '$proofPict.$id',
+                                avatar:
+                                {
+                                    mediaBasePath:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            "$mediaBasePath",
+                                            null
+                                        ]
+                                    },
+                                    mediaUri:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            "$mediaUri",
+                                            null
+                                        ]
+                                    },
+                                    mediaType:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            "$mediaType",
+                                            null
+                                        ]
+                                    },
+                                    mediaEndpoint:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            "$mediaEndpoint",
+                                            null
+                                        ]
+                                    },
+                                },
+                                kyc:1
+                            }
+                        }
+                    ],
+        
+                }
+            },
+            {
+                $lookup: {
+                    from: 'adstypes',
+                    localField: 'typeAdsID',
+                    foreignField: '_id',
+                    as: 'tipeads',
+        
+                },
+        
+            },
+            {
+                $lookup: {
+                    from: "interests_repo",
+                    as: "interest",
+                    let: {
+                        local_id: '$interestID.$id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+        
+        
+                                $expr: {
+                                    $in: ['$_id', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+        
+                                interestName: '$interestName'
+                            }
+                        }
+                    ],
+        
+                }
+            },
+            {
+                "$project":
+                {
+                    tipeads: {
+                        $arrayElemAt: ['$tipeads', 0]
+                    },
+                    place: {
+                        $arrayElemAt: ['$places', 0]
+                    },
+                    basic: {
+                        $arrayElemAt: ['$basicdata', 0]
+                    },
+                    userID: 1,
+                    idApsara: 1,
+                    name: 1,
+                    type: 1,
+                    status: 1,
+                    timestamp: 1,
+                    totalUsedCredit: 1,
+                    tayang: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    contentModeration: 1,
+                    contentModerationResponse: 1,
+                    reportedStatus: 1,
+                    reportedUserCount: 1,
+                    reportedUser: 1,
+                    reportedUserHandle: 1,
+                    interest: 1,
+                    createdAtReportLast: {
+                        $last: "$reportedUser.createdAt"
+                    },
+                    createdAtAppealLast: {
+                        $last: "$reportedUserHandle.createdAt"
+                    },
+                    reportReasonIdLast: {
+                        $last: "$reportedUser.reportReasonId"
+                    },
+                    reasonLast: {
+                        $last: "$reportedUser.description"
+                    },
+                }
+            },
+            {
+                "$project":
+                {
+                    userID: 1,
+                    idApsara: 1,
+                    name: 1,
+                    nameType: '$tipeads.nameType',
+                    type: 1,
+                    status: 1,
+                    timestamp: 1,
+                    totalUsedCredit: 1,
+                    tayang: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    contentModeration: 1,
+                    contentModerationResponse: 1,
+                    reportedStatus: 1,
+                    reportedUser: 1,
+                    reportedUserHandle: 1,
+                    reportedUserCount: 1,
+                    place: '$place.namePlace',
+                    lastReasonReport: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$reportedUser", null]
+                                }, {
+                                    $eq: ["$reportedUser", ""]
+                                }, {
+                                    $eq: ["$reportedUser", []]
+                                },]
+                            },
+                            then: "Lainnya",
+                            else: {
+                                $last: "$reportedUser.description"
+                            }
+                        },
+        
+                    },
+                    lastAppeal: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$reportedUserHandle", null]
+                                }, {
+                                    $eq: ["$reportedUserHandle", ""]
+                                }, {
+                                    $eq: ["$reportedUserHandle", []]
+                                },]
+                            },
+                            then: "Lainnya",
+                            else: {
+                                $last: "$reportedUserHandle.reason"
+                            }
+                        },
+        
+                    },
+                    lastAppealAdmin: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$reportedUserHandle", null]
+                                }, {
+                                    $eq: ["$reportedUserHandle", ""]
+                                }, {
+                                    $eq: ["$reportedUserHandle", []]
+                                },]
+                            },
+                            then: "Lainnya",
+                            else: {
+                                $last: "$reportedUserHandle.reasonAdmin"
+                            }
+                        },
+        
+                    },
+                    createdAtReportLast: 1,
+                    createdAtAppealLast: 1,
+                    statusLast: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$reportedUserHandle", null]
+                                }, {
+                                    $eq: ["$reportedUserHandle", ""]
+                                }, {
+                                    $eq: ["$reportedUserHandle", []]
+                                }]
+                            },
+                            then: "BARU",
+                            else: {
+                                $last: "$reportedUserHandle.status"
+                            }
+                        },
+        
+                    },
+                    interest: 1,
+                    fullName: '$basic.fullName',
+                    email: '$basic.email',
+                    isIdVerified: '$basic.isIdVerified',
+                    profilepictid: '$basic.profilepictid',
+                    proofpictid: '$basic.proofpictid',
+                    avatar: '$basic.avatar',
+                    proopict:
+                    [
+                        {
+                            "_id":"$basic._id",
+                            "createdAt":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$basic.kyc.createdAt", 0
+                                ]
+                            },
+                            "nama":
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$basic.kyc.nama", 0
+                                ]
+                            }
+                        }
+                    ],
+                    statusUser:
+                    {
+                        $cond: {
+                            if: {
+                                $eq: ["$basic.isIdVerified", true]
+                            },
+                            then: "PREMIUM",
+                            else: "BASIC"
+                        }
+                    },
+                }
+            },
+            {
+                "$project":
+                {
+                    userID: 1,
+                    idApsara: 1,
+                    name: 1,
+                    nameType: 1,
+                    type: 1,
+                    status: 1,
+                    timestamp: 1,
+                    totalUsedCredit: 1,
+                    tayang: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    contentModeration: 1,
+                    contentModerationResponse: 1,
+                    reportedStatus: 1,
+                    reportedUser: 1,
+                    reportedUserHandle: 1,
+                    reportedUserCount: 1,
+                    place: 1,
+                    statusLast: 1,
+                    createdAtReportLast: 1,
+                    createdAtAppealLast: 1,
+                    reasonLastReport: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$lastReasonReport", null]
+                                }, {
+                                    $eq: ["$lastReasonReport", ""]
+                                }, {
+                                    $eq: ["$lastReasonReport", "Lainnya"]
+                                }]
+                            },
+                            then: "Lainnya",
+                            else: {
+                                $last: "$reportedUser.description"
+                            }
+                        },
+        
+                    },
+                    reasonLastAppeal: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$lastAppeal", null]
+                                }, {
+                                    $eq: ["$lastAppeal", ""]
+                                }, {
+                                    $eq: ["$lastAppeal", "Lainnya"]
+                                }]
+                            },
+                            then: "Lainnya",
+                            else: {
+                                $last: "$reportedUserHandle.reason"
+                            }
+                        },
+        
+                    },
+                    reasonLastAppealAdmin: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$lastAppealAdmin", null]
+                                }, {
+                                    $eq: ["$lastAppealAdmin", ""]
+                                }, {
+                                    $eq: ["$lastAppealAdmin", "Lainnya"]
+                                }]
+                            },
+                            then: "Lainnya",
+                            else: {
+                                $last: "$reportedUserHandle.reasonAdmin"
+                            }
+                        },
+        
+                    },
+                    reportStatusLast: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$statusLast", null]
+                                }, {
+                                    $eq: ["$statusLast", ""]
+                                }, {
+                                    $eq: ["$statusLast", []]
+                                }, {
+                                    $eq: ["$statusLast", "BARU"]
+                                }]
+                            },
+                            then: "BARU",
+                            else: {
+                                $last: "$reportedUserHandle.status"
+                            }
+                        },
+        
+                    },
+                    proopict:1,
+                    interest: 1,
+                    fullName: 1,
+                    email: 1,
+                    isIdVerified: 1,
+                    proofpict: 1,
+                    statusUser:1,
+                    avatar:1
+                }
+            }
+        ]);
+        return query;
+    }
+
     async updateDitangguhkan(id: ObjectID, reason: string, updatedAt: string, reasonId: ObjectID) {
         let data = await this.adsModel.updateMany({ "_id": id },
             { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].reasonId": reasonId, "reportedUserHandle.$[].reasonAdmin": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
