@@ -1833,6 +1833,7 @@ export class TransactionsController {
         var setemail = setauth.email;
         var reqbody = JSON.parse(JSON.stringify(OyDisbursements));
 
+
         if (OyDisbursements.pin != undefined) {
             if (OyDisbursements.email != undefined) {
                 var ubasic = await this.userbasicsService.findOne(OyDisbursements.email);
@@ -1943,6 +1944,9 @@ export class TransactionsController {
         var iduseradmin = "62144381602c354635ed786a";
         var datainquiry = null;
         var data = null;
+        var dtnow = new Date(Date.now());
+        dtnow.setHours(dtnow.getHours() + 7); // timestamp
+        dtnow = new Date(dtnow);
         // var valueinquiry = null;
         var idinquirycharge = "63217ae5ec46000002007405";
         var totalinquiry = null;
@@ -2073,7 +2077,7 @@ export class TransactionsController {
                         datawithdraw.description = OyDisbursements.note;
                         datawithdraw.idUser = iduser;
                         datawithdraw.status = statusmessage;
-                        datawithdraw.timestamp = dtb;
+                        datawithdraw.timestamp = dtnow.toISOString();
                         datawithdraw.verified = false;
                         datawithdraw.partnerTrxid = partnertrxid;
                         datawithdraw.statusOtp = null;
@@ -2152,7 +2156,7 @@ export class TransactionsController {
                         datawithdraw.description = OyDisbursements.note;
                         datawithdraw.idUser = iduser;
                         datawithdraw.status = statusmessage;
-                        datawithdraw.timestamp = dtb;
+                        datawithdraw.timestamp = dtnow.toISOString();
                         datawithdraw.verified = false;
                         datawithdraw.partnerTrxid = partnertrxid;
                         datawithdraw.statusOtp = null;
@@ -2230,7 +2234,7 @@ export class TransactionsController {
                         datawithdraw.description = OyDisbursements.note;
                         datawithdraw.idUser = iduser;
                         datawithdraw.status = statusmessage;
-                        datawithdraw.timestamp = dtb;
+                        datawithdraw.timestamp = dtnow.toISOString();
                         datawithdraw.verified = false;
                         datawithdraw.partnerTrxid = partnertrxid;
                         datawithdraw.statusOtp = null;
@@ -2262,7 +2266,7 @@ export class TransactionsController {
                     datawithdraw.description = OyDisbursements.note;
                     datawithdraw.idUser = iduser;
                     datawithdraw.status = statusmessagedis;
-                    datawithdraw.timestamp = dtb;
+                    datawithdraw.timestamp = dtnow.toISOString();
                     datawithdraw.verified = false;
                     datawithdraw.partnerTrxid = partnertrxid;
                     datawithdraw.statusOtp = null;
