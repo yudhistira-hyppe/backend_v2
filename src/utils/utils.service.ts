@@ -2382,7 +2382,7 @@ export class UtilsService {
           console.log(adm);
           arraydevice.push(deviceid);
         } catch (e) {
-          e.toString();
+          // e.toString();
         }
 
 
