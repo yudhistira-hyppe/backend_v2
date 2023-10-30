@@ -119,8 +119,10 @@ import { StickerCategoryModule } from './trans/stickercategory/stickercategory.m
 import { AdsPriceCreditsModule } from './trans/adsv2/adspricecredits/adspricecredits.module';
 import { UserbasicnewModule } from './trans/userbasicnew/userbasicnew.module';
 import { AdsRewardsModule } from './trans/adsv2/adsrewards/adsrewards.module';
+import { GetprofilecontenteventModule } from './utils/getprofilecontentevent/getprofilecontentevent.module';
 @Module({
   imports: [
+    GetprofilecontenteventModule,
     AdsRewardsModule,
     UserbasicnewModule,
     BannerModule,

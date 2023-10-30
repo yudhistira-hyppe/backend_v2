@@ -9331,7 +9331,8 @@ export class TransactionsService {
                             try {
                                 if (currentStatusCode != responseStatusCode) {
                                     console.log("STAUS ", "NOT THE SAME");
-                                    let CreateWithdrawsDto_ = new CreateWithdrawsDto();
+                                    let CreateWithdrawsDto_ = new CreateWithdrawsDto(); 
+                                    CreateWithdrawsDto_.statusCode = Number(responseStatusCode);
                                     if (responseStatusCode == "000") {
                                         CreateWithdrawsDto_.verified = true
                                         CreateWithdrawsDto_.description = OyDisbursementStatusResponse_.tx_status_description;
@@ -9365,6 +9366,8 @@ export class TransactionsService {
                     }
                 }
                 console.log("==================================== END CECK STATUS ====================================");
+                console.log("");
+                console.log("");
             }
         }
     }
