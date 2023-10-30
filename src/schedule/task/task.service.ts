@@ -47,7 +47,7 @@ export class TaskService {
   @Cron('* */10 * * * *')
   ceckStatus() {
     //tes
-    this.logger.debug('DISBURSEMENT JOB START'); 
+    this.logger.debug('DISBURSEMENT JOB START');
     this.transactionsService.ceckStatusDisbursement();
   }
 }

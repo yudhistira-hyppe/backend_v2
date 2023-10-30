@@ -2084,6 +2084,7 @@ export class TransactionsController {
                         datawithdraw.totalamount = totalamount;
                         datawithdraw.idAccountBank = idbankaccount;
                         datawithdraw.responOy = datadisbursemen;
+                        datawithdraw.statusCode = parseInt(statuscode);
                         var datatr = await this.withdrawsService.create(datawithdraw);
                         await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
 
@@ -2163,6 +2164,7 @@ export class TransactionsController {
                         datawithdraw.totalamount = totalamount;
                         datawithdraw.idAccountBank = idbankaccount;
                         datawithdraw.responOy = datadisbursemen;
+                        datawithdraw.statusCode = parseInt(statuscode);
                         var datatr = await this.withdrawsService.create(datawithdraw);
                         await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
 
@@ -2241,6 +2243,7 @@ export class TransactionsController {
                         datawithdraw.totalamount = totalamount;
                         datawithdraw.idAccountBank = idbankaccount;
                         datawithdraw.responOy = datadisbursemen;
+                        datawithdraw.statusCode = parseInt(statuscode);
                         var datatr = await this.withdrawsService.create(datawithdraw);
 
                         var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2273,6 +2276,7 @@ export class TransactionsController {
                     datawithdraw.totalamount = totalamount;
                     datawithdraw.idAccountBank = idbankaccount;
                     datawithdraw.responOy = datadisbursemen;
+                    datawithdraw.statusCode = parseInt(statuscode);
                     var datatr = await this.withdrawsService.create(datawithdraw);
 
                     var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2306,6 +2310,9 @@ export class TransactionsController {
         var datarek = null;
         var databank = null;
         var idbank = null;
+        var datasettingdisbvercharge = null;
+        var valuedisbcharge = null;
+        var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
 
         var recipient_name = payload.recipient_name;
         var recipient_bank = payload.recipient_bank;
@@ -2313,6 +2320,14 @@ export class TransactionsController {
         var partner_trx_id = payload.partner_trx_id;
         var statusCallback = payload.status.code;
         var statusMessage = payload.status.message;
+
+        try {
+            datasettingdisbvercharge = await this.settingsService.findOne(idBankDisbursmentCharge);
+            valuedisbcharge = datasettingdisbvercharge._doc.value;
+
+        } catch (e) {
+            throw new BadRequestException("Setting value not found..!");
+        }
         try {
             databank = await this.banksService.findbankcode(recipient_bank);
             idbank = databank._doc._id;
@@ -2352,7 +2367,7 @@ export class TransactionsController {
 
             else if (statusCallback === "210") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload);
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload, parseInt(statusCallback));
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
@@ -2366,20 +2381,45 @@ export class TransactionsController {
 
             else if (statusCallback === "300") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
+                let data = null;
+                let statusCode = null;
+                let idUser = null;
+                let totalamount = null;
+                try {
+                    data = await this.withdrawsService.findParteneridtrx(partner_trx_id);
+                } catch (e) {
+                    data = null;
+                }
+
+                if (data !== null) {
+                    try {
+                        statusCode = data.statusCode;
+                    } catch (e) {
+                        statusCode = 0;
+                    }
+                    idUser = data.idUser;
+                    totalamount = data.totalamount;
+
+                    if (statusCallback !== statusCode.toString() && statusCallback === "300") {
+                        await this.accontbalanceWithdrawTopup(idUser, valuedisbcharge, "disbursement");
+                        await this.accontbalanceWithdrawTopup(idUser, totalamount, "withdraw");
+                    }
+                    await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Transaction is FAILED", payload, parseInt(statusCallback));
+                }
+
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
 
                 return res.status(HttpStatus.OK).json({
                     response_code: 202,
-                    "message": "Disbursement is FAILED"
+                    "message": "Transaction is FAILED"
                 });
 
             }
             else if (statusCallback === "301") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload);
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload, parseInt(statusCallback));
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
@@ -2390,7 +2430,7 @@ export class TransactionsController {
                 });
 
             } else {
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload, parseInt(statusCallback));
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
@@ -4005,6 +4045,33 @@ export class TransactionsController {
             iduser: iduser,
             debet: amount,
             kredit: 0,
+            type: tipe,
+            timestamp: dt.toISOString(),
+            description: desccontent,
+
+        };
+
+        await this.accountbalancesService.createdata(dataacountbalance);
+    }
+
+    async accontbalanceWithdrawTopup(iduser: { oid: String }, amount: number, tipe: string) {
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var desccontent = "";
+
+        if (tipe === "inquiry") {
+            desccontent = "inquiry";
+        } else if (tipe === "disbursement") {
+            desccontent = "disbursement";
+        } else {
+            desccontent = "withdraw";
+        }
+
+        var dataacountbalance = {
+            iduser: iduser,
+            debet: 0,
+            kredit: amount,
             type: tipe,
             timestamp: dt.toISOString(),
             description: desccontent,
