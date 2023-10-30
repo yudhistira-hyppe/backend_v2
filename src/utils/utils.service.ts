@@ -41,6 +41,7 @@ import { SettingsDocument, SettingsMixed } from 'src/trans/settings2/schemas/set
 import { InjectModel } from '@nestjs/mongoose';
 import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
 import { time } from 'console';
+import { GetprofilecontenteventService } from './getprofilecontentevent/getprofilecontentevent.service';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -83,6 +84,7 @@ export class UtilsService {
     private notificationsService: NotificationsService,
     private deepArService: DeepArService,
     private userscoresService: UserscoresService,
+    private getprofilecontenteventService: GetprofilecontenteventService, 
 
   ) { }
 
@@ -1589,10 +1591,17 @@ export class UtilsService {
 
     var CreateInsightsDto_ = new CreateInsightsDto();
     if (await this.ceckData(get_insight)) {
+      const FOLLOWER = await this.getprofilecontenteventService.findByCriteria(email, "FOLLOWER");
+      const FOLLOWER_ = [...new Map(FOLLOWER.map(item => [item["receiverParty"], item])).values()];
+      const FOLLOWING = await this.getprofilecontenteventService.findByCriteria(email, "FOLLOWING");
+      const FOLLOWING_ = [...new Map(FOLLOWING.map(item => [item["receiverParty"], item])).values()];
+
+      let aFOLLOWER_ = <any>FOLLOWER_.length;
+      let aFOLLOWING_ = <any>FOLLOWING_.length;
       if (get_insight.shares != undefined) { CreateInsightsDto_.shares = get_insight.shares; }
-      if (get_insight.followers != undefined) { CreateInsightsDto_.followers = get_insight.followers; }
+      if (get_insight.followers != undefined) { CreateInsightsDto_.followers = aFOLLOWER_; }
       if (get_insight.comments != undefined) { CreateInsightsDto_.comments = get_insight.comments; }
-      if (get_insight.followings != undefined) { CreateInsightsDto_.followings = get_insight.followings; }
+      if (get_insight.followings != undefined) { CreateInsightsDto_.followings = aFOLLOWING_; }
       if (get_insight.reactions != undefined) { CreateInsightsDto_.reactions = get_insight.reactions; }
       if (get_insight.posts != undefined) { CreateInsightsDto_.posts = get_insight.posts; }
       if (get_insight.views != undefined) { CreateInsightsDto_.views = get_insight.views; }
