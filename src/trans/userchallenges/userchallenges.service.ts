@@ -231,7 +231,7 @@ export class UserchallengesService {
             },
             {
 
-                $sort: { score: -1, createdAt: 1 }
+                $sort: { score: -1, 'history.updatedAt': 1 }
             }
         ]);
         return query;
