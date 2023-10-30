@@ -50,20 +50,4 @@ export class TaskService {
     this.logger.debug('DISBURSEMENT JOB START');
     this.transactionsService.ceckStatusDisbursement();
   }
-  // @Cron('* */7 * * * *')
-  // challengeJob2() {
-  //   //tes
-  //   this.logger.debug('Challenge JOB START');
-  //   this.challengeService.sendNotifeChallenge();
-  //   this.challengeService.updateBadgeex();
-  //   this.challengeService.updateSubchallengeex();
-
-  // }
-
-  // @Cron('* */10 * * * *')
-  // ceckStatus() {
-  //   //tes
-  //   this.logger.debug('Challenge JOB START');
-  //   this.challengeService.sendNotifeChallenge();
-  // }
 }

@@ -2401,8 +2401,8 @@ export class TransactionsController {
                     totalamount = data.totalamount;
 
                     if (statusCallback !== statusCode.toString() && statusCallback === "300") {
-                        await this.accontbalanceWithdraw(idUser, valuedisbcharge, "disbursement");
-                        await this.accontbalanceWithdraw(idUser, totalamount, "withdraw");
+                        await this.accontbalanceWithdrawTopup(idUser, valuedisbcharge, "disbursement");
+                        await this.accontbalanceWithdrawTopup(idUser, totalamount, "withdraw");
                     }
                     await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Transaction is FAILED", payload, parseInt(statusCallback));
                 }
@@ -4045,6 +4045,33 @@ export class TransactionsController {
             iduser: iduser,
             debet: amount,
             kredit: 0,
+            type: tipe,
+            timestamp: dt.toISOString(),
+            description: desccontent,
+
+        };
+
+        await this.accountbalancesService.createdata(dataacountbalance);
+    }
+
+    async accontbalanceWithdrawTopup(iduser: { oid: String }, amount: number, tipe: string) {
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var desccontent = "";
+
+        if (tipe === "inquiry") {
+            desccontent = "inquiry";
+        } else if (tipe === "disbursement") {
+            desccontent = "disbursement";
+        } else {
+            desccontent = "withdraw";
+        }
+
+        var dataacountbalance = {
+            iduser: iduser,
+            debet: 0,
+            kredit: amount,
             type: tipe,
             timestamp: dt.toISOString(),
             description: desccontent,
