@@ -2367,7 +2367,7 @@ export class TransactionsController {
 
             else if (statusCallback === "210") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload, parseInt(statusCallback));
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload, statusCallback.toString());
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
@@ -2404,7 +2404,7 @@ export class TransactionsController {
                         await this.accontbalanceWithdrawTopup(idUser, valuedisbcharge, "FAILED TRANSACTION");
                         await this.accontbalanceWithdrawTopup(idUser, totalamount, "FAILED TRANSACTION");
                     }
-                    await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Transaction is FAILED", payload, parseInt(statusCallback));
+                    await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Transaction is FAILED", payload, statusCallback.toString());
                 }
 
 
@@ -2419,7 +2419,7 @@ export class TransactionsController {
             }
             else if (statusCallback === "301") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload, parseInt(statusCallback));
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload, statusCallback.toString());
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
@@ -2430,7 +2430,7 @@ export class TransactionsController {
                 });
 
             } else {
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload, parseInt(statusCallback));
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload, statusCallback.toString());
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
