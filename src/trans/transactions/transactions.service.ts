@@ -9365,6 +9365,8 @@ export class TransactionsService {
                     }
                 }
                 console.log("==================================== END CECK STATUS ====================================");
+                console.log("");
+                console.log("");
             }
         }
     }
