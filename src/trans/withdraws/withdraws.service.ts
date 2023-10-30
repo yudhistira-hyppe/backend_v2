@@ -22,7 +22,14 @@ export class WithdrawsService {
     }
 
     async findWitoutSucces(): Promise<Withdraws[]> {
-        return this.withdrawsModel.find({ status: { $not: { $regex: /Success|Failed/i } } }).exec();
+        return this.withdrawsModel.find({
+            "$and": [
+                { "statusCode": { "$ne": "300" } },
+                { "statusCode": { "$ne": "000" } },
+                { "statusCode": { "$ne": null } },
+                { "statusCode": { "$ne": "204" } },
+            ]
+        }).exec();
     }
 
     async findParteneridtrx(partnerTrxid: string): Promise<Withdraws> {

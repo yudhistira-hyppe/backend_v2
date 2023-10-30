@@ -9314,56 +9314,51 @@ export class TransactionsService {
         let getwithdraws: Withdraws[] = await this.withdrawsService.findWitoutSucces();
         if (await this.utilsService.ceckData(getwithdraws)){
             for (let i = 0;i< getwithdraws.length;i++){
-                console.log("==================================== START CECK STATUS ====================================");
+                console.log("==================================== START CECK STATUS " + getwithdraws[i].partnerTrxid +"====================================");
                 let OyDisbursementStatus_ = new OyDisbursementStatus();
                 OyDisbursementStatus_.partner_trx_id = getwithdraws[i].partnerTrxid;
                 console.log("PARTNER_TRX_ID "+getwithdraws[i].partnerTrxid);
+
                 let OyDisbursementStatusResponse_: OyDisbursementStatusResponse = await this.oyPgService.disbursementStatus(OyDisbursementStatus_);
                 console.log("RESPONSE " + JSON.stringify(OyDisbursementStatusResponse_));
-                let currentResponse = getwithdraws[i].responOy;
-                if (await this.utilsService.ceckData(currentResponse)){
-                    if (currentResponse['status']!=undefined){
-                        if (currentResponse['status']['code'] != undefined) {
-                            let currentStatusCode = currentResponse['status']['code'];
-                            let responseStatusCode = OyDisbursementStatusResponse_.status.code; 
-                            console.log("CURRENT STATUS CODE ", currentStatusCode);
-                            console.log("RESPONSE STATUS CODE ", responseStatusCode);
-                            try {
-                                if (currentStatusCode != responseStatusCode) {
-                                    console.log("STAUS ", "NOT THE SAME");
-                                    let CreateWithdrawsDto_ = new CreateWithdrawsDto(); 
-                                    CreateWithdrawsDto_.statusCode = responseStatusCode.toString();
-                                    if (responseStatusCode == "000") {
-                                        CreateWithdrawsDto_.verified = true
-                                        CreateWithdrawsDto_.description = OyDisbursementStatusResponse_.tx_status_description;
-                                        CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
-                                    } else if (responseStatusCode == "300") {
-                                        CreateWithdrawsDto_.verified = false
-                                        CreateWithdrawsDto_.description = OyDisbursementStatusResponse_.tx_status_description;
-                                        CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
+                
+                let currentStatusCode = getwithdraws[i].statusCode;
+                let responseStatusCode = OyDisbursementStatusResponse_.status.code.toString();
+                console.log("CURRENT STATUS CODE ", currentStatusCode);
+                console.log("RESPONSE STATUS CODE ", responseStatusCode);
+                try {
+                    if (currentStatusCode != responseStatusCode) {
+                        console.log("STAUS ", "NOT THE SAME");
+                        let CreateWithdrawsDto_ = new CreateWithdrawsDto();
+                        CreateWithdrawsDto_.statusCode = responseStatusCode;
+                        if (responseStatusCode == "000") {
+                            CreateWithdrawsDto_.verified = true
+                            CreateWithdrawsDto_.description = OyDisbursementStatusResponse_.tx_status_description;
+                            CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
+                        } else if (responseStatusCode == "300") {
+                            CreateWithdrawsDto_.verified = false
+                            CreateWithdrawsDto_.description = OyDisbursementStatusResponse_.tx_status_description;
+                            CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
 
-                                        let CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
-                                        CreateAccountbalancesDto_.iduser = getwithdraws[i].idUser;
-                                        CreateAccountbalancesDto_.debet = 0;
-                                        CreateAccountbalancesDto_.kredit = getwithdraws[i].amount+6000;
-                                        CreateAccountbalancesDto_.type = "withdraw";
-                                        CreateAccountbalancesDto_.timestamp = await this.utilsService.getDateTimeISOString();
-                                        CreateAccountbalancesDto_.description = "FAILED TRANSACTION";
-                                        await this.accountbalancesService.create(CreateAccountbalancesDto_);
-                                    } else {
-                                        CreateWithdrawsDto_.verified = false
-                                        CreateWithdrawsDto_.description = OyDisbursementStatusResponse_.tx_status_description;
-                                        CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
-                                    }
-                                    await this.withdrawsService.updateoneData(getwithdraws[i]._id.toString(), CreateWithdrawsDto_, OyDisbursementStatusResponse_);
-                                }else{
-                                    console.log("STAUS ", "THE SAME");
-                                }
-                            } catch (e) {
-                                console.log("------------- ERROR " + e +" -------------");
-                            }
+                            let CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
+                            CreateAccountbalancesDto_.iduser = getwithdraws[i].idUser;
+                            CreateAccountbalancesDto_.debet = 0;
+                            CreateAccountbalancesDto_.kredit = getwithdraws[i].amount + 6000;
+                            CreateAccountbalancesDto_.type = "withdraw";
+                            CreateAccountbalancesDto_.timestamp = await this.utilsService.getDateTimeISOString();
+                            CreateAccountbalancesDto_.description = "FAILED TRANSACTION";
+                            await this.accountbalancesService.create(CreateAccountbalancesDto_);
+                        } else {
+                            CreateWithdrawsDto_.verified = false
+                            CreateWithdrawsDto_.description = OyDisbursementStatusResponse_.tx_status_description;
+                            CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
                         }
+                        await this.withdrawsService.updateoneData(getwithdraws[i]._id.toString(), CreateWithdrawsDto_, OyDisbursementStatusResponse_);
+                    } else {
+                        console.log("STAUS ", "THE SAME");
                     }
+                } catch (e) {
+                    console.log("------------- ERROR " + e + " -------------");
                 }
                 console.log("==================================== END CECK STATUS ====================================");
                 console.log("");
