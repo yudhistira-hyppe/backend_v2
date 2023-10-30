@@ -9332,13 +9332,13 @@ export class TransactionsService {
                         let CreateWithdrawsDto_ = new CreateWithdrawsDto();
                         CreateWithdrawsDto_.statusCode = responseStatusCode;
                         if (responseStatusCode == "000") {
-                            CreateWithdrawsDto_.verified = true
-                            CreateWithdrawsDto_.description = OyDisbursementStatusResponse_.tx_status_description;
                             CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
+                            CreateWithdrawsDto_.verified = true
+                            CreateWithdrawsDto_.description = "Transaction has been completed(success)";
                         } else if (responseStatusCode == "300") {
                             CreateWithdrawsDto_.verified = false
-                            CreateWithdrawsDto_.description = OyDisbursementStatusResponse_.tx_status_description;
                             CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
+                            CreateWithdrawsDto_.description = "Transaction is FAILED";
 
                             let CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
                             CreateAccountbalancesDto_.iduser = getwithdraws[i].idUser;
@@ -9348,7 +9348,28 @@ export class TransactionsService {
                             CreateAccountbalancesDto_.timestamp = await this.utilsService.getDateTimeISOString();
                             CreateAccountbalancesDto_.description = "FAILED TRANSACTION";
                             await this.accountbalancesService.create(CreateAccountbalancesDto_);
+                        } else if (responseStatusCode == "101") {
+                            CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
+                            CreateWithdrawsDto_.verified = false
+                            CreateWithdrawsDto_.description = "Transaction is Processed";
+                        } else if (responseStatusCode == "102") {
+                            CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
+                            CreateWithdrawsDto_.verified = false
+                            CreateWithdrawsDto_.description = "Transaction is In Progress";
+                        } else if (responseStatusCode == "204") {
+                            CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
+                            CreateWithdrawsDto_.verified = false
+                            CreateWithdrawsDto_.description = "Transaction do not exist(Partner Tx ID is Not Found)";
+                        } else if (responseStatusCode == "206") {
+                            CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
+                            CreateWithdrawsDto_.verified = false
+                            CreateWithdrawsDto_.description = "Transaction is FAILED(Partner Deposit Balance is Not Enough)";
+                        } else if (responseStatusCode == "301") {
+                            CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
+                            CreateWithdrawsDto_.verified = false
+                            CreateWithdrawsDto_.description = "Pending (When there is an unclear answer from Banks Network)";
                         } else {
+
                             CreateWithdrawsDto_.verified = false
                             CreateWithdrawsDto_.description = OyDisbursementStatusResponse_.tx_status_description;
                             CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
