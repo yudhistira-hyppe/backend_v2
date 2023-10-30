@@ -9346,9 +9346,9 @@ export class TransactionsService {
                                         CreateAccountbalancesDto_.iduser = getwithdraws[i].idUser;
                                         CreateAccountbalancesDto_.debet = 0;
                                         CreateAccountbalancesDto_.kredit = getwithdraws[i].amount+6000;
-                                        CreateAccountbalancesDto_.type = "rewards";
+                                        CreateAccountbalancesDto_.type = "withdraw";
                                         CreateAccountbalancesDto_.timestamp = await this.utilsService.getDateTimeISOString();
-                                        CreateAccountbalancesDto_.description = "TOP UP";
+                                        CreateAccountbalancesDto_.description = "FAILED TRANSACTION";
                                         await this.accountbalancesService.create(CreateAccountbalancesDto_);
                                     } else {
                                         CreateWithdrawsDto_.verified = false
