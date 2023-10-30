@@ -39,7 +39,7 @@ export class WithdrawsService {
 
     async updateoneData(id: string, CreateWithdrawsDto_: CreateWithdrawsDto, responseData: any): Promise<Object> {
         let data = await this.withdrawsModel.updateOne({ "_id": new mongoose.Types.ObjectId(id) },
-            { $set: { "status": CreateWithdrawsDto_.status, "statusCode": CreateWithdrawsDto_.statusCode, "description": CreateWithdrawsDto_.description, verified: CreateWithdrawsDto_.verified }, $push: { responseData: responseData } } );
+            { $set: { "status": CreateWithdrawsDto_.status, "statusCode": CreateWithdrawsDto_.statusCode, "description": CreateWithdrawsDto_.description, verified: CreateWithdrawsDto_.verified }, $push: { responseData: responseData } });
         return data;
     }
 
@@ -54,7 +54,7 @@ export class WithdrawsService {
         return data;
     }
 
-    async updatefailed(partnerTrxid: string, status: string, description: string, payload: OyDisburseCallbackWithdraw, statusCode: number): Promise<Object> {
+    async updatefailed(partnerTrxid: string, status: string, description: string, payload: OyDisburseCallbackWithdraw, statusCode: string): Promise<Object> {
         let data = await this.withdrawsModel.updateOne({ "partnerTrxid": partnerTrxid },
             { $set: { "status": status, "description": description, verified: false, payload: payload, statusCode: statusCode } });
         return data;
