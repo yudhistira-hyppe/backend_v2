@@ -95,7 +95,7 @@ export class CreateWithdraws {
     updatedAt: string;
     responOy: {};
     responseData: any[];
-    statusCode: number;
+    statusCode: string;
 }
 export class OyDisburseCallbacks {
 

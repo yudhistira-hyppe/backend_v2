@@ -16,7 +16,7 @@ export class CreateWithdrawsDto {
     updatedAt: string;
     responOy: {};
     responseData: any[];
-    statusCode: number;
+    statusCode: string;
 }
 
 export class OyDisburseCallbackWithdraw {

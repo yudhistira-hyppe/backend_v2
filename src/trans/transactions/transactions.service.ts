@@ -9332,7 +9332,7 @@ export class TransactionsService {
                                 if (currentStatusCode != responseStatusCode) {
                                     console.log("STAUS ", "NOT THE SAME");
                                     let CreateWithdrawsDto_ = new CreateWithdrawsDto(); 
-                                    CreateWithdrawsDto_.statusCode = Number(responseStatusCode);
+                                    CreateWithdrawsDto_.statusCode = responseStatusCode.toString();
                                     if (responseStatusCode == "000") {
                                         CreateWithdrawsDto_.verified = true
                                         CreateWithdrawsDto_.description = OyDisbursementStatusResponse_.tx_status_description;

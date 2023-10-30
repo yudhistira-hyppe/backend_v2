@@ -2084,7 +2084,7 @@ export class TransactionsController {
                         datawithdraw.totalamount = totalamount;
                         datawithdraw.idAccountBank = idbankaccount;
                         datawithdraw.responOy = datadisbursemen;
-                        datawithdraw.statusCode = parseInt(statusdisb);
+                        datawithdraw.statusCode = statusdisb.toString();
                         var datatr = await this.withdrawsService.create(datawithdraw);
                         await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
 
@@ -2164,7 +2164,7 @@ export class TransactionsController {
                         datawithdraw.totalamount = totalamount;
                         datawithdraw.idAccountBank = idbankaccount;
                         datawithdraw.responOy = datadisbursemen;
-                        datawithdraw.statusCode = parseInt(statusdisb);
+                        datawithdraw.statusCode = statusdisb.toString();
                         var datatr = await this.withdrawsService.create(datawithdraw);
                         await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
 
@@ -2243,7 +2243,7 @@ export class TransactionsController {
                         datawithdraw.totalamount = totalamount;
                         datawithdraw.idAccountBank = idbankaccount;
                         datawithdraw.responOy = datadisbursemen;
-                        datawithdraw.statusCode = parseInt(statusdisb);
+                        datawithdraw.statusCode = statusdisb.toString();
                         var datatr = await this.withdrawsService.create(datawithdraw);
 
                         var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2276,7 +2276,7 @@ export class TransactionsController {
                     datawithdraw.totalamount = totalamount;
                     datawithdraw.idAccountBank = idbankaccount;
                     datawithdraw.responOy = datadisbursemen;
-                    datawithdraw.statusCode = parseInt(statusdisb);
+                    datawithdraw.statusCode = statusdisb.toString();
                     var datatr = await this.withdrawsService.create(datawithdraw);
 
                     var timestamps_end = await this.utilsService.getDateTimeString();
