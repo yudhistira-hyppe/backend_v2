@@ -8,9 +8,11 @@ import { UserticketsModule } from '../../trans/usertickets/usertickets.module';
 import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
 import { PostsModule } from '../../content/posts/posts.module';
 import { ChallengeModule } from 'src/trans/challenge/challenge.module';
+import { TransactionsModule } from 'src/trans/transactions/transactions.module';
 
 @Module({
   imports: [
+      TransactionsModule,
       ChallengeModule,
       ScheduleModule.forRoot(),
     ],

@@ -94,6 +94,8 @@ export class CreateWithdraws {
     idAccountBank: { oid: String; };
     updatedAt: string;
     responOy: {};
+    responseData: any[];
+    statusCode: number;
 }
 export class OyDisburseCallbacks {
 

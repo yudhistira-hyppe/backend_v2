@@ -12,6 +12,14 @@ import { MediadiariesService } from '../../content/mediadiaries/mediadiaries.ser
 import { PostContentService } from '../../content/posts/postcontent.service';
 import { type } from 'os';
 import { ConfigService } from '@nestjs/config';
+import { WithdrawsService } from '../withdraws/withdraws.service';
+import { UtilsService } from 'src/utils/utils.service';
+import { OyDisbursementStatus, OyDisbursementStatusResponse } from 'src/paymentgateway/oypg/dto/OyDTO';
+import { OyPgService } from 'src/paymentgateway/oypg/oypg.service';
+import { CreateWithdrawsDto } from '../withdraws/dto/create-withdraws.dto';
+import { Withdraws } from '../withdraws/schemas/withdraws.schema';
+import { CreateAccountbalancesDto } from '../accountbalances/dto/create-accountbalances.dto';
+import { AccountbalancesService } from '../accountbalances/accountbalances.service';
 
 @Injectable()
 export class TransactionsService {
@@ -23,8 +31,12 @@ export class TransactionsService {
         private readonly mediapictsService: MediapictsService,
         private readonly mediadiariesService: MediadiariesService,
         private readonly postContentService: PostContentService,
-        private readonly httpService: HttpService,
-        private readonly configService: ConfigService
+        private readonly httpService: HttpService, 
+        private readonly configService: ConfigService,
+        private readonly withdrawsService: WithdrawsService,
+        private readonly utilsService: UtilsService,
+        private readonly oyPgService: OyPgService,
+        private readonly accountbalancesService: AccountbalancesService,
 
     ) { }
 
@@ -9296,6 +9308,65 @@ export class TransactionsService {
         var query = await this.transactionsModel.aggregate(pipeline);
         return query;
 
+    }
+
+    async ceckStatusDisbursement(){
+        let getwithdraws: Withdraws[] = await this.withdrawsService.findWitoutSucces();
+        if (await this.utilsService.ceckData(getwithdraws)){
+            for (let i = 0;i< getwithdraws.length;i++){
+                console.log("==================================== START CECK STATUS ====================================");
+                let OyDisbursementStatus_ = new OyDisbursementStatus();
+                OyDisbursementStatus_.partner_trx_id = getwithdraws[i].partnerTrxid;
+                console.log("PARTNER_TRX_ID "+getwithdraws[i].partnerTrxid);
+                let OyDisbursementStatusResponse_: OyDisbursementStatusResponse = await this.oyPgService.disbursementStatus(OyDisbursementStatus_);
+                console.log("RESPONSE " + JSON.stringify(OyDisbursementStatusResponse_));
+                let currentResponse = getwithdraws[i].responOy;
+                if (await this.utilsService.ceckData(currentResponse)){
+                    if (currentResponse['status']!=undefined){
+                        if (currentResponse['status']['code'] != undefined) {
+                            let currentStatusCode = currentResponse['status']['code'];
+                            let responseStatusCode = OyDisbursementStatusResponse_.status.code; 
+                            console.log("CURRENT STATUS CODE ", currentStatusCode);
+                            console.log("RESPONSE STATUS CODE ", responseStatusCode);
+                            try {
+                                if (currentStatusCode != responseStatusCode) {
+                                    console.log("STAUS ", "NOT THE SAME");
+                                    let CreateWithdrawsDto_ = new CreateWithdrawsDto();
+                                    if (responseStatusCode == "000") {
+                                        CreateWithdrawsDto_.verified = true
+                                        CreateWithdrawsDto_.description = OyDisbursementStatusResponse_.tx_status_description;
+                                        CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
+                                    } else if (responseStatusCode == "300") {
+                                        CreateWithdrawsDto_.verified = false
+                                        CreateWithdrawsDto_.description = OyDisbursementStatusResponse_.tx_status_description;
+                                        CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
+
+                                        let CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
+                                        CreateAccountbalancesDto_.iduser = getwithdraws[i].idUser;
+                                        CreateAccountbalancesDto_.debet = 0;
+                                        CreateAccountbalancesDto_.kredit = getwithdraws[i].amount+6000;
+                                        CreateAccountbalancesDto_.type = "rewards";
+                                        CreateAccountbalancesDto_.timestamp = await this.utilsService.getDateTimeISOString();
+                                        CreateAccountbalancesDto_.description = "TOP UP";
+                                        await this.accountbalancesService.create(CreateAccountbalancesDto_);
+                                    } else {
+                                        CreateWithdrawsDto_.verified = false
+                                        CreateWithdrawsDto_.description = OyDisbursementStatusResponse_.tx_status_description;
+                                        CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
+                                    }
+                                    await this.withdrawsService.updateoneData(getwithdraws[i]._id.toString(), CreateWithdrawsDto_, OyDisbursementStatusResponse_);
+                                }else{
+                                    console.log("STAUS ", "THE SAME");
+                                }
+                            } catch (e) {
+                                console.log("------------- ERROR " + e +" -------------");
+                            }
+                        }
+                    }
+                }
+                console.log("==================================== END CECK STATUS ====================================");
+            }
+        }
     }
 
     async callbackVA(callbackVA: VaCallback) {

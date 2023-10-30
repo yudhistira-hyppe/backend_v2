@@ -41,6 +41,10 @@ export class Withdraws {
     idAccountBank: { oid: string }
     @Prop({ type: Object })
     responOy: {}
+    @Prop()
+    responseData: any[];
+    @Prop()
+    statusCode: number;
 
 
 }
