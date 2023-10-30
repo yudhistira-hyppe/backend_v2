@@ -1162,7 +1162,7 @@ export class ContenteventsService {
   }
 
   async updateUnFollowing(email: string, eventType: string, receiverParty: string) {
-    this.ContenteventsModel.updateOne(
+    this.ContenteventsModel.updateMany(
       {
         email: email,
         eventType: eventType,
@@ -1219,7 +1219,7 @@ export class ContenteventsService {
   }
 
   async updateUnFollower(email: string, eventType: string, receiverParty: string) {
-    this.ContenteventsModel.updateOne(
+    this.ContenteventsModel.updateMany(
       {
         email: email,
         eventType: eventType,
