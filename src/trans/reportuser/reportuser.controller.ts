@@ -2841,6 +2841,293 @@ export class ReportuserController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Post('listuserreport/v2')
+    async finduserreport2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/reportuser/listuserreport/v2';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        var type = null;
+        var postID = null;
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var data = [];
+        var query = null;
+
+        var reportedUser = [];
+        var reportedUserCount = null;
+        var mediaprofilepicts = null;
+        var mediaprofilepicts_res = {};
+        var lengUser = null;
+        var media = null;
+        if (type === "content") {
+
+            var objrepuser = {};
+            var arrRepuser = [];
+            var datauser = null;
+
+            try {
+                query = await this.post2SS.detailuserreport(postID);
+            } catch (e) {
+                query = null;
+            }
+
+
+            if (query !== null) {
+
+                try {
+                    reportedUser = query[0].reportedUser;
+                    lengUser = reportedUser.length;
+                } catch (e) {
+                    reportedUser = null;
+                    lengUser = 0;
+                }
+                try {
+                    reportedUserCount = query[0].reportedUserCount;
+                } catch (e) {
+                    reportedUserCount = 0;
+                }
+
+
+                if (reportedUser !== null || reportedUser !== undefined || lengUser > 0) {
+
+                    // for (let i = 0; i < lengUser; i++) {
+
+
+                    //     let createdAt = reportedUser[i].createdAt;
+                    //     let remark = reportedUser[i].description;
+                    //     let email = reportedUser[i].email;
+
+                    //     try {
+                    //         datauser = await this.userbasicsService.findOne(email);
+                    //     } catch (e) {
+                    //         datauser = null;
+                    //     }
+
+                    //     if (datauser !== null || datauser !== undefined) {
+                    //         try {
+                    //             media = datauser._doc.profilePict.oid;
+                    //         } catch (e) {
+                    //             media = null;
+                    //         }
+                    //         var fullName = datauser._doc.fullName;
+
+                    //         if (media !== null) {
+
+                    //             try {
+
+                    //                 mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
+                    //                 console.log(mediaprofilepicts)
+                    //                 var mediaID = mediaprofilepicts.mediaID;
+                    //                 let result = "/profilepict/" + mediaID;
+                    //                 mediaprofilepicts_res = {
+                    //                     mediaBasePath: mediaprofilepicts.mediaBasePath,
+                    //                     mediaUri: mediaprofilepicts.mediaUri,
+                    //                     mediaType: mediaprofilepicts.mediaType,
+                    //                     mediaEndpoint: result
+                    //                 };
+                    //             } catch (e) {
+
+                    //                 mediaprofilepicts_res = {
+                    //                     mediaBasePath: "",
+                    //                     mediaUri: "",
+                    //                     mediaType: "",
+                    //                     mediaEndpoint: ""
+                    //                 };
+                    //             }
+                    //         } else {
+                    //             mediaprofilepicts_res = {
+                    //                 mediaBasePath: "",
+                    //                 mediaUri: "",
+                    //                 mediaType: "",
+                    //                 mediaEndpoint: ""
+                    //             };
+                    //         }
+                    //     }
+
+                    //     objrepuser = {
+                    //         "fullName": fullName,
+                    //         "email": email,
+                    //         "createdAt": createdAt,
+                    //         "description": remark,
+                    //         "avatar": mediaprofilepicts_res,
+
+                    //     }
+
+                    //     arrRepuser.push(objrepuser);
+
+                    // }
+
+                    for (let i = 0; i < lengUser; i++) {
+
+                        let cekactive = reportedUser[i].active;
+                        if(cekactive == true)
+                        {
+                            let createdAt = reportedUser[i].createdAt;
+                            let remark = reportedUser[i].description;
+                            let email = reportedUser[i].email;
+                            
+                            try {
+                                datauser = await this.basic2SS.findbyemail(email);
+                            } catch (e) {
+                                datauser = null;
+                            }
+                            let fullName = datauser.fullName;
+                            mediaprofilepicts_res = {
+                                mediaBasePath: (datauser.mediaBasePath == undefined && datauser.mediaBasePath == null ? "" : datauser.mediaBasePath),
+                                mediaUri: (datauser.mediaUri == undefined && datauser.mediaUri == null ? "" : datauser.mediaUri),
+                                mediaType: (datauser.mediaType == undefined && datauser.mediaType == null ? "" : datauser.mediaType),
+                                mediaEndpoint: (datauser.mediaEndpoint == undefined && datauser.mediaEndpoint == null ? "" : datauser.mediaEndpoint),
+                            };
+
+                            objrepuser = {
+                                "fullName": fullName,
+                                "email": email,
+                                "createdAt": createdAt,
+                                "description": remark,
+                                "avatar": mediaprofilepicts_res,
+
+                            }
+
+                            arrRepuser.push(objrepuser);
+                        }
+
+                    }
+
+                    let active = reportedUser[lengUser - 1].active;
+
+                    if (active === true) {
+                        data = arrRepuser;
+                    } else {
+                        data = [];
+                    }
+
+                } else {
+                    data = [];
+                }
+
+
+            }
+        }
+        else if (type === "ads") {
+            var adsId = mongoose.Types.ObjectId(postID);
+
+            var objrepuser = {};
+            var arrRepuser = [];
+            var datauser = null;
+            try {
+                query = await this.adsService.detailadsreport(adsId);
+            } catch (e) {
+                query = null;
+            }
+
+
+            if (query !== null) {
+
+                try {
+                    reportedUser = query[0].reportedUser;
+                    lengUser = reportedUser.length;
+                } catch (e) {
+                    reportedUser = null;
+                    lengUser = 0;
+                }
+                try {
+                    reportedUserCount = query[0].reportedUserCount;
+                } catch (e) {
+                    reportedUserCount = 0;
+                }
+
+
+                if (reportedUser !== null || reportedUser !== undefined || reportedUser.length > 0) {
+
+                    for (let i = 0; i < lengUser; i++) {
+
+                        let cekactive = reportedUser[i].active;
+                        if(cekactive == true)
+                        {
+                            let createdAt = reportedUser[i].createdAt;
+                            let remark = reportedUser[i].description;
+                            let email = reportedUser[i].email;
+                            
+                            try {
+                                datauser = await this.basic2SS.findbyemail(email);
+                            } catch (e) {
+                                datauser = null;
+                            }
+                            let fullName = datauser.fullName;   
+                            mediaprofilepicts_res = {
+                                mediaBasePath: (datauser.mediaBasePath == undefined && datauser.mediaBasePath == null ? "" : datauser.mediaBasePath),
+                                mediaUri: (datauser.mediaUri == undefined && datauser.mediaUri == null ? "" : datauser.mediaUri),
+                                mediaType: (datauser.mediaType == undefined && datauser.mediaType == null ? "" : datauser.mediaType),
+                                mediaEndpoint: (datauser.mediaEndpoint == undefined && datauser.mediaEndpoint == null ? "" : datauser.mediaEndpoint),
+                            };
+
+                            objrepuser = {
+                                "fullName": fullName,
+                                "email": email,
+                                "createdAt": createdAt,
+                                "description": remark,
+                                "avatar": mediaprofilepicts_res,
+
+                            }
+
+                            arrRepuser.push(objrepuser);
+                        }
+
+                    }
+
+                    let active = reportedUser[lengUser - 1].active;
+
+                    if (active === true) {
+                        data = arrRepuser;
+                    } else {
+                        data = [];
+                    }
+
+                } else {
+                    data = [];
+                }
+
+
+            }
+
+
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        return { response_code: 202, totalReport: reportedUserCount, data, messages };
+
+    }
+
+    @UseGuards(JwtAuthGuard)
     @UseGuards(JwtAuthGuard)
     @Post('delete')
     async reportHandleDelete(@Req() request, @Headers() headers) {
