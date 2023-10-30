@@ -2520,7 +2520,8 @@ export class PostsController {
     }
     const insightsService_data = await this.insightsService.findemail(headers['x-auth-user']);
     const userbasicsService_data = await this.userbasicsService.findOne(headers['x-auth-user']);
-    const contenteventsService_data = await this.contenteventsService.findByCriteria(headers['x-auth-user'], postID_, eventType_, withEvents_, pageRow_, pageNumber_);
+    const contenteventsService_data_ = await this.contenteventsService.findByCriteria(headers['x-auth-user'], postID_, eventType_, withEvents_, pageRow_, pageNumber_);
+    const contenteventsService_data = [...new Map(contenteventsService_data_.map(item => [item["receiverParty"], item])).values()];
     var getProfile_ = await this.utilsService.generateProfile(headers['x-auth-user'], 'PROFILE');
     var avatar_ = {}
     if (getProfile_ != null || getProfile_ != undefined) {
