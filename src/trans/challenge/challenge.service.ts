@@ -4413,13 +4413,13 @@ export class ChallengeService {
                           } else {
                             if (langIso == "en") {
                               if (email == emailmenang) {
-                                await this.util.sendNotifChallenge("PEMENANG", email, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                                await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
 
                               }
                             } else {
                               if (email == emailmenang) {
 
-                                await this.util.sendNotifChallenge("PEMENANG", email, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                                await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
 
                               }
                             }

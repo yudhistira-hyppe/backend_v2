@@ -6772,7 +6772,7 @@ export class subChallengeService {
                                                     },
 
                                                 ],
-                                            default: "Anda Kurang Beruntung.. COBA LAGI !!!"
+                                            default: ""
                                         }
                                     },
                                     idBadge:
