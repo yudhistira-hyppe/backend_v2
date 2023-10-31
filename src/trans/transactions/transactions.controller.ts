@@ -2084,7 +2084,7 @@ export class TransactionsController {
                         datawithdraw.totalamount = totalamount;
                         datawithdraw.idAccountBank = idbankaccount;
                         datawithdraw.responOy = datadisbursemen;
-                        datawithdraw.statusCode = statusdisb.toString();
+                        datawithdraw.statusCode = statusdisb;
                         var datatr = await this.withdrawsService.create(datawithdraw);
                         await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
 
@@ -2164,7 +2164,7 @@ export class TransactionsController {
                         datawithdraw.totalamount = totalamount;
                         datawithdraw.idAccountBank = idbankaccount;
                         datawithdraw.responOy = datadisbursemen;
-                        datawithdraw.statusCode = statusdisb.toString();
+                        datawithdraw.statusCode = statusdisb;
                         var datatr = await this.withdrawsService.create(datawithdraw);
                         await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
 
@@ -2243,7 +2243,7 @@ export class TransactionsController {
                         datawithdraw.totalamount = totalamount;
                         datawithdraw.idAccountBank = idbankaccount;
                         datawithdraw.responOy = datadisbursemen;
-                        datawithdraw.statusCode = statusdisb.toString();
+                        datawithdraw.statusCode = statusdisb;
                         var datatr = await this.withdrawsService.create(datawithdraw);
 
                         var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2276,7 +2276,7 @@ export class TransactionsController {
                     datawithdraw.totalamount = totalamount;
                     datawithdraw.idAccountBank = idbankaccount;
                     datawithdraw.responOy = datadisbursemen;
-                    datawithdraw.statusCode = statusdisb.toString();
+                    datawithdraw.statusCode = statusdisb;
                     var datatr = await this.withdrawsService.create(datawithdraw);
 
                     var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2367,7 +2367,7 @@ export class TransactionsController {
 
             else if (statusCallback === "210") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload, statusCallback.toString());
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload, statusCallback);
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
@@ -2404,7 +2404,7 @@ export class TransactionsController {
                         await this.accontbalanceWithdrawTopup(idUser, valuedisbcharge, "FAILED TRANSACTION");
                         await this.accontbalanceWithdrawTopup(idUser, totalamount, "FAILED TRANSACTION");
                     }
-                    await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Transaction is FAILED", payload, statusCallback.toString());
+                    await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Transaction is FAILED", payload, statusCallback);
                 }
 
 
@@ -2419,7 +2419,7 @@ export class TransactionsController {
             }
             else if (statusCallback === "301") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload, statusCallback.toString());
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload, statusCallback);
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
@@ -2430,7 +2430,7 @@ export class TransactionsController {
                 });
 
             } else {
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload, statusCallback.toString());
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload, statusCallback);
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
@@ -4063,9 +4063,9 @@ export class TransactionsController {
         if (tipe === "inquiry") {
             desccontent = "inquiry";
         } else if (tipe === "disbursement") {
-            desccontent = "disbursement";
+            desccontent = "FAILED WITHDRAWAL";
         } else {
-            desccontent = "withdraw";
+            desccontent = "FAILED TRANSACTION";
         }
 
         var dataacountbalance = {
