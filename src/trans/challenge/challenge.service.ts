@@ -4400,31 +4400,31 @@ export class ChallengeService {
                           } catch (e) {
                             titleEN2 = titleEN1;
                           }
-                          let datanotifchall = null;
-                          try {
+                          // let datanotifchall = null;
+                          // try {
 
-                            datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
-                          } catch (e) {
-                            datanotifchall = null;
-                          }
+                          //   datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
+                          // } catch (e) {
+                          //   datanotifchall = null;
+                          // }
 
-                          if (datanotifchall !== null) {
-                            console.log("==data sudah ada==")
-                          } else {
-                            if (langIso == "en") {
-                              if (email == emailmenang) {
-                                await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+                          // if (datanotifchall !== null) {
+                          //   console.log("==data sudah ada==")
+                          // } else {
+                          if (langIso == "en") {
+                            if (email == emailmenang) {
+                              await this.util.sendNotifChallenge("PEMENANG", emailmenang, titleEN2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
 
-                              }
-                            } else {
-                              if (email == emailmenang) {
-
-                                await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-
-                              }
                             }
+                          } else {
+                            if (email == emailmenang) {
 
+                              await this.util.sendNotifChallenge("PEMENANG", emailmenang, title2, ket3, ket3EN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+
+                            }
                           }
+
+                          // }
 
 
                         }
@@ -4597,25 +4597,25 @@ export class ChallengeService {
 
               }
               else if (type == "challengeBerakhir") {
-                let datanotifchall = null;
-                try {
+                // let datanotifchall = null;
+                // try {
 
-                  datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
-                } catch (e) {
-                  datanotifchall = null;
-                }
+                //   datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
+                // } catch (e) {
+                //   datanotifchall = null;
+                // }
 
-                if (datanotifchall !== null) {
-                  console.log("==data sudah ada==")
+                // if (datanotifchall !== null) {
+                //   console.log("==data sudah ada==")
+                // } else {
+                if (langIso == "en") {
+                  await this.util.sendNotifChallenge("BERAKHIR", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
+
                 } else {
-                  if (langIso == "en") {
-                    await this.util.sendNotifChallenge("BERAKHIR", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-
-                  } else {
-                    await this.util.sendNotifChallenge("BERAKHIR", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
-                  }
-
+                  await this.util.sendNotifChallenge("BERAKHIR", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, session.toString(), datetime);
                 }
+
+                //}
               }
               else {
                 let datanotifchall = null;
