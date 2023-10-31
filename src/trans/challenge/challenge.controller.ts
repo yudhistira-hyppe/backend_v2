@@ -3880,7 +3880,7 @@ export class ChallengeController {
       try {
         await this.userchallengeSS.delete(insertid, exileUser._id.toString(), updatedata);
 
-        this.deleteDataviaBelakang(exileUser, idchallenge);
+        this.deleteDataviaBelakang(exileUser, idchallenge, reason);
 
         const messages = {
           "info": ["The create successful"],
@@ -3903,20 +3903,22 @@ export class ChallengeController {
     }
   }
 
-  async deleteDataviaBelakang(userdata: any, idchallenge: string) {
+  async deleteDataviaBelakang(userdata: any, idchallenge: string, alasan: string) {
     var detail = await this.challengeService.detailchallenge(idchallenge);
     var mongo = require('mongoose');
     var language = JSON.parse(JSON.stringify(userdata.languages));
     var title = null;
-    var bodyin = "Sayang sekali, kamu telah didiskualifikasi karena melanggar syarat dan ketentuan challenge. Klik disini untuk melihat ketentuan";
-    var bodyeng = "Unfortunately, you have been disqualified for violating the terms and conditions of the challenge. Click here to view the terms and conditions!";
-    if (language.$id.toString() == "613bc5daf9438a7564ca798a") {
-      title = "Diskualifikasi dari challenge " + detail.nameChallenge;
-    } else {
-      title = "You have been disqualified from the " + detail.nameChallenge;
-    }
+    var bodyin = "Yah! Kamu telah dikeluarkan dari challenge karena melanggar aturan komunitas Hyppe. Alasan Pengeluaran: " + alasan;
+    // var bodyin = "Yah! Kamu telah dikeluarkan dari challenge karena melanggar aturan komunitas Hyppe. Alasan Pengeluaran: " + alasan;
+    // var bodyeng = "Oh no! You have been kicked out of the challenge for violating Hyppe's community guideline. Violation reason: " + alasan;
+    title = "Diskualifikasi dari challenge " + detail.nameChallenge;
+    // if (language.$id.toString() == "613bc5daf9438a7564ca798a") {
+    //   title = "Diskualifikasi dari challenge " + detail.nameChallenge;
+    // } else {
+    //   title = "You have been disqualified from the " + detail.nameChallenge;
+    // }
 
-    await this.util.sendNotifChallenge("REMOVE", userdata.email.toString(), title, bodyin, bodyeng, "CHALLENGE", "ACCEPT", idchallenge, "REMOVE PARTICIPANT", "", "");
+    await this.util.sendNotifChallenge("REMOVE", userdata.email.toString(), title, bodyin, bodyin, "CHALLENGE", "ACCEPT", idchallenge, "REMOVE PARTICIPANT", "", "");
 
     var listnotif = await this.notifChallengeService.findChild(idchallenge);
     for (var i = 0; i < listnotif.length; i++) {
