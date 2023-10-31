@@ -2401,8 +2401,8 @@ export class TransactionsController {
                     totalamount = data.totalamount;
 
                     if (statusCallback !== statusCode.toString() && statusCallback === "300") {
-                        await this.accontbalanceWithdrawTopup(idUser, valuedisbcharge, "FAILED TRANSACTION");
-                        await this.accontbalanceWithdrawTopup(idUser, totalamount, "FAILED TRANSACTION");
+                        await this.accontbalanceWithdrawTopup(idUser, valuedisbcharge, "disbursement");
+                        await this.accontbalanceWithdrawTopup(idUser, totalamount, "withdraw");
                     }
                     await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Transaction is FAILED", payload, statusCallback);
                 }
