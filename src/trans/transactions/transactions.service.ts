@@ -9355,7 +9355,7 @@ export class TransactionsService {
                             CreateAccountbalancesDto_2.kredit = 6000;
                             CreateAccountbalancesDto_2.type = "disbursement";
                             CreateAccountbalancesDto_2.timestamp = await this.utilsService.getDateTimeISOString();
-                            CreateAccountbalancesDto_2.description = "FAILED WITHDRAWAL";
+                            CreateAccountbalancesDto_2.description = "FAILED TRANSACTION";
                             await this.accountbalancesService.create(CreateAccountbalancesDto_2);
                         } else if (responseStatusCode == "101") {
                             CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
