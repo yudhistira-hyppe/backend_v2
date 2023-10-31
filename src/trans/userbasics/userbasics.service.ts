@@ -635,12 +635,12 @@ export class UserbasicsService {
         {
           "_id":
           {
-            "$in":userid
+            "$in": userid
           }
         }
       },
       {
-        "$lookup": 
+        "$lookup":
         {
           from: 'userauths',
           localField: 'email',
@@ -651,19 +651,19 @@ export class UserbasicsService {
       {
         "$project":
         {
-          _id:1,
-          email:1,
+          _id: 1,
+          email: 1,
           username:
           {
             "$arrayElemAt":
-            [
-              "$userAuth_data.username", 0
-            ]
+              [
+                "$userAuth_data.username", 0
+              ]
           }
         }
       }
     ]);
-    
+
     return result;
   }
 
@@ -1418,24 +1418,112 @@ export class UserbasicsService {
                   {
                     $match:
                     {
-                      $and:
-                        [
-                          {
-                            $expr: {
-                              $eq: ['$iduser', '$$localID']
-                            }
-                          },
-                          {
-                            "type": "rewards"
-                          },
+                      $or: [
+                        {
+                          $and:
+                            [
+                              {
+                                $expr: {
+                                  $eq: ['$iduser', '$$localID']
+                                }
+                              },
+                              {
+                                "type": "rewards"
+                              },
 
-                        ]
-                    }
+                            ]
+                        },
+                        {
+                          $and:
+                            [
+                              {
+                                $expr: {
+                                  $eq: ['$iduser', '$$localID']
+                                }
+                              },
+                              {
+                                "type": "disbursement"
+                              },
+                              {
+                                "description": "FAILED TRANSACTION"
+                              },
+
+                            ]
+                        },
+                        {
+                          $and:
+                            [
+                              {
+                                $expr: {
+                                  $eq: ['$iduser', '$$localID']
+                                }
+                              },
+                              {
+                                "type": "withdraw"
+                              },
+                              {
+                                "description": "FAILED TRANSACTION"
+                              },
+
+                            ]
+                        },
+
+                      ]
+                    },
+
                   },
                   {
                     $project: {
-                      "jenis": "Rewards",
-                      "type": "Rewards",
+                      "jenis":
+                      {
+                        "$cond":
+                        {
+                          if:
+                          {
+                            "$eq":
+                              ["$type", "rewards"]
+                          },
+                          then: "Rewards",
+                          else:
+                          {
+                            "$cond":
+                            {
+                              if:
+                              {
+                                "$eq":
+                                  ["$type", "withdraw"]
+                              },
+                              then: "Withdraws",
+                              else: "Disbursement"
+                            }
+                          },
+                        }
+                      },
+                      "type":
+                      {
+                        "$cond":
+                        {
+                          if:
+                          {
+                            "$eq":
+                              ["$type", "rewards"]
+                          },
+                          then: "Rewards",
+                          else:
+                          {
+                            "$cond":
+                            {
+                              if:
+                              {
+                                "$eq":
+                                  ["$type", "withdraw"]
+                              },
+                              then: "Withdraws",
+                              else: "Disbursement"
+                            }
+                          },
+                        }
+                      },
                       "timestamp": 1,
                       "description": 1,
                       "noinvoice": 1,
@@ -1916,7 +2004,6 @@ export class UserbasicsService {
                           "email":
                           {
                             $ne: email
-
                           }
                         }
                       ]
@@ -1949,7 +2036,6 @@ export class UserbasicsService {
                           "email":
                           {
                             $ne: email
-
                           }
                         }
                       ]
@@ -2032,6 +2118,7 @@ export class UserbasicsService {
                       "_id": new Types.ObjectId("648ae670766c00007d004a82")
                     }
                   },
+
                 ]
               }
             },
@@ -2052,7 +2139,9 @@ export class UserbasicsService {
                   "expiredtimeva": "$buy-sell.expiredtimeva",
                   "bank": "$buy-sell.bank",
                   "amount": "$buy-sell.amount",
-                  "iconVoucher": { $arrayElemAt: ['$setting.value', 0] },
+                  "iconVoucher": {
+                    $arrayElemAt: ['$setting.value', 0]
+                  },
                   "totalamount":
                   {
                     $cond: {
@@ -2795,6 +2884,7 @@ export class UserbasicsService {
           "debetKredit": '$tester.debetKredit',
           "timestart": "$tester.timestart",
           "iconVoucher": "$tester.iconVoucher",
+
         }
       },
     );
@@ -6654,7 +6744,7 @@ export class UserbasicsService {
   //       $match: {
   //         $or: [
   //           {
-  //             'email': "ilhamarahman97@gmail.com"
+  //             'email': email
   //           },
   //           {
   //             'email': "ahmad.taslim07@gmail.com"
@@ -6670,8 +6760,7 @@ export class UserbasicsService {
   //   return query;
   // }
 
-  async gettotalyopmail(skip:number, limit:number)
-  {
+  async gettotalyopmail(skip: number, limit: number) {
     var pipeline = [];
 
     pipeline.push(
@@ -6680,15 +6769,14 @@ export class UserbasicsService {
         {
           "email":
           {
-            "$regex":"yopmail.com",
-            "$options":"i"
+            "$regex": "yopmail.com",
+            "$options": "i"
           }
         }
       }
     );
 
-    if(skip != null && skip != undefined && skip > 0)
-    {
+    if (skip != null && skip != undefined && skip > 0) {
       pipeline.push(
         {
           "$skip": skip * limit
@@ -6696,18 +6784,17 @@ export class UserbasicsService {
       );
     }
 
-    if(limit != null && limit != undefined && limit > 0)
-    {
+    if (limit != null && limit != undefined && limit > 0) {
       pipeline.push(
         {
-          "$limit":limit
+          "$limit": limit
         }
       );
     }
 
     pipeline.push(
       {
-        "$lookup": 
+        "$lookup":
         {
           from: 'userauths',
           localField: 'email',
@@ -6715,8 +6802,8 @@ export class UserbasicsService {
           as: 'userauth_data',
         },
       },
-			{
-        "$lookup": 
+      {
+        "$lookup":
         {
           from: 'languages',
           localField: 'languages.$id',
@@ -6727,35 +6814,35 @@ export class UserbasicsService {
       {
         "$project":
         {
-          email:1,
-          fullName:1,
+          email: 1,
+          fullName: 1,
           languages:
-					{
-						"$ifNull":
-						[
-							{
-								"$arrayElemAt":
-								[
-									"$languages_data.langIso",0
-								]
-							},
-							"id"
-						]
-					},
+          {
+            "$ifNull":
+              [
+                {
+                  "$arrayElemAt":
+                    [
+                      "$languages_data.langIso", 0
+                    ]
+                },
+                "id"
+              ]
+          },
           username:
           {
             "$arrayElemAt":
-            [
-              "$userauth_data.username", 0
-            ]
+              [
+                "$userauth_data.username", 0
+              ]
           },
           akunmati:
           {
             "$regexMatch":
             {
-              input:"$email",
-              regex:"noneactive",
-              options:"i"
+              input: "$email",
+              regex: "noneactive",
+              options: "i"
             }
           }
         }
@@ -6768,18 +6855,17 @@ export class UserbasicsService {
     return result;
   }
 
-  async getpanggilanuser(page: number, limit: number)
-  {
+  async getpanggilanuser(page: number, limit: number) {
     var result = await this.userbasicModel.aggregate(
       [
         {
-          "$skip":page * limit
+          "$skip": page * limit
         },
         {
-          "$limit":limit
+          "$limit": limit
         },
         {
-          "$lookup": 
+          "$lookup":
           {
             from: 'userauths',
             localField: 'email',
@@ -6790,23 +6876,23 @@ export class UserbasicsService {
         {
           "$project":
           {
-            email:1,
-            fullName:1,
-            languages:1,
+            email: 1,
+            fullName: 1,
+            languages: 1,
             username:
             {
               "$arrayElemAt":
-              [
-                "$userauth_data.username", 0
-              ]
+                [
+                  "$userauth_data.username", 0
+                ]
             },
             akunmati:
             {
               "$regexMatch":
               {
-                input:"$email",
-                regex:"noneactive",
-                options:"i"
+                input: "$email",
+                regex: "noneactive",
+                options: "i"
               }
             }
           }
@@ -7118,44 +7204,44 @@ export class UserbasicsService {
           urluserBadge:
           {
             "$ifNull":
-            [
-              {
-                "$filter":
+              [
                 {
-                  input: "$userBadge",
-                  as: "listbadge",
-                  cond:
+                  "$filter":
                   {
-                    "$and":
-                      [
-                        {
-                          "$eq":
-                            [
-                              "$$listbadge.isActive", true
-                            ]
-                        },
-                        {
-                          "$lte": [
-                            {
-                              "$dateToString": {
-                                "format": "%Y-%m-%d %H:%M:%S",
-                                "date": {
-                                  "$add": [
-                                    new Date(),
-                                    25200000
-                                  ]
+                    input: "$userBadge",
+                    as: "listbadge",
+                    cond:
+                    {
+                      "$and":
+                        [
+                          {
+                            "$eq":
+                              [
+                                "$$listbadge.isActive", true
+                              ]
+                          },
+                          {
+                            "$lte": [
+                              {
+                                "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                    "$add": [
+                                      new Date(),
+                                      25200000
+                                    ]
+                                  }
                                 }
-                              }
-                            },
-                            "$$listbadge.endDatetime"
-                          ]
-                        }
-                      ]
-                  }
+                              },
+                              "$$listbadge.endDatetime"
+                            ]
+                          }
+                        ]
+                    }
+                  },
                 },
-              },
-              []
-            ]
+                []
+              ]
           },
         }
       },
@@ -7203,9 +7289,9 @@ export class UserbasicsService {
           "pin": 1,
           "otppinVerified": 1,
           "tutor": 1,
-          urluserBadge: 
+          urluserBadge:
           {
-            "$ifNull":[
+            "$ifNull": [
               {
                 "$arrayElemAt":
                   [
@@ -7220,7 +7306,7 @@ export class UserbasicsService {
     ]);
     return query[0];
   }
-  
+
   async updateTutor(email: string, key: string, value: boolean) {
     console.log(email)
     console.log(key)
@@ -7850,54 +7936,59 @@ export class UserbasicsService {
   //   return query;
   // }
 
-  async countuserchart()
-  {
-    var getmaledata = await this.userbasicModel.find( {$or: [
-      {gender: "MALE"},
-      {gender: " MALE"}, 
-      {gender: "Male" },
-      {gender: "LAKI-LAKI" },
-      {gender: "Laki-laki" },
-      {gender: "Pria" },
-    ] }).count();
-    
-    var getfemaledata = await this.userbasicModel.find( {$or: [
-      {gender: "FEMALE"},
-      {gender: " FEMALE"},
-      {gender: "Female" },
-      {gender: "Perempuan" },
-      {gender: " Perempuan" },
-      {gender: "PEREMPUAN" },
-      {gender: "Wanita" },
-    ] }).count();
-    
-    var getotherdata = await this.userbasicModel.find( {$or: [
-      {gender: ""},
-      {gender: null}
-    ] }).count();
-    
-    var totaldata = await this.userbasicModel.aggregate( [
+  async countuserchart() {
+    var getmaledata = await this.userbasicModel.find({
+      $or: [
+        { gender: "MALE" },
+        { gender: " MALE" },
+        { gender: "Male" },
+        { gender: "LAKI-LAKI" },
+        { gender: "Laki-laki" },
+        { gender: "Pria" },
+      ]
+    }).count();
+
+    var getfemaledata = await this.userbasicModel.find({
+      $or: [
+        { gender: "FEMALE" },
+        { gender: " FEMALE" },
+        { gender: "Female" },
+        { gender: "Perempuan" },
+        { gender: " Perempuan" },
+        { gender: "PEREMPUAN" },
+        { gender: "Wanita" },
+      ]
+    }).count();
+
+    var getotherdata = await this.userbasicModel.find({
+      $or: [
+        { gender: "" },
+        { gender: null }
+      ]
+    }).count();
+
+    var totaldata = await this.userbasicModel.aggregate([
       { $count: "myCount" }
     ]);
 
     var data = [
       {
         gender:
-        [
-          {
+          [
+            {
               "_id": "MALE",
               "count": getmaledata,
-          },
-          {
+            },
+            {
               "_id": "FEMALE",
               "count": getfemaledata,
-          },
-          {
+            },
+            {
               "_id": "OTHER",
               "count": getotherdata,
-          },
-        ],
-        userActive:totaldata[0].myCount
+            },
+          ],
+        userActive: totaldata[0].myCount
       }
     ];
 
