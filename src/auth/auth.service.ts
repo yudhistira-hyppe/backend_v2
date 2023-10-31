@@ -2108,22 +2108,23 @@ export class AuthService {
         user_langIso = req.body.langIso;
       }
     } else {
-      throw new NotAcceptableException({
-        response_code: 406,
-        messages: {
-          info: ['Unabled to proceed'],
-        },
-      });
+      
+      // throw new NotAcceptableException({
+      //   response_code: 406,
+      //   messages: {
+      //     info: ['Unabled to proceedssssssss'],
+      //   },
+      // });
     }
 
-    if (user_email_header != user_email) {
-      throw new NotAcceptableException({
-        response_code: 406,
-        messages: {
-          info: ['Unabled to proceed'],
-        },
-      });
-    }
+    // if (user_email_header != user_email) {
+    //   throw new NotAcceptableException({
+    //     response_code: 406,
+    //     messages: {
+    //       info: ['Unabled to proceed'],
+    //     },
+    //   });
+    // }
 
     var type = 'ENROL';
     var current_date = await this.utilsService.getDateTimeString();
@@ -2135,19 +2136,19 @@ export class AuthService {
 
     //Ceck User ActivityEvent Parent
     const user_activityevents = await this.activityeventsService.findParentWitoutDevice(
-      user_email,
+      user_email_header,
       type,
       false,
     );
 
     //Ceck User Userbasics
     const datauserbasicsService = await this.userbasicsService.findOne(
-      user_email,
+      user_email_header,
     );
 
     //Ceck User Userauths
     const datauserauthsService = await this.userauthsService.findOneByEmail(
-      user_email,
+      user_email_header,
     );
 
     if (await this.utilsService.ceckData(datauserauthsService)) {
@@ -2172,7 +2173,6 @@ export class AuthService {
       }
       if (await this.utilsService.isAuthVerified(Data)) {
         if (Object.keys(user_activityevents).length > 0) {
-
           if ((event == 'UPDATE_BIO') && (status == 'IN_PROGRESS')) {
             //Update Profile Bio
             try {
