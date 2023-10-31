@@ -9340,14 +9340,23 @@ export class TransactionsService {
                             CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
                             CreateWithdrawsDto_.description = "Transaction is FAILED";
 
-                            let CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
-                            CreateAccountbalancesDto_.iduser = getwithdraws[i].idUser;
-                            CreateAccountbalancesDto_.debet = 0;
-                            CreateAccountbalancesDto_.kredit = getwithdraws[i].amount + 6000;
-                            CreateAccountbalancesDto_.type = "withdraw";
-                            CreateAccountbalancesDto_.timestamp = await this.utilsService.getDateTimeISOString();
-                            CreateAccountbalancesDto_.description = "FAILED TRANSACTION";
-                            await this.accountbalancesService.create(CreateAccountbalancesDto_);
+                            let CreateAccountbalancesDto_1 = new CreateAccountbalancesDto();
+                            CreateAccountbalancesDto_1.iduser = getwithdraws[i].idUser;
+                            CreateAccountbalancesDto_1.debet = 0;
+                            CreateAccountbalancesDto_1.kredit = getwithdraws[i].amount;
+                            CreateAccountbalancesDto_1.type = "withdraw";
+                            CreateAccountbalancesDto_1.timestamp = await this.utilsService.getDateTimeISOString();
+                            CreateAccountbalancesDto_1.description = "FAILED TRANSACTION";
+                            await this.accountbalancesService.create(CreateAccountbalancesDto_1);
+
+                            let CreateAccountbalancesDto_2 = new CreateAccountbalancesDto();
+                            CreateAccountbalancesDto_2.iduser = getwithdraws[i].idUser;
+                            CreateAccountbalancesDto_2.debet = 0;
+                            CreateAccountbalancesDto_2.kredit = 6000;
+                            CreateAccountbalancesDto_2.type = "disbursement";
+                            CreateAccountbalancesDto_2.timestamp = await this.utilsService.getDateTimeISOString();
+                            CreateAccountbalancesDto_2.description = "FAILED WITHDRAWAL";
+                            await this.accountbalancesService.create(CreateAccountbalancesDto_2);
                         } else if (responseStatusCode == "101") {
                             CreateWithdrawsDto_.status = OyDisbursementStatusResponse_.status.message;
                             CreateWithdrawsDto_.verified = false
