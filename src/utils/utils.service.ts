@@ -1594,7 +1594,7 @@ export class UtilsService {
       const FOLLOWER = await this.getprofilecontenteventService.findByCriteria(email, "FOLLOWER");
       const FOLLOWER_ = [...new Map(FOLLOWER.map(item => [item["receiverParty"], item])).values()];
       const FOLLOWING = await this.getprofilecontenteventService.findByCriteria(email, "FOLLOWING");
-      const FOLLOWING_ = [...new Map(FOLLOWING.map(item => [item["receiverParty"], item])).values()];
+      const FOLLOWING_ = [...new Map(FOLLOWING.map(item => [item["senderParty"], item])).values()];
 
       let aFOLLOWER_ = <any>FOLLOWER_.length;
       let aFOLLOWING_ = <any>FOLLOWING_.length;
