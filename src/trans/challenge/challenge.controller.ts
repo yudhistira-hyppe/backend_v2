@@ -1866,6 +1866,108 @@ export class ChallengeController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('listing/userchallenge/v2')
+  async listinguserchallenge2(@Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/listing/userchallenge/v2';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
+    var challengeid = null;
+    var pilihansession = null;
+    var jeniskelamin = null;
+    var jenisakun = null;
+    var username = null;
+    var startage = null;
+    var endage = null;
+    var sorting = null;
+    var limit = null;
+    var page = null;
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+    if (request_json["challengeId"] !== undefined) {
+      challengeid = request_json['challengeId'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, challenge field is required");
+    }
+
+    if (request_json["ascending"] !== undefined) {
+      sorting = request_json['ascending'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, ascending field is required");
+    }
+
+    if (request_json["limit"] !== undefined) {
+      limit = request_json['limit'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, limit field is required");
+    }
+
+    if (request_json["page"] !== undefined) {
+      page = request_json['page'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, page field is required");
+    }
+
+    if (request_json["pilihansession"] !== undefined) {
+      pilihansession = request_json['pilihansession'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, set session field is required");
+    }
+
+    if (request_json["username"] !== undefined) {
+      username = request_json['username'];
+    }
+
+    if (request_json["jeniskelamin"] !== undefined) {
+      jeniskelamin = request_json['jeniskelamin'];
+    }
+
+    if (request_json["jenisakun"] !== undefined) {
+      jenisakun = request_json['jenisakun'];
+    }
+
+    if (request_json["startage"] !== undefined && request_json["endage"] !== undefined) {
+      startage = request_json['startage'];
+      endage = request_json['endage'];
+    }
+
+    var data = await this.subchallenge.listinguserchallenge2(challengeid, pilihansession, jenisakun, username, startage, endage, jeniskelamin, sorting, limit, page);
+    var totaldata = await this.subchallenge.listinguserchallenge2(challengeid, pilihansession, jenisakun, username, startage, endage, jeniskelamin, sorting, null, null);
+
+    const messages = {
+      "info": ["The create successful"],
+    };
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+    return {
+      response_code: 202,
+      "data": data,
+      "totaldata": totaldata.length,
+      "message": messages
+    }
+  }
+
 
   @UseGuards(JwtAuthGuard)
   @Post('listleaderboard')

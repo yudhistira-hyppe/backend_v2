@@ -2710,6 +2710,417 @@ export class subChallengeService {
         return query;
     }
 
+    async listinguserchallenge2(challengeId: string, pilihansession: string, setjenisakun: any[], setusername: string, setstartage: number, setendage: number, setjeniskelamin: any[], sortingranking: boolean, limit: number, page: number) {
+        var mongo = require('mongoose');
+        var konvertid = mongo.Types.ObjectId(challengeId);
+
+        var pipeline = [];
+        pipeline.push(
+            {
+                $set:
+                {
+                    "timenow":
+                    {
+                        "$dateToString":
+                        {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date":
+                            {
+                                $add: [new Date(), 25200000]
+                            }
+                        }
+                    }
+                }
+            },
+        );
+
+        if (pilihansession == "BERLANGSUNG") {
+            pipeline.push(
+                {
+                    "$match":
+                    {
+                        "$and":
+                            [
+                                {
+                                    challengeId: konvertid
+                                },
+                                {
+                                    "$expr":
+                                    {
+                                        "$lte":
+                                            [
+                                                "$startDatetime",
+                                                "$timenow"
+                                            ]
+                                    }
+                                },
+                                {
+                                    "$expr":
+                                    {
+                                        "$gte":
+                                            [
+                                                "$endDatetime",
+                                                "$timenow"
+                                            ]
+                                    }
+                                },
+                            ]
+                    }
+                },
+            );
+        }
+        else {
+            pipeline.push(
+                {
+                    "$match":
+                    {
+                        "$and":
+                            [
+                                {
+                                    challengeId: konvertid
+                                },
+                                {
+                                    "$expr":
+                                    {
+                                        "$lte":
+                                            [
+                                                "$endDatetime",
+                                                "$timenow"
+                                            ]
+                                    }
+                                }
+                            ]
+                    }
+                },
+            );
+        }
+
+        var userchallengepipeline = [];
+
+        userchallengepipeline.push(
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+                            {
+                                "$expr":
+                                {
+                                    "$eq":
+                                        [
+                                            "$$userChallenge_fk", "$idSubChallenge"
+                                        ]
+                                }
+                            },
+                            {
+                                "$expr":
+                                {
+                                    "$eq":
+                                        [
+                                            "$isActive", true
+                                        ]
+                                }
+                            },
+                        ]
+                }
+            },
+            {
+                '$lookup': {
+                  from: 'newUserBasics',
+                  localField: 'idUser',
+                  foreignField: '_id',
+                  as: 'userbasics_data'
+                }
+            },
+            {
+                '$project': {
+                    _id: 1,
+                    idSubChallenge: 1,
+                    startDatetime: 1,
+                    endDatetime: 1,
+                    updatedAt: 1,
+                    score: { '$ifNull': [ '$score', 0 ] },
+                    ranking: {
+                        '$ifNull': [ { '$toInt': '$ranking' }, { '$toInt': 0 } ]
+                    },
+                    username: { '$arrayElemAt': [ '$userbasics_data.username', 0 ] },
+                    email: { '$arrayElemAt': [ '$userbasics_data.email', 0 ] },
+                    fullName: { '$arrayElemAt': [ '$userbasics_data.fullName', 0 ] },
+                    gender: {
+                        '$switch': {
+                        branches: [
+                            {
+                            case: {
+                                '$eq': [
+                                {
+                                    '$arrayElemAt': [ '$userbasics_data.gender', 0 ]
+                                },
+                                'FEMALE'
+                                ]
+                            },
+                            then: 'FEMALE'
+                            },
+                            {
+                            case: {
+                                '$eq': [
+                                {
+                                    '$arrayElemAt': [ '$userbasics_data.gender', 0 ]
+                                },
+                                ' FEMALE'
+                                ]
+                            },
+                            then: 'FEMALE'
+                            },
+                            {
+                            case: {
+                                '$eq': [
+                                {
+                                    '$arrayElemAt': [ '$userbasics_data.gender', 0 ]
+                                },
+                                'Perempuan'
+                                ]
+                            },
+                            then: 'FEMALE'
+                            },
+                            {
+                            case: {
+                                '$eq': [
+                                {
+                                    '$arrayElemAt': [ '$userbasics_data.gender', 0 ]
+                                },
+                                'Wanita'
+                                ]
+                            },
+                            then: 'FEMALE'
+                            },
+                            {
+                            case: {
+                                '$eq': [
+                                {
+                                    '$arrayElemAt': [ '$userbasics_data.gender', 0 ]
+                                },
+                                'MALE'
+                                ]
+                            },
+                            then: 'MALE'
+                            },
+                            {
+                            case: {
+                                '$eq': [
+                                {
+                                    '$arrayElemAt': [ '$userbasics_data.gender', 0 ]
+                                },
+                                ' MALE'
+                                ]
+                            },
+                            then: 'MALE'
+                            },
+                            {
+                            case: {
+                                '$eq': [
+                                {
+                                    '$arrayElemAt': [ '$userbasics_data.gender', 0 ]
+                                },
+                                'Laki-laki'
+                                ]
+                            },
+                            then: 'MALE'
+                            },
+                            {
+                            case: {
+                                '$eq': [
+                                {
+                                    '$arrayElemAt': [ '$userbasics_data.gender', 0 ]
+                                },
+                                'Pria'
+                                ]
+                            },
+                            then: 'MALE'
+                            }
+                        ],
+                        default: 'OTHER'
+                        }
+                    },
+                    dob: {
+                        '$cond': {
+                        if: {
+                            '$and': [
+                            { '$arrayElemAt': [ '$userbasics_data.dob', 0 ] },
+                            {
+                                '$ne': [
+                                {
+                                    '$arrayElemAt': [ '$userbasics_data.dob', 0 ]
+                                },
+                                ''
+                                ]
+                            }
+                            ]
+                        },
+                        then: {
+                            '$toInt': {
+                            '$divide': [
+                                {
+                                '$subtract': [
+                                    new Date(),
+                                    {
+                                    '$toDate': {
+                                        '$arrayElemAt': [ '$userbasics_data.dob', 0 ]
+                                    }
+                                    }
+                                ]
+                                },
+                                31536000000
+                            ]
+                            }
+                        },
+                        else: 0
+                        }
+                    },
+                    statusKyc: { '$arrayElemAt': [ '$userbasics_data.statusKyc', 0 ] },
+                    profilePict: {
+                        mediaBasePath: {
+                        '$ifNull': [ { '$arrayElemAt': [ '$userbasics_data.mediaBasePath', 0 ] }, null ]
+                        },
+                        mediaUri: {
+                        '$ifNull': [ { '$arrayElemAt': [ '$userbasics_data.mediaUri', 0 ] }, null ]
+                        },
+                        mediaType: {
+                        '$ifNull': [ { '$arrayElemAt': [ '$userbasics_data.mediaType', 0 ] }, null ]
+                        },
+                        mediaEndpoint: {
+                        '$ifNull': [ { '$arrayElemAt': [ '$userbasics_data.mediaEndpoint', 0 ] }, null ]
+                        },
+                    }
+                }
+            },
+        );
+
+        var userchallengematch = [];
+
+        if (setusername != null && setusername != undefined) {
+            userchallengematch.push(
+                {
+                    username:
+                    {
+                        "$regex": setusername,
+                        "$option": "i"
+                    }
+                }
+            );
+        }
+
+        if (setjenisakun != null && setjenisakun != undefined) {
+            userchallengematch.push(
+                {
+                    "$expr":
+                    {
+                        "$in":
+                            [
+                                "$statusKyc", setjenisakun
+                            ]
+                    }
+                },
+            );
+        }
+
+        if (setjeniskelamin != null && setjeniskelamin != undefined) {
+            userchallengematch.push(
+                {
+                    "$expr":
+                    {
+                        "$in":
+                            [
+                                "$gender", setjeniskelamin
+                            ]
+                    }
+                },
+            );
+        }
+
+        if (setstartage != null && setendage != null) {
+            userchallengematch.push(
+                {
+                    "$expr":
+                    {
+                        "$gte":
+                            [
+                                "$dob", setstartage
+                            ]
+                    }
+                },
+                {
+                    "$expr":
+                    {
+                        "$lte":
+                            [
+                                "$dob", setendage
+                            ]
+                    }
+                },
+            );
+        }
+
+        if (userchallengematch.length != 0) {
+            userchallengepipeline.push(
+                {
+                    "$match":
+                    {
+                        "$and": userchallengematch
+                    }
+                }
+            );
+        }
+
+        var setsorting = null;
+        if (sortingranking == true) {
+            setsorting = 1;
+        }
+        else {
+            setsorting = -1;
+        }
+
+        userchallengepipeline.push(
+            {
+                "$sort":
+                {
+                    ranking: setsorting
+                }
+            }
+        );
+
+        if (page > 0) {
+            userchallengepipeline.push({
+                "$skip": limit * page
+            });
+        }
+
+        if (limit > 0) {
+            userchallengepipeline.push({
+                "$limit": limit
+            });
+        }
+
+        pipeline.push(
+            {
+                "$lookup":
+                {
+                    from: "userChallenge",
+                    as: "userChallenge_data",
+                    let:
+                    {
+                        userChallenge_fk: "$_id"
+                    },
+                    pipeline: userchallengepipeline
+                }
+            },
+        );
+
+        // console.log(JSON.stringify(pipeline));
+
+        var query = await this.subChallengeModel.aggregate(pipeline);
+        return query;
+    }
+
     async getListUserChallenge(idchallenge: string, iduser: string, status: string, session: number) {
         var pipeline = [];
 
