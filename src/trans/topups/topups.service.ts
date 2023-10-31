@@ -29,18 +29,32 @@ export class TopupsService {
     return this.TopupsModel.findOne({ _id: new mongoose.Types.ObjectId(id) }).exec();
   }
 
-  async findCriteria(pageNumber: number, pageRow: number, search: string, sort: any): Promise<Topups[]> {
+  async findCriteria(start_date: any, end_date: any, pageNumber: number, pageRow: number, search: string, sort: any): Promise<Topups[]> {
     var perPage = pageRow, page = Math.max(0, pageNumber);
     var where = {
       $and: []
     };
-    var where_and = {};
-    var where_name = {};
-    if (search != undefined) {
-      where_name['email'] = { $regex: search, $options: "i" };
-      where['$or'].push(where_name);
-    }
-    where.$and.push(where_and);
+
+    // if (start_date != null) {
+    //   let where_start_date = {};
+    //   where_start_date['createdAt'] = { $gte: start_date.toISOString() };
+    //   where.$and.push(where_start_date);
+    // }
+
+    // if (end_date != null) {
+    //   let where_end_date = {};
+    //   where_end_date['createdAt'] = { $lte: end_date.toISOString() };
+    //   where.$and.push(where_end_date);
+    // }
+    // if (end_date != null) {
+    //   where_name['email'] = { $regex: search, $options: "i" };
+    //   where['$or'].push(where_name);
+    // }
+    // if (search != undefined) {
+    //   where_name['email'] = { $regex: search, $options: "i" };
+    //   where['$or'].push(where_name);
+    // }
+    // where.$and.push(where_and);
     const query = await this.TopupsModel.find(where).limit(perPage).skip(perPage * page).sort(sort);
     return query;
   }

@@ -8,9 +8,11 @@ import { TopupsService } from './topups.service';
 import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { UserauthsModule } from '../userauths/userauths.module';
 import { AccountbalancesModule } from '../accountbalances/accountbalances.module';
+import { UtilsModule } from 'src/utils/utils.module';
 
 @Module({
   imports: [
+    UtilsModule,
     AccountbalancesModule,
     UserbasicsModule,
     UserauthsModule,

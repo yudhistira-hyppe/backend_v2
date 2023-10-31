@@ -2108,6 +2108,9 @@ export class AuthService {
         user_langIso = req.body.langIso;
       }
     } else {
+      if (req.body.area != undefined) {
+        user_area = req.body.area;
+      }
       
       // throw new NotAcceptableException({
       //   response_code: 406,
@@ -2495,6 +2498,22 @@ export class AuthService {
                 error,
               );
             }
+          }else{
+            var data_update_userbasict = {};
+            user_email = user_email_header;
+            console.log("user_area", user_area)
+            if (user_area != null) {
+              var areas = await this.areasService.findOneName(user_area);
+              if ((await this.utilsService.ceckData(areas))) {
+                var areas_id = (await areas)._id;
+                data_update_userbasict['states'] = {
+                  $ref: 'areas',
+                  $id: areas_id,
+                  $db: 'hyppe_infra_db',
+                };
+              }
+              await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
+            }
           }
 
           return {
@@ -2676,6 +2695,22 @@ export class AuthService {
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed update profile detail. Error:' + error,
               );
+            }
+          } else {
+            var data_update_userbasict = {};
+            user_email = user_email_header;
+            console.log("user_email", user_email)
+            if (user_area != null) {
+              var areas = await this.areasService.findOneName(user_area);
+              if ((await this.utilsService.ceckData(areas))) {
+                var areas_id = (await areas)._id;
+                data_update_userbasict['states'] = {
+                  $ref: 'areas',
+                  $id: areas_id,
+                  $db: 'hyppe_infra_db',
+                };
+              }
+              await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
             }
           }
 

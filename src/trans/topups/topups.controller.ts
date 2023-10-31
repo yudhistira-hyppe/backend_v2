@@ -53,22 +53,27 @@ export class TopupsController {
 
       //PPH
       let pph = 0;
-      if (Topups_.topup >= 2500000){
+      if (Number(Topups_.topup) <= Number(2500000)) {
         pph = 0.05;
-      } else if ((2500000 < Topups_.topup) && (Topups_.topup <= 30000000)) {
+        console.log(pph);
+      } else if ((Number(2500000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(30000000))) {
         pph = 0.15;
-      } else if ((30000000 < Topups_.topup) && (Topups_.topup <= 62500000)) {
+        console.log(pph);
+      } else if ((Number(30000000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(62500000))) {
         pph = 0.25;
-      } else if ((62500000 < Topups_.topup) && (Topups_.topup <= 150000000)) {
-        pph = 0.30;
+        console.log(pph);
+      } else if ((Number(62500000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(150000000))) {
+        pph = 0.3;
+        console.log(pph);
       } else {
-        pph = 0.30;
+        pph = 0.3;
+        console.log(pph);
       }
 
       //PPH CALCULATE
       let pphPrice = (Topups_.topup / 2) * pph;
       //TOT CALCULATE
-      let tot = (Topups_.total - pphPrice);
+      let tot = (Topups_.topup - pphPrice);
 
       Topups_._id = new mongoose.Types.ObjectId();
       Topups_.idUser = new mongoose.Types.ObjectId(dataUserbasics._id.toString());
@@ -189,6 +194,38 @@ export class TopupsController {
     return await this.errorHandler.generateAcceptResponseCode(
       "Delete Data Topups succesfully",
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/list')
+  async list(@Body() body: any, @Headers() headers) {
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+
+    //----------------START DATE----------------
+    let start_date = null;
+    if (body.start_date != undefined) {
+      start_date = new Date(body.start_date);
+    }
+
+    //----------------END DATE----------------
+    let end_date = null;
+    if (body.end_date != undefined) {
+      end_date = new Date(body.end_date);
+      end_date = new Date(end_date.setDate(end_date.getDate() + 1));
+    }
+
+    try{
+      const topupsList = await this.topupsService.findCriteria(start_date, end_date, body.page, body.limit, body.page, body.sorting);
+      return await this.errorHandler.generateAcceptResponseCodeWithData(
+        "Get List succesfully", topupsList, topupsList.length, body.page
+      );
+    }catch(e){
+
+    }
   }
 
   @UseGuards(JwtAuthGuard)

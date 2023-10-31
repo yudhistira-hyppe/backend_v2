@@ -120,8 +120,10 @@ import { AdsPriceCreditsModule } from './trans/adsv2/adspricecredits/adspricecre
 import { UserbasicnewModule } from './trans/userbasicnew/userbasicnew.module';
 import { AdsRewardsModule } from './trans/adsv2/adsrewards/adsrewards.module';
 import { GetprofilecontenteventModule } from './utils/getprofilecontentevent/getprofilecontentevent.module';
+import { TopupsModule } from './trans/topups/topups.module';
 @Module({
   imports: [
+    TopupsModule,
     GetprofilecontenteventModule,
     AdsRewardsModule,
     UserbasicnewModule,
