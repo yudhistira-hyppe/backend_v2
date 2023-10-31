@@ -4063,7 +4063,7 @@ export class TransactionsController {
         if (tipe === "inquiry") {
             desccontent = "inquiry";
         } else if (tipe === "disbursement") {
-            desccontent = "FAILED WITHDRAWAL";
+            desccontent = "FAILED TRANSACTION";
         } else {
             desccontent = "FAILED TRANSACTION";
         }
