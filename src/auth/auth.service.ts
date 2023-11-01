@@ -2111,6 +2111,18 @@ export class AuthService {
       if (req.body.area != undefined) {
         user_area = req.body.area;
       }
+
+      if (req.body.gender != undefined) {
+        user_gender = req.body.gender;
+      }else{
+        user_gender = "";
+      }
+
+      if (req.body.dob != undefined) {
+        user_dob = req.body.dob;
+      } else {
+        user_dob = "";
+      }
       
       // throw new NotAcceptableException({
       //   response_code: 406,
@@ -2512,8 +2524,14 @@ export class AuthService {
                   $db: 'hyppe_infra_db',
                 };
               }
-              await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
             }
+            if (user_gender != null) {
+              data_update_userbasict['gender'] = user_gender;
+            }
+            if (user_dob != null) {
+              data_update_userbasict['dob'] = user_dob;
+            }
+            await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
           }
 
           return {
@@ -2710,8 +2728,14 @@ export class AuthService {
                   $db: 'hyppe_infra_db',
                 };
               }
-              await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
             }
+            if (user_gender != null) {
+              data_update_userbasict['gender'] = user_gender;
+            }
+            if (user_dob != null) {
+              data_update_userbasict['dob'] = user_dob;
+            }
+            await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
           }
 
           return {
