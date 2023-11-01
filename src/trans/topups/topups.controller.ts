@@ -159,7 +159,9 @@ export class TopupsController {
         CreateAccountbalancesDto_.description = "TOP UP";
         await this.accountbalancesService.create(CreateAccountbalancesDto_);
       }
-      await this.topupsService.updateone(Topups_._id.toString(), Topups_);
+      const dataId = Topups_._id.toString();
+      Topups_._id = undefined;
+      await this.topupsService.updateone(dataId, Topups_);
 
       return await this.errorHandler.generateAcceptResponseCode(
         "Update Data Topups succesfully"
@@ -190,7 +192,9 @@ export class TopupsController {
     }
     Topups_.status = "DELETE";
     Topups_.updatedAt = currentDate;
-    await this.topupsService.updateone(Topups_._id.toString(), Topups_);
+    const dataId = Topups_._id.toString();
+    Topups_._id = undefined;
+    await this.topupsService.updateone(dataId, Topups_);
 
     return await this.errorHandler.generateAcceptResponseCode(
       "Delete Data Topups succesfully",
