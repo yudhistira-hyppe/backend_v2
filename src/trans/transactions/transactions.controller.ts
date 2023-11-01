@@ -1919,7 +1919,7 @@ export class TransactionsController {
 
             throw new BadRequestException("Unabled to proceed");
         }
-        // var ubasic = await this.userbasicsService.findOne(email);
+        var ubasic = await this.userbasicsService.findOne(email);
 
         var iduser = ubasic._id;
         var amounreq = OyDisbursements.amount;
@@ -1990,7 +1990,7 @@ export class TransactionsController {
         }
 
         try {
-            datarek = await this.userbankaccountsService.findnorek(recipient_account, idbank);
+            datarek = await this.userbankaccountsService.findnorekWithdrawuser2(recipient_account, idbank, iduser.toString());
             var idbankaccount = datarek._doc._id;
             norekdb = datarek._doc.noRek;
             namarek = datarek._doc.nama;

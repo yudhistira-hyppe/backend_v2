@@ -159,7 +159,7 @@ export class UserbankaccountsController {
         }
 
         try {
-            datarekkembar = await this.userbankaccountsService.findnorek(noRek, idbank.toString());
+            datarekkembar = await this.userbankaccountsService.findnorek(noRek, idbank);
             idakun = datarekkembar._id;
         } catch (e) {
             datarekkembar = null;
