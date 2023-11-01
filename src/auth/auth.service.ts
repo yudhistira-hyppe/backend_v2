@@ -1986,6 +1986,7 @@ export class AuthService {
   async updateprofile(req: any, head: any) {
     console.log("");
     console.log("");
+    console.log("----------------------------HEAD---------------------------", head);
     console.log("----------------------------REG---------------------------", req);
     console.log("");
     console.log("");
