@@ -2123,6 +2123,10 @@ export class AuthService {
       } else {
         user_dob = "";
       }
+
+      if (req.body.country != undefined) {
+        user_country = req.body.country;
+      }
       
       // throw new NotAcceptableException({
       //   response_code: 406,
@@ -2531,6 +2535,17 @@ export class AuthService {
             if (user_dob != null) {
               data_update_userbasict['dob'] = user_dob;
             }
+            if (user_country != null) {
+              var countries = await this.countriesService.findOneName(user_country);
+              if ((await this.utilsService.ceckData(countries))) {
+                var countries_id = (await countries)._id;
+                data_update_userbasict['countries'] = {
+                  $ref: 'countries',
+                  $id: countries_id,
+                  $db: 'hyppe_infra_db',
+                };
+              }
+            }
             await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
           }
 
@@ -2734,6 +2749,17 @@ export class AuthService {
             }
             if (user_dob != null) {
               data_update_userbasict['dob'] = user_dob;
+            }
+            if (user_country != null) {
+              var countries = await this.countriesService.findOneName(user_country);
+              if ((await this.utilsService.ceckData(countries))) {
+                var countries_id = (await countries)._id;
+                data_update_userbasict['countries'] = {
+                  $ref: 'countries',
+                  $id: countries_id,
+                  $db: 'hyppe_infra_db',
+                };
+              }
             }
             await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
           }

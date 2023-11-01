@@ -35,22 +35,29 @@ export class TopupsService {
       $and: []
     };
 
-    // if (start_date != null) {
-    //   let where_start_date = {};
-    //   where_start_date['createdAt'] = { $gte: start_date.toISOString() };
-    //   where.$and.push(where_start_date);
-    // }
+    if (start_date != null) {
+      let where_start_date = {};
+      where_start_date['createdAt'] = { $gte: start_date.toISOString() };
+      where.$and.push(where_start_date);
+    }
 
-    // if (end_date != null) {
+    if (end_date != null) {
+      let where_end_date = {};
+      where_end_date['createdAt'] = { $lte: end_date.toISOString() };
+      where.$and.push(where_end_date);
+    }
+
+    // if (search != undefined) {
     //   let where_end_date = {};
-    //   where_end_date['createdAt'] = { $lte: end_date.toISOString() };
-    //   where.$and.push(where_end_date);
-    // }
-    // if (end_date != null) {
     //   where_name['email'] = { $regex: search, $options: "i" };
     //   where['$or'].push(where_name);
     // }
-    // if (search != undefined) {
+
+    if (sort==undefined){
+      sort = { "createdAt":-1 }
+    }
+
+    // if (end_date != null) {
     //   where_name['email'] = { $regex: search, $options: "i" };
     //   where['$or'].push(where_name);
     // }
