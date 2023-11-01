@@ -29,32 +29,58 @@ export class TopupsService {
     return this.TopupsModel.findOne({ _id: new mongoose.Types.ObjectId(id) }).exec();
   }
 
-  async findCriteria(start_date: any, end_date: any, pageNumber: number, pageRow: number, search: string, sort: any): Promise<Topups[]> {
+  async findCriteria(start_date: any, end_date: any, pageNumber: number, pageRow: number, search: string, createBy: string, status: [], sort: any): Promise<Topups[]> {
     var perPage = pageRow, page = Math.max(0, pageNumber);
     var where = {
       $and: []
     };
 
-    // if (start_date != null) {
-    //   let where_start_date = {};
-    //   where_start_date['createdAt'] = { $gte: start_date.toISOString() };
-    //   where.$and.push(where_start_date);
-    // }
+    let where_status = {
+      status: { $ne: "DELETE" }
+    };
+    where.$and.push(where_status);
 
-    // if (end_date != null) {
-    //   let where_end_date = {};
-    //   where_end_date['createdAt'] = { $lte: end_date.toISOString() };
-    //   where.$and.push(where_end_date);
-    // }
-    // if (end_date != null) {
-    //   where_name['email'] = { $regex: search, $options: "i" };
-    //   where['$or'].push(where_name);
-    // }
-    // if (search != undefined) {
-    //   where_name['email'] = { $regex: search, $options: "i" };
-    //   where['$or'].push(where_name);
-    // }
-    // where.$and.push(where_and);
+    if (start_date != null) {
+      let where_start_date = {};
+      where_start_date['createdAt'] = { $gte: start_date.toISOString() };
+      where.$and.push(where_start_date);
+    }
+
+    if (end_date != null) {
+      let where_end_date = {};
+      where_end_date['createdAt'] = { $lte: end_date.toISOString() };
+      where.$and.push(where_end_date);
+    }
+
+    if (createBy != undefined) {
+      let where_createBy = {};
+      where_createBy['createByUsername'] = { $regex: createBy, $options: "i" };
+      where.$and.push(where_createBy);
+    }
+
+    if (status != undefined) {
+      if (status.length > 0) {
+        let where_status = {};
+        where_status['status'] = { $in: status };
+        where.$and.push(where_status);
+      }
+    }
+
+    if (search != undefined) {
+      var $or = [];
+      let where_email = {};
+      let where_username = {};
+      where_email['email'] = { $regex: search, $options: "i" };
+      where_username['username'] = { $regex: search, $options: "i" };
+      $or.push(where_email);
+      $or.push(where_username);
+      where.$and.push({ $or:$or });
+    }
+
+    if (sort==undefined){
+      sort = { "createdAt":-1 }
+    }
+    console.log(JSON.stringify(where));
     const query = await this.TopupsModel.find(where).limit(perPage).skip(perPage * page).sort(sort);
     return query;
   }

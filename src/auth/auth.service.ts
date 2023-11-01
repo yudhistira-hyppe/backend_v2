@@ -1984,6 +1984,12 @@ export class AuthService {
   }
 
   async updateprofile(req: any, head: any) {
+    console.log("");
+    console.log("");
+    console.log("----------------------------HEAD---------------------------", head);
+    console.log("----------------------------REG---------------------------", req);
+    console.log("");
+    console.log("");
     if (!(await this.utilsService.validasiTokenEmail(head))) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed',
@@ -2122,6 +2128,10 @@ export class AuthService {
         user_dob = req.body.dob;
       } else {
         user_dob = "";
+      }
+
+      if (req.body.country != undefined) {
+        user_country = req.body.country;
       }
       
       // throw new NotAcceptableException({
@@ -2531,6 +2541,17 @@ export class AuthService {
             if (user_dob != null) {
               data_update_userbasict['dob'] = user_dob;
             }
+            if (user_country != null) {
+              var countries = await this.countriesService.findOneName(user_country);
+              if ((await this.utilsService.ceckData(countries))) {
+                var countries_id = (await countries)._id;
+                data_update_userbasict['countries'] = {
+                  $ref: 'countries',
+                  $id: countries_id,
+                  $db: 'hyppe_infra_db',
+                };
+              }
+            }
             await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
           }
 
@@ -2734,6 +2755,17 @@ export class AuthService {
             }
             if (user_dob != null) {
               data_update_userbasict['dob'] = user_dob;
+            }
+            if (user_country != null) {
+              var countries = await this.countriesService.findOneName(user_country);
+              if ((await this.utilsService.ceckData(countries))) {
+                var countries_id = (await countries)._id;
+                data_update_userbasict['countries'] = {
+                  $ref: 'countries',
+                  $id: countries_id,
+                  $db: 'hyppe_infra_db',
+                };
+              }
             }
             await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
           }

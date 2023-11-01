@@ -18,6 +18,8 @@ export class Topups {
   @Prop()
   pph: number
   @Prop()
+  pphPersen: number
+  @Prop()
   total: number
   @Prop()
   approveByFinance: boolean
