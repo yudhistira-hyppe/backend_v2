@@ -4618,26 +4618,26 @@ export class ChallengeService {
                 //}
               }
               else {
-                let datanotifchall = null;
-                try {
+                // let datanotifchall = null;
+                // try {
 
-                  datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
-                } catch (e) {
-                  datanotifchall = null;
-                }
+                //   datanotifchall = await this.NotificationsService.findNotifchallenge(email, "CHALLENGE", challengeID, datetime);
+                // } catch (e) {
+                //   datanotifchall = null;
+                // }
 
-                if (datanotifchall !== null) {
-                  console.log("==data sudah ada==")
+                // if (datanotifchall !== null) {
+                //   console.log("==data sudah ada==")
+                // } else {
+                if (langIso == "en") {
+                  await this.util.sendNotifChallenge("", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
+
                 } else {
-                  if (langIso == "en") {
-                    await this.util.sendNotifChallenge("", email, titleEN, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
-
-                  } else {
-                    await this.util.sendNotifChallenge("", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
-
-                  }
+                  await this.util.sendNotifChallenge("", email, title, body, bodyEN, "CHALLENGE", "ACCEPT", challengeID, typeChallenge, "", datetime);
 
                 }
+
+                //  }
 
               }
               await this.notifChallengeService.updateStatussend(idnotif.toString());
