@@ -25,7 +25,7 @@ export class TopupsController {
   @UseGuards(JwtAuthGuard)
   @Post('/create')
   async create(@Body() Topups_: Topups, @Headers() headers) {
-    var currentDate = await this.utilsService.getDateTimeString();
+    var currentDate = await this.utilsService.getDateTimeISOString();
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
@@ -104,7 +104,7 @@ export class TopupsController {
   @UseGuards(JwtAuthGuard)
   @Post('/approve')
   async approve(@Body() Topups_: Topups, @Headers() headers) {
-    var currentDate = await this.utilsService.getDateTimeString();
+    var currentDate = await this.utilsService.getDateTimeISOString();
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
@@ -125,7 +125,7 @@ export class TopupsController {
       if (Topups_.approveByFinance!=undefined){
         if (Topups_.approveByFinance && dataTopups.approveByStrategy){
           Topups_.approve = true;
-          Topups_.status = "APPROVE";
+          Topups_.status = "SUCCESS";
           Topups_.approveByFinanceDate = currentDate;
           Topups_.approveByFinanceUserId = new mongoose.Types.ObjectId(dataUserbasics_login._id.toString());
           Topups_.updatedAt = currentDate;
@@ -220,17 +220,19 @@ export class TopupsController {
     }
 
     try{
-      const topupsList = await this.topupsService.findCriteria(start_date, end_date, body.page, body.limit, body.search, body.sorting);
+      const topupsList = await this.topupsService.findCriteria(start_date, end_date, body.page, body.limit, body.search, body.createBy, body.status, body.sorting);
       return await this.errorHandler.generateAcceptResponseCodeWithData(
         "Get List succesfully", topupsList, topupsList.length, body.page
       );
-    }catch(e){
-
+    } catch (e) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed ' + e,
+      );
     }
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/export')
+  @Post('/import')
   @UseInterceptors(FileInterceptor('file'))
   async export(@UploadedFile() file: Express.Multer.File, @Headers() headers) {
     var currentDate = await this.utilsService.getDateTimeString();

@@ -29,7 +29,7 @@ export class TopupsService {
     return this.TopupsModel.findOne({ _id: new mongoose.Types.ObjectId(id) }).exec();
   }
 
-  async findCriteria(start_date: any, end_date: any, pageNumber: number, pageRow: number, search: string, sort: any): Promise<Topups[]> {
+  async findCriteria(start_date: any, end_date: any, pageNumber: number, pageRow: number, search: string, createBy: string, status: [], sort: any): Promise<Topups[]> {
     var perPage = pageRow, page = Math.max(0, pageNumber);
     var where = {
       $and: []
@@ -52,13 +52,29 @@ export class TopupsService {
       where.$and.push(where_end_date);
     }
 
+    if (createBy != undefined) {
+      let where_createBy = {};
+      where_createBy['createByUsername'] = { $regex: createBy, $options: "i" };
+      where.$and.push(where_createBy);
+    }
+
+    if (status != undefined) {
+      if (status.length > 0) {
+        let where_status = {};
+        where_status['status'] = { $in: status };
+        where.$and.push(where_status);
+      }
+    }
+
     if (search != undefined) {
+      var $or = [];
       let where_email = {};
       let where_username = {};
       where_email['email'] = { $regex: search, $options: "i" };
       where_username['username'] = { $regex: search, $options: "i" };
-      where['$or'].push(where_email);
-      where['$or'].push(where_username);
+      $or.push(where_email);
+      $or.push(where_username);
+      where.$and.push({ $or:$or });
     }
 
     if (sort==undefined){
