@@ -1984,6 +1984,11 @@ export class AuthService {
   }
 
   async updateprofile(req: any, head: any) {
+    console.log("");
+    console.log("");
+    console.log("----------------------------REG---------------------------", req);
+    console.log("");
+    console.log("");
     if (!(await this.utilsService.validasiTokenEmail(head))) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed',
