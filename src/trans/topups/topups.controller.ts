@@ -87,7 +87,8 @@ export class TopupsController {
       Topups_.createByUsername = dataUserauths_login.username;
       Topups_.status = "NEW";
       Topups_.createdAt = currentDate;
-      Topups_.updatedAt = currentDate;
+      Topups_.updatedAt = currentDate; 
+      Topups_.pphPersen = pph;
       const data = await this.topupsService.create(Topups_);
 
       return await this.errorHandler.generateAcceptResponseCodeWithData(
@@ -219,7 +220,7 @@ export class TopupsController {
     }
 
     try{
-      const topupsList = await this.topupsService.findCriteria(start_date, end_date, body.page, body.limit, body.page, body.sorting);
+      const topupsList = await this.topupsService.findCriteria(start_date, end_date, body.page, body.limit, body.search, body.sorting);
       return await this.errorHandler.generateAcceptResponseCodeWithData(
         "Get List succesfully", topupsList, topupsList.length, body.page
       );

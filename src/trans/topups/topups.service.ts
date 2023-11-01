@@ -35,6 +35,11 @@ export class TopupsService {
       $and: []
     };
 
+    let where_status = {
+      status: { $ne: "DELETE" }
+    };
+    where.$and.push(where_status);
+
     if (start_date != null) {
       let where_start_date = {};
       where_start_date['createdAt'] = { $gte: start_date.toISOString() };
@@ -47,21 +52,19 @@ export class TopupsService {
       where.$and.push(where_end_date);
     }
 
-    // if (search != undefined) {
-    //   let where_end_date = {};
-    //   where_name['email'] = { $regex: search, $options: "i" };
-    //   where['$or'].push(where_name);
-    // }
+    if (search != undefined) {
+      let where_email = {};
+      let where_username = {};
+      where_email['email'] = { $regex: search, $options: "i" };
+      where_username['username'] = { $regex: search, $options: "i" };
+      where['$or'].push(where_email);
+      where['$or'].push(where_username);
+    }
 
     if (sort==undefined){
       sort = { "createdAt":-1 }
     }
-
-    // if (end_date != null) {
-    //   where_name['email'] = { $regex: search, $options: "i" };
-    //   where['$or'].push(where_name);
-    // }
-    // where.$and.push(where_and);
+    console.log(JSON.stringify(where));
     const query = await this.TopupsModel.find(where).limit(perPage).skip(perPage * page).sort(sort);
     return query;
   }
