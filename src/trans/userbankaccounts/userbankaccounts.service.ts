@@ -483,10 +483,237 @@ export class UserbankaccountsService {
         if (limit > 0) {
             pipeline.push({ $limit: limit });
         }
+
+        var setutil = require('util');
+        console.log(setutil.inspect(pipeline, { showHidden:false, colors:true, depth:null }));
+
         var query = await this.userbankaccountsModel.aggregate(pipeline);
 
         return query;
     }
+
+    async getlistappeal2(startdate: string, enddate: string, namapemohon: string, liststatus: any[], descending: boolean, page: number, limit: number) {
+        var order = null;
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+
+            var dt = dateend.substring(0, 10);
+        } catch (e) {
+            dateend = "";
+        }
+
+        if (descending === true) {
+            order = -1;
+        } else {
+            order = 1;
+        }
+        var pipeline = [];
+
+        pipeline.push(
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+                            {
+                                userHandle:
+                                {
+                                    "$ne": []
+                                }
+                            },
+                            {
+                                userHandle:
+                                {
+                                    "$ne": null
+                                }
+                            },
+
+                        ]
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: 1,
+                    userId: 1,
+                    statusInquiry: 1,
+                    noRek: 1,
+                    nama: 1,
+                    active: 1,
+                    description: 1,
+                    tanggalPengajuan:
+                    {
+                        "$last": "$userHandle.createdAt"
+                    },
+                    updatedAt: 1,
+                    userHandle: 1,
+                    statusLast:
+                    {
+                        "$last": "$userHandle.status"
+                    },
+                    reasonId:
+                    {
+                        "$last": "$userHandle.reasonId"
+                    },
+                    reasonAdmin:
+                    {
+                        "$last": "$userHandle.valueReason"
+                    },
+
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: "newUserBasics",
+                    let:
+                    {
+                        basic_fk: "$userId"
+                    },
+                    as: 'userbasic_data',
+                    pipeline:
+                        [
+                            {
+                                "$match":
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                            [
+                                                "$_id",
+                                                "$$basic_fk"
+                                            ]
+                                    }
+                                }
+                            },
+
+                        ]
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: "$_id",
+                    userId: "$userId",
+                    statusInquiry: "$statusInquiry",
+                    noRek: "$noRek",
+                    nama: "$nama",
+                    active: "$active",
+                    tanggalPengajuan: "$tanggalPengajuan",
+                    fullName:
+
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.fullName",
+                                0
+                            ]
+                    }
+
+
+                    ,
+                    email:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.email",
+                                0
+                            ]
+                    },
+                    username:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.username",
+                                0
+                            ]
+                    },
+                    statusLast: "$statusLast",
+                    reasonId: "$reasonId",
+                    reasonAdmin: "$reasonAdmin",
+                    avatar:
+                    {
+                        mediaEndpoint:
+                        {
+                            "$ifNull":
+                            [
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$userbasic_data.mediaEndpoint", 0
+                                    ]
+                                },
+                                null
+                            ]
+                        }
+                    },
+
+                }
+            },
+        );
+        pipeline.push(
+            {
+                $sort: {
+                    tanggalPengajuan: order
+                },
+
+            },
+        );
+
+        if (namapemohon && namapemohon !== undefined) {
+            pipeline.push(
+                {
+                    $match:
+                    {
+                        username: {
+                            $regex: namapemohon, $options: 'i'
+                        }
+                    }
+                }
+            );
+        }
+
+        if (liststatus && liststatus !== undefined) {
+            pipeline.push(
+                {
+                    $match: {
+                        $or: [
+                            {
+                                statusLast: {
+                                    $in: liststatus
+                                }
+                            },
+
+                        ]
+
+                    }
+                },
+            );
+        }
+        if (startdate && startdate !== undefined) {
+            pipeline.push({ $match: { tanggalPengajuan: { $gte: startdate } } });
+        }
+        if (enddate && enddate !== undefined) {
+            pipeline.push({ $match: { tanggalPengajuan: { $lte: dateend } } });
+        }
+
+        if (page > 0) {
+            pipeline.push({ $skip: (page * limit) });
+        }
+        if (limit > 0) {
+            pipeline.push({ $limit: limit });
+        }
+
+        var setutil = require('util');
+        console.log(setutil.inspect(pipeline, { showHidden:false, colors:true, depth:null }));
+
+        var query = await this.userbankaccountsModel.aggregate(pipeline);
+
+        return query;
+    }
+
     async getlistappealcount(startdate: string, enddate: string, namapemohon: string, liststatus: any[]) {
 
         try {
@@ -678,6 +905,215 @@ export class UserbankaccountsService {
                                     },
 
                                 ]
+                        }
+                    },
+
+                }
+            },
+        );
+
+
+        if (namapemohon && namapemohon !== undefined) {
+            pipeline.push(
+                {
+                    $match:
+                    {
+                        username: {
+                            $regex: namapemohon, $options: 'i'
+                        }
+                    }
+                }
+            );
+        }
+
+        if (liststatus && liststatus !== undefined) {
+            pipeline.push(
+                {
+                    $match: {
+                        $or: [
+                            {
+                                statusLast: {
+                                    $in: liststatus
+                                }
+                            },
+
+                        ]
+
+                    }
+                },
+            );
+        }
+        if (startdate && startdate !== undefined) {
+            pipeline.push({ $match: { tanggalPengajuan: { $gte: startdate } } });
+        }
+        if (enddate && enddate !== undefined) {
+            pipeline.push({ $match: { tanggalPengajuan: { $lte: dt } } });
+        }
+
+        pipeline.push({
+            $group: {
+                _id: null,
+                totalpost: {
+                    $sum: 1
+                }
+            }
+        });
+        var query = await this.userbankaccountsModel.aggregate(pipeline);
+
+        return query;
+    }
+
+    async getlistappealcount2(startdate: string, enddate: string, namapemohon: string, liststatus: any[]) {
+
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+
+            var dt = dateend.substring(0, 10);
+        } catch (e) {
+            dateend = "";
+        }
+
+
+        var pipeline = [];
+
+        pipeline.push(
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+                            {
+                                userHandle:
+                                {
+                                    "$ne": []
+                                }
+                            },
+                            {
+                                userHandle:
+                                {
+                                    "$ne": null
+                                }
+                            },
+
+                        ]
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: 1,
+                    userId: 1,
+                    statusInquiry: 1,
+                    noRek: 1,
+                    nama: 1,
+                    active: 1,
+                    description: 1,
+                    tanggalPengajuan:
+                    {
+                        "$last": "$userHandle.createdAt"
+                    },
+                    updatedAt: 1,
+                    userHandle: 1,
+                    statusLast:
+                    {
+                        "$last": "$userHandle.status"
+                    },
+                    reasonId:
+                    {
+                        "$last": "$userHandle.reasonId"
+                    },
+                    reasonAdmin:
+                    {
+                        "$last": "$userHandle.valueReason"
+                    },
+
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: "newUserBasics",
+                    let:
+                    {
+                        basic_fk: "$userId"
+                    },
+                    as: 'userbasic_data',
+                    pipeline:
+                        [
+                            {
+                                "$match":
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                            [
+                                                "$_id",
+                                                "$$basic_fk"
+                                            ]
+                                    }
+                                }
+                            },
+
+                        ]
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: "$_id",
+                    userId: "$userId",
+                    statusInquiry: "$statusInquiry",
+                    noRek: "$noRek",
+                    nama: "$nama",
+                    active: "$active",
+                    tanggalPengajuan: "$tanggalPengajuan",
+                    fullName:
+
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.fullName",
+                                0
+                            ]
+                    }
+
+
+                    ,
+                    email:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.email",
+                                0
+                            ]
+                    },
+                    username:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.username",
+                                0
+                            ]
+                    },
+                    statusLast: "$statusLast",
+                    reasonId: "$reasonId",
+                    reasonAdmin: "$reasonAdmin",
+                    avatar:
+                    {
+                        mediaEndpoint:
+                        {
+                            "$ifNull":
+                            [
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$userbasic_data.mediaEndpoint", 0
+                                    ]
+                                },
+                                null
+                            ]
                         }
                     },
 
