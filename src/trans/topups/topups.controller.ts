@@ -260,6 +260,7 @@ export class TopupsController {
                 Topups_.createdAt = currentDate;
                 Topups_.updatedAt = currentDate; 
                 Topups_.topup = dataGet.Tooup;
+                Topups_.email = dataGet.Email;
                 let ceckData = await this.getDataTopup(Topups_);
 
                 if (ceckData.status) {
