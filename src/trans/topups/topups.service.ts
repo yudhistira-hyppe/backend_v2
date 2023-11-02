@@ -35,10 +35,10 @@ export class TopupsService {
       $and: []
     };
 
-    // let where_status = {
-    //   status: { $ne: "DELETE" }
-    // };
-    // where.$and.push(where_status);
+    let where_id = {
+      _id: { $ne: null }
+    };
+    where.$and.push(where_id);
 
     if (start_date != null) {
       let where_start_date = {};
