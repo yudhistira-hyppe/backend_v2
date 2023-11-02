@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards, Headers, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Headers, UseInterceptors, UploadedFile, Get, HttpCode, Res, HttpStatus } from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { TopupsService } from './topups.service';
 import { Topups } from './schema/topups.schema';
@@ -8,8 +8,10 @@ import { UserbasicsService } from '../userbasics/userbasics.service';
 import { UserauthsService } from '../userauths/userauths.service';
 import mongoose from 'mongoose';
 import { AccountbalancesService } from '../accountbalances/accountbalances.service';
-import { CreateAccountbalancesDto } from '../accountbalances/dto/create-accountbalances.dto';
+import { CreateAccountbalances } from '../accountbalances/dto/create-accountbalances.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import * as fs from 'fs';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('api/topups')
 export class TopupsController {
@@ -20,12 +22,14 @@ export class TopupsController {
     private readonly userbasicsService: UserbasicsService, 
     private readonly userauthsService: UserauthsService, 
     private readonly accountbalancesService: AccountbalancesService,
+    private readonly configService: ConfigService,
     ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('/create')
   async create(@Body() Topups_: Topups, @Headers() headers) {
     var currentDate = await this.utilsService.getDateTimeISOString();
+    let data = null;
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
@@ -50,47 +54,19 @@ export class TopupsController {
     let dataUserbasics = await this.userbasicsService.findOne(Topups_.email);
     let dataUserauths = await this.userauthsService.findOne(Topups_.email);
     if ((await this.utilsService.ceckData(dataUserbasics)) && (await this.utilsService.ceckData(dataUserauths))) {
-
-      //PPH
-      let pph = 0;
-      if (Number(Topups_.topup) <= Number(2500000)) {
-        pph = 0.05;
-        console.log(pph);
-      } else if ((Number(2500000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(30000000))) {
-        pph = 0.15;
-        console.log(pph);
-      } else if ((Number(30000000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(62500000))) {
-        pph = 0.25;
-        console.log(pph);
-      } else if ((Number(62500000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(150000000))) {
-        pph = 0.3;
-        console.log(pph);
-      } else {
-        pph = 0.3;
-        console.log(pph);
-      }
-
-      //PPH CALCULATE
-      let pphPrice = (Topups_.topup / 2) * pph;
-      //TOT CALCULATE
-      let tot = (Topups_.topup - pphPrice);
-
       Topups_._id = new mongoose.Types.ObjectId();
       Topups_.idUser = new mongoose.Types.ObjectId(dataUserbasics._id.toString());
       Topups_.username = dataUserauths.username;
-      Topups_.pph = pphPrice;
-      Topups_.total = tot;
-      Topups_.approveByFinance = false;
-      Topups_.approveByStrategy = false;
-      Topups_.approve = false;
       Topups_.createBy = new mongoose.Types.ObjectId(dataUserbasics_login._id.toString());
       Topups_.createByUsername = dataUserauths_login.username;
-      Topups_.status = "NEW";
       Topups_.createdAt = currentDate;
-      Topups_.updatedAt = currentDate; 
-      Topups_.pphPersen = pph;
-      const data = await this.topupsService.create(Topups_);
+      Topups_.updatedAt = currentDate;
+      let ceckData = await this.getDataTopup(Topups_);
 
+      if (ceckData.status) {
+        Topups_ = ceckData.Topups;
+        data = await this.topupsService.create(Topups_);
+      }
       return await this.errorHandler.generateAcceptResponseCodeWithData(
         "Create Data Topups succesfully", data
       );
@@ -130,6 +106,7 @@ export class TopupsController {
           Topups_.approveByFinanceUserId = new mongoose.Types.ObjectId(dataUserbasics_login._id.toString());
           Topups_.updatedAt = currentDate;
         } else {
+          Topups_.status = "PROCESS";
           Topups_.approveByFinanceDate = currentDate;
           Topups_.approveByFinanceUserId = new mongoose.Types.ObjectId(dataUserbasics_login._id.toString());
           Topups_.updatedAt = currentDate;
@@ -143,6 +120,7 @@ export class TopupsController {
           Topups_.approveByStrategyUserId = new mongoose.Types.ObjectId(dataUserbasics_login._id.toString());
           Topups_.updatedAt = currentDate;
         } else {
+          Topups_.status = "PROCESS";
           Topups_.approveByStrategyDate = currentDate;
           Topups_.approveByStrategyUserId = new mongoose.Types.ObjectId(dataUserbasics_login._id.toString());
           Topups_.updatedAt = currentDate;
@@ -150,14 +128,14 @@ export class TopupsController {
       }
 
       if (Topups_.approve){
-        let CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
-        CreateAccountbalancesDto_.iduser = { oid: dataTopups.idUser.toString()};
+        let CreateAccountbalancesDto_ = new CreateAccountbalances();
+        CreateAccountbalancesDto_.iduser = new mongoose.Types.ObjectId(dataTopups.idUser.toString());
         CreateAccountbalancesDto_.debet = 0;
         CreateAccountbalancesDto_.kredit = dataTopups.topup;
         CreateAccountbalancesDto_.type = "rewards";
         CreateAccountbalancesDto_.timestamp = await this.utilsService.getDateTimeISOString();
         CreateAccountbalancesDto_.description = "TOP UP";
-        await this.accountbalancesService.create(CreateAccountbalancesDto_);
+        await this.accountbalancesService.create_new(CreateAccountbalancesDto_);
       }
       const dataId = Topups_._id.toString();
       Topups_._id = undefined;
@@ -239,6 +217,7 @@ export class TopupsController {
   @Post('/import')
   @UseInterceptors(FileInterceptor('file'))
   async export(@UploadedFile() file: Express.Multer.File, @Headers() headers) {
+    const XLSX = require('xlsx')
     var currentDate = await this.utilsService.getDateTimeString();
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
       await this.errorHandler.generateNotAcceptableException(
@@ -246,15 +225,63 @@ export class TopupsController {
       );
     }
 
-    //FUNCTION GET EXTENTION
-    const getExtention = (async filename => {
-      var extention = filename.substr(filename.lastIndexOf('.') + 1);
-      return extention;
-    });
+    let dataUserbasics_login = await this.userbasicsService.findOne(headers['x-auth-user']);
+    let dataUserauths_login = await this.userauthsService.findOne(headers['x-auth-user']);
 
     if (file!=undefined){
-      if (file.mimetype == 'application/vnd.ms-excel' || file.mimetype == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      if (file.mimetype == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.mimetype == 'application/vnd.ms-excel') {
         const fileBuffer = file.buffer;
+        let wb = XLSX.read(fileBuffer, { type: "buffer" });
+
+        let dataArray = [];
+        const sheets = wb.SheetNames;
+        for (let i = 0; i < sheets.length; i++) {
+          const temp = XLSX.utils.sheet_to_json(
+          wb.Sheets[wb.SheetNames[i]])
+          temp.forEach((res) => {
+            dataArray.push(res)
+          })
+        } 
+
+        let CountSucces = 0;
+        if (dataArray.length>0){
+          for (let u = 0; u < dataArray.length; u++) {
+            let dataGet = dataArray[u];
+            if ((dataGet.Email != undefined) && (dataGet.Tooup != undefined)){
+              let dataUserbasics = await this.userbasicsService.findOne(dataGet.Email);
+              let dataUserauths = await this.userauthsService.findOne(dataGet.Email);
+              if ((await this.utilsService.ceckData(dataUserbasics)) && (await this.utilsService.ceckData(dataUserauths))) {
+                let Topups_ = new Topups();
+                Topups_._id = new mongoose.Types.ObjectId();
+                Topups_.idUser = new mongoose.Types.ObjectId(dataUserbasics._id.toString());
+                Topups_.username = dataUserauths.username;
+                Topups_.createBy = new mongoose.Types.ObjectId(dataUserbasics_login._id.toString());
+                Topups_.createByUsername = dataUserauths_login.username;
+                Topups_.createdAt = currentDate;
+                Topups_.updatedAt = currentDate; 
+                Topups_.topup = dataGet.Tooup;
+                let ceckData = await this.getDataTopup(Topups_);
+
+                if (ceckData.status) {
+                  Topups_ = ceckData.Topups;
+                  const data = await this.topupsService.create(Topups_);
+                  CountSucces++;
+                }
+              }
+            }
+          }
+        }
+
+        let dataResponse = {
+          length: dataArray.length,
+          succes: CountSucces,
+          failed: dataArray.length - CountSucces,
+          data: dataArray,
+        }
+
+        return await this.errorHandler.generateAcceptResponseCodeWithData(
+          "Create Data Topups succesfully", dataResponse
+        );
       } else {
         await this.errorHandler.generateBadRequestException("Unabled to proceed format file is required zip");
       }
@@ -262,4 +289,64 @@ export class TopupsController {
       await this.errorHandler.generateBadRequestException("Unabled to proceed file is required");
     }
   }
+
+  async getDataTopup(Topups_: Topups){
+    try{
+      //PPH
+      let pph = 0;
+      if (Number(Topups_.topup) <= Number(2500000)) {
+        pph = 0.05;
+        console.log(pph);
+      } else if ((Number(2500000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(30000000))) {
+        pph = 0.15;
+        console.log(pph);
+      } else if ((Number(30000000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(62500000))) {
+        pph = 0.25;
+        console.log(pph);
+      } else if ((Number(62500000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(150000000))) {
+        pph = 0.3;
+        console.log(pph);
+      } else {
+        pph = 0.3;
+        console.log(pph);
+      }
+
+      //PPH CALCULATE
+      let pphPrice = <any>((Topups_.topup / 2) * pph);
+      //TOT CALCULATE
+      let tot = <any>(Topups_.topup - pphPrice);
+
+      Topups_._id = new mongoose.Types.ObjectId();
+      Topups_.pph = pphPrice;
+      Topups_.total = tot;
+      Topups_.approveByFinance = false;
+      Topups_.approveByStrategy = false;
+      Topups_.approve = false;
+      Topups_.status = "NEW";
+      Topups_.pphPersen = <any>pph;
+      return {
+        status: true,
+        Topups: Topups_
+      }
+    }catch(e){
+      return {
+        status:false,
+        Topups: Topups_
+      }
+    }
+  }
+  
+  @Get('file/download/')
+  @HttpCode(HttpStatus.OK)
+  async downloadFile(@Res() response) {
+    const BASE_PATH = this.configService.get("PATH_UPLOAD");
+
+    var file = fs.createReadStream(BASE_PATH +"sample/topup/topup_example.xlsx");
+    var stat = fs.statSync(BASE_PATH + "sample/topup/topup_example.xlsx");
+    response.setHeader('Content-Length', stat.size);
+    response.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    response.setHeader('Content-Disposition', 'attachment; filename=topup_example.xlsx');
+    file.pipe(response);
+  }
+  
 }
