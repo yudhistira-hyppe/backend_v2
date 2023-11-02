@@ -218,7 +218,7 @@ export class TopupsController {
   @UseInterceptors(FileInterceptor('file'))
   async export(@UploadedFile() file: Express.Multer.File, @Headers() headers) {
     const XLSX = require('xlsx')
-    var currentDate = await this.utilsService.getDateTimeString();
+    var currentDate = await this.utilsService.getDateTimeISOString();
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
