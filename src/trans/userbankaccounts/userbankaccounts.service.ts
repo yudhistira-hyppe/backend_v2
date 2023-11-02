@@ -1597,6 +1597,306 @@ export class UserbankaccountsService {
         ]);
         return query[0];
     }
+    
+    async getDetailAccountBankById2(id: string) {
+        const mongoose = require('mongoose');
+        var iddata = mongoose.Types.ObjectId(id);
+        var query = await this.userbankaccountsModel.aggregate([
+            {
+                "$match":
+                {
+                    _id: iddata
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: 1,
+                    userId: 1,
+                    statusInquiry: 1,
+                    idBank: 1,
+                    noRek: 1,
+                    nama: 1,
+                    active: 1,
+                    description: 1,
+                    tanggalPengajuan:
+                    {
+                        "$dateFromString":
+                        {
+                            dateString:
+                            {
+                                "$last": "$userHandle.createdAt"
+                            }
+                        }
+                    },
+                    createdAt: 1,
+                    updatedAt: 1,
+                    userHandle: 1,
+                    statusLast:
+                    {
+                        "$last": "$userHandle.status"
+                    },
+                    reasonId:
+                    {
+                        "$last": "$userHandle.reasonId"
+                    },
+                    reasonAdmin:
+                    {
+                        "$last": "$userHandle.valueReason"
+                    },
+                    SupportfsSourceName: 1,
+                    mediaSupportUri: 1,
+                    SupportfsTargetUri: 1
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: "newUserBasics",
+                    let:
+                    {
+                        basic_fk: "$userId"
+                    },
+                    as: 'userbasic_data',
+                    pipeline:
+                        [
+                            {
+                                "$match":
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                            [
+                                                "$_id",
+                                                "$$basic_fk"
+                                            ]
+                                    }
+                                }
+                            },
+                            {
+                                "$addFields":
+                                {
+                                    "tempkyc":
+                                    {
+                                        "$arrayElemAt":
+                                        [
+                                            "$kyc", 0
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: "banks",
+                    let:
+                    {
+                        bank_fk: "$idBank"
+                    },
+                    as: 'bank_data',
+                    pipeline:
+                        [
+                            {
+                                "$match":
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq": ["$_id", "$$bank_fk"]
+                                    }
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: "$_id",
+                    userId: "$userId",
+                    statusInquiry: "$statusInquiry",
+                    noRek: "$noRek",
+                    bankRek:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$bank_data.bankname", 0
+                            ]
+                    },
+                    createdAt: "$createdAt",
+                    namaRek: "$nama",
+                    active: "$active",
+                    tanggalPengajuan: "$tanggalPengajuan",
+                    fullName:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.fullName", 0
+                            ]
+                    },
+                    gender:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.gender", 0
+                            ]
+                    },
+        
+                    dob:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.dob", 0
+                            ]
+                    },
+        
+                    mobileNumber:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.mobileNumber", 0
+                            ]
+                    },
+        
+                    statusUser:
+                    {
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$eq":
+                                    [
+                                        {
+                                            "$arrayElemAt":
+                                                [
+                                                    "$userbasic_data.isIdVerified", 0
+                                                ]
+                                        },
+                                        false
+                                    ],
+                            },
+                            then: "Basic",
+                            else: "Premium"
+                        }
+                    },
+                    email:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.email", 0
+                            ]
+                    },
+        
+                    username:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.username", 0
+                            ]
+                    },
+                    statusLast: "$statusLast",
+                    reasonId: "$reasonId",
+                    reasonAdmin: "$reasonAdmin",
+                    avatar:
+                    {
+                        mediaEndpoint:
+                        {
+                            "$ifNull":
+                            [
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$userbasic_data.mediaEndpoint", 0
+                                    ]
+                                },
+                                null
+                            ]
+                        }
+                    },
+                    namaKTP:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasic_data.tempkyc.nama", 0
+                            ]
+                    },
+                    dokumenPendukung: "$SupportfsTargetUri",
+                    country:
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$userbasic_data.countriesName", 0
+                                ]
+                            },
+                            null
+                        ]
+                    },
+                    area:
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$userbasic_data.statesName", 0
+                                ]
+                            },
+                            null
+                        ]
+                    },
+                    city:
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$userbasic_data.citiesName", 0
+                                ]
+                            },
+                            null
+                        ]
+                    }
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: 1,
+                    userId: 1,
+                    statusInquiry: 1,
+                    noRek: 1,
+                    bankRek: 1,
+                    namaRek: 1,
+                    active: 1,
+                    createdAt: 1,
+                    tanggalPengajuan: 1,
+                    fullName: 1,
+                    gender: 1,
+                    dob: 1,
+                    mobileNumber: 1,
+                    statusUser: 1,
+                    email: 1,
+                    username: 1,
+                    statusLast: 1,
+                    reasonId: 1,
+                    reasonAdmin: 1,
+                    avatar: 1,
+                    namaKTP: 1,
+                    dokumenPendukung: 1,
+                    country: 1,
+                    area: 1,
+                    city: 1
+                }
+            },
+        ]);
+        return query[0];
+    }
 
     async countAppealakunbank(startdate: string, enddate: string) {
         try {

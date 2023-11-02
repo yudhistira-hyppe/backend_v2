@@ -777,6 +777,20 @@ export class UserbankaccountsController {
 
         return { response_code: 202, messages, data };
     }
+    @Get('api/userbankaccounts/getAccountList/v2/:id')
+    @UseGuards(JwtAuthGuard)
+    async getDetailAccountBank2(@Param('id') id: string) {
+        var data = null;
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        data = await this.userbankaccountsService.getDetailAccountBankById2(id);
+
+
+        return { response_code: 202, messages, data };
+    }
 
     async sendReportAppealBankFCM(email: string, name: string, event: string, type: string, fullname: string) {
         var Templates_ = new TemplatesRepo();
