@@ -4339,68 +4339,68 @@ export class ContenteventsController {
                   }
                 }
               } else {
-                if (saleAmount == 0) {
-                  if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
+                // if (saleAmount == 0) {
+                if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
 
-                    var obj = {};
+                  var obj = {};
 
-                    obj = {
-                      "updatedAt": datauserchall[y].updatedAt,
-                      "score": datauserchall[y].score,
-                      "ranking": datauserchall[y].ranking,
-                    }
+                  obj = {
+                    "updatedAt": datauserchall[y].updatedAt,
+                    "score": datauserchall[y].score,
+                    "ranking": datauserchall[y].ranking,
+                  }
 
-                    if (postTypeParent == "vid") {
-                      poin = poinViewVid;
-                    } else if (postTypeParent == "diary") {
-                      poin = poinViewDiary;
-                    } else {
-                      poin = 0;
-                    }
+                  if (postTypeParent == "vid") {
+                    poin = poinViewVid;
+                  } else if (postTypeParent == "diary") {
+                    poin = poinViewDiary;
+                  } else {
+                    poin = 0;
+                  }
 
-                    await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                    await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
-                    var detail = await this.userchallengesService.findOne(iduserchall.toString());
-                    var activity = detail.activity;
-                    let objintr = { "type": nametable, "id": idref, "desc": action }
-                    console.log(objintr)
-                    activity.push(objintr)
-                    await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                  await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+                  await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+                  var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                  var activity = detail.activity;
+                  let objintr = { "type": nametable, "id": idref, "desc": action }
+                  console.log(objintr)
+                  activity.push(objintr)
+                  await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                  try {
+                    datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
+                  } catch (e) {
+                    datapostchall = null;
+                  }
+                  if (datapostchall != null) {
+                    idpostchall = datapostchall._id.toString();
+                  }
+                  if (poin > 0) {
                     try {
-                      datapostchall = await this.postchallengeService.findBypostID(postID, idChallenges.toString());
+                      await this.postchallengeService.updatePostchallenge(idpostchall, poin);
                     } catch (e) {
-                      datapostchall = null;
+
                     }
-                    if (datapostchall != null) {
-                      idpostchall = datapostchall._id.toString();
-                    }
-                    if (poin > 0) {
-                      try {
-                        await this.postchallengeService.updatePostchallenge(idpostchall, poin);
-                      } catch (e) {
+                  }
+                  var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
-                      }
-                    }
-                    var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
+                  if (datauschall.length > 0) {
+                    for (let x = 0; x < datauschall.length; x++) {
 
-                    if (datauschall.length > 0) {
-                      for (let x = 0; x < datauschall.length; x++) {
+                      let iducall = datauschall[x]._id;
+                      let start = new Date(datauschall[x].startDatetime);
+                      let end = new Date(datauschall[x].endDatetime);
+                      let datenow = new Date(Date.now());
+                      let idChallenges2 = datauschall[x].idChallenge;
+                      let rank = x + 1;
 
-                        let iducall = datauschall[x]._id;
-                        let start = new Date(datauschall[x].startDatetime);
-                        let end = new Date(datauschall[x].endDatetime);
-                        let datenow = new Date(Date.now());
-                        let idChallenges2 = datauschall[x].idChallenge;
-                        let rank = x + 1;
+                      // if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                      await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                      // }
 
-                        // if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                        await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                        // }
-
-                      }
                     }
                   }
                 }
+                //}
               }
             }
 
