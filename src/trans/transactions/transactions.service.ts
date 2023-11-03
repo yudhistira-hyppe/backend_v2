@@ -3781,6 +3781,377 @@ export class TransactionsService {
         return query;
     }
 
+    async findhistorydetailsell2(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
+
+        const query = await this.transactionsModel.aggregate([
+            {
+                $addFields: {
+                    type: 'Sell',
+                    jenis: "$type",
+        
+                },
+            },
+            {
+                $lookup: {
+                    from: "newUserBasics",
+                    localField: "iduserbuyer",
+                    foreignField: "_id",
+                    as: "userbasics_data"
+                }
+            }, 
+            {
+                $lookup: {
+                    from: "newPosts",
+                    localField: "postid",
+                    foreignField: "postID",
+                    as: "post_data"
+                }
+            }, 
+            {
+                $project: {
+                    idusersell: "$idusersell",
+                    iduserbuyer: "$iduserbuyer",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    "description":
+                    {
+                        $cond: {
+                            if:
+                            {
+                                $and: [
+                                    {
+                                        $lt: ['$expiredtimeva', {
+                                            "$dateToString": {
+                                                "format": "%Y-%m-%dT%H:%M:%S",
+                                                "date": {
+                                                    $add: [new Date(), 25200000]
+                                                }
+                                            }
+                                        },]
+                                    },
+                                    {
+                                        $eq: ['$status', 'WAITING_PAYMENT']
+                                    }
+                                ]
+                            },
+                            then: "$VA expired time",
+                            else: '$description'
+                        }
+                    },
+        
+                    "status":
+                    {
+                        $cond: {
+                            if:
+                            {
+                                $and: [
+                                    {
+                                        $lt: ['$expiredtimeva', {
+                                            "$dateToString": {
+                                                "format": "%Y-%m-%dT%H:%M:%S",
+                                                "date": {
+                                                    $add: [new Date(), 25200000]
+                                                }
+                                            }
+                                        },]
+                                    },
+                                    {
+                                        $eq: ['$status', 'WAITING_PAYMENT']
+                                    }
+                                ]
+                            },
+                            then: "Cancel",
+                            else: '$status'
+                        }
+                    },
+                    paymentmethod: "$paymentmethod",
+                    user: {
+                        $arrayElemAt: [
+                            "$userbasics_data",
+                            0
+                        ]
+                    },
+                    postdata: {
+                        $arrayElemAt: [
+                            "$post_data",
+                            0
+                        ]
+                    },
+                }
+            }, 
+            {
+                $project: {
+                    contentMedias: "$postdata.contentMedias",
+                    idusersell: "$idusersell",
+                    iduserbuyer: "$iduserbuyer",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    description: "$description",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status",
+                    paymentmethod: "$paymentmethod",
+                    fullName: "$user.fullName",
+                    email: "$user.email",
+                    postID: "$postdata.postID",
+                    postType: "$postdata.postType",
+                    likes: "$postdata.likes",
+                    views: "$postdata.views",
+                    shares: "$postdata.shares",
+                    descriptionContent: '$postdata.description',
+                    title: '$postdata.description',
+                    mediaSource:
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$postdata.mediaSource", 0
+                        ]
+                    }
+                }
+            }, 
+            {
+                $project: {
+                    idusersell: "$idusersell",
+                    iduserbuyer: "$iduserbuyer",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    description: "$description",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status",
+                    paymentmethod: "$paymentmethod",
+                    fullName: "$fullName",
+                    email: "$email",
+                    postID: "$postID",
+                    postType: "$postType",
+                    likes: "$likes",
+                    views: "$views",
+                    shares: "$shares",
+                    descriptionContent: '$descriptionContent',
+                    title: '$title',
+                    mediaSource: '$mediaSource'
+                }
+            }, 
+            {
+                $project: {
+                    idusersell: "$idusersell",
+                    iduserbuyer: "$iduserbuyer",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    description: "$description",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status",
+                    paymentmethod: "$paymentmethod",
+                    fullName: "$fullName",
+                    email: "$email",
+                    postID: "$postID",
+                    postType: "$postType",
+                    likes: "$likes",
+                    views: "$views",
+                    shares: "$shares",
+                    descriptionContent: '$descriptionContent',
+                    title: '$title',
+                    mediaSource: '$mediaSource'
+                }
+            }, 
+            {
+                $project: {
+                    idusersell: "$idusersell",
+                    iduserbuyer: "$iduserbuyer",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    description: "$description",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status",
+                    paymentmethod: "$paymentmethod",
+                    fullName: "$fullName",
+                    email: "$email",
+                    postID: "$postID",
+                    postType: "$postType",
+                    likes: "$likes",
+                    views: "$views",
+                    shares: "$shares",
+                    descriptionContent: '$descriptionContent',
+                    title: '$title',
+                    mediaSource: '$mediaSource'
+                }
+            }, 
+            {
+                $project: {
+        
+                    idusersell: "$idusersell",
+                    iduserbuyer: "$iduserbuyer",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    description: "$description",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status",
+                    paymentmethod: "$paymentmethod",
+                    fullName: "$fullName",
+                    email: "$email",
+                    postID: "$postID",
+                    postType: "$postType",
+                    likes: "$likes",
+                    views: "$views",
+                    shares: "$shares",
+                    descriptionContent: '$descriptionContent',
+                    title: '$title',
+                    mediaBasePath:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaBasePath",
+                            null
+                        ]
+                    },
+                    mediaUri:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaUri",
+                            null
+                        ]
+                    },
+                    mediaType:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaType",
+                            null
+                        ]
+                    },
+                    mediaThumbEndpoint:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaThumbEndpoint",
+                            {
+                                "$concat":
+                                [
+                                    "/thumb/",
+                                    "$postID"
+                                ]
+                            }
+                        ]
+                    },
+                    mediaEndpoint:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaEndpoint",
+                            {
+                                "$cond":
+                                {
+                                    if:
+                                    {
+                                        "$eq":
+                                        [
+                                            "$postType", "pict"
+                                        ]
+                                    },
+                                    then:
+                                    {
+                                        "$concat":
+                                        [
+                                            "/pict/",
+                                            "$postID"
+                                        ]
+                                    },
+                                    else:
+                                    {
+                                        "$concat":
+                                        [
+                                            "/stream/",
+                                            "$postID"
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    mediaThumbUri:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaThumbUri",
+                            "$mediaSource.mediaUri"
+                        ]
+                    },
+                    apsaraId:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.apsaraId",
+                            null
+                        ]
+                    },
+                    apsara:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.apsara",
+                            false
+                        ]
+                    },
+                }
+            },
+            {
+                $match: {
+                    _id: id, type: type, jenis: jenis, idusersell: iduser
+                }
+            },
+
+        ]);
+        return query;
+    }
+
     async findhistorydetailbuy(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
 
 
@@ -4437,6 +4808,378 @@ export class TransactionsService {
         return query;
     }
 
+    async findhistorydetailbuy2(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
+
+
+        const query = await this.transactionsModel.aggregate([
+            {
+                $addFields: {
+                    type: 'Buy',
+                    jenis: "$type",
+        
+                },
+            },
+            {
+                $lookup: {
+                    from: "newUserBasics",
+                    localField: "iduserbuyer",
+                    foreignField: "_id",
+                    as: "userbasics_data"
+                }
+            }, 
+            {
+                $lookup: {
+                    from: "newPosts",
+                    localField: "postid",
+                    foreignField: "postID",
+                    as: "post_data"
+                }
+            }, 
+            {
+                $project: {
+                    idusersell: "$idusersell",
+                    iduserbuyer: "$iduserbuyer",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    "description":
+                    {
+                        $cond: {
+                            if:
+                            {
+                                $and: [
+                                    {
+                                        $lt: ['$expiredtimeva', {
+                                            "$dateToString": {
+                                                "format": "%Y-%m-%dT%H:%M:%S",
+                                                "date": {
+                                                    $add: [new Date(), 25200000]
+                                                }
+                                            }
+                                        },]
+                                    },
+                                    {
+                                        $eq: ['$status', 'WAITING_PAYMENT']
+                                    }
+                                ]
+                            },
+                            then: "$VA expired time",
+                            else: '$description'
+                        }
+                    },
+        
+                    "status":
+                    {
+                        $cond: {
+                            if:
+                            {
+                                $and: [
+                                    {
+                                        $lt: ['$expiredtimeva', {
+                                            "$dateToString": {
+                                                "format": "%Y-%m-%dT%H:%M:%S",
+                                                "date": {
+                                                    $add: [new Date(), 25200000]
+                                                }
+                                            }
+                                        },]
+                                    },
+                                    {
+                                        $eq: ['$status', 'WAITING_PAYMENT']
+                                    }
+                                ]
+                            },
+                            then: "Cancel",
+                            else: '$status'
+                        }
+                    },
+                    paymentmethod: "$paymentmethod",
+                    user: {
+                        $arrayElemAt: [
+                            "$userbasics_data",
+                            0
+                        ]
+                    },
+                    postdata: {
+                        $arrayElemAt: [
+                            "$post_data",
+                            0
+                        ]
+                    },
+                }
+            }, 
+            {
+                $project: {
+                    contentMedias: "$postdata.contentMedias",
+                    idusersell: "$idusersell",
+                    iduserbuyer: "$iduserbuyer",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    description: "$description",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status",
+                    paymentmethod: "$paymentmethod",
+                    fullName: "$user.fullName",
+                    email: "$user.email",
+                    postID: "$postdata.postID",
+                    postType: "$postdata.postType",
+                    likes: "$postdata.likes",
+                    views: "$postdata.views",
+                    shares: "$postdata.shares",
+                    descriptionContent: '$postdata.description',
+                    title: '$postdata.description',
+                    mediaSource:
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$postdata.mediaSource", 0
+                        ]
+                    }
+                }
+            }, 
+            {
+                $project: {
+                    idusersell: "$idusersell",
+                    iduserbuyer: "$iduserbuyer",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    description: "$description",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status",
+                    paymentmethod: "$paymentmethod",
+                    fullName: "$fullName",
+                    email: "$email",
+                    postID: "$postID",
+                    postType: "$postType",
+                    likes: "$likes",
+                    views: "$views",
+                    shares: "$shares",
+                    descriptionContent: '$descriptionContent',
+                    title: '$title',
+                    mediaSource: '$mediaSource'
+                }
+            }, 
+            {
+                $project: {
+                    idusersell: "$idusersell",
+                    iduserbuyer: "$iduserbuyer",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    description: "$description",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status",
+                    paymentmethod: "$paymentmethod",
+                    fullName: "$fullName",
+                    email: "$email",
+                    postID: "$postID",
+                    postType: "$postType",
+                    likes: "$likes",
+                    views: "$views",
+                    shares: "$shares",
+                    descriptionContent: '$descriptionContent',
+                    title: '$title',
+                    mediaSource: '$mediaSource'
+                }
+            }, 
+            {
+                $project: {
+                    idusersell: "$idusersell",
+                    iduserbuyer: "$iduserbuyer",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    description: "$description",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status",
+                    paymentmethod: "$paymentmethod",
+                    fullName: "$fullName",
+                    email: "$email",
+                    postID: "$postID",
+                    postType: "$postType",
+                    likes: "$likes",
+                    views: "$views",
+                    shares: "$shares",
+                    descriptionContent: '$descriptionContent',
+                    title: '$title',
+                    mediaSource: '$mediaSource'
+                }
+            }, 
+            {
+                $project: {
+        
+                    idusersell: "$idusersell",
+                    iduserbuyer: "$iduserbuyer",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    description: "$description",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status",
+                    paymentmethod: "$paymentmethod",
+                    fullName: "$fullName",
+                    email: "$email",
+                    postID: "$postID",
+                    postType: "$postType",
+                    likes: "$likes",
+                    views: "$views",
+                    shares: "$shares",
+                    descriptionContent: '$descriptionContent',
+                    title: '$title',
+                    mediaBasePath:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaBasePath",
+                            null
+                        ]
+                    },
+                    mediaUri:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaUri",
+                            null
+                        ]
+                    },
+                    mediaType:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaType",
+                            null
+                        ]
+                    },
+                    mediaThumbEndpoint:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaThumbEndpoint",
+                            {
+                                "$concat":
+                                [
+                                    "/thumb/",
+                                    "$postID"
+                                ]
+                            }
+                        ]
+                    },
+                    mediaEndpoint:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaEndpoint",
+                            {
+                                "$cond":
+                                {
+                                    if:
+                                    {
+                                        "$eq":
+                                        [
+                                            "$postType", "pict"
+                                        ]
+                                    },
+                                    then:
+                                    {
+                                        "$concat":
+                                        [
+                                            "/pict/",
+                                            "$postID"
+                                        ]
+                                    },
+                                    else:
+                                    {
+                                        "$concat":
+                                        [
+                                            "/stream/",
+                                            "$postID"
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    mediaThumbUri:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.mediaThumbUri",
+                            "$mediaSource.mediaUri"
+                        ]
+                    },
+                    apsaraId:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.apsaraId",
+                            null
+                        ]
+                    },
+                    apsara:
+                    {
+                        "$ifNull":
+                        [
+                            "$mediaSource.apsara",
+                            false
+                        ]
+                    },
+                }
+            },
+            {
+                $match: {
+                    _id: id, type: type, jenis: jenis, iduserbuyer: iduser
+                }
+            },
+
+        ]);
+        return query;
+    }
+
     async findtransactionvoucher(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
 
         const query = await this.transactionsModel.aggregate([
@@ -4492,6 +5235,61 @@ export class TransactionsService {
 
     }
 
+    async findtransactionvoucher2(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
+
+        const query = await this.transactionsModel.aggregate([
+
+            {
+                $addFields: {
+                    type: 'Buy',
+                    jenis: "$type",
+
+                },
+            },
+
+            {
+                $lookup: {
+                    from: "newUserBasics",
+                    localField: "iduserbuyer",
+                    foreignField: "_id",
+                    as: "user_data"
+                }
+            }, {
+                $lookup: {
+                    from: "uservouchers",
+                    localField: "detail.id",
+                    foreignField: "voucherID",
+                    as: "user_voucher"
+                }
+            },
+            {
+                $lookup: {
+                    from: "settings",
+                    as: "setting",
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                "_id": new Types.ObjectId("648ae670766c00007d004a82")
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                $match: {
+                    _id: id,
+                    type: type,
+                    jenis: jenis,
+                    iduserbuyer: iduser
+                }
+            },
+        ]);
+
+        return query;
+
+    }
+
     async findtransactionvoucherSell(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
 
         const query = await this.transactionsModel.aggregate([
@@ -4507,6 +5305,47 @@ export class TransactionsService {
             {
                 $lookup: {
                     from: "userbasics",
+                    localField: "idusersell",
+                    foreignField: "_id",
+                    as: "user_data"
+                }
+            }, {
+                $lookup: {
+                    from: "uservouchers",
+                    localField: "detail.id",
+                    foreignField: "voucherID",
+                    as: "user_voucher"
+                }
+            },
+            {
+                $match: {
+                    _id: id,
+                    type: type,
+                    jenis: jenis,
+                    idusersell: iduser
+                }
+            },
+        ]);
+
+        return query;
+
+    }
+
+    async findtransactionvoucherSell2(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
+
+        const query = await this.transactionsModel.aggregate([
+
+            {
+                $addFields: {
+                    type: 'Sell',
+                    jenis: "$type",
+
+                },
+            },
+
+            {
+                $lookup: {
+                    from: "newUserBasics",
                     localField: "idusersell",
                     foreignField: "_id",
                     as: "user_data"
