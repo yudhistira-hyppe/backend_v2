@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { CreateAccountbalancesDto } from './dto/create-accountbalances.dto';
+import { CreateAccountbalancesDto, CreateAccountbalances } from './dto/create-accountbalances.dto';
 import { Accountbalances, AccountbalancesDocument } from './schemas/accountbalances.schema';
 import { PostContentService } from '../../content/posts/postcontent.service';
 import mongoose from 'mongoose';
@@ -1217,6 +1217,15 @@ export class AccountbalancesService {
 
     async create(CreateAccountbalancesDto: CreateAccountbalancesDto): Promise<Accountbalances> {
         let data = await this.accountbalancesModel.create(CreateAccountbalancesDto);
+
+        if (!data) {
+            throw new Error('Todo is not found!');
+        }
+        return data;
+    }
+
+    async create_new(CreateAccountbalances: CreateAccountbalances): Promise<Accountbalances> {
+        let data = await this.accountbalancesModel.create(CreateAccountbalances);
 
         if (!data) {
             throw new Error('Todo is not found!');
