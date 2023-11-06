@@ -5810,10 +5810,7 @@ export class TransactionsController {
                     databankvacharge = await this.settingsService.findOne(idbankvacharge);
                     valuevacharge = databankvacharge._doc.value;
                     valuemradmin = datamradmin._doc.value;
-                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
-
-
-
+                    nominalmradmin = Math.ceil(amounts * valuemradmin / 100);
 
                 } catch (e) {
                     datamradmin = null;
@@ -6167,7 +6164,7 @@ export class TransactionsController {
                     databankvacharge = await this.settingsService.findOne(idbankvacharge);
                     valuevacharge = databankvacharge._doc.value;
                     valuemradmin = datamradmin._doc.value;
-                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
+                    nominalmradmin = Math.ceil(amounts * valuemradmin / 100);
 
 
 
@@ -6519,7 +6516,7 @@ export class TransactionsController {
                     databankvacharge = await this.settingsService.findOne(idbankvacharge);
                     valuevacharge = databankvacharge._doc.value;
                     valuemradmin = datamradmin._doc.value;
-                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
+                    nominalmradmin = Math.ceil(amounts * valuemradmin / 100);
 
 
 
