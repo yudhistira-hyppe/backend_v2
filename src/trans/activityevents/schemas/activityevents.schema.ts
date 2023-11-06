@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { type } from 'os';
-import { Int32 } from "mongodb";
+import { Int32, ObjectId } from "mongodb";
 
 export type ActivityeventsDocument = Activityevents & Document;
 
@@ -59,9 +59,7 @@ export class Activityevents {
   @Prop()
   fork: String;
   @Prop({ type: Object })
-  userbasic: {
-    oid: String;
-  };
+  userbasic: ObjectId
 }
 
 export const ActivityeventsSchema = SchemaFactory.createForClass(Activityevents);

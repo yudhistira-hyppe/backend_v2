@@ -12,6 +12,8 @@ export class Userbasicnew {
     @Prop()
     email: String;
     @Prop()
+    emailLogin: String;
+    @Prop()
     fullName: String;
     @Prop()
     dob: String;

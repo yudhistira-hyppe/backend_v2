@@ -42,9 +42,11 @@ import { UserchallengesModule } from '../trans/userchallenges/userchallenges.mod
 import { ConfigModule } from '@nestjs/config';
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
+import { NewPostModule } from '../content/new_post/new_post.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    NewPostModule,
     ChallengeModule,
     UserchallengesModule,
     UserbankaccountsModule,

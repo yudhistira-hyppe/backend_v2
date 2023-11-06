@@ -1,30 +1,33 @@
-import mongoose from "mongoose";
+import { IsNotEmpty, IsString } from "class-validator";
+import { ObjectId } from "mongodb";
+import mongoose, { Document } from 'mongoose';
 import { Long } from "mongodb";
 export class CreateuserbasicnewDto {
   _id: mongoose.Types.ObjectId;
   profileID: string;
   email: String;
+  emailLogin: string;
   fullName: String;
   dob: String;
-  gender:String;
+  gender: String;
   regSrc: String;
   loginSource: String;
   loginSrc: String;
-  mobileNumber:String;
-  status:String;
-  event:String;
-  idProofName:String;
-  idProofNumber:String;
-  idProofStatus:String;
-  isComplete:boolean;
-  isCelebrity:boolean;
-  isIdVerified:boolean;
-  isPrivate:boolean;
-  isFollowPrivate:boolean;
-  isPostPrivate:boolean;
-  createdAt:String;
-  updatedAt:String;
-  bio:String;
+  mobileNumber: String;
+  status: String;
+  event: String;
+  idProofName: String;
+  idProofNumber: String;
+  idProofStatus: String;
+  isComplete: boolean;
+  isCelebrity: boolean;
+  isIdVerified: boolean;
+  isPrivate: boolean;
+  isFollowPrivate: boolean;
+  isPostPrivate: boolean;
+  createdAt: String;
+  updatedAt: String;
+  bio: String;
   profilePict: {
     $ref: String;
     $id: { oid: String };
@@ -40,9 +43,9 @@ export class CreateuserbasicnewDto {
     $id: { oid: String };
     $db: String;
   };
-  userInterests:any[];
-  authUsers:{
-    "devices":any[]
+  userInterests: any[];
+  authUsers: {
+    "devices": any[]
   };
   cities: {
     $ref: String;
@@ -67,7 +70,7 @@ export class CreateuserbasicnewDto {
   _class: String;
   pin: String;
   otp_pin: String;
-  otpToken:String;
+  otpToken: String;
   otp_expired_time: String;
   otppinVerified: boolean;
   statusKyc: string;
@@ -98,7 +101,7 @@ export class CreateuserbasicnewDto {
   otpRequestTime: Long;
   otpAttempt: Long;
   otpNextAttemptAllow: Long;
-  oneTimePassword:string;
+  oneTimePassword: string;
   location: any;
   isEnabled: boolean;
   isAccountNonExpired: boolean;
@@ -114,5 +117,13 @@ export class CreateuserbasicnewDto {
   fsSourceName: string;
   fsTargetUri: string;
   mediaEndpoint: string;
-  kyc:any[];
+  kyc: any[];
+}
+
+export class SearchUserbasicDto {
+  @IsString()
+  @IsNotEmpty()
+  search: String;
+  pageRow: number;
+  pageNumber: number;
 }

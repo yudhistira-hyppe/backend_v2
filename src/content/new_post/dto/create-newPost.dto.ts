@@ -1,5 +1,5 @@
 export class CreateNewPostDTO {
-  _id:String;
+  _id: String;
   postID: String;
   email: String;
   postType: String;
@@ -7,10 +7,10 @@ export class CreateNewPostDTO {
   active: Boolean;
   createdAt: String;
   updatedAt: String;
-  expiration: 
-  {
-    numberLong: String
-  };
+  expiration:
+    {
+      numberLong: String
+    };
   visibility: String;
   location: String;
   tags: any[];
@@ -51,6 +51,9 @@ export class CreateNewPostDTO {
   mediaThumBasePath: any[];
   mediaThumUri: any[];
   uploadSource: any[];
+  reactions: number;
+  rotate: number;
+  apsaraId: string;
 }
 
 export class CreatenewPost2Dto {

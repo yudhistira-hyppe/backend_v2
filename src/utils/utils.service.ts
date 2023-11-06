@@ -1290,7 +1290,14 @@ export class UtilsService {
     }
     return isTrue;
   }
-
+  async validateUsernamev2(username: string): Promise<boolean> {
+    var isTrue = false;
+    var list_username = await this.basic2SS.findbyusername(username);
+    if (!(await this.ceckData(list_username))) {
+      isTrue = true;
+    }
+    return isTrue;
+  }
   async formatDateString(date: Date): Promise<string> {
     var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
     return DateTime.substring(0, 10);
@@ -1821,18 +1828,15 @@ export class UtilsService {
 
     var AvatarDTO_ = new AvatarDTO();
 
-    try
-    {
-      if(get_userbasic.mediaBasePath != null || get_userbasic.mediaUri != null || get_userbasic.mediaType != null || get_userbasic.mediaEndpoint != null)
-      {
+    try {
+      if (get_userbasic.mediaBasePath != null || get_userbasic.mediaUri != null || get_userbasic.mediaType != null || get_userbasic.mediaEndpoint != null) {
         AvatarDTO_.mediaBasePath = get_userbasic.mediaBasePath;
         AvatarDTO_.mediaUri = get_userbasic.mediaUri;
         AvatarDTO_.mediaType = get_userbasic.mediaType;
         AvatarDTO_.mediaEndpoint = get_userbasic.mediaEndpoint;
       }
     }
-    catch(e)
-    {
+    catch (e) {
 
     }
 
@@ -1906,6 +1910,7 @@ export class UtilsService {
         ProfileDTO_.authEmail = get_userbasic.email;
         ProfileDTO_.iduser = get_userbasic._id;
         ProfileDTO_.profileID = get_userbasic.profileID;
+        ProfileDTO_.emailLogin = get_userbasic.emailLogin;
         //ProfileDTO_.token =
         //ProfileDTO_.refreshToken =
         //ProfileDTO_.userProfile =
@@ -1986,6 +1991,7 @@ export class UtilsService {
         ProfileDTO_.pin_verified = otppinVerified;
         ProfileDTO_.iduser = get_userbasic._id;
         ProfileDTO_.profileID = get_userbasic.profileID;
+        ProfileDTO_.emailLogin = get_userbasic.emailLogin;
         if (get_userbasic.statusKyc != undefined) {
           ProfileDTO_.statusKyc = get_userbasic.statusKyc;
         } else {

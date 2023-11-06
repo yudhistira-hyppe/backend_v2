@@ -95,6 +95,7 @@ export class UserbasicnewService {
                     "_id": 1,
                     "profileID": 1,
                     "email": 1,
+                    "emailLogin": 1,
                     "fullName": 1,
                     "dob": 1,
                     "gender":
@@ -989,249 +990,246 @@ export class UserbasicnewService {
 
         //kalo error, coba ganti jadi set dan jadi object
         var query = await this.UserbasicnewModel.aggregate([
-          {
-            "$match":
-            {
-              createdAt:
-              {
-                "$gte": convertstart,
-                "$lte": convertend
-              },
-              isEnabled: true
-            }
-          },
-          {
-            "$project":
-            {
-              createdAt:
-              {
-                "$substr":
-                  [
-                    "$createdAt", 0, 10
-                  ]
-              }
-            }
-          },
-          {
-            "$group":
-            {
-              _id:
-              {
-                "$dateFromString":
-                {
-                  "format": "%Y-%m-%d",
-                  "dateString": "$createdAt"
-    
-                }
-              },
-              totalperhari:
-              {
-                "$sum": 1
-              }
-            }
-          },
-          {
-            "$project":
-            {
-              _id: 1,
-              totalperhari: 1
-            }
-          },
-          {
-            "$unwind":
-            {
-              path: "$_id"
-            }
-          },
-          {
-            "$sort":
-            {
-              _id: 1
-            }
-          },
-          {
-            "$group":
-            {
-              _id: null,
-              total:
-              {
-                "$sum": "$totalperhari"
-              },
-              resultdata:
-              {
-                "$push":
-                {
-                  _id:
-                  {
-                    "$substr":
-                      [
-                        {
-                          "$toString": "$_id"
-                        }, 0, 10
-                      ]
-                  },
-                  totaldata: "$totalperhari"
-                }
-              }
-            }
-          }
-        ]);
-    
-        return query;
-    }
-
-    async regexfindUser(target:string, page:number, limit:number)
-    {
-        var query = await this.UserbasicnewModel.aggregate([
             {
                 "$match":
                 {
-                    "username":
+                    createdAt:
                     {
-                        "$regex":target,
-                        "$options":"i"
+                        "$gte": convertstart,
+                        "$lte": convertend
+                    },
+                    isEnabled: true
+                }
+            },
+            {
+                "$project":
+                {
+                    createdAt:
+                    {
+                        "$substr":
+                            [
+                                "$createdAt", 0, 10
+                            ]
+                    }
+                }
+            },
+            {
+                "$group":
+                {
+                    _id:
+                    {
+                        "$dateFromString":
+                        {
+                            "format": "%Y-%m-%d",
+                            "dateString": "$createdAt"
+
+                        }
+                    },
+                    totalperhari:
+                    {
+                        "$sum": 1
                     }
                 }
             },
             {
                 "$project":
                 {
-                    idUserAuth:"$_id",
-                    email:1,
-                    profilpictId:"$profilePict.$id",
-                    fullName:1,
-                    username:1,
-                    avatar:
-                    {
-                        mediaBasePath:"$mediaBasePath",
-                        mediaUri:"$mediaUri",
-                        mediaType:"$mediaType",
-                        mediaEndpoint:"$mediaEndpoint"
-                    }
+                    _id: 1,
+                    totalperhari: 1
+                }
+            },
+            {
+                "$unwind":
+                {
+                    path: "$_id"
                 }
             },
             {
                 "$sort":
                 {
-                    fullName:1
-                }                
+                    _id: 1
+                }
             },
             {
-                "$skip":page * limit
-            },
-            {
-                "$limit":limit
+                "$group":
+                {
+                    _id: null,
+                    total:
+                    {
+                        "$sum": "$totalperhari"
+                    },
+                    resultdata:
+                    {
+                        "$push":
+                        {
+                            _id:
+                            {
+                                "$substr":
+                                    [
+                                        {
+                                            "$toString": "$_id"
+                                        }, 0, 10
+                                    ]
+                            },
+                            totaldata: "$totalperhari"
+                        }
+                    }
+                }
             }
         ]);
 
         return query;
     }
 
-    async getUserHyppe3(search: string, startdate:string, enddate:string, jabatan:any[], divisi:any[], status:boolean, skip: number, limit: number, ascending:boolean) {
+    async regexfindUser(target: string, page: number, limit: number) {
+        var query = await this.UserbasicnewModel.aggregate([
+            {
+                "$match":
+                {
+                    "username":
+                    {
+                        "$regex": target,
+                        "$options": "i"
+                    }
+                }
+            },
+            {
+                "$project":
+                {
+                    idUserAuth: "$_id",
+                    email: 1,
+                    profilpictId: "$profilePict.$id",
+                    fullName: 1,
+                    username: 1,
+                    avatar:
+                    {
+                        mediaBasePath: "$mediaBasePath",
+                        mediaUri: "$mediaUri",
+                        mediaType: "$mediaType",
+                        mediaEndpoint: "$mediaEndpoint"
+                    }
+                }
+            },
+            {
+                "$sort":
+                {
+                    fullName: 1
+                }
+            },
+            {
+                "$skip": page * limit
+            },
+            {
+                "$limit": limit
+            }
+        ]);
+
+        return query;
+    }
+
+    async getUserHyppe3(search: string, startdate: string, enddate: string, jabatan: any[], divisi: any[], status: boolean, skip: number, limit: number, ascending: boolean) {
         var pipeline = [];
         pipeline.push(
             { '$match': { email: /@hyppe.id/i } },
             {
-            '$lookup': {
-                from: 'group',
-                let: { userName: '$_id' },
-                pipeline: [
-                {
-                    '$match': { '$expr': { '$in': [ '$$userName', '$userbasics' ] } }
+                '$lookup': {
+                    from: 'group',
+                    let: { userName: '$_id' },
+                    pipeline: [
+                        {
+                            '$match': { '$expr': { '$in': ['$$userName', '$userbasics'] } }
+                        }
+                    ],
+                    as: 'group_userbasics'
                 }
-                ],
-                as: 'group_userbasics'
-            }
             },
             {
-            '$project': {
-                idUserAuth:"$id",
-                group_userbasics: {
-                '$ifNull': [ { '$arrayElemAt': [ '$group_userbasics', 0 ] }, null ]
-                },
-                fullName: '$fullName',
-                username: '$username',
-                email: '$email',
-                isIdVerified: '$isIdVerified',
-                createdAt:"$createdAt",
-                roles: { '$ifNull': [ '$roles', [] ] },
-                avatar: {
-                mediaBasePath: { '$ifNull': [ '$mediaBasePath', null ] },
-                mediaUri: { '$ifNull': [ '$mediaUri', null ] },
-                mediaType: { '$ifNull': [ '$mediaType', null ] },
-                mediaEndpoint: { '$ifNull': [ '$mediaEndpoint', null ] }
+                '$project': {
+                    idUserAuth: "$id",
+                    group_userbasics: {
+                        '$ifNull': [{ '$arrayElemAt': ['$group_userbasics', 0] }, null]
+                    },
+                    fullName: '$fullName',
+                    username: '$username',
+                    email: '$email',
+                    isIdVerified: '$isIdVerified',
+                    createdAt: "$createdAt",
+                    roles: { '$ifNull': ['$roles', []] },
+                    avatar: {
+                        mediaBasePath: { '$ifNull': ['$mediaBasePath', null] },
+                        mediaUri: { '$ifNull': ['$mediaUri', null] },
+                        mediaType: { '$ifNull': ['$mediaType', null] },
+                        mediaEndpoint: { '$ifNull': ['$mediaEndpoint', null] }
+                    }
                 }
-            }
             },
             {
-            '$lookup': {
-                from: 'division',
-                localField: 'group_userbasics.divisionId',
-                foreignField: '_id',
-                as: 'division_data'
-            }
+                '$lookup': {
+                    from: 'division',
+                    localField: 'group_userbasics.divisionId',
+                    foreignField: '_id',
+                    as: 'division_data'
+                }
             },
             {
-            '$project': {
-                idUserAuth:"$idUserAuth",
-                group_userbasics: '$group_userbasics',
-                fullName: '$fullName',
-                username: '$username',
-                email: '$email',
-                isIdVerified: { '$in': [ 'ROLE_ADMIN', '$roles' ] },
-                avatar: '$avatar',
-                createdAt:"$createdAt",
-            }
+                '$project': {
+                    idUserAuth: "$idUserAuth",
+                    group_userbasics: '$group_userbasics',
+                    fullName: '$fullName',
+                    username: '$username',
+                    email: '$email',
+                    isIdVerified: { '$in': ['ROLE_ADMIN', '$roles'] },
+                    avatar: '$avatar',
+                    createdAt: "$createdAt",
+                }
             },
             {
-            '$lookup': {
-                from: 'division',
-                localField: 'group_userbasics.divisionId',
-                foreignField: '_id',
-                as: 'division_data'
-            }
+                '$lookup': {
+                    from: 'division',
+                    localField: 'group_userbasics.divisionId',
+                    foreignField: '_id',
+                    as: 'division_data'
+                }
             },
             {
-            '$project': {
-                namadivisi: { '$arrayElemAt': [ '$division_data.nameDivision', 0 ] },
-                group: '$group_userbasics.nameGroup',
-                groupId: '$group_userbasics._id',
-                fullName: '$fullName',
-                username: '$username',
-                email: '$email',
-                status: "$isIdVerified",
-                avatar: '$avatar',
-                createdAt:"$createdAt"
-            }
+                '$project': {
+                    namadivisi: { '$arrayElemAt': ['$division_data.nameDivision', 0] },
+                    group: '$group_userbasics.nameGroup',
+                    groupId: '$group_userbasics._id',
+                    fullName: '$fullName',
+                    username: '$username',
+                    email: '$email',
+                    status: "$isIdVerified",
+                    avatar: '$avatar',
+                    createdAt: "$createdAt"
+                }
             },
         );
 
         var firstmatch = [];
-        if(search != null)
-        {
+        if (search != null) {
             firstmatch.push({
                 "$or":
-                [
-                    {
-                        "username": 
+                    [
                         {
-                            $regex: search, 
-                            $options: 'i'
-                        }
-                    },
-                    {
-                        "email": 
-                        { 
-                            $regex: search, 
-                            $options: 'i' 
-                        } 
-                    },
-                ]
+                            "username":
+                            {
+                                $regex: search,
+                                $options: 'i'
+                            }
+                        },
+                        {
+                            "email":
+                            {
+                                $regex: search,
+                                $options: 'i'
+                            }
+                        },
+                    ]
             });
         }
 
-        if(startdate != null && enddate != null)
-        {
+        if (startdate != null && enddate != null) {
             var convertstart = startdate.split(" ")[0];
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
             var convertend = currentdate.toISOString().split("T")[0];
@@ -1240,109 +1238,99 @@ export class UserbasicnewService {
                 "$expr":
                 {
                     "$and":
-                    [
-                        {
-                            "$gte":
-                            [
-                                "$createdAt", convertstart
-                            ],
-                        },
-                        {
-                            "$lt":
-                            [
-                                "$createdAt", convertend
-                            ]
-                        }
-                    ]
+                        [
+                            {
+                                "$gte":
+                                    [
+                                        "$createdAt", convertstart
+                                    ],
+                            },
+                            {
+                                "$lt":
+                                    [
+                                        "$createdAt", convertend
+                                    ]
+                            }
+                        ]
                 }
             });
         }
 
-        if(jabatan != null)
-        {
+        if (jabatan != null) {
             firstmatch.push({
                 "group":
                 {
-                "$in":jabatan
+                    "$in": jabatan
                 }
             });
         }
 
-        if(divisi != null)
-        {
+        if (divisi != null) {
             firstmatch.push({
                 "namadivisi":
                 {
-                "$in":divisi
+                    "$in": divisi
                 }
             });
         }
 
-        if(status != null)
-        {
+        if (status != null) {
             firstmatch.push({
-                "status":status
+                "status": status
             });
         }
 
-        if(firstmatch.length != 0)
-        {
+        if (firstmatch.length != 0) {
             pipeline.push({
                 "$match":
                 {
-                "$and":firstmatch
+                    "$and": firstmatch
                 }
             });
         }
 
-        if(ascending != null)
-        {
+        if (ascending != null) {
             var konvertsort = null;
-            if(ascending == true)
-            {
+            if (ascending == true) {
                 konvertsort = 1;
             }
-            else
-            {
+            else {
                 konvertsort = -1;
             }
             pipeline.push({
                 "$sort":
                 {
-                "createdAt":konvertsort
+                    "createdAt": konvertsort
                 }
             });
         }
 
-        if(skip != null && skip > 0)
-        {
+        if (skip != null && skip > 0) {
             pipeline.push({
-                "$skip" : (skip * limit)
+                "$skip": (skip * limit)
             });
         }
 
-        if(limit != null && limit > 0)
-        {
+        if (limit != null && limit > 0) {
             pipeline.push({
-                "$limit":limit
+                "$limit": limit
             });
         }
 
         var consol = require('util');
-        console.log(consol.inspect(pipeline, { showHidden:false, depth:null, colors:true}))
+        console.log(consol.inspect(pipeline, { showHidden: false, depth: null, colors: true }))
 
         var data = await this.UserbasicnewModel.aggregate(pipeline);
 
         return data;
     }
 
-    async listkycsummary2(startdate: string, enddate: string, jenisquery: string, keys: string, status: any[], descending: boolean, page: number, limit: number)
-    {
+    async listkycsummary2(startdate: string, enddate: string, jenisquery: string, keys: string, status: any[], descending: boolean, page: number, limit: number) {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-      
+
             var dateend = currentdate.toISOString();
-          } catch (e) {
+        } catch (e) {
             dateend = "";
         }
 
@@ -1354,42 +1342,40 @@ export class UserbasicnewService {
             {
                 "kyc.valid":
                 {
-                    "$exists":true
+                    "$exists": true
                 }
             },
             {
                 "kyc.status":
                 {
-                    "$ne":null
+                    "$ne": null
                 }
             },
             {
                 "kyc.status":
                 {
-                    "$ne":""
+                    "$ne": ""
                 }
             }
         );
 
-        if(startdate != null && startdate != undefined)
-        {
+        if (startdate != null && startdate != undefined) {
             firstmatch.push(
                 {
                     "kyc.createdAt":
                     {
-                        "$gte":startdate
+                        "$gte": startdate
                     }
                 }
             );
         }
 
-        if(enddate != null && enddate != undefined)
-        {
+        if (enddate != null && enddate != undefined) {
             firstmatch.push(
                 {
                     "kyc.createdAt":
                     {
-                        "$lte":dateend
+                        "$lte": dateend
                     }
                 }
             );
@@ -1399,58 +1385,58 @@ export class UserbasicnewService {
             {
                 "$unwind":
                 {
-                    path:"$kyc"
+                    path: "$kyc"
                 }
             },
             {
                 "$match":
                 {
-                    "$and":firstmatch
+                    "$and": firstmatch
                 }
             },
             {
                 "$project":
                 {
-                    _id:1,
-                    kyc:1,
-                    email:1,
-                    username:1,
-                    userId:"$_id",
-                    jumlahPermohonan:'1',
+                    _id: 1,
+                    kyc: 1,
+                    email: 1,
+                    username: 1,
+                    userId: "$_id",
+                    jumlahPermohonan: '1',
                     tahapan: "KTP",
                     avatar:
                     {
                         mediaBasePath:
                         {
                             "$ifNull":
-                            [
-                                "$mediaBasePath",
-                                null
-                            ]
+                                [
+                                    "$mediaBasePath",
+                                    null
+                                ]
                         },
                         mediaUri:
                         {
                             "$ifNull":
-                            [
-                                "$mediaUri",
-                                null
-                            ]
+                                [
+                                    "$mediaUri",
+                                    null
+                                ]
                         },
                         mediaType:
                         {
                             "$ifNull":
-                            [
-                                "$mediaType",
-                                null
-                            ]
+                                [
+                                    "$mediaType",
+                                    null
+                                ]
                         },
                         mediaEndpoint:
                         {
                             "$ifNull":
-                            [
-                                "$mediaEndpoint",
-                                null
-                            ]
+                                [
+                                    "$mediaEndpoint",
+                                    null
+                                ]
                         },
                     }
                 }
@@ -1458,14 +1444,14 @@ export class UserbasicnewService {
             {
                 "$project":
                 {
-                    _id:1,
+                    _id: 1,
                     // kyc:1,
-                    email:1,
-                    username:1,
-                    userId:1,
-                    jumlahPermohonan:1,
-                    tahapan:1,
-                    avatar:1,
+                    email: 1,
+                    username: 1,
+                    userId: 1,
+                    jumlahPermohonan: 1,
+                    tahapan: 1,
+                    avatar: 1,
                     // kycHandle:
                     // {
                     //     "$ifNull":
@@ -1474,64 +1460,62 @@ export class UserbasicnewService {
                     //         []       
                     //     ]
                     // },
-                    idcardnumber:"$kyc.idcardnumber",
+                    idcardnumber: "$kyc.idcardnumber",
                     status:
                     {
                         '$switch': {
-                          branches: [
-                            {
-                              case: { '$eq': [ '$kyc.status', 'IN_PROGGRESS' ] },
-                              then: 'BARU'
-                            },
-                            {
-                              case: { '$eq': [ '$kyc.status', 'FAILED' ] },
-                              then: 'DITOLAK'
-                            },
-                            {
-                              case: { '$eq': [ '$kyc.status', 'FINISH' ] },
-                              then: 'BYSYSTEM'
-                            },
-                            {
-                              case: { '$eq': [ '$kyc.status', 'DISETUJUI' ] },
-                              then: 'DISETUJUI'
-                            }
-                          ],
-                          default: ''
+                            branches: [
+                                {
+                                    case: { '$eq': ['$kyc.status', 'IN_PROGGRESS'] },
+                                    then: 'BARU'
+                                },
+                                {
+                                    case: { '$eq': ['$kyc.status', 'FAILED'] },
+                                    then: 'DITOLAK'
+                                },
+                                {
+                                    case: { '$eq': ['$kyc.status', 'FINISH'] },
+                                    then: 'BYSYSTEM'
+                                },
+                                {
+                                    case: { '$eq': ['$kyc.status', 'DISETUJUI'] },
+                                    then: 'DISETUJUI'
+                                }
+                            ],
+                            default: ''
                         }
                     },
-                    createdAt:"$kyc.createdAt",
+                    createdAt: "$kyc.createdAt",
                 }
             }
         );
 
-        if(jenisquery == 'summary')
-        {
+        if (jenisquery == 'summary') {
             pipeline.push(
                 {
                     "$group":
                     {
-                        _id:"$status",
+                        _id: "$status",
                         myCount:
                         {
-                            "$sum":1
+                            "$sum": 1
                         }
                     }
                 }
             );
         }
-        else
-        {
+        else {
             if (keys != null && keys != undefined) {
                 pipeline.push({
                     $match: {
-            
+
                         username: {
                             $regex: keys, $options: 'i'
                         },
                     }
                 });
             }
-        
+
             if (status != null && status !== undefined) {
                 pipeline.push(
                     {
@@ -1542,19 +1526,19 @@ export class UserbasicnewService {
                                         $in: status
                                     }
                                 },
-                
+
                             ]
                         }
                     }
                 );
             }
-        
+
             if (descending === true) {
                 order = -1;
             } else {
                 order = 1;
             }
-        
+
             pipeline.push(
                 {
                     $sort: {
@@ -1562,11 +1546,11 @@ export class UserbasicnewService {
                     },
                 }
             );
-        
+
             if (page > 0) {
                 pipeline.push({ $skip: (page * limit) });
             }
-        
+
             if (limit > 0) {
                 pipeline.push({ $limit: limit });
             }
@@ -1577,272 +1561,271 @@ export class UserbasicnewService {
         return query;
     }
 
-    async detailkyc(id:string)
-    {
+    async detailkyc(id: string) {
         var mongo = require('mongoose');
         var result = await this.UserbasicnewModel.aggregate([
             {
                 $unwind: "$kyc"
             },
             {
-                  $match: {
+                $match: {
                     $and: [
-                      {
-            
-                        "kyc.status": {
-                          $ne: null
-                        }
-                      },
-                      {
-            
-                        "kyc.status": {
-                          $ne: ""
-                        }
-                      },
-            
+                        {
+
+                            "kyc.status": {
+                                $ne: null
+                            }
+                        },
+                        {
+
+                            "kyc.status": {
+                                $ne: ""
+                            }
+                        },
+
                     ],
                     _id: mongo.Types.ObjectId(id)
-                  }
+                }
             },
             {
                 $project: {
-                  email: '$email',
-                  insight_id: '$insight.$id',
-                  isIdVerified: '$isIdVerified',
-                  countries: "$countriesName",
-                  area: "$statesName",
-                  cities: "$citiesName",
-                  fsSourceUri: "$kyc.fsSourceUri",
-                  mediaUri: "$kyc.mediaUri",
-                  SelfiefsSourceUri: "$kyc.SelfiefsSourceUri",
-                  mediaSelfieUri: "$kyc.mediaSelfieUri",
-                  SupportfsSourceUri: "$kyc.SupportfsSourceUri",
-                  mediaSupportUri: "$kyc.mediaSupportUri",
-                  fullName: 1,
-                  username: 1,
-                  userAuth_id: '$_id',
-                  createdAt: "$kyc.createdAt",
-                  status:  "$kyc.status",
-                  idcardnumber:  "$kyc.idcardnumber",
-                  tglLahir: {
-                    "$cond":
+                    email: '$email',
+                    insight_id: '$insight.$id',
+                    isIdVerified: '$isIdVerified',
+                    countries: "$countriesName",
+                    area: "$statesName",
+                    cities: "$citiesName",
+                    fsSourceUri: "$kyc.fsSourceUri",
+                    mediaUri: "$kyc.mediaUri",
+                    SelfiefsSourceUri: "$kyc.SelfiefsSourceUri",
+                    mediaSelfieUri: "$kyc.mediaSelfieUri",
+                    SupportfsSourceUri: "$kyc.SupportfsSourceUri",
+                    mediaSupportUri: "$kyc.mediaSupportUri",
+                    fullName: 1,
+                    username: 1,
+                    userAuth_id: '$_id',
+                    createdAt: "$kyc.createdAt",
+                    status: "$kyc.status",
+                    idcardnumber: "$kyc.idcardnumber",
+                    tglLahir: {
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$or":
+                                    [
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$kyc.tglLahir", null
+                                                ]
+                                        },
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$kyc.tglLahir", ""
+                                                ]
+                                        }
+                                    ]
+                            },
+                            then: "$dob",
+                            else: "$kyc.tglLahir"
+                        }
+                    },
+                    nama: "$kyc.nama",
+                    tempatLahir: "$kyc.tempatLahir",
+                    jenisKelamin: "$kyc.jenisKelamin",
+                    alamat: "$kyc.alamat",
+                    agama: "$kyc.agama",
+                    statusPerkawinan: "$kyc.statusPerkawinan",
+                    pekerjaan: "$kyc.pekerjaan",
+                    kewarganegaraan: "$kyc.kewarganegaraan",
+                    mobileNumber: 1,
+                    avatar:
                     {
-                      if:
-                      {
-                        "$or":
-                        [
-                          {
-                            "$eq":
-                            [
-                              "$kyc.tglLahir", null
-                            ]
-                          },
-                          {
-                            "$eq":
-                            [
-                              "$kyc.tglLahir", ""
-                            ]
-                          }
-                        ]
-                      },
-                      then:"$dob",
-                      else:"$kyc.tglLahir"
-                    }
-                  },
-                  nama: "$kyc.nama",
-                  tempatLahir: "$kyc.tempatLahir",
-                  jenisKelamin: "$kyc.jenisKelamin",
-                  alamat: "$kyc.alamat",
-                  agama: "$kyc.agama",
-                  statusPerkawinan: "$kyc.statusPerkawinan",
-                  pekerjaan: "$kyc.pekerjaan",
-                  kewarganegaraan: "$kyc.kewarganegaraan",
-                  mobileNumber: 1,
-                  avatar:
-                  {
-                      mediaBasePath:
-                      {
-                          "$ifNull":
-                          [
-                              "$mediaBasePath", null
-                          ]
-                      },
-                      mediaUri:
-                      {
-                          "$ifNull":
-                          [
-                              "$mediaUri", null
-                          ]
-                      },
-                      mediaEndpoint:
-                      {
-                          "$ifNull":
-                          [
-                              "$mediaEndpoint", null
-                          ]
-                      },
-                      mediaType:
-                      {
-                          "$ifNull":
-                          [
-                              "$mediaType", null
-                          ]
-                      }
-                  },
+                        mediaBasePath:
+                        {
+                            "$ifNull":
+                                [
+                                    "$mediaBasePath", null
+                                ]
+                        },
+                        mediaUri:
+                        {
+                            "$ifNull":
+                                [
+                                    "$mediaUri", null
+                                ]
+                        },
+                        mediaEndpoint:
+                        {
+                            "$ifNull":
+                                [
+                                    "$mediaEndpoint", null
+                                ]
+                        },
+                        mediaType:
+                        {
+                            "$ifNull":
+                                [
+                                    "$mediaType", null
+                                ]
+                        }
+                    },
                 }
             },
             {
                 $lookup: {
-                  from: 'insights',
-                  localField: 'insight_id',
-                  foreignField: '_id',
-                  as: 'insight_data',
+                    from: 'insights',
+                    localField: 'insight_id',
+                    foreignField: '_id',
+                    as: 'insight_data',
                 },
             },
             {
                 $addFields: {
-          
-                  insights: { $arrayElemAt: ['$insight_data', 0] },
+
+                    insights: { $arrayElemAt: ['$insight_data', 0] },
                 },
-          
+
             },
             {
                 $project: {
-                  email: 1,
-                  insights: 1,
-                  isIdVerified: 1,
-                  username: 1,
-                  fullName: 1,
-                  countries: 1,
-                  area: 1,
-                  cities: 1,
-                  createdAt: 1,
-                  // profilpict: {
-                  //   $arrayElemAt: ['$profilePict_data', 0]
-                  // },
-                  status: {
-                    $switch: {
-                      branches: [
-                        {
-                          case: {
-                            $eq: [
-                              "$status",
-                              "IN_PROGGRESS"
-                            ]
-                          },
-                          then: "BARU"
-                        },
-                        {
-                          case: {
-                            $eq: [
-                              "$status",
-                              "FAILED"
-                            ]
-                          },
-                          then: "DITOLAK"
-                        },
-                        {
-                          case: {
-                            $eq: [
-                              "$status",
-                              "FINISH"
-                            ]
-                          },
-                          then: "BYSYSTEM"
-                        },
-                        {
-                          case: {
-                            $eq: [
-                              "$status",
-                              "DISETUJUI"
-                            ]
-                          },
-                          then: "DISETUJUI"
-                        },
-                      ],
-                      default: ""
-                    }
-                  },
-                  tglLahir: 1,
-                  idcardnumber: 1,
-                  jumlahPermohonan: "1",
-                  tahapan: "KTP",
-                  nama: 1,
-                  tempatLahir: 1,
-                  jenisKelamin: 1,
-                  alamat: 1,
-                  agama: 1,
-                  statusPerkawinan: 1,
-                  pekerjaan: 1,
-                  kewarganegaraan: 1,
-                  fsSourceUri: 1,
-                  mediaUri: 1,
-                  SelfiefsSourceUri: 1,
-                  mediaSelfieUri: 1,
-                  SupportfsSourceUri: 1,
-                  mediaSupportUri: 1,
-                  mobileNumber: 1,
-                  avatar:1,
-                  statusUser: {
-                    $cond: {
-                      if: {
-                        $or: [{
-                          $eq: ["$isIdVerified", null]
-                        }, {
-                          $eq: ["$isIdVerified", ""]
-                        }, {
-                          $eq: ["$isIdVerified", []]
-                        }, {
-                          $eq: ["$isIdVerified", false]
-                        }]
-                      },
-                      then: "BASIC",
-                      else: "PREMIUM"
+                    email: 1,
+                    insights: 1,
+                    isIdVerified: 1,
+                    username: 1,
+                    fullName: 1,
+                    countries: 1,
+                    area: 1,
+                    cities: 1,
+                    createdAt: 1,
+                    // profilpict: {
+                    //   $arrayElemAt: ['$profilePict_data', 0]
+                    // },
+                    status: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$status",
+                                            "IN_PROGGRESS"
+                                        ]
+                                    },
+                                    then: "BARU"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$status",
+                                            "FAILED"
+                                        ]
+                                    },
+                                    then: "DITOLAK"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$status",
+                                            "FINISH"
+                                        ]
+                                    },
+                                    then: "BYSYSTEM"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$status",
+                                            "DISETUJUI"
+                                        ]
+                                    },
+                                    then: "DISETUJUI"
+                                },
+                            ],
+                            default: ""
+                        }
                     },
-          
-                  },
-          
+                    tglLahir: 1,
+                    idcardnumber: 1,
+                    jumlahPermohonan: "1",
+                    tahapan: "KTP",
+                    nama: 1,
+                    tempatLahir: 1,
+                    jenisKelamin: 1,
+                    alamat: 1,
+                    agama: 1,
+                    statusPerkawinan: 1,
+                    pekerjaan: 1,
+                    kewarganegaraan: 1,
+                    fsSourceUri: 1,
+                    mediaUri: 1,
+                    SelfiefsSourceUri: 1,
+                    mediaSelfieUri: 1,
+                    SupportfsSourceUri: 1,
+                    mediaSupportUri: 1,
+                    mobileNumber: 1,
+                    avatar: 1,
+                    statusUser: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$isIdVerified", null]
+                                }, {
+                                    $eq: ["$isIdVerified", ""]
+                                }, {
+                                    $eq: ["$isIdVerified", []]
+                                }, {
+                                    $eq: ["$isIdVerified", false]
+                                }]
+                            },
+                            then: "BASIC",
+                            else: "PREMIUM"
+                        },
+
+                    },
+
                 }
             },
             {
                 $project: {
-                  email: 1,
-                  isIdVerified: 1,
-                  username: 1,
-                  fullName: 1,
-          
-                  createdAt: 1,
-                  status: 1,
-                  idcardnumber: 1,
-                  jumlahPermohonan: "1",
-                  tahapan: "KTP",
-                  avatar: 1,
-                  nama: 1,
-                  tglLahir: 1,
-                  tempatLahir: 1,
-                  jenisKelamin: 1,
-                  alamat: 1,
-                  agama: 1,
-                  statusPerkawinan: 1,
-                  pekerjaan: 1,
-                  kewarganegaraan: 1,
-                  statusUser: 1,
-                  insight: {
-          
-                    followers: '$insights.followers',
-          
-                    followings: '$insights.followings'
-                  },
-                  fsSourceUri: 1,
-                  SelfiefsSourceUri: 1,
-                  SupportfsSourceUri: 1,
-                  mediaSelfieUri: 1,
-                  mediaUri: 1,
-                  mediaSupportUri: 1,
-                  mobileNumber: 1,
-                  countries: 1,
-                  area: 1,
-                  cities: 1,
+                    email: 1,
+                    isIdVerified: 1,
+                    username: 1,
+                    fullName: 1,
+
+                    createdAt: 1,
+                    status: 1,
+                    idcardnumber: 1,
+                    jumlahPermohonan: "1",
+                    tahapan: "KTP",
+                    avatar: 1,
+                    nama: 1,
+                    tglLahir: 1,
+                    tempatLahir: 1,
+                    jenisKelamin: 1,
+                    alamat: 1,
+                    agama: 1,
+                    statusPerkawinan: 1,
+                    pekerjaan: 1,
+                    kewarganegaraan: 1,
+                    statusUser: 1,
+                    insight: {
+
+                        followers: '$insights.followers',
+
+                        followings: '$insights.followings'
+                    },
+                    fsSourceUri: 1,
+                    SelfiefsSourceUri: 1,
+                    SupportfsSourceUri: 1,
+                    mediaSelfieUri: 1,
+                    mediaUri: 1,
+                    mediaSupportUri: 1,
+                    mobileNumber: 1,
+                    countries: 1,
+                    area: 1,
+                    cities: 1,
                 }
             },
         ]);

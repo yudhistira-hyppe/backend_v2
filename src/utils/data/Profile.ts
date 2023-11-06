@@ -10,6 +10,7 @@ export class ProfileDTO {
     password: String;
     fullName: String;
     email: String;
+    emailLogin: String;
     langIso: String;
     location: LocationDTO;
     regSrc: String;

@@ -51,8 +51,9 @@ import { GlobalResponse } from '../utils/data/globalResponse';
 import { GlobalMessages } from '../utils/data/globalMessage';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express/multer';
 import { FormDataRequest } from 'nestjs-form-data';
-import { CreateUserbasicDto, SearchUserbasicDto } from '../trans/userbasics/dto/create-userbasic.dto';
+import { CreateUserbasicDto } from '../trans/userbasics/dto/create-userbasic.dto';
 import { PostsService } from '../content/posts/posts.service';
+import { NewPostService } from '../content/new_post/new_post.service';
 import { ContenteventsService } from '../content/contentevents/contentevents.service';
 import { InsightsService } from '../content/insights/insights.service';
 import { Long } from 'mongodb';
@@ -66,9 +67,10 @@ import { FriendListService } from 'src/content/friend_list/friend_list.service';
 import { CreateUserauthDto } from 'src/trans/userauths/dto/create-userauth.dto';
 import { ConfigService } from '@nestjs/config';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
-import { CreateuserbasicnewDto } from 'src/trans/userbasicnew/dto/Createuserbasicnew-dto';
+//import { CreateuserbasicnewDto } from 'src/trans/userbasicnew/dto/Createuserbasicnew-dto';
 import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema';
 import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
+import { CreateuserbasicnewDto, SearchUserbasicDto } from '../trans/userbasicnew/dto/Createuserbasicnew-dto';
 const sharp = require('sharp');
 const convert = require('heic-convert');
 
@@ -102,7 +104,8 @@ export class AuthController {
     private friendListService: FriendListService,
     private readonly configService: ConfigService,
     private readonly logapiSS: LogapisService,
-    private readonly basic2SS: UserbasicnewService
+    private readonly basic2SS: UserbasicnewService,
+    private readonly NewPostService: NewPostService
   ) { }
 
   // @UseGuards(LocalAuthGuard)
@@ -1440,6 +1443,7 @@ export class AuthController {
         // ProfileDTO_.devicetype = getdevicedata;
         ProfileDTO_.devicetype = (getdevicedata != null ? getdevicedata : LoginRequest_.devicetype);
         ProfileDTO_.listSetting = datasetting;
+        ProfileDTO_.emailLogin = data_userbasics.emailLogin;
 
         var GlobalResponse_ = new GlobalResponse();
         var GlobalMessages_ = new GlobalMessages();
@@ -2163,6 +2167,11 @@ export class AuthController {
     return await this.authService.updateprofile(request, headers);
   }
 
+  @Post('api/user/updateprofile/v2')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async updateprofilev2(@Req() request: any, @Headers() headers) {
+    return await this.authService.updateprofilev2(request, headers);
+  }
   @Post('api/user/resendotp')
   @HttpCode(HttpStatus.ACCEPTED)
   async resendotp(@Req() request: any) {
@@ -3262,8 +3271,7 @@ export class AuthController {
         'Unabled to proceed user not found',
       );
     }
-    else
-    {
+    else {
       var user_view = headers['x-auth-user'];
       await this.authService.viewProfile(tmp.email.toString(), user_view);
       var Data = await this.utilsService.generateProfile2(tmp.email.toString(), 'PROFILE');
@@ -3284,7 +3292,7 @@ export class AuthController {
             "The process successful"
           ]
         }
-      }; 
+      };
     }
   }
 
@@ -3420,7 +3428,7 @@ export class AuthController {
         await this.authService.viewProfile(SearchUserbasicDto_.search.toString(), user_view);
         var Data = await this.utilsService.generateProfile2(SearchUserbasicDto_.search.toString(), 'PROFILE');
 
-        var numPost = await this.postsService.findUserPost(SearchUserbasicDto_.search.toString());
+        var numPost = await this.NewPostService.findUserPost(SearchUserbasicDto_.search.toString());
         let aNumPost = <any>numPost;
         Data.insight.posts = <Long>aNumPost;
 

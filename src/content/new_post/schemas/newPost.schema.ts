@@ -2,12 +2,12 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 // import { Long } from "mongodb";
 
-export type NewpostsDocument = newPosts & Document ;
+export type NewpostsDocument = newPosts & Document;
 
 @Schema({ collection: 'newPosts' })
 export class newPosts {
   @Prop()
-  _id:String;
+  _id: String;
   @Prop()
   postID: String;
   @Prop()
@@ -23,10 +23,10 @@ export class newPosts {
   @Prop()
   updatedAt: String;
   @Prop({ type: Object })
-  expiration: 
-  {
-    numberLong: String
-  };
+  expiration:
+    {
+      numberLong: String
+    };
   @Prop()
   visibility: String;
   @Prop()
@@ -101,6 +101,14 @@ export class newPosts {
   mediaThumUri: any[];
   @Prop()
   uploadSource: any[];
+  @Prop()
+  mediaType: string;
+  @Prop()
+  apsaraId: string;
+  @Prop()
+  rotate: number
+  @Prop()
+  reactions: number;
 }
 
 export const NewpostsSchema = SchemaFactory.createForClass(newPosts);

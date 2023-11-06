@@ -2707,6 +2707,7 @@ export class AuthService {
     }
   }
 
+
   async refreshToken(email: string, refresh_token_id: string) {
     //Ceck User Jwtrefreshtoken
     const datajwtrefreshtokenService =
@@ -10593,6 +10594,7 @@ export class AuthService {
 
   async signup3(req: any): Promise<any> {
     var user_email = null;
+    var emailLogin = null;
     var user_password = null;
     var user_deviceId = null;
     var user_interest = null;
@@ -10696,6 +10698,7 @@ export class AuthService {
         });
       }
       user_email = req.body.email;
+      emailLogin = req.body.email;
       user_password = req.body.password;
       user_deviceId = req.body.deviceId;
       if (req.body.langIso != undefined) {
@@ -10757,6 +10760,7 @@ export class AuthService {
         });
       }
       user_email = req.body.email;
+      emailLogin = req.body.email;
       user_otp = req.body.otp;
       user_status = req.body.status;
       user_event = req.body.event;
@@ -11166,6 +11170,7 @@ export class AuthService {
                 data["interest"] = interests_array;
                 data["event"] = 'UPDATE_BIO';
                 data["email"] = datauserbasicsService.email;
+                data["emailLogin"] = datauserbasicsService.emailLogin;
                 data["username"] = datauserbasicsService.username;
                 data["isComplete"] = datauserbasicsService.isComplete;
                 data["status"] = 'IN_PROGRESS';
@@ -13596,5 +13601,747 @@ export class AuthService {
       );
     }
   }
+
+
+  async updateprofilev2(req: any, head: any) {
+    if (!(await this.utilsService.validasiTokenEmail(head))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    var user_email_header = null;
+    var user_email = null;
+    var emailLogin = null;
+    var user_username = null;
+    var user_bio = null;
+    var user_fullName = null;
+
+    var user_country = null;
+    var user_area = null;
+    var user_city = null;
+    var user_mobileNumber = null;
+    var user_idProofNumber = null;
+    var user_gender = null;
+    var user_dob = null;
+    var user_langIso = null;
+    var mongo = require('mongoose');
+    var event = req.body.event;
+    var status = req.body.status;
+
+    if (head['x-auth-user'] != undefined) {
+      user_email_header = head['x-auth-user'];
+    }
+
+    if ((event == 'UPDATE_BIO') && (status == 'IN_PROGRESS')) {
+      if (req.body.email != undefined) {
+        user_email = req.body.email;
+      }
+      if (req.body.emailLogin != undefined) {
+
+        emailLogin = req.body.emailLogin;
+      }
+
+      if (req.body.username != undefined) {
+        user_username = req.body.username;
+      }
+
+      if (req.body.bio != undefined) {
+        user_bio = req.body.bio;
+      }
+
+      if (req.body.fullName != undefined) {
+        user_fullName = req.body.fullName;
+      }
+
+      if (req.body.country != undefined) {
+        user_country = req.body.country;
+      }
+
+      if (req.body.area != undefined) {
+        user_area = req.body.area;
+      }
+
+      if (req.body.city != undefined) {
+        user_city = req.body.city;
+      }
+
+      if (req.body.mobileNumber != undefined) {
+        user_mobileNumber = req.body.mobileNumber;
+      }
+
+      // if (req.body.$idProofNumber != undefined) {
+      //   user_idProofNumber = req.body.idProofNumber;
+      // }
+
+      if (req.body.gender != undefined) {
+        user_gender = req.body.gender;
+      }
+
+      if (req.body.dob != undefined) {
+        user_dob = req.body.dob;
+      }
+
+      if (req.body.langIso != undefined) {
+        user_langIso = req.body.langIso;
+      }
+    } else if ((event == 'UPDATE_PROFILE') && (status == 'COMPLETE_BIO')) {
+      if (req.body.email != undefined) {
+        user_email = req.body.email;
+      }
+      if (req.body.emailLogin != undefined) {
+
+        emailLogin = req.body.emailLogin;
+      }
+      if (req.body.username != undefined) {
+        user_username = req.body.username;
+      }
+
+      if (req.body.bio != undefined) {
+        user_bio = req.body.bio;
+      }
+
+      if (req.body.fullName != undefined) {
+        user_fullName = req.body.fullName;
+      }
+
+      if (req.body.country != undefined) {
+        user_country = req.body.country;
+      }
+
+      if (req.body.area != undefined) {
+        user_area = req.body.area;
+      }
+
+      if (req.body.city != undefined) {
+        user_city = req.body.city;
+      }
+
+      if (req.body.mobileNumber != undefined) {
+        user_mobileNumber = req.body.mobileNumber;
+      }
+
+      // if (req.body.$idProofNumber != undefined) {
+      //   user_idProofNumber = req.body.$idProofNumber;
+      // }
+
+      if (req.body.gender != undefined) {
+        user_gender = req.body.gender;
+      }
+
+      if (req.body.dob != undefined) {
+        user_dob = req.body.dob;
+      }
+
+      if (req.body.langIso != undefined) {
+        user_langIso = req.body.langIso;
+      }
+    } else {
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['Unabled to proceed'],
+        },
+      });
+    }
+
+    if (user_email_header != user_email) {
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['Unabled to proceed'],
+        },
+      });
+    }
+
+    var type = 'ENROL';
+    var current_date = await this.utilsService.getDateTimeString();
+
+    var data_CreateActivityeventsDto_parent = new CreateActivityeventsDto();
+    var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
+
+    var _class_ActivityEvent = 'io.melody.hyppe.trans.domain.ActivityEvent';
+
+    //Ceck User ActivityEvent Parent
+    const user_activityevents = await this.activityeventsService.findParentWitoutDevice(
+      user_email,
+      type,
+      false,
+    );
+
+    //Ceck User Userbasics
+    const datauserbasicsService = await this.basic2SS.findOne(
+      user_email,
+    );
+
+    //Ceck User Userauths
+    // const datauserauthsService = await this.userauthsService.findOneByEmail(
+    //   user_email,
+    // );
+
+    if (await this.utilsService.ceckData(datauserbasicsService)) {
+      var usernameExisting = datauserbasicsService.username.toString();
+      if (usernameExisting != user_username) {
+        var ceckUsername = await this.utilsService.validateUsername(user_username);
+        if (!ceckUsername) {
+          throw new NotAcceptableException({
+            response_code: 406,
+            messages: {
+              info: ['Unabled to proceed, username is already in use'],
+            },
+          });
+        }
+      }
+    }
+
+    if ((await this.utilsService.ceckData(datauserbasicsService)) && (await this.utilsService.ceckData(datauserbasicsService))) {
+      var id = datauserbasicsService._id.toString();
+      var Data = {
+        isEmailVerified: datauserbasicsService.isEmailVerified,
+        status: datauserbasicsService.status,
+      }
+      if (await this.utilsService.isAuthVerified(Data)) {
+        if (Object.keys(user_activityevents).length > 0) {
+
+          if ((event == 'UPDATE_BIO') && (status == 'IN_PROGRESS')) {
+            //Update Profile Bio
+            try {
+              if (user_username != null) {
+                if (await this.utilsService.validateUsername(user_username)) {
+                  await this.userauthsService.updatebyEmail(user_email, {
+                    username: user_username
+                  });
+                }
+              }
+
+              var data_update_userbasict = {};
+              if (user_fullName != null) {
+                data_update_userbasict['fullName'] = user_fullName;
+              }
+              if (user_bio != null) {
+                data_update_userbasict['bio'] = user_bio;
+              }
+              if (user_mobileNumber != null) {
+                data_update_userbasict['mobileNumber'] = user_mobileNumber;
+              }
+              // if (user_idProofNumber != null) {
+              //   data_update_userbasict['idProofNumber'] = user_idProofNumber;
+              // }
+              if (user_gender != null) {
+                data_update_userbasict['gender'] = user_gender;
+              }
+              if (user_dob != null) {
+                data_update_userbasict['dob'] = user_dob;
+              }
+              if (user_country != null) {
+                var countries = await this.countriesService.findOneName(user_country);
+                if ((await this.utilsService.ceckData(countries))) {
+                  var countries_id = (await countries)._id;
+                  data_update_userbasict['countries'] = {
+                    $ref: 'countries',
+                    $id: countries_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_area != null) {
+                var areas = await this.areasService.findOneName(user_area);
+                if ((await this.utilsService.ceckData(areas))) {
+                  var areas_id = (await areas)._id;
+                  data_update_userbasict['states'] = {
+                    $ref: 'areas',
+                    $id: areas_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_city != null) {
+                var cities = await this.citiesService.findOneName(user_city);
+                if ((await this.utilsService.ceckData(cities))) {
+                  var cities_id = (await cities)._id;
+                  data_update_userbasict['cities'] = {
+                    $ref: 'cities',
+                    $id: cities_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_langIso != null) {
+                var languages = await this.languagesService.findOneLangiso(user_langIso);
+                if ((await this.utilsService.ceckData(languages))) {
+                  var languages_id = (await languages)._id;
+                  data_update_userbasict['languages'] = {
+                    $ref: 'languages',
+                    $id: languages_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              data_update_userbasict['status'] = status;
+              data_update_userbasict['event'] = event;
+              if (emailLogin != null) {
+                data_update_userbasict['emailLogin'] = emailLogin;
+              }
+
+              if (user_bio != null || user_fullName != null || user_dob != null || user_gender != null || user_mobileNumber != null) {
+                await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
+              }
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed update profile bio. Error:' + error,
+              );
+            }
+
+            //Create ActivityEvent child 1
+            var ID_child_ActivityEvent_1 = (
+              await this.utilsService.generateId()
+            ).toLowerCase();
+            try {
+              var id_Activityevents_child_1 = new mongoose.Types.ObjectId();
+              data_CreateActivityeventsDto_child._id = id_Activityevents_child_1;
+              data_CreateActivityeventsDto_child.activityEventID =
+                ID_child_ActivityEvent_1;
+              data_CreateActivityeventsDto_child.activityType = type;
+              data_CreateActivityeventsDto_child.active = true;
+              data_CreateActivityeventsDto_child.status = status;
+              data_CreateActivityeventsDto_child.target = 'COMPLETE_BIO';
+              data_CreateActivityeventsDto_child.event = event;
+              data_CreateActivityeventsDto_child._class = _class_ActivityEvent;
+              data_CreateActivityeventsDto_child.payload = {
+                login_location: {
+                  latitude: undefined,
+                  longitude: undefined,
+                },
+                logout_date: undefined,
+                login_date: current_date,
+                login_device: undefined,
+                email: user_email,
+              };
+
+              data_CreateActivityeventsDto_child.createdAt = current_date;
+              data_CreateActivityeventsDto_child.updatedAt = current_date;
+              data_CreateActivityeventsDto_child.sequenceNumber = new Int32(4);
+              data_CreateActivityeventsDto_child.flowIsDone = false;
+              data_CreateActivityeventsDto_parent.__v = undefined;
+              data_CreateActivityeventsDto_child.parentActivityEventID =
+                user_activityevents[0].activityEventID;
+              data_CreateActivityeventsDto_child.userbasic =
+                mongo.Types.ObjectId(datauserbasicsService._id);
+
+              //Insert ActivityEvent child
+              await this.activityeventsService.create(
+                data_CreateActivityeventsDto_child,
+              );
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Create Activity events Child. Error:' + error,
+              );
+            }
+
+            //Update ActivityEvent Parent 1
+            try {
+              const data_transitions = user_activityevents[0].transitions;
+              data_transitions.push({
+                $ref: 'activityevents',
+                $id: new Object(ID_child_ActivityEvent_1),
+                $db: 'hyppe_trans_db',
+              });
+
+              //Update ActivityEvent Parent 1
+              await this.activityeventsService.update(
+                {
+                  _id: user_activityevents[0]._id,
+                },
+                {
+                  transitions: data_transitions,
+                },
+              );
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Update Activity events Parent. Error:' +
+                error,
+              );
+            }
+
+          } else if ((event == 'UPDATE_PROFILE') && (status == 'COMPLETE_BIO')) {
+            //Update Profile Detail
+            try {
+              if (user_username != null) {
+                if (await this.utilsService.validateUsername(user_username)) {
+                  await this.userauthsService.updatebyEmail(user_email, {
+                    username: user_username
+                  });
+                }
+              }
+
+              var data_update_userbasict = {};
+              if (user_fullName != null) {
+                data_update_userbasict['fullName'] = user_fullName;
+              }
+              if (user_bio != null) {
+                data_update_userbasict['bio'] = user_bio;
+              }
+              if (user_mobileNumber != null) {
+                data_update_userbasict['mobileNumber'] = user_mobileNumber;
+              }
+              // if (user_idProofNumber != null) {
+              //   data_update_userbasict['idProofNumber'] = user_idProofNumber;
+              // }
+              if (user_gender != null) {
+                data_update_userbasict['gender'] = user_gender;
+              }
+              if (user_dob != null) {
+                data_update_userbasict['dob'] = user_dob;
+              }
+              if (user_country != null) {
+                var countries = await this.countriesService.findOneName(user_country);
+                if ((await this.utilsService.ceckData(countries))) {
+                  var countries_id = (await countries)._id;
+                  data_update_userbasict['countries'] = {
+                    $ref: 'countries',
+                    $id: countries_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_area != null) {
+                var areas = await this.areasService.findOneName(user_area);
+                if ((await this.utilsService.ceckData(areas))) {
+                  var areas_id = (await areas)._id;
+                  data_update_userbasict['states'] = {
+                    $ref: 'areas',
+                    $id: areas_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_city != null) {
+                var cities = await this.citiesService.findOneName(user_city);
+                if ((await this.utilsService.ceckData(cities))) {
+                  var cities_id = (await cities)._id;
+                  data_update_userbasict['cities'] = {
+                    $ref: 'cities',
+                    $id: cities_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_langIso != null) {
+                var languages = await this.languagesService.findOneLangiso(user_langIso);
+                if ((await this.utilsService.ceckData(languages))) {
+                  var languages_id = (await languages)._id;
+                  data_update_userbasict['languages'] = {
+                    $ref: 'languages',
+                    $id: languages_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              data_update_userbasict['isComplete'] = true;
+              data_update_userbasict['status'] = status;
+              data_update_userbasict['event'] = event;
+              if (emailLogin != null) {
+                data_update_userbasict['emailLogin'] = emailLogin;
+              }
+
+              if (user_bio != null || user_fullName != null || user_dob != null || user_gender != null || user_mobileNumber != null) {
+                await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
+              }
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed update profile detail. Error:' + error,
+              );
+            }
+
+            //Create ActivityEvent child 2
+            var ID_child_ActivityEvent_2 = (
+              await this.utilsService.generateId()
+            ).toLowerCase();
+            try {
+              var id_Activityevents_child_2 = new mongoose.Types.ObjectId();
+              data_CreateActivityeventsDto_child._id = id_Activityevents_child_2;
+              data_CreateActivityeventsDto_child.activityEventID =
+                ID_child_ActivityEvent_2;
+              data_CreateActivityeventsDto_child.activityType = type;
+              data_CreateActivityeventsDto_child.active = true;
+              data_CreateActivityeventsDto_child.status = status;
+              data_CreateActivityeventsDto_child.target = 'COMPLETE_BIO';
+              data_CreateActivityeventsDto_child.event = event;
+              data_CreateActivityeventsDto_child._class = _class_ActivityEvent;
+              data_CreateActivityeventsDto_child.payload = {
+                login_location: {
+                  latitude: undefined,
+                  longitude: undefined,
+                },
+                logout_date: undefined,
+                login_date: current_date,
+                login_device: undefined,
+                email: user_email,
+              };
+              data_CreateActivityeventsDto_child.createdAt = current_date;
+              data_CreateActivityeventsDto_child.updatedAt = current_date;
+              data_CreateActivityeventsDto_child.sequenceNumber = new Int32(4);
+              data_CreateActivityeventsDto_child.flowIsDone = false;
+              data_CreateActivityeventsDto_parent.__v = undefined;
+              data_CreateActivityeventsDto_child.parentActivityEventID =
+                user_activityevents[0].activityEventID;
+              data_CreateActivityeventsDto_child.userbasic =
+                mongo.Types.ObjectId(datauserbasicsService._id);
+
+              //Insert ActivityEvent child
+              await this.activityeventsService.create(
+                data_CreateActivityeventsDto_child,
+              );
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Create Activity events Child. Error:' + error,
+              );
+            }
+
+            //Update ActivityEvent Parent
+            try {
+              const data_transitions = user_activityevents[0].transitions;
+              data_transitions.push({
+                $ref: 'activityevents',
+                $id: new Object(ID_child_ActivityEvent_2),
+                $db: 'hyppe_trans_db',
+              });
+
+              //Update ActivityEvent Parent
+              await this.activityeventsService.update(
+                {
+                  _id: user_activityevents[0]._id,
+                },
+                {
+                  transitions: data_transitions,
+                },
+              );
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Update Activity events Parent. Error:' +
+                error,
+              );
+            }
+
+            //Update ActivityEvent All Child True
+            try {
+              await this.activityeventsService.updateFlowDone(user_activityevents[0].activityEventID.toString());
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Update ActivityEvent All Child True. Error:' +
+                error,
+              );
+            }
+          }
+
+          return {
+            response_code: 202,
+            messages: {
+              info: ['Update profile successful'],
+            }
+          };
+        } else {
+          if ((event == 'UPDATE_BIO') && (status == 'IN_PROGRESS')) {
+            //Update Profile Bio
+            try {
+              if (user_username != null) {
+                if (await this.utilsService.validateUsername(user_username)) {
+                  await this.userauthsService.updatebyEmail(user_email, {
+                    username: user_username
+                  });
+                }
+              }
+
+              var data_update_userbasict = {};
+              if (user_fullName != null) {
+                data_update_userbasict['fullName'] = user_fullName;
+              }
+              if (user_bio != null) {
+                data_update_userbasict['bio'] = user_bio;
+              }
+              if (user_mobileNumber != null) {
+                data_update_userbasict['mobileNumber'] = user_mobileNumber;
+              }
+              // if (user_idProofNumber != null) {
+              //   data_update_userbasict['idProofNumber'] = user_idProofNumber;
+              // }
+              if (user_gender != null) {
+                data_update_userbasict['gender'] = user_gender;
+              }
+              if (user_dob != null) {
+                data_update_userbasict['dob'] = user_dob;
+              }
+              if (user_country != null) {
+                var countries = await this.countriesService.findOneName(user_country);
+                if ((await this.utilsService.ceckData(countries))) {
+                  var countries_id = (await countries)._id;
+                  data_update_userbasict['countries'] = {
+                    $ref: 'countries',
+                    $id: countries_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_area != null) {
+                var areas = await this.areasService.findOneName(user_area);
+                if ((await this.utilsService.ceckData(areas))) {
+                  var areas_id = (await areas)._id;
+                  data_update_userbasict['states'] = {
+                    $ref: 'areas',
+                    $id: areas_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_city != null) {
+                var cities = await this.citiesService.findOneName(user_city);
+                if ((await this.utilsService.ceckData(cities))) {
+                  var cities_id = (await cities)._id;
+                  data_update_userbasict['cities'] = {
+                    $ref: 'cities',
+                    $id: cities_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_langIso != null) {
+                var languages = await this.languagesService.findOneLangiso(user_langIso);
+                if ((await this.utilsService.ceckData(languages))) {
+                  var languages_id = (await languages)._id;
+                  data_update_userbasict['languages'] = {
+                    $ref: 'languages',
+                    $id: languages_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (emailLogin != null) {
+                data_update_userbasict['emailLogin'] = emailLogin;
+              }
+
+              //data_update_userbasict['status'] = status;
+              //data_update_userbasict['event'] = event;
+
+              await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
+              // if (user_bio != null || user_fullName != null || user_dob != null || user_gender != null || user_mobileNumber != null) {
+              //   await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
+              // }
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed update profile bio. Error:' + error,
+              );
+            }
+          } else if ((event == 'UPDATE_PROFILE') && (status == 'COMPLETE_BIO')) {
+            //Update Profile Detail
+            try {
+              if (user_username != null) {
+                if (await this.utilsService.validateUsername(user_username)) {
+                  await this.userauthsService.updatebyEmail(user_email, {
+                    username: user_username
+                  });
+                }
+              }
+
+              var data_update_userbasict = {};
+              if (user_fullName != null) {
+                data_update_userbasict['fullName'] = user_fullName;
+              }
+              if (user_bio != null) {
+                data_update_userbasict['bio'] = user_bio;
+              }
+              if (user_mobileNumber != null) {
+                data_update_userbasict['mobileNumber'] = user_mobileNumber;
+              }
+              // if (user_idProofNumber != null) {
+              //   data_update_userbasict['idProofNumber'] = user_idProofNumber;
+              // }
+              if (user_gender != null) {
+                data_update_userbasict['gender'] = user_gender;
+              }
+              if (user_dob != null) {
+                data_update_userbasict['dob'] = user_dob;
+              }
+              if (user_country != null) {
+                var countries = await this.countriesService.findOneName(user_country);
+                if ((await this.utilsService.ceckData(countries))) {
+                  var countries_id = (await countries)._id;
+                  data_update_userbasict['countries'] = {
+                    $ref: 'countries',
+                    $id: countries_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_area != null) {
+                var areas = await this.areasService.findOneName(user_area);
+                if ((await this.utilsService.ceckData(areas))) {
+                  var areas_id = (await areas)._id;
+                  data_update_userbasict['states'] = {
+                    $ref: 'areas',
+                    $id: areas_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_city != null) {
+                var cities = await this.citiesService.findOneName(user_city);
+                if ((await this.utilsService.ceckData(cities))) {
+                  var cities_id = (await cities)._id;
+                  data_update_userbasict['cities'] = {
+                    $ref: 'cities',
+                    $id: cities_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_langIso != null) {
+                var languages = await this.languagesService.findOneLangiso(user_langIso);
+                if ((await this.utilsService.ceckData(languages))) {
+                  var languages_id = (await languages)._id;
+                  data_update_userbasict['languages'] = {
+                    $ref: 'languages',
+                    $id: languages_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              //data_update_userbasict['isComplete'] = true;
+              //data_update_userbasict['status'] = status;
+              //data_update_userbasict['event'] = event;
+
+              if (user_bio != null || user_fullName != null || user_dob != null || user_gender != null || user_mobileNumber != null) {
+                await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
+              }
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed update profile detail. Error:' + error,
+              );
+            }
+          }
+
+          return {
+            response_code: 202,
+            messages: {
+              info: ['Update profile successful'],
+            }
+          };
+        }
+      } else {
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Unabled to proceed, User not verified'],
+          },
+        });
+      }
+    } else {
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['Unabled to proceed, User not found'],
+        },
+      });
+    }
+  }
+
 
 }
