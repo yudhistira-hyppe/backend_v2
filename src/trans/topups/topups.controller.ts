@@ -280,6 +280,7 @@ export class TopupsController {
 
                 if (ceckData.status) {
                   Topups_ = ceckData.Topups;
+                  Topups_.status = "FAILED";
                   const data = await this.topupsService.create(Topups_);
                 } else {
                   Topups_ = ceckData.Topups;
