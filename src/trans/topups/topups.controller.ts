@@ -247,11 +247,11 @@ export class TopupsController {
         if (dataArray.length>0){
           for (let u = 0; u < dataArray.length; u++) {
             let dataGet = dataArray[u];
-            if ((dataGet.Email != undefined) && (dataGet.Tooup != undefined)){
+            if ((dataGet.Email != undefined) && (dataGet.Topup != undefined)){
               let dataUserbasics = await this.userbasicsService.findOne(dataGet.Email);
               let dataUserauths = await this.userauthsService.findOne(dataGet.Email);
+              let Topups_ = new Topups();
               if ((await this.utilsService.ceckData(dataUserbasics)) && (await this.utilsService.ceckData(dataUserauths))) {
-                let Topups_ = new Topups();
                 Topups_._id = new mongoose.Types.ObjectId();
                 Topups_.idUser = new mongoose.Types.ObjectId(dataUserbasics._id.toString());
                 Topups_.username = dataUserauths.username;
@@ -259,7 +259,7 @@ export class TopupsController {
                 Topups_.createByUsername = dataUserauths_login.username;
                 Topups_.createdAt = currentDate;
                 Topups_.updatedAt = currentDate; 
-                Topups_.topup = dataGet.Tooup;
+                Topups_.topup = dataGet.Topup;
                 Topups_.email = dataGet.Email;
                 let ceckData = await this.getDataTopup(Topups_);
 
@@ -267,6 +267,24 @@ export class TopupsController {
                   Topups_ = ceckData.Topups;
                   const data = await this.topupsService.create(Topups_);
                   CountSucces++;
+                }
+              }else{
+                Topups_._id = new mongoose.Types.ObjectId();
+                Topups_.createBy = new mongoose.Types.ObjectId(dataUserbasics_login._id.toString());
+                Topups_.createByUsername = dataUserauths_login.username;
+                Topups_.createdAt = currentDate;
+                Topups_.updatedAt = currentDate;
+                Topups_.topup = dataGet.Topup;
+                Topups_.email = dataGet.Email;
+                let ceckData = await this.getDataTopup(Topups_);
+
+                if (ceckData.status) {
+                  Topups_ = ceckData.Topups;
+                  const data = await this.topupsService.create(Topups_);
+                } else {
+                  Topups_ = ceckData.Topups;
+                  Topups_.status = "FAILED";
+                  const data = await this.topupsService.create(Topups_);
                 }
               }
             }
@@ -329,7 +347,14 @@ export class TopupsController {
         status: true,
         Topups: Topups_
       }
-    }catch(e){
+    } catch (e) {
+      Topups_._id = new mongoose.Types.ObjectId();
+      Topups_.pph = 0;
+      Topups_.total = 0;
+      Topups_.approveByFinance = false;
+      Topups_.approveByStrategy = false;
+      Topups_.approve = false;
+      Topups_.status = "FAILED";
       return {
         status:false,
         Topups: Topups_
