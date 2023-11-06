@@ -917,7 +917,6 @@ export class NewPostController {
         return { response_code: 202, data, skip, limit, totalFilter, totalAll, messages };
     }
 
-    //hold dulu
     @Post('getusercontents/boostconsole/list/details/v2')
     @UseGuards(JwtAuthGuard)
     async detailcontentboostv2(@Req() request, @Headers() headers): Promise<any> {

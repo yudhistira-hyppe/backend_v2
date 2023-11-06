@@ -4212,7 +4212,6 @@ export class UserbasicsService {
 
     );
 
-    //fokus kesini
     if (sell === true && buy === false && withdrawal === false && rewards === false && boost === false) {
       pipeline.push({ $match: { "type": "Sell" } },);
     }
@@ -4228,7 +4227,6 @@ export class UserbasicsService {
     else if (sell === false && buy === false && withdrawal === false && rewards === false && boost === true) {
       pipeline.push({ $match: { $or: [{ "type": "Buy", "jenis": "BOOST_CONTENT" }, { "type": "Buy", "jenis": "BOOST_CONTENT+OWNERSHIP" }] } },);
     }
-    //end of focus
     else if (sell === true && buy === true && withdrawal === false && rewards === false && boost === false) {
       pipeline.push({ $match: { $or: [{ "type": "Sell", }, { "type": "Buy", }] } },);
     }
@@ -4293,10 +4291,6 @@ export class UserbasicsService {
     if (limit > 0) {
       pipeline.push({ $limit: limit });
     }
-
-    var setutil = require('util');
-    console.log(setutil.inspect(pipeline, { showHidden:false, depth:null }));
-
     var query = await this.userbasicModel.aggregate(pipeline);
 
     return query;
@@ -5684,10 +5678,6 @@ export class UserbasicsService {
         }
       }
     });
-
-    var setutil = require('util');
-    console.log(setutil.inspect(pipeline, { showHidden:false, depth:null }));
-
     var query = await this.userbasicModel.aggregate(pipeline);
 
     return query;
