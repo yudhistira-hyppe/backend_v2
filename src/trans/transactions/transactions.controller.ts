@@ -5810,10 +5810,7 @@ export class TransactionsController {
                     databankvacharge = await this.settingsService.findOne(idbankvacharge);
                     valuevacharge = databankvacharge._doc.value;
                     valuemradmin = datamradmin._doc.value;
-                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
-
-
-
+                    nominalmradmin = Math.ceil(amounts * valuemradmin / 100);
 
                 } catch (e) {
                     datamradmin = null;
@@ -5922,7 +5919,7 @@ export class TransactionsController {
                     "view": databuy[0].saleview,
                     "bank": namabank,
                     "paymentmethode": namamethode,
-                    "amount": amount,
+                    "amount": amounts,
                     "totalamount": databuy[0].totalamount,
                     "status": databuy[0].status,
                     "fullName": databuy[0].fullName,
@@ -5943,7 +5940,9 @@ export class TransactionsController {
                     "mediaThumbUri": mediaThumbUri,
                     "apsara": apsaradefine,
                     "apsaraId": idapsaradefine,
-                    "media": dataapsara
+                    "media": dataapsara,
+                    "adminFee": nominalmradmin,
+                    "serviceFee": valuevacharge,
 
                 };
             }
@@ -6103,7 +6102,7 @@ export class TransactionsController {
                     "amount": amounts,
                     "totalamount": databuy[0].totalamount,
                     // "adminFee": nominalmradmin,
-                    "serviceFee": valuevacharge,
+                    // "serviceFee": valuevacharge,
                     "status": databuy[0].status,
                     "fullName": databuy[0].fullName,
                     "email": databuy[0].email,
@@ -6165,7 +6164,7 @@ export class TransactionsController {
                     databankvacharge = await this.settingsService.findOne(idbankvacharge);
                     valuevacharge = databankvacharge._doc.value;
                     valuemradmin = datamradmin._doc.value;
-                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
+                    nominalmradmin = Math.ceil(amounts * valuemradmin / 100);
 
 
 
@@ -6277,7 +6276,7 @@ export class TransactionsController {
                     "view": databuy[0].saleview,
                     "bank": namabank,
                     "paymentmethode": namamethode,
-                    "amount": amount,
+                    "amount": amounts,
                     "totalamount": databuy[0].totalamount,
                     "status": databuy[0].status,
                     "fullName": databuy[0].fullName,
@@ -6517,7 +6516,7 @@ export class TransactionsController {
                     databankvacharge = await this.settingsService.findOne(idbankvacharge);
                     valuevacharge = databankvacharge._doc.value;
                     valuemradmin = datamradmin._doc.value;
-                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
+                    nominalmradmin = Math.ceil(amounts * valuemradmin / 100);
 
 
 
@@ -6629,7 +6628,7 @@ export class TransactionsController {
                     "view": databuy[0].saleview,
                     "bank": namabank,
                     "paymentmethode": namamethode,
-                    "amount": amount,
+                    "amount": amounts,
                     "totalamount": databuy[0].totalamount,
                     "status": databuy[0].status,
                     "fullName": databuy[0].fullName,
