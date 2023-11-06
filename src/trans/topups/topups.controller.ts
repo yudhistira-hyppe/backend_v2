@@ -248,8 +248,8 @@ export class TopupsController {
           for (let u = 0; u < dataArray.length; u++) {
             let dataGet = dataArray[u];
             if ((dataGet.Email != undefined) && (dataGet.Topup != undefined)){
-              let dataUserbasics = await this.userbasicsService.findOne(dataGet.Email.toLowerCase());
-              let dataUserauths = await this.userauthsService.findOne(dataGet.Email.toLowerCase());
+              let dataUserbasics = await this.userbasicsService.findOne((dataGet.Email.toString()).toLowerCase());
+              let dataUserauths = await this.userauthsService.findOne((dataGet.Email.toString()).toLowerCase());
               let Topups_ = new Topups();
               if ((await this.utilsService.ceckData(dataUserbasics)) && (await this.utilsService.ceckData(dataUserauths))) {
                 Topups_._id = new mongoose.Types.ObjectId();
@@ -260,7 +260,7 @@ export class TopupsController {
                 Topups_.createdAt = currentDate;
                 Topups_.updatedAt = currentDate; 
                 Topups_.topup = dataGet.Topup;
-                Topups_.email = dataGet.Email.toLowerCase();
+                Topups_.email = (dataGet.Email.toString()).toLowerCase();
                 let ceckData = await this.getDataTopup(Topups_);
 
                 if (ceckData.status) {
@@ -275,7 +275,7 @@ export class TopupsController {
                 Topups_.createdAt = currentDate;
                 Topups_.updatedAt = currentDate;
                 Topups_.topup = dataGet.Topup;
-                Topups_.email = dataGet.Email.toLowerCase();
+                Topups_.email = (dataGet.Email.toString()).toLowerCase();
                 let ceckData = await this.getDataTopup(Topups_);
 
                 if (ceckData.status) {
