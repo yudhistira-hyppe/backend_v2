@@ -3061,7 +3061,8 @@ export class UserbasicsService {
       {
         $match:
         {
-          "email": email
+          "email": email,
+
         }
       },
       {
@@ -3122,24 +3123,112 @@ export class UserbasicsService {
                   {
                     $match:
                     {
-                      $and:
-                        [
-                          {
-                            $expr: {
-                              $eq: ['$iduser', '$$localID']
-                            }
-                          },
-                          {
-                            "type": "rewards"
-                          },
+                      $or: [
+                        {
+                          $and:
+                            [
+                              {
+                                $expr: {
+                                  $eq: ['$iduser', '$$localID']
+                                }
+                              },
+                              {
+                                "type": "rewards"
+                              },
 
-                        ]
-                    }
+                            ]
+                        },
+                        {
+                          $and:
+                            [
+                              {
+                                $expr: {
+                                  $eq: ['$iduser', '$$localID']
+                                }
+                              },
+                              {
+                                "type": "disbursement"
+                              },
+                              {
+                                "description": "FAILED TRANSACTION"
+                              },
+
+                            ]
+                        },
+                        {
+                          $and:
+                            [
+                              {
+                                $expr: {
+                                  $eq: ['$iduser', '$$localID']
+                                }
+                              },
+                              {
+                                "type": "withdraw"
+                              },
+                              {
+                                "description": "FAILED TRANSACTION"
+                              },
+
+                            ]
+                        },
+
+                      ]
+                    },
+
                   },
                   {
                     $project: {
-                      "jenis": "Rewards",
-                      "type": "Rewards",
+                      "jenis":
+                      {
+                        "$cond":
+                        {
+                          if:
+                          {
+                            "$eq":
+                              ["$type", "rewards"]
+                          },
+                          then: "Rewards",
+                          else:
+                          {
+                            "$cond":
+                            {
+                              if:
+                              {
+                                "$eq":
+                                  ["$type", "withdraw"]
+                              },
+                              then: "Withdraws",
+                              else: "Disbursement"
+                            }
+                          },
+                        }
+                      },
+                      "type":
+                      {
+                        "$cond":
+                        {
+                          if:
+                          {
+                            "$eq":
+                              ["$type", "rewards"]
+                          },
+                          then: "Rewards",
+                          else:
+                          {
+                            "$cond":
+                            {
+                              if:
+                              {
+                                "$eq":
+                                  ["$type", "withdraw"]
+                              },
+                              then: "Withdraws",
+                              else: "Disbursement"
+                            }
+                          },
+                        }
+                      },
                       "timestamp": 1,
                       "description": 1,
                       "noinvoice": 1,
@@ -3153,7 +3242,7 @@ export class UserbasicsService {
                       "iduserbuyer": 1,
                       "idusersell": 1,
                       "debetKredit": "+",
-                      "fullName": 1,
+
                     }
                   },
 
@@ -3205,12 +3294,50 @@ export class UserbasicsService {
                       "bank": 1,
                       "amount": 1,
                       "totalamount": 1,
-                      "status": "Success",
+                      "status": 1,
                       "postid": 1,
                       "iduserbuyer": 1,
                       "idusersell": 1,
                       "debetKredit": "-",
-                      "fullName": "$fullName",
+
+                    }
+                  },
+                  {
+                    $project: {
+                      "jenis": "Withdraws",
+                      "type": "Withdraws",
+                      "timestamp": 1,
+                      "description": 1,
+                      "noinvoice": 1,
+                      "nova": 1,
+                      "expiredtimeva": 1,
+                      "bank": 1,
+                      "amount": 1,
+                      "totalamount": 1,
+                      "status":
+                      {
+                        $cond: {
+                          if: {
+                            $or: [
+                              {
+                                $eq: ["$status", "Request is In progress"]
+                              },
+                              {
+                                $eq: ["$status", "Success"]
+                              },
+
+                            ],
+
+                          },
+                          then: "Success",
+                          else: "Failed"
+                        }
+                      },
+                      "postid": 1,
+                      "iduserbuyer": 1,
+                      "idusersell": 1,
+                      "debetKredit": "-",
+
                     }
                   },
 
@@ -3324,7 +3451,7 @@ export class UserbasicsService {
                             ]
                           },
                           then: "$VA expired time",
-                          else: '$description'
+                          else: 'description'
                         }
                       },
                       "noinvoice": 1,
@@ -3374,7 +3501,7 @@ export class UserbasicsService {
                       "postID": 1,
                       "description": 1,
                       "postType": 1,
-                      "certified": 1
+
                     }
                   }
                 ],
@@ -3410,17 +3537,16 @@ export class UserbasicsService {
                         $ifNull: ["$apsara", false]
                       },
                       "apsaraId": {
-                        $ifNull: ["$apsaraId", false]
+                        $ifNull: ["$apsaraId", ""]
                       },
-                      "apsaraThumbId":
-                      {
-                        "$concat": ["/thumb/", "$postID"]
-                      },
+                      "apsaraThumbId": 1,
                       "mediaEndpoint": {
                         "$concat": ["/stream/", "$postID"]
                       },
                       "mediaUri": 1,
-                      "mediaThumbEndpoint": 1,
+                      "mediaThumbEndpoint": {
+                        "$concat": ["/thumb/", "$postID"]
+                      },
                       "mediaThumbUri": 1,
 
                     }
@@ -3455,7 +3581,7 @@ export class UserbasicsService {
                         $ifNull: ["$apsara", false]
                       },
                       "apsaraId": {
-                        $ifNull: ["$apsaraId", false]
+                        $ifNull: ["$apsaraId", ""]
                       },
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
@@ -3463,7 +3589,7 @@ export class UserbasicsService {
                       },
                       "mediaUri": 1,
                       "mediaThumbEndpoint": {
-                        "$concat": ["/stream/", "$postID"]
+                        "$concat": ["/thumb/", "$postID"]
                       },
                       "mediaThumbUri": 1,
 
@@ -3499,7 +3625,7 @@ export class UserbasicsService {
                         $ifNull: ["$apsara", false]
                       },
                       "apsaraId": {
-                        $ifNull: ["$apsaraId", false]
+                        $ifNull: ["$apsaraId", ""]
                       },
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
@@ -3507,7 +3633,7 @@ export class UserbasicsService {
                       },
                       "mediaUri": 1,
                       "mediaThumbEndpoint": {
-                        "$concat": ["/stream/", "$postID"]
+                        "$concat": ["/thumb/", "$postID"]
                       },
                       "mediaThumbUri": 1,
 
@@ -3543,7 +3669,7 @@ export class UserbasicsService {
                         $ifNull: ["$apsara", false]
                       },
                       "apsaraId": {
-                        $ifNull: ["$apsaraId", false]
+                        $ifNull: ["$apsaraId", ""]
                       },
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
@@ -3687,6 +3813,21 @@ export class UserbasicsService {
               }
             },
             {
+              $lookup: {
+                from: "settings",
+                as: "setting",
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      "_id": new Types.ObjectId("648ae670766c00007d004a82")
+                    }
+                  },
+
+                ]
+              }
+            },
+            {
               $project: {
                 "transaction": [{
                   //"video": 1,
@@ -3703,6 +3844,9 @@ export class UserbasicsService {
                   "expiredtimeva": "$buy-sell.expiredtimeva",
                   "bank": "$buy-sell.bank",
                   "amount": "$buy-sell.amount",
+                  "iconVoucher": {
+                    $arrayElemAt: ['$setting.value', 0]
+                  },
                   "totalamount":
                   {
                     $cond: {
@@ -3715,8 +3859,8 @@ export class UserbasicsService {
                   },
                   "status": "$buy-sell.status",
                   "email": "$email",
-                  "fullName": "$fullName",
-                  "username": "$fullName",
+                  "fullName": "$fullname",
+                  "userame": "$fullname",
                   "penjual":
                   {
                     $cond: {
@@ -3843,14 +3987,6 @@ export class UserbasicsService {
                       ]
                     }]
                   },
-                  "certified": {
-                    $arrayElemAt: ['$post.certified', {
-                      "$indexOfArray": [
-                        "$post.postID",
-                        "$buy-sell.postid"
-                      ]
-                    }]
-                  },
                   "descriptionContent":
                   {
                     $arrayElemAt: ['$post.description', {
@@ -3878,7 +4014,6 @@ export class UserbasicsService {
                       ]
                     }]
                   },
-
                   "mediaEndpoint":
                   {
                     $switch: {
@@ -4179,6 +4314,192 @@ export class UserbasicsService {
                       "default": "$kampret"
                     }
                   },
+                  "mediaThumbEndpoint":
+                  {
+                    $switch: {
+                      branches: [
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "vid"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$video.mediaThumbEndpoint', {
+                              "$indexOfArray": [
+                                "$video.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "pict"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$pict.mediaThumbEndpoint', {
+                              "$indexOfArray": [
+                                "$pict.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "story"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$story.mediaThumbEndpoint', {
+                              "$indexOfArray": [
+                                "$story.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "diary"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$diary.mediaThumbEndpoint', {
+                              "$indexOfArray": [
+                                "$diary.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+
+                      ],
+                      "default": "$kampret"
+                    }
+                  },
+                  "apsaraThumbId":
+                  {
+                    $switch: {
+                      branches: [
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "vid"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$video.apsaraThumbId', {
+                              "$indexOfArray": [
+                                "$video.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "pict"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$pict.apsaraThumbId', {
+                              "$indexOfArray": [
+                                "$pict.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "story"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$story.apsaraThumbId', {
+                              "$indexOfArray": [
+                                "$story.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "diary"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$diary.apsaraThumbId', {
+                              "$indexOfArray": [
+                                "$diary.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+
+                      ],
+                      "default": "$kampret"
+                    }
+                  },
 
                 }]
               }
@@ -4231,7 +4552,6 @@ export class UserbasicsService {
           "jenis": '$tester.jenis',
           "timestamp": '$tester.timestamp',
           "description": '$tester.description',
-          "certified": '$tester.certified',
           "noinvoice": '$tester.noinvoice',
           "nova": '$tester.nova',
           "expiredtimeva": '$tester.expiredtimeva',
@@ -4260,6 +4580,15 @@ export class UserbasicsService {
           "postType": '$tester.postType',
           "descriptionContent": '$tester.descriptionContent',
           "title": '$tester.title',
+          "mediaType": '$tester.mediaType',
+          "mediaEndpoint": '$tester.mediaEndpoint',
+          "mediaThumbEndpoint": '$tester.mediaThumbEndpoint',
+          "apsaraThumbId": '$tester.apsaraThumbId',
+          "apsaraId": '$tester.apsaraId',
+          "apsara": '$tester.apsara',
+          "debetKredit": '$tester.debetKredit',
+          "timestart": "$tester.timestart",
+          "iconVoucher": "$tester.iconVoucher",
 
         }
       },
@@ -4349,7 +4678,6 @@ export class UserbasicsService {
 
         }
       },
-
     );
 
     if (sell === true && buy === false && withdrawal === false && rewards === false && boost === false) {
