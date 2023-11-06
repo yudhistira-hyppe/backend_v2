@@ -511,6 +511,84 @@ export class WithdrawsService {
         return query;
     }
 
+    async findhistoryWithdrawdetail2(id: ObjectId, iduser: ObjectId) {
+        const query = await this.withdrawsModel.aggregate([
+            {
+                $match: {
+                    _id: id,
+                    idUser: iduser
+                }
+            },
+            {
+                $addFields: {
+                    type: 'Withdraws',
+        
+                },
+            },
+            {
+                $lookup: {
+                    from: "newUserBasics",
+                    localField: "idUser",
+                    foreignField: "_id",
+                    as: "userbasics_data"
+                }
+            }, 
+            {
+                $project: {
+                    iduser: "$idUser",
+                    type: "$type",
+                    timestamp: "$timestamp",
+                    partnerTrxid: "$partnerTrxid",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    description: "$description",
+                    status: "$status",
+                    idAccountBank: "$idAccountBank",
+                    user: {
+                        $arrayElemAt: [
+                            "$userbasics_data",
+                            0
+                        ]
+                    },
+        
+                }
+            }, 
+            {
+                $project: {
+                    iduser: "$iduser",
+                    fullName: "$user.fullName",
+                    email: "$user.email",
+                    type: "$type",
+                    timestamp: "$timestamp",
+                    partnerTrxid: "$partnerTrxid",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    description: "$description",
+                    status:
+                    {
+                        $cond: {
+                            if: {
+                                $or: [
+                                    {
+                                        $eq: ["$status", "Request is In progress"]
+                                    },
+                                    {
+                                        $eq: ["$status", "Success"]
+                                    },
+                                ],
+        
+                            },
+                            then: "Success",
+                            else: "Failed"
+                        }
+                    },
+                    idAccountBank: "$idAccountBank",
+                }
+            }
+        ]);
+        return query;
+    }
+
     async findhistoryWithdrawer(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
         var pipeline = new Array<any>({
             $addFields: {

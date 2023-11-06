@@ -32,11 +32,14 @@ import { AdsBalaceCreditModule } from '../adsv2/adsbalacecredit/adsbalacecredit.
 import { VoucherpromoModule } from '../adsv2/voucherpromo/voucherpromo.module';
 import { LogapisModule } from '../logapis/logapis.module';
 import { AdsPriceCreditsModule } from '../adsv2/adspricecredits/adspricecredits.module';
-
+import { UserbasicnewModule } from '../userbasicnew/userbasicnew.module';
+import { NewPostModule } from 'src/content/new_post/new_post.module';
 
 @Module({
 
     imports: [
+        UserbasicnewModule,
+        NewPostModule,
         LogapisModule,
         AdsPriceCreditsModule,
         VoucherpromoModule,

@@ -28,6 +28,7 @@ import { AccountbalancesService } from '../../../trans/accountbalances/accountba
 import { CreateAccountbalancesDto } from '../../../trans/accountbalances/dto/create-accountbalances.dto';
 import { AdsBalaceCreditService } from '../adsbalacecredit/adsbalacecredit.service';
 import { AdsPriceCreditsService } from '../adspricecredits/adspricecredits.service';
+import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 const sharp = require('sharp');
 
 @Controller('api/adsv2/ads')
@@ -50,6 +51,7 @@ export class AdsController {
         private readonly adslogsService: AdslogsService,
         private accountbalancesService: AccountbalancesService,
         private readonly logapiSS: LogapisService,
+        private readonly basic2SS: UserbasicnewService,
         private adsBalaceCreditService: AdsBalaceCreditService,
         private readonly adsPriceCreditsService: AdsPriceCreditsService,
         private readonly adsService: AdsService) {
@@ -1193,6 +1195,145 @@ export class AdsController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Post('/campaign/detail/all/v2')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async campaignDetailAll2(@Body() body: any, @Headers() headers, @Request() req) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var reqbody = JSON.parse(JSON.stringify(body));
+
+        if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unauthorized',
+            );
+        }
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed email header dan token not match',
+            );
+        }
+
+        //VALIDASI PARAM adsId
+        if (body.adsId == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+            await this.errorHandler.generateBadRequestException(
+                'Unabled to proceed, param adsId is required',
+            );
+        }
+
+        const dataAds = await this.adsService.findOne(body.adsId);
+        if (!(await this.utilsService.ceckData(dataAds))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+            await this.errorHandler.generateBadRequestException(
+                'Unabled to proceed, ads not found',
+            );
+        }
+
+        //----------------START DATE----------------
+        var start_date = null;
+        if (body.start_date != undefined) {
+            start_date = new Date(body.start_date);
+        }
+
+        //----------------END DATE----------------
+        var end_date = null;
+        if (body.end_date != undefined) {
+            end_date = new Date(body.end_date);
+            end_date = new Date(end_date.setDate(end_date.getDate() + 1));
+        }
+
+        try {
+            let ads_campaign_detail = await this.adsService.campaignDetailAll2(body.adsId.toString(), start_date, end_date);
+            if (await this.utilsService.ceckData(ads_campaign_detail)) {
+                if (ads_campaign_detail.length > 0) {
+                    ads_campaign_detail = ads_campaign_detail[0];
+                }
+            }
+
+            if (ads_campaign_detail.summary.CTR == null) {
+                ads_campaign_detail.summary.CTR = "0%"
+            }
+            for (var d = start_date; d <= end_date; d.setDate(d.getDate() + 1)) {
+                var DateFormat = await this.utilsService.consvertDateTimeString(new Date(d));
+                const isFoundreach = ads_campaign_detail.summary.reach.some(element => {
+                    if (element._id === DateFormat) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (!isFoundreach) {
+                    ads_campaign_detail.summary.reach.push({
+                        "_id": DateFormat,
+                        "reachView": 0
+                    })
+                }
+                const isFoundimpresi = ads_campaign_detail.summary.impresi.some(element => {
+                    if (element._id === DateFormat) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (!isFoundimpresi) {
+                    ads_campaign_detail.summary.impresi.push({
+                        "_id": DateFormat,
+                        "impresiView": 0
+                    })
+                }
+                const isFoundCTA = ads_campaign_detail.summary.CTA.some(element => {
+                    if (element._id === DateFormat) {
+                        return true;
+                    }
+                    return false;
+                });
+                if (!isFoundCTA) {
+                    ads_campaign_detail.summary.CTA.push({
+                        "_id": DateFormat,
+                        "CTACount": 0
+                    })
+                }
+            }
+
+            var listdata = [];
+            if (ads_campaign_detail.adsDetail.idApsara != undefined) {
+                listdata.push(ads_campaign_detail.adsDetail.idApsara);
+            }
+            if (listdata.length > 0) {
+                var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
+                if (apsaravideodata.VideoList.length > 0) {
+                    if (apsaravideodata.VideoList[0] != undefined) {
+                        ads_campaign_detail.adsDetail.media = apsaravideodata.VideoList[0];
+                    }
+                }
+            }
+
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+            return await this.errorHandler.generateAcceptResponseCodeWithData(
+                "Get Ads Campaign Detail succesfully", ads_campaign_detail,
+            );
+        }
+        catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+            await this.errorHandler.generateInternalServerErrorException(
+                'Unabled to proceed, ERROR ' + e,
+            );
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Post('/campaign/detail/')
     @HttpCode(HttpStatus.ACCEPTED)
     async campaignDetail1(@Body() body: any, @Headers() headers, @Request() req) {
@@ -1596,6 +1737,219 @@ export class AdsController {
                     mediaUri: (get_profilePict.mediaUri != undefined) ? get_profilePict.mediaUri : null,
                     mediaType: (get_profilePict.mediaType != undefined) ? get_profilePict.mediaType : null,
                     mediaEndpoint: (get_profilePict.mediaID != undefined) ? '/profilepict/' + get_profilePict.mediaID : null,
+                }
+            }
+            try {
+                data_response['placingID'] = data_ads[0].placingID.toString();
+                dataPlace = await this.adsplacesService.findOne(data_ads[0].placingID.toString());
+                if (await this.utilsService.ceckData(dataPlace)) {
+                    data_response['adsPlace'] = dataPlace.namePlace;
+                }
+            } catch (e) {
+                data_response['placingID'] = null;
+                data_response['adsPlace'] = null;
+            }
+
+            data_response['adsType'] = (await this.adsTypeService.findOne(data_ads[0].typeAdsID.toString())).nameType;
+            data_response['adsSkip'] = (data_ads[0].skipTime != undefined) ? data_ads[0].skipTime : (await this.adsTypeService.findOne(data_ads[0].typeAdsID.toString())).AdsSkip;
+            data_response['mediaType'] = data_ads[0].type;
+            data_response['ctaButton'] = data_ads[0].ctaNames;
+            data_response['videoId'] = data_ads[0].idApsara;
+            data_response['duration'] = data_ads[0].duration;
+            data_response['mediaBasePath'] = data_ads[0].mediaBasePath;
+            data_response['mediaUri'] = data_ads[0].mediaUri;
+            data_response['mediaThumBasePath'] = data_ads[0].mediaThumBasePath;
+            data_response['mediaThumUri'] = data_ads[0].mediaThumUri;
+            data_response['width'] = data_ads[0].width;
+            data_response['height'] = data_ads[0].height;
+
+            AdsLogsDto_.responseAds = JSON.stringify(data_response);
+            await this.adslogsService.create(AdsLogsDto_);
+            return {
+                "response_code": 202,
+                "data": data_response,
+                "messages": {
+                    "info": [
+                        "The process successfuly"
+                    ]
+                }
+            };
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+            AdsLogsDto_.responseAds = JSON.stringify({ response: "Unabled to proceed Ads not found" });
+            await this.adslogsService.create(AdsLogsDto_);
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Ads not found'
+            );
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('/get/v2/:id')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async getAds2(@Param('id') id: string, @Headers() headers, @Request() req) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+
+        var current_date = await this.utilsService.getDateTimeString();
+        var dataPlace = null;
+        var genIdUserAds = new mongoose.Types.ObjectId();
+        var AdsLogsDto_ = new AdsLogsDto();
+        var logRequest = {
+            header: headers,
+            request: {
+                email: headers['x-auth-user'],
+                idAdsType: id,
+            }
+        }
+        AdsLogsDto_.requestAds = JSON.stringify(logRequest);
+        AdsLogsDto_.endPointAds = "api/adsv2/ads/get/v2/" + id;
+        AdsLogsDto_.type = "GET ADS";
+        AdsLogsDto_.dateTime = await this.utilsService.getDateTimeString();
+        AdsLogsDto_.nameActivitas = ["GetAds"];
+
+        //Validasi Token
+        if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: "Unauthorized" });
+            await this.adslogsService.create(AdsLogsDto_);
+
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unauthorized',
+            );
+        }
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: "Unabled to proceed email header dan token not match" });
+            await this.adslogsService.create(AdsLogsDto_);
+
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed email header dan token not match',
+            );
+        }
+
+        //Validasi Param typeAdsId
+        if (id == undefined) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: "Unabled to proceed, param id is required" });
+            await this.adslogsService.create(AdsLogsDto_);
+
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+            await this.errorHandler.generateBadRequestException(
+                'Unabled to proceed, param id is required',
+            );
+        }
+        const dataTypeAds = await this.adsTypeService.findOne(id);
+        if (!(await this.utilsService.ceckData(dataTypeAds))) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: "Unabled to proceed TypeAds not found" });
+            await this.adslogsService.create(AdsLogsDto_);
+
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed TypeAds not found'
+            );
+        }
+
+        //Validasi User
+        const data_userbasic = await this.userbasicsService.findOne(headers['x-auth-user']);
+        if (!(await this.utilsService.ceckData(data_userbasic))) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: "Unabled to proceed User not found" });
+            await this.adslogsService.create(AdsLogsDto_);
+
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed User not found'
+            );
+        }
+        AdsLogsDto_.iduser = new mongoose.Types.ObjectId(data_userbasic._id.toString());
+        const data_ads = await this.adsService.getAdsUser2(headers['x-auth-user'], data_userbasic._id.toString(), id);
+        console.log(data_ads);
+        if (await this.utilsService.ceckData(data_ads)) {
+            var ceckData = await this.userAdsService.findAdsIDUserID(data_userbasic._id.toString(), data_ads[0]._id.toString());
+            if (!(await this.utilsService.ceckData(ceckData))) {
+                var CreateUserAdsDto_ = new CreateUserAdsDto();
+                CreateUserAdsDto_._id = genIdUserAds;
+                CreateUserAdsDto_.adsID = new mongoose.Types.ObjectId(data_ads[0]._id);
+                CreateUserAdsDto_.userID = new mongoose.Types.ObjectId(data_userbasic._id.toString());
+                CreateUserAdsDto_.priority = data_ads[0].priority;
+                if (data_ads[0].description != undefined) {
+                    CreateUserAdsDto_.description = data_ads[0].description;
+                }
+                CreateUserAdsDto_.createdAt = current_date;
+                CreateUserAdsDto_.statusClick = false;
+                CreateUserAdsDto_.statusView = false;
+                CreateUserAdsDto_.viewed = 0;
+                CreateUserAdsDto_.liveAt = data_ads[0].liveAt;
+                CreateUserAdsDto_.liveTypeuserads = data_ads[0].liveTypeAds;
+                CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_ads[0].typeAdsID);
+                CreateUserAdsDto_.nameType = data_ads[0].nameType;
+                CreateUserAdsDto_.isActive = true;
+                CreateUserAdsDto_.scoreAge = data_ads[0].scoreUmur;
+                CreateUserAdsDto_.scoreGender = data_ads[0].scoreKelamin;
+                CreateUserAdsDto_.scoreGeografis = data_ads[0].scoreGeografis;
+                CreateUserAdsDto_.scoreInterest = data_ads[0].scoreMinat;
+                CreateUserAdsDto_.scoreTotal = data_ads[0].scoreTotal;
+                this.userAdsService.create(CreateUserAdsDto_);
+            }
+
+            //Get Pict User Ads
+            var get_profilePict = {};
+            const data_userbasic_ads = await this.basic2SS.findOne(data_ads[0].userID.toString());
+            if (data_userbasic_ads.mediaBasePath != undefined || data_userbasic_ads.mediaUri != undefined || data_userbasic_ads.mediaType != undefined || data_userbasic_ads.mediaEndpoint != undefined) {
+                if(data_userbasic_ads.mediaBasePath != undefined)
+                {
+                    get_profilePict['mediaBasePath'] = data_userbasic_ads.mediaBasePath;
+                }
+
+                if(data_userbasic_ads.mediaUri != undefined)
+                {
+                    get_profilePict['mediaUri'] = data_userbasic_ads.mediaUri;
+                }
+
+                if(data_userbasic_ads.mediaType != undefined)
+                {
+                    get_profilePict['mediaType'] = data_userbasic_ads.mediaType;
+                }
+
+                if(data_userbasic_ads.mediaEndpoint != undefined)
+                {
+                    get_profilePict['mediaEndpoint'] = data_userbasic_ads.mediaEndpoint;
+                }
+            }
+
+            //Create Response
+            var data_response = {};
+            data_response['adsId'] = data_ads[0]._id.toString();
+            data_response['adsUrlLink'] = data_ads[0].urlLink;
+            data_response['adsDescription'] = data_ads[0].description;
+            data_response['name'] = data_ads[0].description;
+            if (await this.utilsService.ceckData(ceckData)) {
+                data_response['useradsId'] = ceckData._id.toString();
+            } else {
+                data_response['useradsId'] = genIdUserAds.toString();
+            }
+            data_response['idUser'] = data_userbasic_ads._id.toString();
+            data_response['fullName'] = data_userbasic_ads.fullName;
+            data_response['email'] = data_userbasic_ads.email;
+            data_response['username'] = data_ads[0].username;
+            if (await this.utilsService.ceckData(get_profilePict)) {
+                data_response['avartar'] = {
+                    mediaBasePath: (get_profilePict['mediaBasePath'] != undefined) ? get_profilePict['mediaBasePath'] : null,
+                    mediaUri: (get_profilePict['mediaUri'] != undefined) ? get_profilePict['mediaUri'] : null,
+                    mediaType: (get_profilePict['mediaType'] != undefined) ? get_profilePict['mediaType'] : null,
+                    mediaEndpoint: (get_profilePict['mediaEndpoint'] != undefined) ? get_profilePict['mediaEndpoint'] : null,
                 }
             }
             try {
