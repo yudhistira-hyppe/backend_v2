@@ -51,8 +51,8 @@ export class TopupsController {
         cecktopup,
       );
     }
-    let dataUserbasics = await this.userbasicsService.findOne(Topups_.email);
-    let dataUserauths = await this.userauthsService.findOne(Topups_.email);
+    let dataUserbasics = await this.userbasicsService.findOne((Topups_.email.toString()).toLowerCase());
+    let dataUserauths = await this.userauthsService.findOne((Topups_.email.toString()).toLowerCase());
     if ((await this.utilsService.ceckData(dataUserbasics)) && (await this.utilsService.ceckData(dataUserauths))) {
       Topups_._id = new mongoose.Types.ObjectId();
       Topups_.idUser = new mongoose.Types.ObjectId(dataUserbasics._id.toString());
@@ -61,6 +61,7 @@ export class TopupsController {
       Topups_.createByUsername = dataUserauths_login.username;
       Topups_.createdAt = currentDate;
       Topups_.updatedAt = currentDate;
+      Topups_.email = (Topups_.email.toString()).toLowerCase();
       let ceckData = await this.getDataTopup(Topups_);
 
       if (ceckData.status) {
