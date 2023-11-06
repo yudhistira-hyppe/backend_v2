@@ -36,7 +36,7 @@ export class TaskService {
 
   @Cron('* */7 * * * *')
   challengeJob2() {
-    // this.logger.debug('Challenge JOB START');
+    this.logger.debug('Challenge JOB START');
     this.challengeService.sendNotifeChallenge();
     this.challengeService.updateBadgeex();
     this.challengeService.updateSubchallengeex();
@@ -45,7 +45,7 @@ export class TaskService {
 
   @Cron('* */10 * * * *')
   ceckStatus() {
-    // this.logger.debug('DISBURSEMENT JOB START');
+    this.logger.debug('DISBURSEMENT JOB START');
     this.transactionsService.ceckStatusDisbursement();
   }
 }
