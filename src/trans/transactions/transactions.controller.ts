@@ -5943,7 +5943,9 @@ export class TransactionsController {
                     "mediaThumbUri": mediaThumbUri,
                     "apsara": apsaradefine,
                     "apsaraId": idapsaradefine,
-                    "media": dataapsara
+                    "media": dataapsara,
+                    "adminFee": nominalmradmin,
+                    "serviceFee": valuevacharge,
 
                 };
             }
@@ -6103,7 +6105,7 @@ export class TransactionsController {
                     "amount": amounts,
                     "totalamount": databuy[0].totalamount,
                     // "adminFee": nominalmradmin,
-                    "serviceFee": valuevacharge,
+                    // "serviceFee": valuevacharge,
                     "status": databuy[0].status,
                     "fullName": databuy[0].fullName,
                     "email": databuy[0].email,
