@@ -7029,7 +7029,7 @@ export class TransactionsController {
 
                 mediaThumbUri = databuy[0].mediaThumbUri;
                 try {
-                    dataconten = await this.getusercontentsService.findcontenbuy(postid);
+                    dataconten = await this.posts2SS.findcontenbuy(postid);
                     saleAmount = dataconten[0].saleAmount;
                 } catch (e) {
                     dataconten = null;
@@ -7209,7 +7209,7 @@ export class TransactionsController {
 
                 mediaThumbUri = databuy[0].mediaThumbUri;
                 try {
-                    dataconten = await this.getusercontentsService.findcontenbuy(postid);
+                    dataconten = await this.posts2SS.findcontenbuy(postid);
                     saleAmount = dataconten[0].saleAmount;
                 } catch (e) {
                     dataconten = null;
@@ -7384,7 +7384,7 @@ export class TransactionsController {
 
                 mediaThumbUri = databuy[0].mediaThumbUri;
                 try {
-                    dataconten = await this.getusercontentsService.findcontenbuy(postid);
+                    dataconten = await this.posts2SS.findcontenbuy(postid);
                     saleAmount = dataconten[0].saleAmount;
                 } catch (e) {
                     dataconten = null;
@@ -7564,7 +7564,7 @@ export class TransactionsController {
 
                 mediaThumbUri = databuy[0].mediaThumbUri;
                 try {
-                    dataconten = await this.getusercontentsService.findcontenbuy(postid);
+                    dataconten = await this.posts2SS.findcontenbuy(postid);
                     saleAmount = dataconten[0].saleAmount;
                 } catch (e) {
                     dataconten = null;
@@ -7739,7 +7739,7 @@ export class TransactionsController {
 
                 mediaThumbUri = databuy[0].mediaThumbUri;
                 try {
-                    dataconten = await this.getusercontentsService.findcontenbuy(postid);
+                    dataconten = await this.posts2SS.findcontenbuy(postid);
                     saleAmount = dataconten[0].saleAmount;
                 } catch (e) {
                     dataconten = null;
@@ -7916,7 +7916,7 @@ export class TransactionsController {
 
                 mediaThumbUri = databuy[0].mediaThumbUri;
                 try {
-                    dataconten = await this.getusercontentsService.findcontenbuy(postid);
+                    dataconten = await this.posts2SS.findcontenbuy(postid);
                     saleAmount = dataconten[0].saleAmount;
                 } catch (e) {
                     dataconten = null;

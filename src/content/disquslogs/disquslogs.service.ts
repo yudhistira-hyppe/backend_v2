@@ -464,29 +464,6 @@ export class DisquslogsService {
             }
           }
         },
-        // {
-        //   "$lookup": {
-        //     "from": "userauths",
-        //     "as": "authsender",
-        //     "let": {
-        //       "local_id": "$sender"
-        //     },
-        //     "pipeline": [
-        //       {
-        //         "$match": {
-        //           "$expr": {
-        //             "$eq": [
-        //               "$email",
-        //               "$$local_id"
-        //             ]
-        //           }
-        //         }
-        //       },
-
-        //     ],
-
-        //   }
-        // },
         {
           "$lookup": {
             "from": "newUserBasics",
@@ -522,29 +499,6 @@ export class DisquslogsService {
             active: '$active'
           }
         },
-        // {
-        //   "$lookup": {
-        //     "from": "userauths",
-        //     "as": "authreceiver",
-        //     "let": {
-        //       "local_id": "$receiver"
-        //     },
-        //     "pipeline": [
-        //       {
-        //         "$match": {
-        //           "$expr": {
-        //             "$eq": [
-        //               "$email",
-        //               "$$local_id"
-        //             ]
-        //           }
-        //         }
-        //       },
-
-        //     ],
-
-        //   }
-        // },
         {
           "$lookup": {
             "from": "newUserBasics",
@@ -593,29 +547,6 @@ export class DisquslogsService {
             active: 1
           }
         },
-        // {
-        //   "$lookup": {
-        //     "from": "userbasics",
-        //     "as": "ubasic",
-        //     "let": {
-        //       "local_id": "$emailsender"
-        //     },
-        //     "pipeline": [
-        //       {
-        //         "$match": {
-        //           "$expr": {
-        //             "$eq": [
-        //               "$email",
-        //               "$$local_id"
-        //             ]
-        //           }
-        //         }
-        //       },
-
-        //     ],
-
-        //   }
-        // },
         {
           "$lookup": {
             "from": "newUserBasics",

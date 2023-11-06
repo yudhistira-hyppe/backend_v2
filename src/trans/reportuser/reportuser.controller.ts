@@ -2121,7 +2121,7 @@ export class ReportuserController {
                     idusersell = datatransaksi.idusersell;
                     tgltransaksi = datatransaksi.timestamp;
 
-                    var ubasicpenjual = await this.userbasicsService.findbyid(idusersell.toString());
+                    var ubasicpenjual = await this.basic2SS.findOne(idusersell.toString());
                     namapenjual = ubasicpenjual.fullName;
 
                 }
@@ -3042,7 +3042,7 @@ export class ReportuserController {
             var arrRepuser = [];
             var datauser = null;
             try {
-                query = await this.adsService.detailadsreport(adsId);
+                query = await this.adsService.detailadsreport2(adsId);
             } catch (e) {
                 query = null;
             }

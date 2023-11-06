@@ -734,14 +734,14 @@ export class UserbankaccountsController {
         }
 
         try {
-            datasearch = await this.userbankaccountsService.getlistappealcount(startdate, enddate, namapemohon, statusLast);
+            datasearch = await this.userbankaccountsService.getlistappealcount2(startdate, enddate, namapemohon, statusLast);
             totalsearch = datasearch[0].totalpost;
         } catch (e) {
             totalsearch = 0;
         }
 
         try {
-            dataall = await this.userbankaccountsService.getlistappealcount(undefined, undefined, undefined, undefined);
+            dataall = await this.userbankaccountsService.getlistappealcount2(undefined, undefined, undefined, undefined);
             totalallrow = dataall[0].totalpost;
 
         } catch (e) {

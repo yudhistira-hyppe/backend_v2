@@ -128,7 +128,7 @@ export class NewPostController {
   @Post('posts/tagpeople/v2')
   async tagpeople(@Headers() headers, @Body() body) {
     var timestamps_start = await this.utilsService.getDateTimeString();
-    var fullurl = headers.host + "/api/post/v3/tagpeople";
+    var fullurl = headers.host + "/api/posts/tagpeople/v2";
     var reqbody = JSON.parse(JSON.stringify(body));
 
     //CECK BAEARER TOKEN
@@ -917,6 +917,7 @@ export class NewPostController {
         return { response_code: 202, data, skip, limit, totalFilter, totalAll, messages };
     }
 
+    //hold dulu
     @Post('getusercontents/boostconsole/list/details/v2')
     @UseGuards(JwtAuthGuard)
     async detailcontentboostv2(@Req() request, @Headers() headers): Promise<any> {
