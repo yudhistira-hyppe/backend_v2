@@ -131,7 +131,7 @@ export class TopupsController {
         let CreateAccountbalancesDto_ = new CreateAccountbalances();
         CreateAccountbalancesDto_.iduser = new mongoose.Types.ObjectId(dataTopups.idUser.toString());
         CreateAccountbalancesDto_.debet = 0;
-        CreateAccountbalancesDto_.kredit = dataTopups.topup;
+        CreateAccountbalancesDto_.kredit = dataTopups.total;
         CreateAccountbalancesDto_.type = "rewards";
         CreateAccountbalancesDto_.timestamp = await this.utilsService.getDateTimeISOString();
         CreateAccountbalancesDto_.description = "TOP UP";
