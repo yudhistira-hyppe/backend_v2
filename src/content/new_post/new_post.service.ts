@@ -205,7 +205,7 @@ export class NewPostService {
                 "from": "newUserBasics",
                 "as": "databasic",
                 "let": {
-                  "local_id": "$email",
+                  "local_id": "$idUser",
     
                 },
                 "pipeline": [
@@ -213,14 +213,15 @@ export class NewPostService {
                     $match:
                     {
                       $expr: {
-                        $eq: ['$email', '$$local_id']
+                        $eq: ['$_id', '$$local_id']
                       }
                     }
                   },
                   {
                     $project: {
                       iduser: "$_id",
-    
+                      username: "$username",
+                      pict:"$mediaEndpoint"
                     }
                   },
     
@@ -350,19 +351,6 @@ export class NewPostService {
     
             },
             {
-              $addFields: {
-    
-    
-                'auth': {
-                  $arrayElemAt: ['$authdata', 0]
-                },
-                'iduser': {
-                  $arrayElemAt: ['$basicdata.iduser', 0]
-                },
-    
-              }
-            },
-            {
               "$lookup": {
                 "from": "interests_repo",
                 "as": "kategori",
@@ -401,11 +389,11 @@ export class NewPostService {
             },
             {
               $project: {
-                username: "$auth.username",
+                username: "$databasic.username",
+			          iduser:"$databasic.iduser",
                 createdAt: 1,
                 updatedAt: 1,
                 postID: 1,
-                iduser: 1,
                 email: 1,
                 postType: 1,
                 views: 1,
@@ -478,7 +466,6 @@ export class NewPostService {
                   }
                 },
                 mediaSource: 1,
-                auth: 1
               }
             },
             {
@@ -572,7 +559,6 @@ export class NewPostService {
                   }
                 },
                 mediaSource: 1,
-                auth: 1
               }
             },
             {
@@ -602,7 +588,6 @@ export class NewPostService {
                 tr: 1,
                 tags: 1,
                 mediaSource: 1,
-                auth: 1
               }
             },
             {
@@ -1481,7 +1466,6 @@ export class NewPostService {
           pipeline.push({ $limit: limit });
         }
     
-        // console.log(JSON.stringify(pipeline));
     
         let query = await this.loaddata.aggregate(pipeline);
         // console.log(query);
@@ -3343,7 +3327,7 @@ export class NewPostService {
               "$unwind":
               {
                   path: "$userdata",
-                  preserveNullAndEmptyArrays: true
+                  // preserveNullAndEmptyArrays: true
               }
           },
           {
@@ -3355,10 +3339,38 @@ export class NewPostService {
                   email: "$userdata.email",
                   avatar:
                   {
-                      mediaBasePath: "$userdata.mediaBasePath",
-                      mediaUri: "$userdata.mediaUri",
-                      mediaType: "$userdata.mediaType",
-                      mediaEndpoint: "$userdata.mediaEndpoint",
+                      mediaBasePath: 
+                      {
+                        "$ifNull":
+                        [
+                          "$userdata.mediaBasePath",
+                          null
+                        ]
+                      },
+                      mediaUri: 
+                      {
+                        "$ifNull":
+                        [
+                          "$userdata.mediaUri",
+                          null
+                        ]
+                      },
+                      mediaType: 
+                      {
+                        "$ifNull":
+                        [
+                          "$userdata.mediaType",
+                          null
+                        ]
+                      },
+                      mediaEndpoint: 
+                      {
+                        "$ifNull":
+                        [
+                          "$userdata.mediaEndpoint",
+                          null
+                        ]
+                      },
                   },
                   urluserBadge:
                   {
@@ -3428,7 +3440,7 @@ export class NewPostService {
                                   "$urluserBadge", 0
                               ]
                           },
-                          null
+                          "$$REMOVE"
                       ]
                   }
               }
@@ -3542,7 +3554,13 @@ export class NewPostService {
                               "allowComments": 1,
                               "saleAmount": 1,
                               "certified": 1,
-                              "mediaSource": 1,
+                              "mediaSource": 
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource", 0
+                                  ]
+                              },
                               "isLiked":
                               {
                                   "$ifNull":
@@ -3564,7 +3582,8 @@ export class NewPostService {
                                       },
                                       []
                                   ]
-                              }
+                              },
+                              "idUser":1
                           }
                       },
                       {
@@ -3574,6 +3593,20 @@ export class NewPostService {
                               localField: "idUser",
                               foreignField: "_id",
                               as: "authdata"
+                          }
+                      },
+                      {
+                          "$addFields":
+                          {
+                              "cleanUri":
+                              { 
+                                  $replaceOne: 
+                                  { 
+                                      input: "$mediaSource.mediaUri", 
+                                      find: "_0001.jpeg", 
+                                      replacement: "" 
+                                  }
+                              }
                           }
                       },
                       {
@@ -3682,45 +3715,105 @@ export class NewPostService {
                               {
                                   "mediaEndpoint":
                                   {
-                                      "$arrayElemAt":
+                                      "$ifNull":
                                       [
-                                          "$authdata.mediaEndpoint", 0
+                                          {
+                                              "$arrayElemAt":
+                                              [
+                                                  "$authdata.mediaEndpoint", 0
+                                              ]
+                                          },
+                                          null
                                       ]
                                   }
                               },
-                              "mediaThumbEndpoint":
+                              mediaBasePath:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.mediaThumbEndpoint", 0
+                                      "$mediaSource.mediaBasePath",
+                                      null
                                   ]
                               },
-                              "mediaEndpoint":
+                              mediaUri:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.mediaEndpoint", 0
+                                      "$mediaSource.mediaUri",
+                                      null
                                   ]
                               },
-                              "mediaType":
+                              mediaType:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.mediaType", 0
+                                      "$mediaSource.mediaType",
+                                      null
                                   ]
                               },
-                              "isApsara":
+                              mediaThumbEndpoint:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.apsara", 0
+                                      "$mediaSource.mediaThumbEndpoint",
+                                      {
+                                          "$concat":
+                                          [
+                                              "/thumb/",
+                                              "$cleanUri"
+                                          ]
+                                      }
                                   ]
                               },
-                              "apsaraId":
+                              mediaEndpoint:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.apsaraId", 0
+                                      "$mediaSource.mediaEndpoint",
+                                      {
+                                          "$cond":
+                                          {
+                                              if:
+                                              {
+                                                  "$eq":
+                                                  [
+                                                      "$postType", "pict"
+                                                  ]
+                                              },
+                                              then:
+                                              {
+                                                  "$concat":
+                                                  [
+                                                      "/pict/",
+                                                      "$cleanUri"
+                                                  ]
+                                              },
+                                              else:
+                                              {
+                                                  "$concat":
+                                                  [
+                                                      "/stream/",
+                                                      "$cleanUri"
+                                                  ]
+                                              }
+                                          }
+                                      }
+                                  ]
+                              },
+                              isApsara:
+                              {
+                                  "$ifNull":
+                                  [
+                                      "$mediaSource.apsara",
+                                      false
+                                  ]
+                              },
+                              apsaraId:
+                              {
+                                  "$ifNull":
+                                  [
+                                      "$mediaSource.apsaraId",
+                                      null
                                   ]
                               }
                           }
@@ -3738,7 +3831,7 @@ export class NewPostService {
               "$unwind":
               {
                   path: "$postdata",
-                  preserveNullAndEmptyArrays: true
+                  // preserveNullAndEmptyArrays: true
               }
           },
           {
@@ -3890,7 +3983,13 @@ export class NewPostService {
                               "allowComments": 1,
                               "saleAmount": 1,
                               "certified": 1,
-                              "mediaSource": 1,
+                              "mediaSource": 
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource", 0
+                                  ]
+                              },
                               "isLiked":
                               {
                                   "$ifNull":
@@ -3912,7 +4011,8 @@ export class NewPostService {
                                       },
                                       []
                                   ]
-                              }
+                              },
+                              "idUser":1
                           }
                       },
                       {
@@ -3922,6 +4022,20 @@ export class NewPostService {
                               localField: "idUser",
                               foreignField: "_id",
                               as: "authdata"
+                          }
+                      },
+                      {
+                          "$addFields":
+                          {
+                              "cleanUri":
+                              { 
+                                  $replaceOne: 
+                                  { 
+                                      input: "$mediaSource.mediaUri", 
+                                      find: "_0001.jpeg", 
+                                      replacement: "" 
+                                  }
+                              }
                           }
                       },
                       {
@@ -4030,45 +4144,105 @@ export class NewPostService {
                               {
                                   "mediaEndpoint":
                                   {
-                                      "$arrayElemAt":
+                                      "$ifNull":
                                       [
-                                          "$authdata.mediaEndpoint", 0
+                                          {
+                                              "$arrayElemAt":
+                                              [
+                                                  "$authdata.mediaEndpoint", 0
+                                              ]
+                                          },
+                                          null
                                       ]
                                   }
                               },
-                              "mediaThumbEndpoint":
+                              mediaBasePath:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.mediaThumbEndpoint", 0
+                                      "$mediaSource.mediaBasePath",
+                                      null
                                   ]
                               },
-                              "mediaEndpoint":
+                              mediaUri:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.mediaEndpoint", 0
+                                      "$mediaSource.mediaUri",
+                                      null
                                   ]
                               },
-                              "mediaType":
+                              mediaType:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.mediaType", 0
+                                      "$mediaSource.mediaType",
+                                      null
                                   ]
                               },
-                              "isApsara":
+                              mediaThumbEndpoint:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.apsara", 0
+                                      "$mediaSource.mediaThumbEndpoint",
+                                      {
+                                          "$concat":
+                                          [
+                                              "/thumb/",
+                                              "$cleanUri"
+                                          ]
+                                      }
                                   ]
                               },
-                              "apsaraId":
+                              mediaEndpoint:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.apsaraId", 0
+                                      "$mediaSource.mediaEndpoint",
+                                      {
+                                          "$cond":
+                                          {
+                                              if:
+                                              {
+                                                  "$eq":
+                                                  [
+                                                      "$postType", "pict"
+                                                  ]
+                                              },
+                                              then:
+                                              {
+                                                  "$concat":
+                                                  [
+                                                      "/pict/",
+                                                      "$cleanUri"
+                                                  ]
+                                              },
+                                              else:
+                                              {
+                                                  "$concat":
+                                                  [
+                                                      "/stream/",
+                                                      "$cleanUri"
+                                                  ]
+                                              }
+                                          }
+                                      }
+                                  ]
+                              },
+                              isApsara:
+                              {
+                                  "$ifNull":
+                                  [
+                                      "$mediaSource.apsara",
+                                      false
+                                  ]
+                              },
+                              apsaraId:
+                              {
+                                  "$ifNull":
+                                  [
+                                      "$mediaSource.apsaraId",
+                                      null
                                   ]
                               }
                           }
@@ -4086,7 +4260,7 @@ export class NewPostService {
               "$unwind":
               {
                   path: "$postdata",
-                  preserveNullAndEmptyArrays: true
+                  // preserveNullAndEmptyArrays: true
               }
           },
           {
@@ -4238,7 +4412,13 @@ export class NewPostService {
                               "allowComments": 1,
                               "saleAmount": 1,
                               "certified": 1,
-                              "mediaSource": 1,
+                              "mediaSource": 
+                              {
+                                  "$arrayElemAt":
+                                  [
+                                      "$mediaSource", 0
+                                  ]
+                              },
                               "isLiked":
                               {
                                   "$ifNull":
@@ -4260,7 +4440,8 @@ export class NewPostService {
                                       },
                                       []
                                   ]
-                              }
+                              },
+                              "idUser":1
                           }
                       },
                       {
@@ -4270,6 +4451,20 @@ export class NewPostService {
                               localField: "idUser",
                               foreignField: "_id",
                               as: "authdata"
+                          }
+                      },
+                      {
+                          "$addFields":
+                          {
+                              "cleanUri":
+                              { 
+                                  $replaceOne: 
+                                  { 
+                                      input: "$mediaSource.mediaUri", 
+                                      find: "_0001.jpeg", 
+                                      replacement: "" 
+                                  }
+                              }
                           }
                       },
                       {
@@ -4378,45 +4573,105 @@ export class NewPostService {
                               {
                                   "mediaEndpoint":
                                   {
-                                      "$arrayElemAt":
+                                      "$ifNull":
                                       [
-                                          "$authdata.mediaEndpoint", 0
+                                          {
+                                              "$arrayElemAt":
+                                              [
+                                                  "$authdata.mediaEndpoint", 0
+                                              ]
+                                          },
+                                          null
                                       ]
                                   }
                               },
-                              "mediaThumbEndpoint":
+                              mediaBasePath:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.mediaThumbEndpoint", 0
+                                      "$mediaSource.mediaBasePath",
+                                      null
                                   ]
                               },
-                              "mediaEndpoint":
+                              mediaUri:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.mediaEndpoint", 0
+                                      "$mediaSource.mediaUri",
+                                      null
                                   ]
                               },
-                              "mediaType":
+                              mediaType:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.mediaType", 0
+                                      "$mediaSource.mediaType",
+                                      null
                                   ]
                               },
-                              "isApsara":
+                              mediaThumbEndpoint:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.apsara", 0
+                                      "$mediaSource.mediaThumbEndpoint",
+                                      {
+                                          "$concat":
+                                          [
+                                              "/thumb/",
+                                              "$cleanUri"
+                                          ]
+                                      }
                                   ]
                               },
-                              "apsaraId":
+                              mediaEndpoint:
                               {
-                                  "$arrayElemAt":
+                                  "$ifNull":
                                   [
-                                      "$mediaSource.apsaraId", 0
+                                      "$mediaSource.mediaEndpoint",
+                                      {
+                                          "$cond":
+                                          {
+                                              if:
+                                              {
+                                                  "$eq":
+                                                  [
+                                                      "$postType", "pict"
+                                                  ]
+                                              },
+                                              then:
+                                              {
+                                                  "$concat":
+                                                  [
+                                                      "/pict/",
+                                                      "$cleanUri"
+                                                  ]
+                                              },
+                                              else:
+                                              {
+                                                  "$concat":
+                                                  [
+                                                      "/stream/",
+                                                      "$cleanUri"
+                                                  ]
+                                              }
+                                          }
+                                      }
+                                  ]
+                              },
+                              isApsara:
+                              {
+                                  "$ifNull":
+                                  [
+                                      "$mediaSource.apsara",
+                                      false
+                                  ]
+                              },
+                              apsaraId:
+                              {
+                                  "$ifNull":
+                                  [
+                                      "$mediaSource.apsaraId",
+                                      null
                                   ]
                               }
                           }
@@ -4434,7 +4689,7 @@ export class NewPostService {
               "$unwind":
               {
                   path: "$postdata",
-                  preserveNullAndEmptyArrays: true
+                  // preserveNullAndEmptyArrays: true
               }
           },
           {
@@ -4492,7 +4747,8 @@ export class NewPostService {
         }
       );
 
-      console.log(JSON.stringify(pipeline));
+      var setutil = require('util');
+      console.log(setutil.inspect(pipeline, { showHidden:false, depth:null }));
 
       var query = await this.loaddata.aggregate(pipeline);
 
@@ -4517,7 +4773,7 @@ export class NewPostService {
           {
               "$project":
               {
-                  "userid": konvertid
+                  "idUser": konvertid
               }
           },
           {
@@ -4530,7 +4786,7 @@ export class NewPostService {
                   as: "trans_data",
                   let:
                   {
-                      trans_fk: "$userid"
+                      trans_fk: "$idUser"
                   },
                   pipeline:
                   [
@@ -4629,7 +4885,29 @@ export class NewPostService {
                       ]
                   },
                   "monetize": true,
-                  "trans_data": "$trans_data"
+                  "trans_data": "$trans_data",
+                  "tempreportedUserCount":
+                  {
+                      "$ifNull":
+                      [
+                          {
+                              "$filter":
+                              {
+                                  input: "$reportedUser",
+                                  as: "listuser",
+                                  cond:
+                                  {
+                                  "$eq":
+                                      [
+                                      "$$listuser.active",
+                                      true
+                                      ]
+                                  }
+                              }
+                          },
+                          []
+                      ]
+                  }
               }
           },
           {
@@ -4863,6 +5141,16 @@ export class NewPostService {
                         false
                     ]
                 },
+                reportedUserCount: 
+                {
+                  "$ifNull":
+                  [
+                    "$reportedUserCount",
+                    {
+                      "$size":"$tempreportedUserCount"
+                    }
+                  ]
+                },
             }
           }
         );
@@ -4918,6 +5206,28 @@ export class NewPostService {
                       replacement: ""
                   }
               },
+              "tempreportedUserCount":
+              {
+                  "$ifNull":
+                  [
+                      {
+                          "$filter":
+                          {
+                              input: "$reportedUser",
+                              as: "listuser",
+                              cond:
+                              {
+                              "$eq":
+                                  [
+                                  "$$listuser.active",
+                                  true
+                                  ]
+                              }
+                          }
+                      },
+                      []
+                  ]
+              }
             }
           },
           {
@@ -4962,8 +5272,18 @@ export class NewPostService {
                 allowComments: 1,
                 isSafe: 1,
                 saleLike: 1,
+                idUser: 1,
                 saleView: 1,
-                reportedUserCount: 1,
+                reportedUserCount: 
+                {
+                  "$ifNull":
+                  [
+                    "$reportedUserCount",
+                    {
+                      "$size":"$tempreportedUserCount"
+                    }
+                  ]
+                },
                 monetize: "$monetize",
                 salePrice: "$salePrice",
                 // mediaref: "$mediaref",
@@ -5128,7 +5448,8 @@ export class NewPostService {
       pipeline.push({ $limit: limit });
 
       var query = await this.loaddata.aggregate(pipeline);
-      console.log(query);
+      var setutil = require('util');
+      console.log(setutil.inspect(pipeline, { showHidden:false, depth:null }));
       var listdata = [];
       var tempresult = null;
       var tempdata = null;
@@ -5144,7 +5465,7 @@ export class NewPostService {
 
       //console.log(listdata);
       var apsaraimagedata = await this.postContentService.getImageApsara(listdata);
-      console.log(apsaraimagedata);
+      // console.log(apsaraimagedata);
       // console.log(resultdata.ImageInfo[0]);
       tempresult = apsaraimagedata.ImageInfo;
       for (var i = 0; i < query.length; i++) {
@@ -5165,7 +5486,7 @@ export class NewPostService {
       }
   
       var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
-      console.log(apsaravideodata);
+      // console.log(apsaravideodata);
       // console.log(resultdata.ImageInfo[0]);
       tempresult = apsaravideodata.VideoList;
       for (var i = 0; i < query.length; i++) {
@@ -7563,7 +7884,14 @@ export class NewPostService {
                 'mediaSource': {
                     '$arrayElemAt': ['$mediaSource', 0]
                 },
-                'listTag': '$tagPeople.$id'
+                'listTag': 
+                {
+                    "$ifNull":
+                    [
+                        '$tagPeople.$id',
+                        []
+                    ]
+                }
             }
         },
         {
@@ -7582,7 +7910,7 @@ export class NewPostService {
                 as: "tagpeople_data",
                 let:
                 {
-                    idauth:"$listTag"
+                    local:"$listTag"
                 },
                 pipeline:
                 [

@@ -632,6 +632,9 @@ export class NewPostController {
 
         }
 
+        var setutil = require('util');
+        console.log(setutil.inspect(datasearch, { showHidden:false, depth:null }));
+
         try {
             user = datasearch[0].user;
             lenguser = user.length;
@@ -677,7 +680,6 @@ export class NewPostController {
             user = [];
         }
 
-        console.log(arrpict);
         if (lengpict > 0) {
 
             if (arrpict[0]._id !== undefined) {
@@ -710,14 +712,14 @@ export class NewPostController {
                                 "ImageInfo": [tempresult[loopapsara]]
                             }
                         }
-                        else if(arrpict[loopimage].isApsara == false && (arrpict[loopimage].mediaType == "image" || arrpict[loopimage].mediaType == "images"))
-                        {
-                            arrpict[loopimage].media = 
-                            {
-                                "ImageInfo":[]
-                            }
-                        }
+                    }
 
+                    if(arrpict[loopimage].isApsara == false && (arrpict[loopimage].mediaType == "image" || arrpict[loopimage].mediaType == "images"))
+                    {
+                        arrpict[loopimage].media = 
+                        {
+                            "ImageInfo":[]
+                        }
                     }
                     
                     picts.push(arrpict[loopimage]);
@@ -765,17 +767,19 @@ export class NewPostController {
                                     "VideoList": [tempresult[loopapsara]]
                                 }
                             }
-                            else if(arrvid[loopvid].isApsara == false && arrvid[loopvid].mediaType == "video")
-                            {
-                                arrvid[loopvid].media = 
-                                {
-                                    "VideoList":[]
-                                }
-                            }
+                        }
 
-                            vid.push(arrvid[loopvid]);
+                    }
+
+                    if(arrvid[loopvid].isApsara == false && arrvid[loopvid].mediaType == "video")
+                    {
+                        arrvid[loopvid].media = 
+                        {
+                            "VideoList":[]
                         }
                     }
+
+                    vid.push(arrvid[loopvid]);
                 }
             } else {
                 vid = [];
@@ -785,11 +789,12 @@ export class NewPostController {
         }
 
         if (lengdiary > 0) {
+            console.log(arrdiary);
             if (arrdiary[0]._id !== undefined) {
                 var listdata = [];
                 var tempresult = null;
                 var tempdata = null;
-                for(var i = 0; i < lengvid; i++)
+                for(var i = 0; i < lengdiary; i++)
                 {
                     tempdata = arrdiary[i];
                     if(tempdata.isApsara == true)
@@ -817,17 +822,18 @@ export class NewPostController {
                                     "VideoList": [tempresult[loopapsara]]
                                 }
                             }
-                            else if(arrdiary[loopvid].isApsara == false && arrdiary[loopvid].mediaType == "video")
-                            {
-                                arrdiary[loopvid].media = 
-                                {
-                                    "VideoList":[]
-                                }
-                            }
-
-                            diary.push(arrdiary[loopvid]);
+                        }
+                        
+                    }
+                    
+                    if(arrdiary[loopvid].isApsara == false && arrdiary[loopvid].mediaType == "video")
+                    {
+                        arrdiary[loopvid].media = 
+                        {
+                            "VideoList":[]
                         }
                     }
+                    diary.push(arrdiary[loopvid]);
                 }
             } else {
                 diary = [];
