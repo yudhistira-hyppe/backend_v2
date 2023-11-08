@@ -116,7 +116,7 @@ export class TopupsController {
       if (Topups_.approveByStrategy != undefined) {
         if (Topups_.approveByStrategy && dataTopups.approveByFinance) {
           Topups_.approve = true;
-          Topups_.status = "APPROVE";
+          Topups_.status = "SUCCESS";
           Topups_.approveByStrategyDate = currentDate;
           Topups_.approveByStrategyUserId = new mongoose.Types.ObjectId(dataUserbasics_login._id.toString());
           Topups_.updatedAt = currentDate;
