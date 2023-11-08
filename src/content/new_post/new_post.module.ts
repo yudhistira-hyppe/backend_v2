@@ -12,7 +12,7 @@ import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { PostsModule } from '../posts/posts.module';
 import { GetusercontentsModule } from 'src/trans/getusercontents/getusercontents.module';
 import { MediamusicModule } from '../mediamusic/mediamusic.module';
-
+import { NewcontenteventsModule } from '../newcontentevents/newcontentevents.module';
 @Module({
   imports:[
     ConfigModule.forRoot(),
@@ -24,6 +24,7 @@ import { MediamusicModule } from '../mediamusic/mediamusic.module';
     GetusercontentsModule,
     DisquslogsModule,
     MediamusicModule,
+    NewcontenteventsModule,
     MongooseModule.forFeature([{ name: newPosts.name, schema: NewpostsSchema }], 'SERVER_FULL')
   ],
   controllers: [NewPostController],

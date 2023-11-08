@@ -12307,6 +12307,271 @@ export class TransactionsController {
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
 
+    @Post('api/transactions/list/v2')
+    @UseGuards(JwtAuthGuard)
+    async searchhistorylist2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/list/v2';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+
+        var startdate = null;
+        var enddate = null;
+        var iduser = null;
+        var email = null;
+        var type = null;
+
+        var page = null;
+        var limit = null;
+
+        var data = [];
+        var status = null;
+        var sell = null;
+        var buy = null;
+        var withdrawal = null;
+        var boost = null;
+        var rewards = null;
+        var descending = null;
+        var datasearch = null;
+        var totalsearch = null;
+        var totalpage = null;
+        var dataall = null;
+        var totalallrow = null;
+        var total = null;
+        var dataquery = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+            var ubasic = await this.basic2SS.findbyemail(email);
+
+            iduser = ubasic._id;
+
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        status = request_json["status"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        type = request_json["type"];
+        sell = request_json["sell"];
+        buy = request_json["buy"];
+        withdrawal = request_json["withdrawal"];
+        boost = request_json["boost"];
+        rewards = request_json["rewards"];
+        descending = request_json["descending"];
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+
+        var dataid = null;
+        try {
+            dataquery = await this.basic2SS.transaksiHistoryBisnis(email, startdate, enddate, sell, buy, withdrawal, rewards, boost, page, limit, descending);
+            dataid = dataquery[0]._id
+        } catch (e) {
+            dataquery = [];
+            dataid = null;
+        }
+
+        if (dataid === null) {
+            data = [];
+        } else {
+            data = dataquery;
+        }
+
+
+        try {
+            total = data.length;
+        } catch (e) {
+            total = 0;
+        }
+
+        if (dataid === null) {
+            totalsearch = 0;
+        } else {
+            try {
+                datasearch = await this.basic2SS.transaksiHistoryBisnisCount(email, startdate, enddate, sell, buy, withdrawal, rewards, boost);
+                totalsearch = datasearch[0].totalpost;
+            } catch (e) {
+                totalsearch = 0;
+            }
+        }
+
+
+        if (dataid === null) {
+            totalallrow = 0;
+        } else {
+
+            try {
+
+                dataall = await this.basic2SS.transaksiHistoryBisnisCount(email, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+                totalallrow = dataall[0].totalpost;
+
+            } catch (e) {
+                totalallrow = 0;
+            }
+        }
+        var datatrpending = null;
+        var datatrpendingjual = null;
+
+        try {
+
+            datatrpending = await this.transactionsService.findExpirednew(iduser);
+
+
+        } catch (e) {
+            datatrpending = null;
+
+        }
+
+        if (datatrpending !== null && datatrpending.length > 0) {
+            var datenow = new Date(Date.now());
+            var callback = null;
+            var statuswaiting = null;
+
+            var lengdatatr = datatrpending.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpending[i].idva;
+                var idtransaction = datatrpending[i]._id;
+                statuswaiting = datatrpending[i].status;
+                var expiredva = new Date(datatrpending[i].expiredtimeva);
+                expiredva.setHours(expiredva.getHours() - 7);
+
+                // if (datenow > expiredva) {
+                let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                    await this.transactionsService.updatestatuscancel(idtransaction);
+
+                } else if (cekstatusva.va_status === "COMPLETE") {
+
+                    if (statuswaiting == "WAITING_PAYMENT") {
+                        var VaCallback_ = new VaCallback();
+                        VaCallback_.va_number = cekstatusva.va_number;
+                        VaCallback_.amount = cekstatusva.amount;
+                        VaCallback_.partner_user_id = cekstatusva.partner_user_id;
+                        VaCallback_.success = true;
+                        try {
+                            callback = await this.transactionsService.callbackVA(VaCallback_);
+                            console.log(callback)
+
+                        } catch (e) {
+                            e.toString()
+                        }
+                    }
+
+                }
+
+
+                //}
+
+
+            }
+
+        }
+
+        try {
+
+            datatrpendingjual = await this.transactionsService.findExpiredSell(iduser);
+
+
+        } catch (e) {
+            datatrpendingjual = null;
+
+        }
+
+        if (datatrpendingjual !== null && datatrpendingjual.length > 0) {
+            var datenow = new Date(Date.now());
+            var callback = null;
+            var statuswaiting = null;
+
+
+            var lengdatatr = datatrpendingjual.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpendingjual[i].idva;
+                var idtransaction = datatrpendingjual[i]._id;
+                statuswaiting = datatrpendingjual[i].status;
+                var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
+                expiredva.setHours(expiredva.getHours() - 7);
+
+                //if (datenow > expiredva) {
+                let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                    await this.transactionsService.updatestatuscancel(idtransaction);
+
+                } else if (cekstatusva.va_status === "COMPLETE") {
+
+                    if (statuswaiting == "WAITING_PAYMENT") {
+                        var VaCallback_ = new VaCallback();
+                        VaCallback_.va_number = cekstatusva.va_number;
+                        VaCallback_.amount = cekstatusva.amount;
+                        VaCallback_.partner_user_id = cekstatusva.partner_user_id;
+                        VaCallback_.success = true;
+                        try {
+                            callback = await this.transactionsService.callbackVA(VaCallback_);
+                            console.log(callback)
+
+                        } catch (e) {
+                            e.toString()
+                        }
+                    }
+
+                }
+
+
+                //}
+
+
+            }
+
+        }
+
+
+
+        var tpage = null;
+        var tpage2 = null;
+
+        tpage2 = (totalsearch / limit).toFixed(0);
+        tpage = (totalsearch % limit);
+        if (tpage > 0 && tpage < 5) {
+            totalpage = parseInt(tpage2) + 1;
+
+        } else {
+            totalpage = parseInt(tpage2);
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+        return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
+    }
+
     @Post('api/transactions/vouchersellchart')
     @UseGuards(JwtAuthGuard)
     async getVoucherSellChartBasedDate(@Req() request: Request, @Headers() headers): Promise<any> {

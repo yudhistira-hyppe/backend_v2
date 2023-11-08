@@ -48,6 +48,7 @@ import { PostchallengeModule } from 'src/trans/postchallenge/postchallenge.modul
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { MediastikerModule } from '../mediastiker/mediastiker.module';
 import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
+import { NewcontenteventsModule } from '../newcontentevents/newcontentevents.module';
 @Module({
 
     imports: [
@@ -68,6 +69,7 @@ import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
         BullModule.registerQueue({
             name: 'post-user-playlist',
         }),
+        NewcontenteventsModule,
         NestjsFormDataModule,
         SeaweedfsModule,
         UserplaylistModule,

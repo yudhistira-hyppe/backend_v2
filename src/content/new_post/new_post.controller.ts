@@ -14,6 +14,7 @@ import { PostContentService } from '../posts/postcontent.service';
 import { GetusercontentsService } from 'src/trans/getusercontents/getusercontents.service';
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
 import { MediamusicService } from '../mediamusic/mediamusic.service';
+import { NewcontenteventsService } from '../newcontentevents/newcontentevents.service';
 @Controller('api/')
 export class NewPostController {
   constructor(private readonly newPostService: NewPostService,
@@ -26,6 +27,7 @@ export class NewPostController {
     private readonly usercontentService:GetusercontentsService,
     private readonly disqusLogSS:DisquslogsService,
     private readonly musicSS:MediamusicService,
+    private readonly contentEvent2SS:NewcontenteventsService,
     ) { }
 
   @UseGuards(JwtAuthGuard)
@@ -211,7 +213,7 @@ export class NewPostController {
               if (tp1.email == userEmail) {
                 tp1.status = "UNLINK";
               } else {
-                var ceck_data_FOLLOWER = await this.getcontenteventsService.ceckData(tp1.email, "FOLLOWER", "ACCEPT", userEmail, "", "");
+                var ceck_data_FOLLOWER = await this.contentEvent2SS.ceckData(tp1.email, "FOLLOWER", "ACCEPT", userEmail, "", "");
                 if (await this.utilsService.ceckData(ceck_data_FOLLOWER)) {
                   if (ceck_data_FOLLOWER.active) {
                     tp1.status = "FOLLOWING";
@@ -1026,7 +1028,7 @@ export class NewPostController {
                 datakomentar = [];
             }
             try {
-                datacountlike = await this.getcontenteventsService.countLikeBoost(postID, dtstart, dtend);
+                datacountlike = await this.contentEvent2SS.countLikeBoost(postID, dtstart, dtend);
             } catch (e) {
                 datacountlike = null;
             }

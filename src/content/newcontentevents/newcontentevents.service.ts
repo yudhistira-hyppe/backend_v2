@@ -906,10 +906,11 @@ export class NewcontenteventsService {
         return query;
     }
 
-    async findByCriteria(email: string, PostID: string, EventType: string, Events: string[], pageRow: number, pageNumber: number): Promise<Newcontentevents[]> {
+    async findByCriteria(iduser: string, PostID: string, EventType: string, Events: string[], pageRow: number, pageNumber: number): Promise<Newcontentevents[]> {
+        var mongo = require('mongoose');
         var Where = {}
         var Or = []
-        Object.assign(Where, { email: email });
+        Object.assign(Where, { idEmail: new mongo.Types.ObjectId(iduser) });
         if (PostID != "") {
             Object.assign(Where, { postID: PostID });
         }

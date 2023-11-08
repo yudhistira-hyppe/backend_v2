@@ -5556,7 +5556,7 @@ export class NewPostService {
                 }
               }],
               active: true,
-              postID: "516a3f5a-be7d-9ab9-c085-37bbb974cf8f"
+              postID: postID
             }
           },
           {
@@ -5701,8 +5701,8 @@ export class NewPostService {
                         [
                             "$mediaSource", 0
                         ]
-                    }
-        
+                    },
+                    idUser:1,
                   }
                 },
                 {

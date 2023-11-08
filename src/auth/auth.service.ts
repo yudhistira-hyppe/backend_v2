@@ -103,6 +103,27 @@ export class AuthService {
     }
   }
 
+  async validateUser2(email: string, pass: string): Promise<any> {
+    var isMatch = false;
+    try {
+      const user_userbasics = await this.basic2SS.findbyemail(email);
+      if (await this.utilsService.ceckData(user_userbasics)) {
+        const passuser = user_userbasics.password;
+        isMatch = await this.utilsService.comparePassword(pass, passuser);
+      } else {
+        return 'NOTFOUND';
+      }
+      if (isMatch) {
+        const { password, ...result } = user_userbasics;
+        return result;
+      } else {
+        return 'INVALIDCREDENTIALSLID';
+      }
+    } catch (err) {
+      return 'UNABLEDTOPROCEED';
+    }
+  }
+
   async login(req: any) {
     var user_email = req.body.email;
     var user_location = req.body.location;
