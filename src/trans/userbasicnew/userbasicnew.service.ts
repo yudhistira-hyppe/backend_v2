@@ -2279,7 +2279,7 @@ export class UserbasicnewService {
                             '$match': {
                                 '$and': [
                                 { '$expr': { '$in': [ '$_id', '$$localID' ] } },
-                                { email: { '$ne': 'ilhamarahman97@gmail.com' } }
+                                { email: { '$ne': email } }
                                 ]
                             }
                             }
@@ -2296,7 +2296,7 @@ export class UserbasicnewService {
                             '$match': {
                                 '$and': [
                                 { '$expr': { '$in': [ '$_id', '$$localID' ] } },
-                                { email: { '$ne': 'ilhamarahman97@gmail.com' } }
+                                { email: { '$ne': email } }
                                 ]
                             }
                             }
@@ -3211,7 +3211,7 @@ export class UserbasicnewService {
                             '$match': {
                                 '$and': [
                                 { '$expr': { '$in': [ '$_id', '$$localID' ] } },
-                                { email: { '$ne': 'ilhamarahman97@gmail.com' } }
+                                { email: { '$ne': email } }
                                 ]
                             }
                             }
@@ -3228,7 +3228,7 @@ export class UserbasicnewService {
                             '$match': {
                                 '$and': [
                                 { '$expr': { '$in': [ '$_id', '$$localID' ] } },
-                                { email: { '$ne': 'ilhamarahman97@gmail.com' } }
+                                { email: { '$ne': email } }
                                 ]
                             }
                             }
