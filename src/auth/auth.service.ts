@@ -45,6 +45,7 @@ import { UserchallengesService } from '../trans/userchallenges/userchallenges.se
 import { Userchallenges } from '../trans/userchallenges/schemas/userchallenges.schema';
 import { subChallengeService } from '../trans/challenge/subChallenge.service';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { NewRefferalService } from 'src/trans/newRefferal/newRefferal.service'; 
 
 @Injectable()
 export class AuthService {
@@ -78,7 +79,8 @@ export class AuthService {
     private challengeService: ChallengeService,
     private userchallengesService: UserchallengesService,
     private subChallengeService: subChallengeService,
-    private readonly logapiSS: LogapisService
+    private readonly logapiSS: LogapisService,
+    private readonly referral2SS: NewRefferalService
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -5421,6 +5423,66 @@ export class AuthService {
         try {
           var data_referral = await this.referralService.findAllByParent(user_email);
           var data_referral_parent = await this.referralService.findAllByChildren(user_email);
+
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, null);
+
+          return {
+            parent: (await this.utilsService.ceckData(data_referral_parent)) ? data_referral_parent[0].parent : "",
+            response_code: 202,
+            data: data_referral.length,
+            messages: {
+              info: ['The process successful'],
+            },
+            list: data_referral
+          }
+        } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, null);
+
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed',
+          );
+        }
+      } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, null);
+
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed',
+        );
+      }
+    } else {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, null);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+  }
+
+  async referralcount2(req: any, head: any): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
+    if (await this.utilsService.validasiTokenEmail(head)) {
+      var user_email = head['x-auth-user'];
+
+      //Ceck User Userbasics
+      const datauserbasicsService = await this.basic2SS.findbyemail(
+        user_email,
+      );
+
+      if (await this.utilsService.ceckData(datauserbasicsService)) {
+        try {
+          // var data_referral = await this.referralService.findAllByParent(user_email);
+          var data_referral = await this.referral2SS.findAllByParent(user_email);
+          // var data_referral_parent = await this.referralService.findAllByChildren(user_email);
+          var data_referral_parent = await this.referral2SS.findAllByChildren(user_email);
 
           var fullurl = req.get("Host") + req.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();

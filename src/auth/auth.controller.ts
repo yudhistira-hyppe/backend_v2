@@ -2190,6 +2190,12 @@ export class AuthController {
     return await this.authService.referralcount(request, headers);
   }
 
+  @Post('api/user/referral-count/v2')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async referral_count2(@Req() request: any, @Headers() headers) {
+    return await this.authService.referralcount2(request, headers);
+  }
+
   @Post('api/user/referral')
   @HttpCode(HttpStatus.ACCEPTED)
   async referral(@Req() request: any, @Headers() headers) {

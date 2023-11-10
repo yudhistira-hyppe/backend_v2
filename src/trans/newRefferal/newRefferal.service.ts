@@ -27,4 +27,12 @@ export class NewRefferalService {
   async update(id: number, updateNewRefferalDto: UpdateNewRefferalDto) {
     return `This action updates a #${id} newRefferal`;
   }
+
+  async findAllByParent(parent: string): Promise<newRefferal[]> {
+    return this.referraldata.find({ parent: parent, verified: true }, { parent:1, children:1, active:1, verified:1, imei:1, createdAt:1, updatedAt:1 }).exec();
+  }
+
+  async findAllByChildren(children: string): Promise<newRefferal[]> {
+    return this.referraldata.find({ children: children }, { parent:1, children:1, active:1, verified:1, imei:1, createdAt:1, updatedAt:1 }).exec();
+  }
 }
