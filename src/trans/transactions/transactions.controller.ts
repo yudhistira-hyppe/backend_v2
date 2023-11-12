@@ -8969,6 +8969,180 @@ export class TransactionsController {
         return { response_code: 202, data, messages };
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Post('api/transactions/historys/voucher/detail/v2')
+    async finddatadetail2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/historys/voucher/detaildetail/v2';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+        
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var id = null;
+        var arrdata = [];
+        var objdata = {};
+
+        if (request_json["id"] !== undefined) {
+            id = request_json["id"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var idtr = mongoose.Types.ObjectId(id);
+        let datatr = await this.transactionsService.findtransactiondetailvoucher2(idtr);
+        var detail = datatr[0].detail;
+        var lenghdetail = detail.length;
+        var userid = datatr[0].iduser;
+        var iduser = mongoose.Types.ObjectId(userid);
+        var data = [];
+
+        for (var i = 0; i < lenghdetail; i++) {
+            var idvc = detail[i].id.toString();
+            var qty = detail[i].qty;
+            var totalAmount = detail[i].totalAmount;
+            let dtvoucher = await this.vouchersService.findOne(idvc);
+
+            objdata = {
+                "_id": dtvoucher._id,
+                "noVoucher": dtvoucher.noVoucher,
+                "codeVoucher": dtvoucher.codeVoucher,
+                "userID": dtvoucher.userID,
+                "nameAds": dtvoucher.nameAds,
+                "creditValue": dtvoucher.creditValue,
+                "creditPromo": dtvoucher.creditPromo,
+                "creditTotal": dtvoucher.creditTotal,
+                "createdAt": dtvoucher.createdAt,
+                "expiredAt": dtvoucher.expiredAt,
+                "amount": dtvoucher.amount,
+                "qty": qty,
+                "totalUsed": dtvoucher.totalUsed,
+                "pendingUsed": dtvoucher.pendingUsed,
+                "expiredDay": dtvoucher.expiredDay,
+                "isActive": dtvoucher.isActive,
+                "description": dtvoucher.description,
+                "updatedAt": dtvoucher.updatedAt,
+                "totalAmount": totalAmount
+            }
+            arrdata.push(objdata);
+        }
+
+        data = [
+            {
+                "_id": datatr[0]._id,
+                "iduser": datatr[0].iduser,
+                "type": datatr[0].type,
+                "jenis": datatr[0].jenis,
+                "timestamp": datatr[0].timestamp,
+                "description": datatr[0].description,
+                "noinvoice": datatr[0].noinvoice,
+                "nova": datatr[0].nova,
+                "expiredtimeva": datatr[0].expiredtimeva,
+                "bank": datatr[0].bank,
+                "amount": datatr[0].amount,
+                "totalamount": datatr[0].totalamount,
+                "status": datatr[0].status,
+                "fullName": datatr[0].fullName,
+                "email": datatr[0].email,
+                "voucher_data": arrdata
+            }
+        ];
+
+        var datatrpending = null;
+        var datatrpendingjual = null;
+
+        try {
+
+            datatrpending = await this.transactionsService.findExpirednew(iduser);
+
+
+        } catch (e) {
+            datatrpending = null;
+
+        }
+
+        if (datatrpending !== null) {
+            var datenow = new Date(Date.now());
+
+
+            var lengdatatr = datatrpending.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpending[i].idva;
+                var idtransaction = datatrpending[i]._id;
+                var expiredva = new Date(datatrpending[i].expiredtimeva);
+                expiredva.setHours(expiredva.getHours() - 7);
+
+                if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        this.transactionsService.updatestatuscancel(idtransaction);
+
+                    }
+
+
+                }
+
+
+            }
+
+        }
+
+        try {
+
+            datatrpendingjual = await this.transactionsService.findExpiredSell(iduser);
+
+
+        } catch (e) {
+            datatrpendingjual = null;
+
+        }
+
+        if (datatrpendingjual !== null) {
+            var datenow = new Date(Date.now());
+
+
+            var lengdatatr = datatrpendingjual.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpendingjual[i].idva;
+                var idtransaction = datatrpendingjual[i]._id;
+                var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
+                expiredva.setHours(expiredva.getHours() - 7);
+
+                if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        await this.transactionsService.updatestatuscancel(idtransaction);
+
+                    }
+
+
+                }
+
+
+            }
+
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+        return { response_code: 202, data, messages };
+    }
+
     async generateNumber() {
         const getRandomId = (min = 0, max = 500000) => {
             min = Math.ceil(min);
@@ -13080,6 +13254,197 @@ export class TransactionsController {
             try {
 
                 dataall = await this.transactionsService.jualbelicount(undefined, undefined, undefined, undefined, undefined);
+                totalallrow = dataall[0].totalpost;
+
+            } catch (e) {
+                totalallrow = 0;
+            }
+        }
+        var datatrpending = null;
+        var datatrpendingjual = null;
+
+        try {
+
+            datatrpending = await this.transactionsService.findExpirednewAll();
+
+
+        } catch (e) {
+            datatrpending = null;
+
+        }
+
+        if (datatrpending !== null && datatrpending.length > 0) {
+            var datenow = new Date(Date.now());
+
+            var callback = null;
+            var statuswaiting = null;
+
+            var lengdatatr = datatrpending.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpending[i].idva;
+                var idtransaction = datatrpending[i]._id;
+                statuswaiting = datatrpending[i].status;
+                var expiredva = new Date(datatrpending[i].expiredtimeva);
+                expiredva.setHours(expiredva.getHours() - 7);
+
+                // if (datenow > expiredva) {
+                let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                    this.transactionsService.updatestatuscancel(idtransaction);
+
+                } else if (cekstatusva.va_status === "COMPLETE") {
+
+                    if (statuswaiting == "WAITING_PAYMENT") {
+                        var VaCallback_ = new VaCallback();
+                        VaCallback_.va_number = cekstatusva.va_number;
+                        VaCallback_.amount = cekstatusva.amount;
+                        VaCallback_.partner_user_id = cekstatusva.partner_user_id;
+                        VaCallback_.success = true;
+                        try {
+                            callback = await this.transactionsService.callbackVA(VaCallback_);
+                            console.log(callback)
+
+                        } catch (e) {
+                            e.toString()
+                        }
+                    }
+
+                }
+
+
+                //}
+
+
+            }
+
+        }
+
+
+        var tpage = null;
+        var tpage2 = null;
+
+        tpage2 = (totalsearch / limit).toFixed(0);
+        tpage = (totalsearch % limit);
+        if (tpage > 0 && tpage < 5) {
+            totalpage = parseInt(tpage2) + 1;
+
+        } else {
+            totalpage = parseInt(tpage2);
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+        return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
+    }
+
+    @Post('api/transactions/list/content/v2')
+    @UseGuards(JwtAuthGuard)
+    async searchlist2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/list/content/v2';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+        
+        var startdate = null;
+        var enddate = null;
+        var iduser = null;
+        var email = null;
+        var type = null;
+
+        var page = null;
+        var limit = null;
+
+        var data = [];
+        var status = null;
+        var descending = null;
+        var datasearch = null;
+        var totalsearch = null;
+        var totalpage = null;
+        var dataall = null;
+        var totalallrow = null;
+        var total = null;
+        var dataquery = null;
+        var penjual = null;
+        var pembeli = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        status = request_json["status"];
+        pembeli = request_json["pembeli"];
+        penjual = request_json["penjual"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        type = request_json["type"];
+
+        descending = request_json["descending"];
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+
+        var dataid = null;
+        try {
+            dataquery = await this.transactionsService.jualbeli2(startdate, enddate, status, descending, page, limit, penjual, pembeli);
+            dataid = dataquery[0]._id
+        } catch (e) {
+            dataquery = [];
+            dataid = null;
+        }
+
+        if (dataid === null) {
+            data = [];
+        } else {
+            data = dataquery;
+        }
+
+
+        try {
+            total = data.length;
+        } catch (e) {
+            total = 0;
+        }
+
+        if (dataid === null) {
+            totalsearch = 0;
+        } else {
+            try {
+                datasearch = await this.transactionsService.jualbelicount2(startdate, enddate, status, penjual, pembeli);
+                totalsearch = datasearch[0].totalpost;
+            } catch (e) {
+                totalsearch = 0;
+            }
+        }
+
+
+        if (dataid === null) {
+            totalallrow = 0;
+        } else {
+
+            try {
+
+                dataall = await this.transactionsService.jualbelicount2(undefined, undefined, undefined, undefined, undefined);
                 totalallrow = dataall[0].totalpost;
 
             } catch (e) {
