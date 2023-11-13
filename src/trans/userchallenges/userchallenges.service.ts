@@ -141,13 +141,7 @@ export class UserchallengesService {
     async userChallengebyIdChall(iduser: string, idchallenge: string) {
         var query = await this.UserchallengesModel.aggregate([
 
-            {
-                $match: {
-                    "idChallenge": new Types.ObjectId(idchallenge),
-                    "idUser": new Types.ObjectId(iduser),
-                    "isActive": true
-                }
-            },
+
             {
                 $set: {
                     "timenow":
@@ -164,6 +158,48 @@ export class UserchallengesService {
                     }
                 }
             },
+            {
+                $match: {
+                    "idChallenge": new Types.ObjectId(idchallenge),
+                    "idUser": new Types.ObjectId(iduser),
+                    "isActive": true
+                }
+            },
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+
+                            {
+                                $expr:
+                                {
+                                    $gte:
+                                        [
+                                            "$timenow",
+                                            "$startDatetime",
+
+                                        ]
+                                },
+
+                            },
+                            {
+                                $expr:
+                                {
+                                    $lte:
+                                        [
+                                            "$timenow",
+                                            "$endDatetime",
+
+                                        ]
+                                },
+
+                            },
+
+                        ]
+                }
+            },
+
             {
                 $lookup: {
                     from: 'subChallenge',
@@ -194,9 +230,9 @@ export class UserchallengesService {
                     },
                     "timenow": 1,
 
-
                 }
             },
+
 
         ]);
         return query;
