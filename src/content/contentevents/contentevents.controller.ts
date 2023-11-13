@@ -1339,8 +1339,8 @@ export class ContenteventsController {
             );
           }
         } else {
-          let ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEW", "DONE", email_receiverParty, "", request.body.postID);
-          let ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "VIEW", "ACCEPT", "", email_user, request.body.postID);
+          let ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEWCHALLENGE", "DONE", email_receiverParty, "", request.body.postID);
+          let ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "VIEWCHALLENGE", "ACCEPT", "", email_user, request.body.postID);
           if (!(await this.utilsService.ceckData(ceck_data_DONE)) && !(await this.utilsService.ceckData(ceck_data_ACCEPT))) {
             var _id_1 = (await this.utilsService.generateId());
             var _id_2 = (await this.utilsService.generateId());
@@ -1375,11 +1375,11 @@ export class ContenteventsController {
             CreateContenteventsDto2.postID = request.body.postID
 
             try {
-              var resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
+              let resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
               idevent1 = resultdata1._id;
-              var dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
+              let dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
 
-              var dataview = await this.contenteventsService.listview(email_user, request.body.postID);
+              let dataview = await this.contenteventsService.listview(email_user, request.body.postID);
 
 
 
