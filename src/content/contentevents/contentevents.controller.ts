@@ -1339,8 +1339,8 @@ export class ContenteventsController {
             );
           }
         } else {
-          let ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEWCHALLENGE", "DONE", email_receiverParty, "", request.body.postID);
-          let ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "VIEWCHALLENGE", "ACCEPT", "", email_user, request.body.postID);
+          let ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEW", "DONE", email_receiverParty, "", request.body.postID);
+          let ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "VIEW", "ACCEPT", "", email_user, request.body.postID);
           if (!(await this.utilsService.ceckData(ceck_data_DONE)) && !(await this.utilsService.ceckData(ceck_data_ACCEPT))) {
             var _id_1 = (await this.utilsService.generateId());
             var _id_2 = (await this.utilsService.generateId());
@@ -1381,21 +1381,21 @@ export class ContenteventsController {
 
               var dataview = await this.contenteventsService.listview(email_user, request.body.postID);
 
-              if (idevent1 != null) {
 
-                if (dataview.length > 0) {
 
-                } else {
-                  try {
-                    this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
-                    console.log("sukses hitung score")
-                  } catch (e) {
-                    console.log("gagal ngitung skor" + e)
-                  }
+              if (dataview.length > 0) {
+
+              } else {
+                try {
+                  this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+                  console.log("sukses hitung score")
+                } catch (e) {
+                  console.log("gagal ngitung skor" + e)
                 }
-
-
               }
+
+
+
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
