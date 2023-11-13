@@ -165,6 +165,41 @@ export class UserchallengesService {
                 }
             },
             {
+                "$match":
+                {
+                    "$and":
+                        [
+
+                            {
+                                $expr:
+                                {
+                                    $gte:
+                                        [
+                                            "$timenow",
+                                            "$startDatetime",
+
+                                        ]
+                                },
+
+                            },
+                            {
+                                $expr:
+                                {
+                                    $lte:
+                                        [
+                                            "$timenow",
+                                            "$endDatetime",
+
+                                        ]
+                                },
+
+                            },
+
+                        ]
+                }
+            },
+
+            {
                 $lookup: {
                     from: 'subChallenge',
                     localField: 'idSubChallenge',
@@ -194,9 +229,9 @@ export class UserchallengesService {
                     },
                     "timenow": 1,
 
-
                 }
             },
+
 
         ]);
         return query;

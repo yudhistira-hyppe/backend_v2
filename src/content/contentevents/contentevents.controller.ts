@@ -4158,7 +4158,6 @@ export class ContenteventsController {
                       }
                     } else {
                       // if (saleAmount == 0) {
-                      //  if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
 
                       var obj = {};
 
@@ -4176,7 +4175,7 @@ export class ContenteventsController {
                       else {
                         poin = 0;
                       }
-
+                      // if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
                       await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                       await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
                       var detail = await this.userchallengesService.findOne(iduserchall.toString());
@@ -4223,7 +4222,7 @@ export class ContenteventsController {
 
 
                     }
-                    //}
+                    // }
 
                     // }
 
@@ -4340,7 +4339,7 @@ export class ContenteventsController {
                 }
               } else {
                 // if (saleAmount == 0) {
-                //if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
+
 
                 var obj = {};
 
@@ -4357,7 +4356,7 @@ export class ContenteventsController {
                 } else {
                   poin = 0;
                 }
-
+                // if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
                 await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
                 await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
                 var detail = await this.userchallengesService.findOne(iduserchall.toString());
@@ -4399,7 +4398,7 @@ export class ContenteventsController {
 
                   }
                 }
-                //}
+                // }
                 //}
               }
             }

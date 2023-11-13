@@ -119,12 +119,10 @@ export class ChallengeController {
     if (request_json['statusChallenge'] == 'PUBLISH') {
       var getdata = await this.challengeService.findAll(null, request_json['jenisChallenge'], null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
       if ((request_json['jenisChallenge'] == '647055de0435000059003462' && getdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && getdata.length >= 5)) {
-        if(request_json['jenisChallenge'] == '647055de0435000059003462')
-        {
+        if (request_json['jenisChallenge'] == '647055de0435000059003462') {
           throw new NotAcceptableException("Challenge Utama yang sudah aktif telah memenuhi batas maksimal (Maksimal: 3 challenge aktif)")
         }
-        else
-        {
+        else {
           throw new NotAcceptableException("Challenge Lainnya yang sudah aktif telah memenuhi batas maksimal (Maksimal: 5 challenge aktif)")
         }
       }
@@ -786,16 +784,13 @@ export class ChallengeController {
 
     if (getdata["statusChallenge"] == 'DRAFT') {
 
-      if (request_json['statusChallenge'] == 'PUBLISH') 
-      {
+      if (request_json['statusChallenge'] == 'PUBLISH') {
         var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
         if ((request_json['jenisChallenge'] == '647055de0435000059003462' && cekdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
-          if(request_json['jenisChallenge'] == '647055de0435000059003462')
-          {
+          if (request_json['jenisChallenge'] == '647055de0435000059003462') {
             throw new NotAcceptableException("Challenge Utama yang sudah aktif telah memenuhi batas maksimal (Maksimal: 3 challenge aktif)")
           }
-          else
-          {
+          else {
             throw new NotAcceptableException("Challenge Lainnya yang sudah aktif telah memenuhi batas maksimal (Maksimal: 5 challenge aktif)")
           }
         }
@@ -1403,12 +1398,10 @@ export class ChallengeController {
       var setjenischallenge = getdata["jenisChallenge"].toString();
       var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
       if ((setjenischallenge == '647055de0435000059003462' && cekdata.length >= 3) || (setjenischallenge == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
-        if(setjenischallenge == '647055de0435000059003462')
-        {
+        if (setjenischallenge == '647055de0435000059003462') {
           throw new NotAcceptableException("Challenge Utama yang sudah aktif telah memenuhi batas maksimal (Maksimal: 3 challenge aktif)")
         }
-        else
-        {
+        else {
           throw new NotAcceptableException("Challenge Lainnya yang sudah aktif telah memenuhi batas maksimal (Maksimal: 5 challenge aktif)")
         }
       }
@@ -1893,7 +1886,7 @@ export class ChallengeController {
       for (var i = 0; i < parentdata.jumlahSiklusdurasi; i++) {
         var pecahdata = temptanggal.toISOString().split("T");
         var startdatetime = pecahdata[0] + " " + parentdata.startTime;
-        
+
         temptanggal.setDate(temptanggal.getDate() + satuanhari);
 
         var pecahdata = temptanggal.toISOString().split("T");
@@ -3319,8 +3312,7 @@ export class ChallengeController {
             setdata.isSend = false;
             setdata.nameChallenge = detail.nameChallenge;
             setdata.datetime = timedate;
-            if (listpartisipan == null || listpartisipan.length == 0) 
-            {
+            if (listpartisipan == null || listpartisipan.length == 0) {
               setdata.all = 1;
             }
             setdata.createdAt = await this.util.getDateTimeString();
@@ -3760,12 +3752,18 @@ export class ChallengeController {
 
   @Post('userbadge')
   async userbadges() {
-    var endDatetime = null;
-    endDatetime = new Date("2023-10-15 20:34:00");
-    endDatetime.setHours(endDatetime.getHours() + 7); // timestamp
-    endDatetime = new Date(endDatetime);
-    console.log(endDatetime)
-    this.sendNotifeChallenge();
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+
+    dt = new Date(dt);
+    var td = dt;
+    td.setSeconds(dt.getSeconds() + 1);
+    td = new Date(td);
+    var strdate = td.toISOString();
+    var repdate = strdate.replace('T', ' ');
+    var splitdate = repdate.split('.');
+    var timedate = splitdate[0];
+    //this.sendNotifeChallenge();
     //  this.updateUserbadge();
 
     const messages = {
@@ -3774,7 +3772,7 @@ export class ChallengeController {
 
     return {
       response_code: 202,
-      "message": messages
+      "message": timedate
     }
   }
 
