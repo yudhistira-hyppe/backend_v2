@@ -5473,6 +5473,35 @@ export class AuthController {
     return this.userbasicsService.updateStatusKyc(email, isIdVerified, status, timestamps_start, fullurl);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('api/user/kyc/stat/v2')
+  async kycUpdateStatus2(
+    @Query('status') status: string,
+    @Query('email') email: string,
+    @Req() request): Promise<Object> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = request.get("Host") + request.originalUrl;
+
+    if (email == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, null);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed param email required',
+      );
+    }
+    let isIdVerified = false;
+    if (status == "unverified") {
+      isIdVerified = false;
+    } else if (status == "verified") {
+      isIdVerified = true;
+    } else if (status == "review") {
+      isIdVerified = false;
+    }
+
+    return this.basic2SS.updateStatusKyc(email, isIdVerified, status, timestamps_start, fullurl);
+  }
+
   // @HttpCode(HttpStatus.ACCEPTED)
   // @Get('api/user/getpin?')
   // async getPin(@Query('email') email: string) {

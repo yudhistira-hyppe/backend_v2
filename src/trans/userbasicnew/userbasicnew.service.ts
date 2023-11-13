@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { Userbasicnew, UserbasicnewDocument } from './schemas/userbasicnew.schema';
+import { LogapisService } from '../logapis/logapis.service';
 
 @Injectable()
 export class UserbasicnewService {
     constructor(
         @InjectModel(Userbasicnew.name, 'SERVER_FULL')
         private readonly UserbasicnewModel: Model<UserbasicnewDocument>,
+        private readonly logapiSS: LogapisService
     ) { }
 
     async create(Userbasicnew_: Userbasicnew): Promise<Userbasicnew> {
@@ -4633,4 +4635,23 @@ export class UserbasicnewService {
     
         return query;
     }
+
+    async updateStatusKyc(email: string, status: Boolean, statusKyc: string, startdate: string, urllink: string): Promise<Object> {
+        let data = await this.UserbasicnewModel.updateOne({ "email": email },
+          {
+            $set: {
+              "isIdVerified": status,
+              "statusKyc": statusKyc
+            }
+          },
+        );
+    
+        var timestamps_end = new Date();
+        timestamps_end.setHours(timestamps_end.getHours() + 7);
+        var pecahdata = timestamps_end.toISOString().split("T");
+        var finalend = pecahdata[0] + " " + pecahdata[1].split(".")[0];
+        this.logapiSS.create2(urllink, startdate, finalend, email, null, null, null);
+    
+        return data;
+      }
 }
