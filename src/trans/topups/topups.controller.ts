@@ -261,6 +261,7 @@ export class TopupsController {
                 Topups_.createdAt = currentDate;
                 Topups_.updatedAt = currentDate; 
                 Topups_.topup = dataGet.Topup;
+                Topups_.npwp = dataGet.Npwp.toString();
                 Topups_.email = (dataGet.Email.toString()).toLowerCase();
                 let ceckData = await this.getDataTopup(Topups_);
 
@@ -313,41 +314,71 @@ export class TopupsController {
 
   async getDataTopup(Topups_: Topups){
     try{
-      //PPH
-      let pph = 0;
-      if (Number(Topups_.topup) <= Number(2500000)) {
-        pph = 0.05;
-        console.log(pph);
-      } else if ((Number(2500000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(30000000))) {
-        pph = 0.15;
-        console.log(pph);
-      } else if ((Number(30000000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(62500000))) {
-        pph = 0.25;
-        console.log(pph);
-      } else if ((Number(62500000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(150000000))) {
-        pph = 0.3;
-        console.log(pph);
-      } else {
-        pph = 0.3;
-        console.log(pph);
-      }
+      if (Topups_.npwp !=undefined){
+        if (Topups_.npwp.toLowerCase()=="yes") {
+          //PPH
+          let pph = 0;
+          if (Number(Topups_.topup) <= Number(2500000)) {
+            pph = 0.05;
+            console.log(pph);
+          } else if ((Number(2500000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(30000000))) {
+            pph = 0.15;
+            console.log(pph);
+          } else if ((Number(30000000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(62500000))) {
+            pph = 0.25;
+            console.log(pph);
+          } else if ((Number(62500000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(150000000))) {
+            pph = 0.3;
+            console.log(pph);
+          } else {
+            pph = 0.3;
+            console.log(pph);
+          }
 
-      //PPH CALCULATE
-      let pphPrice = <any>((Topups_.topup / 2) * pph);
-      //TOT CALCULATE
-      let tot = <any>(Topups_.topup - pphPrice);
+          //PPH CALCULATE
+          let pphPrice = <any>((Topups_.topup / 2) * pph);
+          //TOT CALCULATE
+          let tot = <any>(Topups_.topup - pphPrice);
 
-      Topups_._id = new mongoose.Types.ObjectId();
-      Topups_.pph = pphPrice;
-      Topups_.total = tot;
-      Topups_.approveByFinance = false;
-      Topups_.approveByStrategy = false;
-      Topups_.approve = false;
-      Topups_.status = "NEW";
-      Topups_.pphPersen = <any>pph;
-      return {
-        status: true,
-        Topups: Topups_
+          Topups_._id = new mongoose.Types.ObjectId();
+          Topups_.pph = pphPrice;
+          Topups_.total = tot;
+          Topups_.approveByFinance = false;
+          Topups_.approveByStrategy = false;
+          Topups_.approve = false;
+          Topups_.status = "NEW";
+          Topups_.pphPersen = <any>pph;
+          return {
+            status: true,
+            Topups: Topups_
+          }
+        } else {
+          Topups_._id = new mongoose.Types.ObjectId();
+          Topups_.pph = 0;
+          Topups_.total = Topups_.topup;
+          Topups_.approveByFinance = false;
+          Topups_.approveByStrategy = false;
+          Topups_.approve = false;
+          Topups_.status = "FAILED";
+          Topups_.pphPersen = 0;
+          return {
+            status: false,
+            Topups: Topups_
+          }
+        }
+      }else{
+        Topups_._id = new mongoose.Types.ObjectId();
+        Topups_.pph = 0;
+        Topups_.total = Topups_.topup;
+        Topups_.approveByFinance = false;
+        Topups_.approveByStrategy = false;
+        Topups_.approve = false;
+        Topups_.status = "FAILED";
+        Topups_.pphPersen = 0;
+        return {
+          status: false,
+          Topups: Topups_
+        }
       }
     } catch (e) {
       Topups_._id = new mongoose.Types.ObjectId();
