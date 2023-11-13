@@ -19,6 +19,8 @@ export class Topups {
   @Prop()
   pph: number
   @Prop()
+  npwp: String
+  @Prop()
   pphPersen: number
   @Prop()
   total: number
