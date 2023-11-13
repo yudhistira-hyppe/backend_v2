@@ -28,6 +28,7 @@ export class TopupsController {
   @UseGuards(JwtAuthGuard)
   @Post('/create')
   async create(@Body() Topups_: Topups, @Headers() headers) {
+    console.log("---------TOPUPS---------", JSON.stringify(Topups_))
     var currentDate = await this.utilsService.getDateTimeISOString();
     let data = null;
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
@@ -68,6 +69,7 @@ export class TopupsController {
         Topups_ = ceckData.Topups;
         data = await this.topupsService.create(Topups_);
       }
+      console.log("---------TOPUPS DATA---------", JSON.stringify(data))
       return await this.errorHandler.generateAcceptResponseCodeWithData(
         "Create Data Topups succesfully", data
       );
@@ -283,10 +285,16 @@ export class TopupsController {
                 if (ceckData.status) {
                   Topups_ = ceckData.Topups;
                   Topups_.status = "FAILED";
+                  if (Topups_.remact == undefined) {
+                    Topups_.remact = "User Nor Found";
+                  }
                   const data = await this.topupsService.create(Topups_);
                 } else {
                   Topups_ = ceckData.Topups;
                   Topups_.status = "FAILED";
+                  if (Topups_.remact == undefined) {
+                    Topups_.remact = "User Nor Found";
+                  }
                   const data = await this.topupsService.create(Topups_);
                 }
               }
@@ -359,10 +367,10 @@ export class TopupsController {
           Topups_.approveByFinance = false;
           Topups_.approveByStrategy = false;
           Topups_.approve = false;
-          Topups_.status = "FAILED";
+          Topups_.status = "NEW";
           Topups_.pphPersen = 0;
           return {
-            status: false,
+            status: true,
             Topups: Topups_
           }
         }
@@ -373,10 +381,10 @@ export class TopupsController {
         Topups_.approveByFinance = false;
         Topups_.approveByStrategy = false;
         Topups_.approve = false;
-        Topups_.status = "FAILED";
+        Topups_.status = "NEW";
         Topups_.pphPersen = 0;
         return {
-          status: false,
+          status: true,
           Topups: Topups_
         }
       }
@@ -388,6 +396,7 @@ export class TopupsController {
       Topups_.approveByStrategy = false;
       Topups_.approve = false;
       Topups_.status = "FAILED";
+      Topups_.remact = "Error " + e;
       return {
         status:false,
         Topups: Topups_
