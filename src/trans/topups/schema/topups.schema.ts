@@ -48,6 +48,8 @@ export class Topups {
   createdAt: String
   @Prop()
   updatedAt: String
+  @Prop()
+  remact: String
 }
 
 export const TopupsSchema = SchemaFactory.createForClass(Topups);
