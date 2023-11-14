@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { CreateAccountbalancesDto } from './dto/create-accountbalances.dto';
+import { CreateAccountbalancesDto, CreateAccountbalances } from './dto/create-accountbalances.dto';
 import { Accountbalances, AccountbalancesDocument } from './schemas/accountbalances.schema';
 import { PostContentService } from '../../content/posts/postcontent.service';
 import mongoose from 'mongoose';
@@ -45,7 +45,8 @@ export class AccountbalancesService {
         return query;
     }
 
-    async getReward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], similarity: any[], page: number, limit: number, sorting: boolean, idtransaction:string){
+    async getReward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], similarity: any[], page: number, limit: number, sorting: boolean, idtransaction: string) {
+        
         var paramaggregate = [];
         var $match = {};
 
@@ -54,7 +55,7 @@ export class AccountbalancesService {
             type: "rewards"
         });
 
-        if (idtransaction!=undefined){
+        if (idtransaction != undefined) {
             andFilter.push({
                 idtrans: new mongoose.Types.ObjectId(idtransaction)
             })
@@ -98,11 +99,11 @@ export class AccountbalancesService {
             });
         }
         //------------FILTER GENDER------------
-        if (gender != undefined ) {
-            if (gender.length>0){
+        if (gender != undefined) {
+            if (gender.length > 0) {
                 var Array_Gender = [];
-                if (gender.includes("MALE")){
-                    console.log("MALE TRUE",gender);
+                if (gender.includes("MALE")) {
+                    console.log("MALE TRUE", gender);
                     Array_Gender.push("Male", "Laki-laki", "MALE")
                 }
                 if (gender.includes("FEMALE")) {
@@ -183,6 +184,7 @@ export class AccountbalancesService {
         if (similarity != undefined) {
             if (similarity.length > 0) {
                 var similarityFilter = [];
+                console.log(similarity);
                 if (similarity.includes("show_smaller_than_25")) {
                     similarityFilter.push({
                         commonality: {
@@ -193,7 +195,7 @@ export class AccountbalancesService {
                     //     $gt: 0, $lt: 14
                     // }
                 }
-                if (age.includes("show_25_smaller_than_50")) {
+                if (similarity.includes("show_25_smaller_than_50")) {
                     similarityFilter.push({
                         commonality: {
                             $gte: 25, $lt: 50
@@ -203,7 +205,7 @@ export class AccountbalancesService {
                     //     $gte: 14, $lte: 28
                     // }
                 }
-                if (age.includes("show_50_smaller_than_75")) {
+                if (similarity.includes("show_50_smaller_than_75")) {
                     similarityFilter.push({
                         commonality: {
                             $gte: 50, $lt: 75
@@ -213,7 +215,7 @@ export class AccountbalancesService {
                     //     $gte: 29, $lte: 43
                     // }
                 }
-                if (age.includes("show_75_smaller_than_100")) {
+                if (similarity.includes("show_75_smaller_than_100")) {
                     similarityFilter.push({
                         commonality: {
                             $gte: 75, $lte: 100
@@ -244,286 +246,281 @@ export class AccountbalancesService {
         $match["$and"] = andFilter;
         //------------PUSH MATCH QUERY------------
         paramaggregate.push(
-        {
-            $lookup: {
-                from: 'userbasics',
-                as: 'userbasics_data',
-                let: {
-                    local_id: "$iduser"
-                },
-                pipeline: [
-                    {
-                        $match:
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    as: 'userbasics_data',
+                    let: {
+                        local_id: "$iduser"
+                    },
+                    pipeline: [
                         {
-                            $expr: {
-                                $eq: ['$_id', '$$local_id']
+                            $match:
+                            {
+                                $expr: {
+                                    $eq: ['$_id', '$$local_id']
+                                }
                             }
-                        }
-                    },
-                    {
-                        $project: {
-                            _id: 1,
-                            email: 1,
-                            fullName: 1,
-                            profileID: 1,
-                            gender: 1,
-                            age: {
-                                $cond: {
-                                    if: {
-                                        $and: ['$dob', {
-                                            $ne: ["$dob", ""]
-                                        }]
-                                    },
-                                    then: {
-                                        $toInt: {
-                                            $divide: [{
-                                                $subtract: [new Date(), {
-                                                    $toDate: "$dob"
-                                                }]
-                                            }, (365 * 24 * 60 * 60 * 1000)]
-                                        }
-                                    },
-                                    else: 0
-                                }
-                            },
-                            userInterests_array: {
-                                $map: {
-                                    input: {
-                                        $map: {
-                                            input: "$userInterests",
-                                            in: {
-                                                $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
-                                            },
-                                        }
-                                    },
-                                    in: "$$this.v"
-                                }
-                            },
-                            states: 1,
-                            userAuth: 1,
-                            profilePict:1
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: "interests_repo",
-                            localField: "userInterests_array",
-                            foreignField: "_id",
-                            as: "interests"
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'areas',
-                            as: 'areas',
-                            let: {
-                                local_id: "$states.$id"
-                            },
-                            pipeline: [
-                                {
-                                    $match:
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                                email: 1,
+                                fullName: 1,
+                                profileID: 1,
+                                gender: 1,
+                                age: {
+                                    $cond: {
+                                        if: {
+                                            $and: ['$dob', {
+                                                $ne: ["$dob", ""]
+                                            }]
+                                        },
+                                        then: {
+                                            $toInt: {
+                                                $divide: [{
+                                                    $subtract: [new Date(), {
+                                                        $toDate: "$dob"
+                                                    }]
+                                                }, (365 * 24 * 60 * 60 * 1000)]
+                                            }
+                                        },
+                                        else: 0
+                                    }
+                                },
+                                userInterests_array: {
+                                    $map: {
+                                        input: {
+                                            $map: {
+                                                input: "$userInterests",
+                                                in: {
+                                                    $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                                },
+                                            }
+                                        },
+                                        in: "$$this.v"
+                                    }
+                                },
+                                states: 1,
+                                userAuth: 1,
+                                profilePict: 1
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "interests_repo",
+                                localField: "userInterests_array",
+                                foreignField: "_id",
+                                as: "interests"
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'areas',
+                                as: 'areas',
+                                let: {
+                                    local_id: "$states.$id"
+                                },
+                                pipeline: [
                                     {
-                                        $expr: {
-                                            $eq: ['$_id', '$$local_id']
+                                        $match:
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$local_id']
+                                            }
                                         }
-                                    }
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'userauths',
+                                as: 'userauths',
+                                let: {
+                                    local_id: "$userAuth.$id"
                                 },
-                            ]
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: 'userauths',
-                            as: 'userauths',
-                            let: {
-                                local_id: "$userAuth.$id"
-                            },
-                            pipeline: [
-                                {
-                                    $match: {
-                                        $expr: {
-                                            $and: [
-                                                { $eq: ['$_id', '$$local_id'] },
-                                            ]
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $and: [
+                                                    { $eq: ['$_id', '$$local_id'] },
+                                                ]
+                                            }
                                         }
-                                    }
-                                },
-                            ]
-                        }
-                    }
-                ],
-            },
-        },
-        {
-            $lookup: {
-                from: 'userads',
-                as: 'userads_data',
-                let: {
-                    userID: "$iduser",
-                    adsID: "$idtrans"
-                },
-                pipeline: [
-                    {
-                        $match: {
-                            $expr: {
-                                $and: [
-                                    { $eq: ['$userID', '$$userID'] },
-                                    { $eq: ['$adsID', '$$adsID'] },
+                                    },
                                 ]
                             }
                         }
+                    ],
+                },
+            },
+            {
+                $lookup: {
+                    from: 'userads',
+                    as: 'userads_data',
+                    let: {
+                        userID: "$iduser",
+                        adsID: "$idtrans"
                     },
-                ]
-            }
-        },
-        {
-            $project: {
-                _id: 1,
-                timestamp: 1,
-                fullName: {
-                    "$let": {
-                        "vars": {
-                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ['$userID', '$$userID'] },
+                                        { $eq: ['$adsID', '$$adsID'] },
+                                    ]
+                                }
+                            }
                         },
-                        "in": "$$tmp.fullName"
-                    }
-                },
-                email: {
-                    "$let": {
-                        "vars": {
-                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                        },
-                        "in": "$$tmp.email"
-                    }
-                },
-                profileID: {
-                    "$let": {
-                        "vars": {
-                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                        },
-                        "in": "$$tmp.profileID"
-                    }
-                },
-                profilePict: {
-                    $concat: ["/profilepict/", {
+                    ]
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    timestamp: 1,
+                    fullName: {
                         "$let": {
                             "vars": {
                                 "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
                             },
-                            "in": "$$tmp.profilePict.$id"
+                            "in": "$$tmp.fullName"
                         }
-                } ] },
-                gender: {
-                    $switch: {
-                        branches: [
-                            {
-                                case: {
-                                    $or: [
-                                        {
-                                            $eq: [{
-                                                "$let": {
-                                                    "vars": {
-                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                                    },
-                                                    "in": "$$tmp.gender"
-                                                }
-                                            }, "Male"] },
-                                        {
-                                            $eq: [{
-                                                "$let": {
-                                                    "vars": {
-                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                                    },
-                                                    "in": "$$tmp.gender"
-                                                }
-                                            }, "Laki-laki"] },
-                                        {
-                                            $eq: [{
-                                                "$let": {
-                                                    "vars": {
-                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                                    },
-                                                    "in": "$$tmp.gender"
-                                                }
-                                            }, "MALE"] }
-                                    ]
-                                }, then: "Laki-laki"
+                    },
+                    email: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
                             },
-                            {
-                                case: {
-                                    $or: [
-                                        {
-                                            $eq: [{
-                                                "$let": {
-                                                    "vars": {
-                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                                    },
-                                                    "in": "$$tmp.gender"
-                                                }
-                                            }, " Perempuan"] },
-                                        {
-                                            $eq: [{
-                                                "$let": {
-                                                    "vars": {
-                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                                    },
-                                                    "in": "$$tmp.gender"
-                                                }
-                                            }, "Perempuan"] },
-                                        {
-                                            $eq: [{
-                                                "$let": {
-                                                    "vars": {
-                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                                    },
-                                                    "in": "$$tmp.gender"
-                                                }
-                                            }, "PEREMPUAN"] },
-                                        {
-                                            $eq: [{
-                                                "$let": {
-                                                    "vars": {
-                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                                    },
-                                                    "in": "$$tmp.gender"
-                                                }
-                                            }, "FEMALE"] },
-                                        {
-                                            $eq: [{
-                                                "$let": {
-                                                    "vars": {
-                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                                    },
-                                                    "in": "$$tmp.gender"
-                                                }
-                                            }, " FEMALE"] }
-                                    ]
-                                }, then: "Perempuan"
-                            }
-                        ],
-                        "default": "Lainnya"
-                    }
-                },
-                ageQualication: {
-                    $switch: {
-                        branches: [
-                            {
-                                case: {
-                                    $lt: [{
-                                        "$let": {
-                                            "vars": {
-                                                "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                            },
-                                            "in": "$$tmp.age"
-                                        }
-                                    }, 14]
+                            "in": "$$tmp.email"
+                        }
+                    },
+                    profileID: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.profileID"
+                        }
+                    },
+                    profilePict: {
+                        $concat: ["/profilepict/", {
+                            "$let": {
+                                "vars": {
+                                    "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
                                 },
-                                then: "< 14 Tahun"
-                            },
-                            {
-                                case: {
-                                    $and: [{
-                                        $gte: [{
+                                "in": "$$tmp.profilePict.$id"
+                            }
+                        }]
+                    },
+                    gender: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $or: [
+                                            {
+                                                $eq: [{
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                        },
+                                                        "in": "$$tmp.gender"
+                                                    }
+                                                }, "Male"]
+                                            },
+                                            {
+                                                $eq: [{
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                        },
+                                                        "in": "$$tmp.gender"
+                                                    }
+                                                }, "Laki-laki"]
+                                            },
+                                            {
+                                                $eq: [{
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                        },
+                                                        "in": "$$tmp.gender"
+                                                    }
+                                                }, "MALE"]
+                                            }
+                                        ]
+                                    }, then: "Laki-laki"
+                                },
+                                {
+                                    case: {
+                                        $or: [
+                                            {
+                                                $eq: [{
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                        },
+                                                        "in": "$$tmp.gender"
+                                                    }
+                                                }, " Perempuan"]
+                                            },
+                                            {
+                                                $eq: [{
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                        },
+                                                        "in": "$$tmp.gender"
+                                                    }
+                                                }, "Perempuan"]
+                                            },
+                                            {
+                                                $eq: [{
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                        },
+                                                        "in": "$$tmp.gender"
+                                                    }
+                                                }, "PEREMPUAN"]
+                                            },
+                                            {
+                                                $eq: [{
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                        },
+                                                        "in": "$$tmp.gender"
+                                                    }
+                                                }, "FEMALE"]
+                                            },
+                                            {
+                                                $eq: [{
+                                                    "$let": {
+                                                        "vars": {
+                                                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                        },
+                                                        "in": "$$tmp.gender"
+                                                    }
+                                                }, " FEMALE"]
+                                            }
+                                        ]
+                                    }, then: "Perempuan"
+                                }
+                            ],
+                            "default": "Lainnya"
+                        }
+                    },
+                    ageQualication: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $lt: [{
                                             "$let": {
                                                 "vars": {
                                                     "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
@@ -531,32 +528,60 @@ export class AccountbalancesService {
                                                 "in": "$$tmp.age"
                                             }
                                         }, 14]
-                                    }, {
-                                        $lte: [{
-                                            "$let": {
-                                                "vars": {
-                                                    "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                                },
-                                                "in": "$$tmp.age"
-                                            }
-                                        }, 28]
-                                    }]
+                                    },
+                                    then: "< 14 Tahun"
                                 },
-                                then: "14 - 28 Tahun"
-                            },
-                            {
-                                case: {
-                                    $and: [{
-                                        $gte: [{
-                                            "$let": {
-                                                "vars": {
-                                                    "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                                },
-                                                "in": "$$tmp.age"
-                                            }
-                                        }, 29]
-                                    }, {
-                                        $lte: [{
+                                {
+                                    case: {
+                                        $and: [{
+                                            $gte: [{
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                    },
+                                                    "in": "$$tmp.age"
+                                                }
+                                            }, 14]
+                                        }, {
+                                            $lte: [{
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                    },
+                                                    "in": "$$tmp.age"
+                                                }
+                                            }, 28]
+                                        }]
+                                    },
+                                    then: "14 - 28 Tahun"
+                                },
+                                {
+                                    case: {
+                                        $and: [{
+                                            $gte: [{
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                    },
+                                                    "in": "$$tmp.age"
+                                                }
+                                            }, 29]
+                                        }, {
+                                            $lte: [{
+                                                "$let": {
+                                                    "vars": {
+                                                        "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                                    },
+                                                    "in": "$$tmp.age"
+                                                }
+                                            }, 43]
+                                        }]
+                                    },
+                                    then: "29 - 43 Tahun"
+                                },
+                                {
+                                    case: {
+                                        $gt: [{
                                             "$let": {
                                                 "vars": {
                                                     "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
@@ -564,139 +589,125 @@ export class AccountbalancesService {
                                                 "in": "$$tmp.age"
                                             }
                                         }, 43]
-                                    }]
+                                    },
+                                    then: "> 43 Tahun"
                                 },
-                                then: "29 - 43 Tahun"
+                            ],
+                            "default": "Other"
+                        }
+                    },
+                    age: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
                             },
-                            {
-                                case: {
-                                    $gt: [{
+                            "in": "$$tmp.age"
+                        }
+                    },
+                    username: {
+                        $let: {
+                            "vars": {
+                                userauths: {
+                                    "$arrayElemAt": [{
                                         "$let": {
                                             "vars": {
                                                 "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
                                             },
-                                            "in": "$$tmp.age"
+                                            "in": "$$tmp.userauths"
                                         }
-                                    }, 43]
-                                },
-                                then: "> 43 Tahun"
-                            },
-                        ],
-                        "default": "Other"
-                    }
-                },
-                age: {
-                    "$let": {
-                        "vars": {
-                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                        },
-                        "in": "$$tmp.age"
-                    }
-                },
-                username: {
-                    $let: {
-                        "vars": {
-                            userauths: {
-                                "$arrayElemAt": [{
-                                    "$let": {
-                                        "vars": {
-                                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                        },
-                                        "in": "$$tmp.userauths"
-                                    }
-                                }, 0]
-                            }
-                        },
-                        "in": "$$userauths.username"
-                    }
-                },
-                lokasiId: {
-                    "$let": {
-                        "vars": {
-                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                        },
-                        "in": "$$tmp.states.$id"
-                    }
-                },
-                lokasi: {
-                    $let: {
-                        "vars": {
-                            areas: {
-                                "$arrayElemAt": [{
-                                    "$let": {
-                                        "vars": {
-                                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                        },
-                                        "in": "$$tmp.areas"
-                                    }
-                                }, 0]
-                            }
-                        },
-                        "in": "$$areas.stateName"
-                    }
-                },
-                interest: {
-                    $map: {
-                        input: {
-                            $map: {
-                                input: {
-                                    "$let": {
-                                        "vars": {
-                                            "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                        },
-                                        "in": "$$tmp.interests"
-                                    }
-                                },
-                                in: {
-                                    $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
-                                },
-                            }
-                        },
-                        in: "$$this.v"
-                    }
-                },
-                useradsId: {
-                    "$let": {
-                        "vars": {
-                            "tmp": { "$arrayElemAt": ["$userads_data", 0] },
-                        },
-                        "in": "$$tmp._id"
-                    }
-                },
-                commonality: {
-                    $cond: {
-                        if: {
-                            $and: [{
-                                "$let": {
-                                    "vars": {
-                                        "tmp": { "$arrayElemAt": ["$userads_data", 0] },
-                                    },
-                                    "in": "$$tmp.scoreTotal"
+                                    }, 0]
                                 }
-                            }, {
-                                $ne: [{
+                            },
+                            "in": "$$userauths.username"
+                        }
+                    },
+                    lokasiId: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                            },
+                            "in": "$$tmp.states.$id"
+                        }
+                    },
+                    lokasi: {
+                        $let: {
+                            "vars": {
+                                areas: {
+                                    "$arrayElemAt": [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.areas"
+                                        }
+                                    }, 0]
+                                }
+                            },
+                            "in": "$$areas.stateName"
+                        }
+                    },
+                    interest: {
+                        $map: {
+                            input: {
+                                $map: {
+                                    input: {
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
+                                            },
+                                            "in": "$$tmp.interests"
+                                        }
+                                    },
+                                    in: {
+                                        $arrayElemAt: [{ $objectToArray: "$$this" }, 1]
+                                    },
+                                }
+                            },
+                            in: "$$this.v"
+                        }
+                    },
+                    useradsId: {
+                        "$let": {
+                            "vars": {
+                                "tmp": { "$arrayElemAt": ["$userads_data", 0] },
+                            },
+                            "in": "$$tmp._id"
+                        }
+                    },
+                    commonality: {
+                        $cond: {
+                            if: {
+                                $and: [{
                                     "$let": {
                                         "vars": {
                                             "tmp": { "$arrayElemAt": ["$userads_data", 0] },
                                         },
                                         "in": "$$tmp.scoreTotal"
                                     }
-                                }, ""]
-                            }]
-                        },
-                        then: {
-                            "$let": {
-                                "vars": {
-                                    "tmp": { "$arrayElemAt": ["$userads_data", 0] },
-                                },
-                                "in": "$$tmp.scoreTotal"
-                            }
-                        },
-                        else: 0
-                    }
-                },
-            }
-        },);
+                                }, {
+                                    $ne: [{
+                                        "$let": {
+                                            "vars": {
+                                                "tmp": { "$arrayElemAt": ["$userads_data", 0] },
+                                            },
+                                            "in": "$$tmp.scoreTotal"
+                                        }
+                                    }, ""]
+                                }]
+                            },
+                            then: {
+                                "$let": {
+                                    "vars": {
+                                        "tmp": { "$arrayElemAt": ["$userads_data", 0] },
+                                    },
+                                    "in": "$$tmp.scoreTotal"
+                                }
+                            },
+                            else: 0
+                        }
+                    },
+                }
+            },);
         //------------PUSH MATCH END------------
         if (andFilter.length > 0) {
             paramaggregate.push({ $match });
@@ -727,7 +738,7 @@ export class AccountbalancesService {
                 "$limit": limit
             });
         }
-        //console.log(JSON.stringify(paramaggregate));
+        console.log(JSON.stringify(paramaggregate));
         const query = await this.accountbalancesModel.aggregate(paramaggregate);
         // const query = await this.accountbalancesModel.aggregate([
         //     {
@@ -1206,6 +1217,15 @@ export class AccountbalancesService {
 
     async create(CreateAccountbalancesDto: CreateAccountbalancesDto): Promise<Accountbalances> {
         let data = await this.accountbalancesModel.create(CreateAccountbalancesDto);
+
+        if (!data) {
+            throw new Error('Todo is not found!');
+        }
+        return data;
+    }
+
+    async create_new(CreateAccountbalances: CreateAccountbalances): Promise<Accountbalances> {
+        let data = await this.accountbalancesModel.create(CreateAccountbalances);
 
         if (!data) {
             throw new Error('Todo is not found!');
@@ -1866,31 +1886,43 @@ export class AccountbalancesService {
                     preserveNullAndEmptyArrays: true
                 }
             },
-
             {
                 $project: {
                     kredit: 1,
+                    idtrans: 1,
+                    adsId: '$adsdata._id',
+                    skipTime: '$adsdata.skipTime',
                     type: '$adsdata.type',
                     idApsara: '$adsdata.idApsara',
                     duration: '$adsdata.duration',
                     description: '$adsdata.description',
                     timestamp: 1,
-                    datatype: { $arrayElemAt: ['$adsdata.typesdata', 0] },
-
-
+                    datatype: {
+                        $arrayElemAt: ['$adsdata.typesdata', 0]
+                    },
+                    "mediaBasePath": '$adsdata.mediaBasePath',
+                    "mediaUri": '$adsdata.mediaUri',
+                    "mediaThumBasePath": '$adsdata.mediaThumBasePath',
+                    "mediaThumUri": '$adsdata.mediaThumUri'
                 }
             },
             {
                 $project: {
+                    adsId: 1,
                     kredit: 1,
+                    idtrans: 1,
+                    skipTime: 1,
                     type: 1,
                     idApsara: 1,
                     duration: 1,
                     description: 1,
                     timestamp: 1,
                     from: '$datatype.nameType',
-                    status: "Recieved Successfully"
-
+                    status: "Recieved Successfully",
+                    mediaBasePath: 1,
+                    "mediaUri": 1,
+                    "mediaThumBasePath": 1,
+                    "mediaThumUri": 1
                 }
             }
 
@@ -1909,6 +1941,7 @@ export class AccountbalancesService {
         var apsara = null;
         var idapsaradefine = null;
         var apsaradefine = null;
+        var skipTime = null;
         for (var i = 0; i < dataquery.length; i++) {
             try {
                 idapsara = dataquery[i].idApsara;
@@ -1916,6 +1949,15 @@ export class AccountbalancesService {
                 idapsara = "";
             }
 
+            try {
+                skipTime = dataquery[i].skipTime;
+            } catch (e) {
+                skipTime = null;
+            }
+
+            if (skipTime == null && skipTime == undefined) {
+                skipTime = 0;
+            }
 
             if (idapsara === undefined || idapsara === "" || idapsara === null || idapsara === "other") {
                 idapsaradefine = "";
@@ -1928,15 +1970,16 @@ export class AccountbalancesService {
             if (idapsara === "") {
 
             } else {
-                if (type === "image") {
+                if (type === "Image") {
 
-                    try {
-                        datanew = await this.postContentService.getImageApsara(pict);
-                    } catch (e) {
-                        datanew = [];
+                    idapsaradefine = "konak";
+                    datanew = {
+                        "ImageInfo": [{
+                            URL: dataquery[i].mediaThumUri
+                        }]
                     }
                 }
-                else if (type === "video") {
+                else if (type === "Video") {
                     try {
                         datanew = await this.postContentService.getVideoApsara(pict);
                     } catch (e) {
@@ -1955,6 +1998,7 @@ export class AccountbalancesService {
                     "from": dataquery[i].from,
                     "status": dataquery[i].status,
                     "apsaraId": idapsaradefine,
+                    "skipTime": skipTime,
                     "media": datanew
 
                 };
@@ -1967,7 +2011,7 @@ export class AccountbalancesService {
         return data;
     }
 
-    async getIncomeByDate(startdate:string){
+    async getIncomeByDate(startdate: string) {
         const mongoose = require('mongoose');
         var iddata = mongoose.Types.ObjectId("62144381602c354635ed786a");
         var before = new Date(startdate).toISOString().split("T")[0];
@@ -1981,8 +2025,8 @@ export class AccountbalancesService {
                 {
                     timestamp:
                     {
-                        "$gte":before,
-                        "$lte":today
+                        "$gte": before,
+                        "$lte": today
                     },
                     iduser: iddata
                 }
@@ -1993,11 +2037,11 @@ export class AccountbalancesService {
                     timestamp:
                     {
                         "$substr":
-                        [
-                            "$timestamp", 0, 10
-                        ]
+                            [
+                                "$timestamp", 0, 10
+                            ]
                     },
-                    kredit:1
+                    kredit: 1
                 }
             },
             {
@@ -2005,7 +2049,7 @@ export class AccountbalancesService {
                 {
                     _id:
                     {
-                        "$dateFromString": 
+                        "$dateFromString":
                         {
                             "format": "%Y-%m-%d",
                             "dateString": "$timestamp"
@@ -2013,45 +2057,45 @@ export class AccountbalancesService {
                     },
                     totalperhari:
                     {
-                        "$sum":1
+                        "$sum": 1
                     },
                     totalpendapatanperhari:
                     {
-                        "$sum":"$kredit"
+                        "$sum": "$kredit"
                     }
                 }
             },
             {
                 "$project":
                 {
-                    _id:1,
-                    totalperhari:1,
-                    totalpendapatanperhari:1,
+                    _id: 1,
+                    totalperhari: 1,
+                    totalpendapatanperhari: 1,
                 }
             },
             {
                 "$unwind":
                 {
-                    path:"$_id"
+                    path: "$_id"
                 }
             },
             {
                 "$sort":
                 {
-                    _id:1 
+                    _id: 1
                 }
             },
             {
                 "$group":
                 {
-                    _id:null,
+                    _id: null,
                     total:
                     {
-                        "$sum":"$totalpendapatanperhari"
+                        "$sum": "$totalpendapatanperhari"
                     },
                     totaldata:
                     {
-                        "$sum":"$totalperhari"
+                        "$sum": "$totalperhari"
                     },
                     resultdata:
                     {
@@ -2060,78 +2104,15 @@ export class AccountbalancesService {
                             _id:
                             {
                                 "$substr":
-                                [
-                                {
-                                    "$toString":"$_id"
-                                },0,10
-                                ]
+                                    [
+                                        {
+                                            "$toString": "$_id"
+                                        }, 0, 10
+                                    ]
                             },
-                            totaldata:"$totalperhari",
-                            totalpendapatanperhari:"$totalpendapatanperhari"
+                            totaldata: "$totalperhari",
+                            totalpendapatanperhari: "$totalpendapatanperhari"
                         }
-                    }
-                }
-            }
-        ]);   
-        
-        return query;
-    }
-
-    async getTotalPendapatan(start: string, end:string)
-    {
-        const mongoose = require('mongoose');
-        var iddata = mongoose.Types.ObjectId("62144381602c354635ed786a");
-        var before = new Date(start).toISOString().split("T")[0];
-        var input = new Date(end);
-        input.setDate(input.getDate() + 1);
-        var today = new Date(input).toISOString().split("T")[0];
-        
-        var query = await this.accountbalancesModel.aggregate([
-            {
-                "$match":
-                {
-                    iduser:
-                    {
-                        "$eq":iddata
-                    },
-                    timestamp:
-                    {
-                        "$gte": before,
-                        "$lte": today,
-                    },
-                    "$or":
-                    [
-                        {
-                            description:
-                            {
-                                "$regex":"sell voucher",
-                                "$options":"i"
-                            },
-                        },
-                        {
-                            description:
-                            {
-                                "$regex":"Admin Charge",
-                                "$options":"i"
-                            },
-                        },
-                        {
-                            description:
-                            {
-                                "$regex":"sell boost",
-                                "$options":"i"
-                            },
-                        },
-                    ]
-                },
-            },
-            {
-                "$group":
-                {
-                    _id:null,
-                    total:
-                    {
-                        "$sum":"$kredit"
                     }
                 }
             }
@@ -2140,22 +2121,83 @@ export class AccountbalancesService {
         return query;
     }
 
-    async getTotalPendapatanVoucher(start:string, end:string)
-    {
+    async getTotalPendapatan(start: string, end: string) {
         const mongoose = require('mongoose');
         var iddata = mongoose.Types.ObjectId("62144381602c354635ed786a");
         var before = new Date(start).toISOString().split("T")[0];
         var input = new Date(end);
         input.setDate(input.getDate() + 1);
         var today = new Date(input).toISOString().split("T")[0];
-        
+
         var query = await this.accountbalancesModel.aggregate([
             {
                 "$match":
                 {
                     iduser:
                     {
-                        "$eq":iddata
+                        "$eq": iddata
+                    },
+                    timestamp:
+                    {
+                        "$gte": before,
+                        "$lte": today,
+                    },
+                    "$or":
+                        [
+                            {
+                                description:
+                                {
+                                    "$regex": "sell voucher",
+                                    "$options": "i"
+                                },
+                            },
+                            {
+                                description:
+                                {
+                                    "$regex": "Admin Charge",
+                                    "$options": "i"
+                                },
+                            },
+                            {
+                                description:
+                                {
+                                    "$regex": "sell boost",
+                                    "$options": "i"
+                                },
+                            },
+                        ]
+                },
+            },
+            {
+                "$group":
+                {
+                    _id: null,
+                    total:
+                    {
+                        "$sum": "$kredit"
+                    }
+                }
+            }
+        ]);
+
+        return query;
+    }
+
+    async getTotalPendapatanVoucher(start: string, end: string) {
+        const mongoose = require('mongoose');
+        var iddata = mongoose.Types.ObjectId("62144381602c354635ed786a");
+        var before = new Date(start).toISOString().split("T")[0];
+        var input = new Date(end);
+        input.setDate(input.getDate() + 1);
+        var today = new Date(input).toISOString().split("T")[0];
+
+        var query = await this.accountbalancesModel.aggregate([
+            {
+                "$match":
+                {
+                    iduser:
+                    {
+                        "$eq": iddata
                     },
                     timestamp:
                     {
@@ -2164,8 +2206,8 @@ export class AccountbalancesService {
                     },
                     description:
                     {
-                        "$regex":"sell voucher",
-                        "$options":"i"
+                        "$regex": "sell voucher",
+                        "$options": "i"
                     },
                 },
             },
@@ -2175,11 +2217,11 @@ export class AccountbalancesService {
                     createdAt:
                     {
                         "$substr":
-                        [
-                            "$timestamp", 0, 10
-                        ]
+                            [
+                                "$timestamp", 0, 10
+                            ]
                     },
-                    kredit:1
+                    kredit: 1
                 }
             },
             {
@@ -2187,7 +2229,7 @@ export class AccountbalancesService {
                 {
                     _id:
                     {
-                        "$dateFromString": 
+                        "$dateFromString":
                         {
                             "format": "%Y-%m-%d",
                             "dateString": "$createdAt"
@@ -2195,41 +2237,41 @@ export class AccountbalancesService {
                     },
                     totalperhari:
                     {
-                        "$sum":1
+                        "$sum": 1
                     },
                     totalpendapatanperhari:
                     {
-                        "$sum":"$kredit"
+                        "$sum": "$kredit"
                     }
                 }
             },
             {
                 "$project":
                 {
-                    _id:1,
-                    totalperhari:1,
-                    totalpendapatanperhari:1,
+                    _id: 1,
+                    totalperhari: 1,
+                    totalpendapatanperhari: 1,
                 }
             },
             {
                 "$unwind":
                 {
-                    path:"$_id"
+                    path: "$_id"
                 }
             },
             {
                 "$sort":
                 {
-                    _id:1 
+                    _id: 1
                 }
             },
             {
                 "$group":
                 {
-                    _id:null,
+                    _id: null,
                     total:
                     {
-                        "$sum":"$totalpendapatanperhari"
+                        "$sum": "$totalpendapatanperhari"
                     },
                     resultdata:
                     {
@@ -2238,14 +2280,14 @@ export class AccountbalancesService {
                             _id:
                             {
                                 "$substr":
-                                [
-                                {
-                                    "$toString":"$_id"
-                                },0,10
-                                ]
+                                    [
+                                        {
+                                            "$toString": "$_id"
+                                        }, 0, 10
+                                    ]
                             },
-                            totaldata:"$totalperhari",
-                            totalpendapatanperhari:"$totalpendapatanperhari"
+                            totaldata: "$totalperhari",
+                            totalpendapatanperhari: "$totalpendapatanperhari"
                         }
                     }
                 }
@@ -2255,8 +2297,7 @@ export class AccountbalancesService {
         return query;
     }
 
-    async getTotalPendapatanJualBeli(start:string, end:string)
-    {
+    async getTotalPendapatanJualBeli(start: string, end: string) {
         const mongoose = require('mongoose');
         var iddata = mongoose.Types.ObjectId("62144381602c354635ed786a");
         var before = new Date(start).toISOString().split("T")[0];
@@ -2270,11 +2311,11 @@ export class AccountbalancesService {
                 {
                     timestamp:
                     {
-                        "$gte":before,
-                        "$lte":today
+                        "$gte": before,
+                        "$lte": today
                     },
                     iduser: iddata,
-                    type:"sell"
+                    type: "sell"
                 }
             },
             {
@@ -2283,11 +2324,11 @@ export class AccountbalancesService {
                     createdAt:
                     {
                         "$substr":
-                        [
-                            "$timestamp", 0, 10
-                        ]
+                            [
+                                "$timestamp", 0, 10
+                            ]
                     },
-                    kredit:1
+                    kredit: 1
                 }
             },
             {
@@ -2295,7 +2336,7 @@ export class AccountbalancesService {
                 {
                     _id:
                     {
-                        "$dateFromString": 
+                        "$dateFromString":
                         {
                             "format": "%Y-%m-%d",
                             "dateString": "$createdAt"
@@ -2303,41 +2344,41 @@ export class AccountbalancesService {
                     },
                     totalperhari:
                     {
-                        "$sum":1
+                        "$sum": 1
                     },
                     totalpendapatanperhari:
                     {
-                        "$sum":"$kredit"
+                        "$sum": "$kredit"
                     }
                 }
             },
             {
                 "$project":
                 {
-                    _id:1,
-                    totalperhari:1,
-                    totalpendapatanperhari:1,
+                    _id: 1,
+                    totalperhari: 1,
+                    totalpendapatanperhari: 1,
                 }
             },
             {
                 "$unwind":
                 {
-                    path:"$_id"
+                    path: "$_id"
                 }
             },
             {
                 "$sort":
                 {
-                    _id:1 
+                    _id: 1
                 }
             },
             {
                 "$group":
                 {
-                    _id:null,
+                    _id: null,
                     total:
                     {
-                        "$sum":"$totalpendapatanperhari"
+                        "$sum": "$totalpendapatanperhari"
                     },
                     resultdata:
                     {
@@ -2346,14 +2387,14 @@ export class AccountbalancesService {
                             _id:
                             {
                                 "$substr":
-                                [
-                                {
-                                    "$toString":"$_id"
-                                },0,10
-                                ]
+                                    [
+                                        {
+                                            "$toString": "$_id"
+                                        }, 0, 10
+                                    ]
                             },
-                            totaldata:"$totalperhari",
-                            totalpendapatanperhari:"$totalpendapatanperhari"
+                            totaldata: "$totalperhari",
+                            totalpendapatanperhari: "$totalpendapatanperhari"
                         }
                     }
                 }

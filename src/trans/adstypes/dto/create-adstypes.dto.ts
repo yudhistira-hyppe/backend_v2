@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 export class CreateAdstypesDto {
 
 
@@ -27,5 +29,6 @@ export class CreateAdstypesDto {
 
     creditValue: number;
     AdsSkip: number;
+    idRewards: mongoose.Types.ObjectId;
 
 }

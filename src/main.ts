@@ -14,10 +14,11 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  //app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe());
   // const app = await NestFactory.create(AppModule, {
   //   httpsOptions,
   // });
+  //app.useGlobalPipes(new ValidationPipe());
   const configService: ConfigService = app.get(ConfigService);
   const adminConfig: ServiceAccount = {
     "projectId": configService.get<string>('FIREBASE_PROJECT_ID'),

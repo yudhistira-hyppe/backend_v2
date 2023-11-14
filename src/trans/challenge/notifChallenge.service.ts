@@ -21,7 +21,7 @@ export class notifChallengeService {
     }
 
     async findChild(id: string): Promise<notifChallenge[]> {
-        return this.notifChallengeModel.find({ challengeId: new Types.ObjectId(id) }).exec();
+        return this.notifChallengeModel.find({ challengeID: new Types.ObjectId(id) }).exec();
     }
 
     async find(): Promise<notifChallenge[]> {
@@ -41,8 +41,8 @@ export class notifChallengeService {
         return data;
     }
 
-    async updateStatussend(id: string, email: string) {
-        let data = await this.notifChallengeModel.updateOne({ "_id": id, "email": email },
+    async updateStatussend(id: string) {
+        let data = await this.notifChallengeModel.updateOne({ "_id": id },
             {
                 $set: {
                     "isSend": true,
@@ -70,6 +70,70 @@ export class notifChallengeService {
         var pipeline = [];
         pipeline.push(
             {
+                $set: {
+                    "timenow":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [
+                                    new Date(),
+                                    25140000
+                                ]
+                            }
+                        }
+                    },
+                    "timenowplus":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [
+                                    new Date(),
+                                    25260000
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+
+                            {
+                                $expr:
+                                {
+                                    $gte:
+                                        [
+                                            "$timenow",
+
+                                            "$datetime",
+
+                                        ]
+                                },
+
+                            },
+                            {
+                                $expr:
+                                {
+                                    $eq:
+                                        [
+                                            "$isSend",
+
+                                            false,
+
+                                        ]
+                                },
+
+                            },
+
+                        ]
+                }
+            },
+            {
                 $unwind: {
                     path: '$userID',
                     preserveNullAndEmptyArrays: true
@@ -93,18 +157,243 @@ export class notifChallengeService {
                     "ranking": "$userID.ranking",
                     "title": "$userID.title",
                     "notification": "$userID.notification",
+                    "titleEN": "$userID.titleEN",
+                    "notificationEN": "$userID.notificationEN",
                     "challengeID": 1,
                     "subChallengeID": 1,
                     "type": 1,
                     "datetime": 1,
                     "session": 1,
                     "isSend": 1,
-                    "typeChallenge": { $arrayElemAt: ['$challengedata.objectChallenge', 0] },
-
+                    "all": 1,
+                    "typeChallenge": {
+                        $arrayElemAt: ['$challengedata.objectChallenge', 0]
+                    },
+                    timenowplus: '$timenowplus',
+                    timenow: '$timenow',
+                    "titleAsli": "$title",
+                    "description": 1,
                 }
             }
         );
-        var query = await this.notifChallengeModel.aggregate();
+        var query = await this.notifChallengeModel.aggregate(pipeline);
         return query;
+    }
+
+    async listnotifchallengeByid(id: string) {
+        var pipeline = [];
+        pipeline.push(
+            {
+                $set: {
+                    "timenow":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [
+                                    new Date(),
+                                    25140000
+                                ]
+                            }
+                        }
+                    },
+                    "timenowplus":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [
+                                    new Date(),
+                                    25260000
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+
+                            {
+                                $expr:
+                                {
+                                    $gte:
+                                        [
+                                            "$timenow",
+
+                                            "$datetime",
+
+                                        ]
+                                },
+
+                            },
+                            {
+                                $expr:
+                                {
+                                    $eq:
+                                        [
+                                            "$isSend",
+
+                                            false,
+
+                                        ]
+                                },
+
+                            },
+
+                        ]
+                }
+            },
+            {
+                $unwind: {
+                    path: '$userID',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: 'challenge',
+                    localField: 'challengeID',
+                    foreignField: '_id',
+                    as: 'challengedata',
+
+                },
+
+            },
+            {
+                $project: {
+                    "idUser": "$userID.idUser",
+                    "email": "$userID.email",
+                    "username": "$userID.username",
+                    "ranking": "$userID.ranking",
+                    "title": "$userID.title",
+                    "notification": "$userID.notification",
+                    "titleEN": "$userID.titleEN",
+                    "notificationEN": "$userID.notificationEN",
+                    "challengeID": 1,
+                    "subChallengeID": 1,
+                    "type": 1,
+                    "datetime": 1,
+                    "session": 1,
+                    "isSend": 1,
+                    "all": 1,
+                    "typeChallenge": {
+                        $arrayElemAt: ['$challengedata.objectChallenge', 0]
+                    },
+                    timenowplus: '$timenowplus',
+                    timenow: '$timenow',
+                    "titleAsli": "$title",
+                    "description": 1,
+                }
+            },
+            { $match: { "_id": new Types.ObjectId(id) } }
+        );
+        var query = await this.notifChallengeModel.aggregate(pipeline);
+        return query;
+    }
+
+    async findbyChallengeandSub(idchallenge: string, subchallenge: string) {
+        var mongo = require('mongoose');
+        var result = await this.notifChallengeModel.aggregate([
+            {
+                $set: {
+                    "timenow":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [
+                                    new Date(),
+                                    25140000
+                                ]
+                            }
+                        }
+                    },
+                    "timenowplus":
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [
+                                    new Date(),
+                                    25260000
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+                            {
+                                "challengeID": mongo.Types.ObjectId(idchallenge)
+                            },
+                            {
+                                "subChallengeID": mongo.Types.ObjectId(subchallenge)
+                            },
+                            {
+                                "isSend": false
+                            },
+                            {
+                                "all": 1
+                            },
+                            {
+                                $expr:
+                                {
+                                    $gte:
+                                        [
+                                            "$timenow",
+
+                                            "$datetime",
+
+                                        ]
+                                },
+
+                            },
+                            {
+                                $expr:
+                                {
+                                    $eq:
+                                        [
+                                            "$isSend",
+
+                                            false,
+
+                                        ]
+                                },
+
+                            },
+                            // {
+                            //     "$or":
+                            //         [
+                            //             {
+                            //                 "type": "akanDatang"
+                            //             },
+                            //             {
+                            //                 "type": "challengeDimulai"
+                            //             }
+                            //         ]
+                            // }
+                        ]
+                }
+            },
+            {
+                "$sort":
+                {
+                    "datetime": 1
+                }
+            },
+            {
+                "$limit": 1
+            }
+        ]);
+
+        return result;
     }
 }

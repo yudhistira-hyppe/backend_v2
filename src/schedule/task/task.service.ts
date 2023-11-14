@@ -1,12 +1,15 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
 import { PostContentService } from "src/content/posts/postcontent.service";
+import { ChallengeService } from "src/trans/challenge/challenge.service";
+import { TransactionsService } from "src/trans/transactions/transactions.service";
 
 
 @Injectable()
 export class TaskService {
   constructor(
-    private readonly postContentService: PostContentService,
+    private readonly challengeService: ChallengeService,
+    private readonly transactionsService: TransactionsService,
   ) { }
 
 
@@ -17,12 +20,32 @@ export class TaskService {
   //   this.logger.debug('Called when the current second is 45');
   // }
 
-  @Cron('0 0 23 * * *')
-  seaweedJob() {
-    this.logger.debug('SEAWEED JOB START');
-    //this.postContentService.cronJobSeaweedProfileStart();
-    //this.postContentService.cronJobSeaweedPictStart();
-    //this.postContentService.cronJobSeaweedVidStart();
-    //this.postContentService.cronJobSeaweedDiariesStart();
+  // @Cron('* */5 * * * *')
+  // challengeJob() {
+  //   this.logger.debug('Challenge JOB START userbadge');
+  //   //this.challengeService.userbadge();
+  //   // this.logger.debug('Challenge JOB START updateUserbadge');
+  //   this.challengeService.updateBadgeex();
+  //   this.challengeService.updateSubchallengeex();
+  //   // this.challengeService.sendNotifeChallenge();
+  //   //this.postContentService.cronJobSeaweedProfileStart();
+  //   //this.postContentService.cronJobSeaweedPictStart();
+  //   //this.postContentService.cronJobSeaweedVidStart();
+  //   //this.postContentService.cronJobSeaweedDiariesStart();
+  // }
+
+  @Cron('* */7 * * * *')
+  challengeJob2() {
+    this.logger.debug('Challenge JOB START');
+    this.challengeService.sendNotifeChallenge();
+    this.challengeService.updateBadgeex();
+    this.challengeService.updateSubchallengeex();
+
+  }
+
+  @Cron('* */10 * * * *')
+  ceckStatus() {
+    this.logger.debug('DISBURSEMENT JOB START');
+    this.transactionsService.ceckStatusDisbursement();
   }
 }

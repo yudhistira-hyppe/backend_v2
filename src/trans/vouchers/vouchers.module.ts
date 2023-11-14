@@ -8,10 +8,12 @@ import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { SettingsModule } from '../settings/settings.module';
 import { LogapisModule } from '../logapis/logapis.module';
 import { UtilsModule } from 'src/utils/utils.module';
+import { AdsPriceCreditsModule } from '../adsv2/adspricecredits/adspricecredits.module';
 @Module({
 
     imports: [
         ConfigModule.forRoot(), UserbasicsModule, SettingsModule, LogapisModule, UtilsModule,
+        AdsPriceCreditsModule,
         MongooseModule.forFeature([{ name: Vouchers.name, schema: VouchersSchema }], 'SERVER_FULL')
     ],
     controllers: [VouchersController],

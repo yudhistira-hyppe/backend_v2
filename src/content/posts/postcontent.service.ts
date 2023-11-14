@@ -1340,6 +1340,7 @@ export class PostContentService {
     var pd = new PostData();
     pd.postID = String(apost.postID);
     pd.email = String(apost.email);
+    pd.stiker = apost.stiker;
     res.data = pd;
 
     return res;
@@ -3526,6 +3527,7 @@ export class PostContentService {
     PostData_.comment = [];
     PostData_.comments = 0;
     PostData_.reportedStatus = Posts_.reportedStatus;
+    PostData_.stiker = Posts_.stiker;
 
     //PRIPACY
     let privacy = new Privacy();

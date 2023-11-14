@@ -52,5 +52,7 @@ export class AdsType {
     creditValue: number;
     @Prop()
     AdsSkip: number;
+    @Prop()
+    idRewards: mongoose.Types.ObjectId;
 }
 export const AdsTypeSchema = SchemaFactory.createForClass(AdsType);

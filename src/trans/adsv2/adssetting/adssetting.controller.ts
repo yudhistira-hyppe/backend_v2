@@ -17,6 +17,8 @@ import { AdsObjectivitasDto } from '../adsobjectivitas/dto/adsobjectivitas.dto';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { AdsPriceCreditsService } from '../adspricecredits/adspricecredits.service';
 import { AdsPriceCredits } from '../adspricecredits/schema/adspricecredits.schema';
+import { AdsRewardsService } from '../adsrewards/adsrewards.service';
+import { AdsRewards } from '../adsrewards/schema/adsrewards.schema';
 
 @Controller('api/adsv2/setting')
 export class AdsSettingController {
@@ -31,6 +33,7 @@ export class AdsSettingController {
         private readonly adsObjectivitasService: AdsObjectivitasService,
         private readonly logapiSS: LogapisService,
         private readonly adsPriceCreditsService: AdsPriceCreditsService,
+        private readonly adsRewardsService: AdsRewardsService, 
         private readonly errorHandler: ErrorHandler) { }
 
     @UseGuards(JwtAuthGuard)
@@ -135,8 +138,11 @@ export class AdsSettingController {
             var getSetting_Objectivitas_Consideration = await this.adsObjectivitasService.findOne(_id_Objectivitas_Consideration);
             var getSetting_InContentAds = await this.adsTypeService.findOne(_id_InContentAds);
             var getSetting_InBetweenAds = await this.adsTypeService.findOne(_id_InBetweenAds);
-            var getSetting_PopUpAds = await this.adsTypeService.findOne(_id_PopUpAds);
+            var getSetting_PopUpAds = await this.adsTypeService.findOne(_id_PopUpAds); 
             var getSetting_CreditPrice = await this.adsPriceCreditsService.findStatusActive();
+            var getSetting_Rewards_InContentAds = await this.adsRewardsService.findStatusActive(_id_InContentAds);
+            var getSetting_Rewards_InBetweenAds = await this.adsRewardsService.findStatusActive(_id_InBetweenAds);
+            var getSetting_Rewards_PopUpAds = await this.adsRewardsService.findStatusActive(_id_PopUpAds);
             var getSetting_AdsDurationMin = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsDurationMin));
             var getSetting_AdsDurationMax = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsDurationMax));
             var getSetting_AdsPlanMin = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsPlanMin));
@@ -261,7 +267,7 @@ export class AdsSettingController {
                 },
                 {
                     Jenis: "EconomySharingInContent",
-                    Nilai: (getSetting_InContentAds.rewards != undefined) ? getSetting_InContentAds.rewards : 0,
+                    Nilai: (getSetting_Rewards_InContentAds.rewardPrice != undefined) ? getSetting_Rewards_InContentAds.rewardPrice : 0,
                     Unit: "Rupiah",
                     Aktifitas: (EconomySharingInContent.length > 0) ? EconomySharingInContent[0].userbasics_data[0].fullName : "",
                     Date: (EconomySharingInContent.length > 0) ? EconomySharingInContent[0].dateTime : "-",
@@ -318,7 +324,7 @@ export class AdsSettingController {
                 },
                 {
                     Jenis: "EconomySharingInBetween",
-                    Nilai: (getSetting_InBetweenAds.rewards != undefined) ? getSetting_InBetweenAds.rewards : 0,
+                    Nilai: (getSetting_Rewards_InBetweenAds.rewardPrice != undefined) ? getSetting_Rewards_InBetweenAds.rewardPrice : 0,
                     Unit: "Rupiah",
                     Aktifitas: (EconomySharingInBetween.length > 0) ? EconomySharingInBetween[0].userbasics_data[0].fullName : "",
                     Date: (EconomySharingInBetween.length > 0) ? EconomySharingInBetween[0].dateTime : "-",
@@ -375,7 +381,7 @@ export class AdsSettingController {
                 },
                 {
                     Jenis: "EconomySharingSPonsorPopUp",
-                    Nilai: (getSetting_PopUpAds.rewards != undefined) ? getSetting_PopUpAds.rewards : 0,
+                    Nilai: (getSetting_Rewards_PopUpAds.rewardPrice != undefined) ? getSetting_Rewards_PopUpAds.rewardPrice : 0,
                     Unit: "Rupiah",
                     Aktifitas: (EconomySharingSPonsorPopUp.length > 0) ? EconomySharingSPonsorPopUp[0].userbasics_data[0].fullName : "",
                     Date: (EconomySharingSPonsorPopUp.length > 0) ? EconomySharingSPonsorPopUp[0].dateTime : "-",
@@ -400,7 +406,7 @@ export class AdsSettingController {
                 },
                 {
                     Jenis: "ConsiderationSimiliarityAudienceMin",
-                    Nilai: (getSetting_Objectivitas_Awareness.percentageMin != undefined) ? getSetting_Objectivitas_Awareness.percentageMin : 0,
+                    Nilai: (getSetting_Objectivitas_Consideration.percentageMin != undefined) ? getSetting_Objectivitas_Consideration.percentageMin : 0,
                     Unit: "Persen",
                     Aktifitas: (ConsiderationSimiliarityAudienceMin.length > 0) ? ConsiderationSimiliarityAudienceMin[0].userbasics_data[0].fullName : "",
                     Date: (ConsiderationSimiliarityAudienceMin.length > 0) ? ConsiderationSimiliarityAudienceMin[0].dateTime : "-",
@@ -796,8 +802,7 @@ export class AdsSettingController {
             (body.InContentAdsSkipTimeMin != undefined) ||
             (body.InContentAdsSkipTimeMax != undefined) ||
             (body.InContentCPAPrice != undefined) ||
-            (body.InContentCPVPrice != undefined) ||
-            (body.EconomySharingInContent != undefined)
+            (body.InContentCPVPrice != undefined) 
         ) {
             var AdsTypeDto_ = new AdsTypeDto();
             //----------------DURATION MIN----------------
@@ -872,21 +877,53 @@ export class AdsSettingController {
                 AdsTypeDto_.CPV = body.InContentCPVPrice;
                 nameActivitas.push("InContentCPVPrice");
             }
-            //----------------ECONOMY SHARING----------------
-            if (body.EconomySharingInContent != undefined) {
-                //VALIDASI PARAM value
-                var ceck_EconomySharingInContent = await this.utilsService.validateParam("EconomySharingInContent", body.EconomySharingInContent, "number")
-                if (ceck_EconomySharingInContent != "") {
-                    await this.errorHandler.generateBadRequestException(
-                        ceck_EconomySharingInContent,
-                    );
-                }
-                AdsTypeDto_.rewards = body.EconomySharingInContent;
-                nameActivitas.push("EconomySharingInContent");
-            }
+            // //----------------ECONOMY SHARING----------------
+            // if (body.EconomySharingInContent != undefined) {
+            //     //VALIDASI PARAM value
+            //     var ceck_EconomySharingInContent = await this.utilsService.validateParam("EconomySharingInContent", body.EconomySharingInContent, "number")
+            //     if (ceck_EconomySharingInContent != "") {
+            //         await this.errorHandler.generateBadRequestException(
+            //             ceck_EconomySharingInContent,
+            //         );
+            //     }
+            //     AdsTypeDto_.rewards = body.EconomySharingInContent;
+            //     nameActivitas.push("EconomySharingInContent");
+            // }
             try {
                 await this.adsTypeService.update(_id_InContentAds, AdsTypeDto_);
             } catch (e) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, ' + e.toString(),
+                );
+            }
+        }
+
+        if ((body.EconomySharingInContent != undefined)){
+            //VALIDASI PARAM value
+            var ceck_EconomySharingInContent = await this.utilsService.validateParam("EconomySharingInContent", body.EconomySharingInContent, "number")
+            if (ceck_EconomySharingInContent != "") {
+                await this.errorHandler.generateBadRequestException(
+                    ceck_EconomySharingInContent,
+                );
+            }
+            var getSetting_InContentAds_ = await this.adsTypeService.findOne(_id_InContentAds);
+            try {
+                nameActivitas.push("EconomySharingInContent");
+                const currentDate = await this.utilsService.getDateTimeISOString()
+                let AdsRewards_ = new AdsRewards();
+                AdsRewards_._id = new mongoose.Types.ObjectId();
+                AdsRewards_.iduser = new mongoose.Types.ObjectId(ubasic._id.toString());
+                AdsRewards_.idAdsType = new mongoose.Types.ObjectId(getSetting_InContentAds_._id.toString());
+                AdsRewards_.nameType = getSetting_InContentAds_.nameType.toString();
+                AdsRewards_.createAt = currentDate;
+                AdsRewards_.updateAt = currentDate;
+                AdsRewards_.status = true;
+                AdsRewards_.rewardPrice = body.EconomySharingInContent;
+                await this.adsRewardsService.create(AdsRewards_);
+            } catch (e) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, ' + e.toString(),
                 );
@@ -900,8 +937,7 @@ export class AdsSettingController {
             (body.InBetweenAdsSkipTimeMin != undefined) ||
             (body.InBetweenAdsSkipTimeMax != undefined) ||
             (body.InBetweenCPAPrice != undefined) ||
-            (body.InBetweenCPVPrice != undefined) ||
-            (body.EconomySharingInBetween != undefined)
+            (body.InBetweenCPVPrice != undefined) 
         ) {
             var AdsTypeDto_ = new AdsTypeDto();
             //----------------DURATION MIN----------------
@@ -977,19 +1013,51 @@ export class AdsSettingController {
                 nameActivitas.push("InBetweenCPVPrice");
             }
             //----------------ECONOMY SHARING----------------
-            if (body.EconomySharingInBetween != undefined) {
-                //VALIDASI PARAM value
-                var ceck_EconomySharingInBetween = await this.utilsService.validateParam("EconomySharingInBetween", body.EconomySharingInBetween, "number")
-                if (ceck_EconomySharingInBetween != "") {
-                    await this.errorHandler.generateBadRequestException(
-                        ceck_EconomySharingInBetween,
-                    );
-                }
-                AdsTypeDto_.rewards = body.EconomySharingInBetween;
-                nameActivitas.push("EconomySharingInBetween");
-            }
+            // if (body.EconomySharingInBetween != undefined) {
+            //     //VALIDASI PARAM value
+            //     var ceck_EconomySharingInBetween = await this.utilsService.validateParam("EconomySharingInBetween", body.EconomySharingInBetween, "number")
+            //     if (ceck_EconomySharingInBetween != "") {
+            //         await this.errorHandler.generateBadRequestException(
+            //             ceck_EconomySharingInBetween,
+            //         );
+            //     }
+            //     AdsTypeDto_.rewards = body.EconomySharingInBetween;
+            //     nameActivitas.push("EconomySharingInBetween");
+            // }
             try {
                 await this.adsTypeService.update(_id_InBetweenAds, AdsTypeDto_);
+            } catch (e) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, ' + e.toString(),
+                );
+            }
+        }
+
+        if ((body.EconomySharingInBetween != undefined)) {
+            //VALIDASI PARAM value
+            var ceck_EconomySharingInBetween = await this.utilsService.validateParam("EconomySharingInBetween", body.EconomySharingInBetween, "number")
+            if (ceck_EconomySharingInBetween != "") {
+                await this.errorHandler.generateBadRequestException(
+                    ceck_EconomySharingInBetween,
+                );
+            }
+            var getSetting_InBetweenAds_ = await this.adsTypeService.findOne(_id_InBetweenAds);
+            try {
+                nameActivitas.push("EconomySharingInBetween");
+                const currentDate = await this.utilsService.getDateTimeISOString()
+                let AdsRewards_ = new AdsRewards();
+                AdsRewards_._id = new mongoose.Types.ObjectId();
+                AdsRewards_.iduser = new mongoose.Types.ObjectId(ubasic._id.toString());
+                AdsRewards_.idAdsType = new mongoose.Types.ObjectId(getSetting_InBetweenAds_._id.toString());
+                AdsRewards_.nameType = getSetting_InBetweenAds_.nameType.toString();
+                AdsRewards_.createAt = currentDate;
+                AdsRewards_.updateAt = currentDate;
+                AdsRewards_.status = true;
+                AdsRewards_.rewardPrice = body.EconomySharingInBetween;
+                await this.adsRewardsService.create(AdsRewards_);
             } catch (e) {
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
@@ -1007,8 +1075,7 @@ export class AdsSettingController {
             (body.PopUpAdsSkipTimeMin != undefined) ||
             (body.PopUpAdsSkipTimeMax != undefined) ||
             (body.PopUpCPAPrice != undefined) ||
-            (body.PopUpCPVPrice != undefined) ||
-            (body.EconomySharingSPonsorPopUp != undefined)
+            (body.PopUpCPVPrice != undefined) 
         ) {
             var AdsTypeDto_ = new AdsTypeDto();
             //----------------DURATION MIN----------------
@@ -1084,19 +1151,51 @@ export class AdsSettingController {
                 nameActivitas.push("PopUpCPVPrice");
             }
             //----------------ECONOMY SHARING----------------
-            if (body.EconomySharingSPonsorPopUp != undefined) {
-                //VALIDASI PARAM value
-                var ceck_EconomySharingSPonsorPopUp = await this.utilsService.validateParam("EconomySharingSPonsorPopUp", body.EconomySharingSPonsorPopUp, "number")
-                if (ceck_EconomySharingSPonsorPopUp != "") {
-                    await this.errorHandler.generateBadRequestException(
-                        ceck_EconomySharingSPonsorPopUp,
-                    );
-                }
-                AdsTypeDto_.rewards = body.EconomySharingSPonsorPopUp;
-                nameActivitas.push("EconomySharingSPonsorPopUp");
-            }
+            // if (body.EconomySharingSPonsorPopUp != undefined) {
+            //     //VALIDASI PARAM value
+            //     var ceck_EconomySharingSPonsorPopUp = await this.utilsService.validateParam("EconomySharingSPonsorPopUp", body.EconomySharingSPonsorPopUp, "number")
+            //     if (ceck_EconomySharingSPonsorPopUp != "") {
+            //         await this.errorHandler.generateBadRequestException(
+            //             ceck_EconomySharingSPonsorPopUp,
+            //         );
+            //     }
+            //     AdsTypeDto_.rewards = body.EconomySharingSPonsorPopUp;
+            //     nameActivitas.push("EconomySharingSPonsorPopUp");
+            // }
             try {
                 await this.adsTypeService.update(_id_PopUpAds, AdsTypeDto_);
+            } catch (e) {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, ' + e.toString(),
+                );
+            }
+        }
+
+        if ((body.EconomySharingSPonsorPopUp != undefined)) {
+            //VALIDASI PARAM value
+            var ceck_EconomySharingSPonsorPopUp = await this.utilsService.validateParam("EconomySharingSPonsorPopUp", body.EconomySharingSPonsorPopUp, "number")
+            if (ceck_EconomySharingSPonsorPopUp != "") {
+                await this.errorHandler.generateBadRequestException(
+                    ceck_EconomySharingSPonsorPopUp,
+                );
+            }
+            var getSetting_PopUpAds_ = await this.adsTypeService.findOne(_id_PopUpAds);
+            try {
+                nameActivitas.push("EconomySharingInBetween");
+                const currentDate = await this.utilsService.getDateTimeISOString()
+                let AdsRewards_ = new AdsRewards();
+                AdsRewards_._id = new mongoose.Types.ObjectId();
+                AdsRewards_.iduser = new mongoose.Types.ObjectId(ubasic._id.toString());
+                AdsRewards_.idAdsType = new mongoose.Types.ObjectId(getSetting_PopUpAds_._id.toString());
+                AdsRewards_.nameType = getSetting_PopUpAds_.nameType.toString();
+                AdsRewards_.createAt = currentDate;
+                AdsRewards_.updateAt = currentDate;
+                AdsRewards_.status = true;
+                AdsRewards_.rewardPrice = body.EconomySharingSPonsorPopUp;
+                await this.adsRewardsService.create(AdsRewards_);
             } catch (e) {
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
@@ -1471,6 +1570,9 @@ export class AdsSettingController {
             var getSetting_InContentAds = await this.adsTypeService.findOne(_id_InContentAds);
             var getSetting_InBetweenAds = await this.adsTypeService.findOne(_id_InBetweenAds);
             var getSetting_PopUpAds = await this.adsTypeService.findOne(_id_PopUpAds);
+            var getSetting_Rewards_InContentAds = await this.adsRewardsService.findStatusActive(_id_InContentAds);
+            var getSetting_Rewards_InBetweenAds = await this.adsRewardsService.findStatusActive(_id_InBetweenAds);
+            var getSetting_Rewards_PopUpAds = await this.adsRewardsService.findStatusActive(_id_PopUpAds);
             var getSetting_CreditPrice = await this.adsPriceCreditsService.findStatusActive();
             var getSetting_AdsDurationMin = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsDurationMin));
             var getSetting_AdsDurationMax = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsDurationMax));
@@ -1587,7 +1689,7 @@ export class AdsSettingController {
                     },
                     {
                         Jenis: "EconomySharingInContent",
-                        Nilai: (getSetting_InContentAds.rewards != undefined) ? getSetting_InContentAds.rewards : 0,
+                        Nilai: (getSetting_Rewards_InContentAds.rewardPrice != undefined) ? getSetting_Rewards_InContentAds.rewardPrice : 0,
                         Unit: "Rupiah",
                         Aktifitas: (EconomySharingInContent.length > 0) ? EconomySharingInContent[0].userbasics_data[0].fullName : "",
                         Date: (EconomySharingInContent.length > 0) ? EconomySharingInContent[0].dateTime : "-",
@@ -1644,7 +1746,7 @@ export class AdsSettingController {
                     },
                     {
                         Jenis: "EconomySharingInBetween",
-                        Nilai: (getSetting_InBetweenAds.rewards != undefined) ? getSetting_InBetweenAds.rewards : 0,
+                        Nilai: (getSetting_Rewards_InBetweenAds.rewardPrice != undefined) ? getSetting_Rewards_InBetweenAds.rewardPrice : 0,
                         Unit: "Rupiah",
                         Aktifitas: (EconomySharingInBetween.length > 0) ? EconomySharingInBetween[0].userbasics_data[0].fullName : "",
                         Date: (EconomySharingInBetween.length > 0) ? EconomySharingInBetween[0].dateTime : "-",
@@ -1701,7 +1803,7 @@ export class AdsSettingController {
                     },
                     {
                         Jenis: "EconomySharingSPonsorPopUp",
-                        Nilai: (getSetting_PopUpAds.rewards != undefined) ? getSetting_PopUpAds.rewards : 0,
+                        Nilai: (getSetting_Rewards_PopUpAds.rewardPrice != undefined) ? getSetting_Rewards_PopUpAds.rewardPrice : 0,
                         Unit: "Rupiah",
                         Aktifitas: (EconomySharingSPonsorPopUp.length > 0) ? EconomySharingSPonsorPopUp[0].userbasics_data[0].fullName : "",
                         Date: (EconomySharingSPonsorPopUp.length > 0) ? EconomySharingSPonsorPopUp[0].dateTime : "-",
@@ -1726,7 +1828,7 @@ export class AdsSettingController {
                     },
                     {
                         Jenis: "ConsiderationSimiliarityAudienceMin",
-                        Nilai: (getSetting_Objectivitas_Awareness.percentageMin != undefined) ? getSetting_Objectivitas_Awareness.percentageMin : 0,
+                        Nilai: (getSetting_Objectivitas_Consideration.percentageMin != undefined) ? getSetting_Objectivitas_Consideration.percentageMin : 0,
                         Unit: "Persen",
                         Aktifitas: (ConsiderationSimiliarityAudienceMin.length > 0) ? ConsiderationSimiliarityAudienceMin[0].userbasics_data[0].fullName : "",
                         Date: (ConsiderationSimiliarityAudienceMin.length > 0) ? ConsiderationSimiliarityAudienceMin[0].dateTime : "-",

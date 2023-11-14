@@ -34,6 +34,8 @@ export class Userchallenges {
     activity: any[];
     @Prop()
     history: any[];
+    @Prop()
+    rejectRemark: any[];
 
 }
 export const UserchallengesSchema = SchemaFactory.createForClass(Userchallenges);

@@ -90,7 +90,8 @@
     "sharp": "^0.31.3",
     "uuid": "^8.3.2",
     "webp-converter": "^2.3.3",
-    "websockets": "^0.2.0"
+    "websockets": "^0.2.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.2.8",

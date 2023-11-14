@@ -13,4 +13,5 @@ export class CreateUserChallengeDto {
     updatedAt: string;    
     activity: any[];
     history: any[];
+    rejectRemark: any[];
 }

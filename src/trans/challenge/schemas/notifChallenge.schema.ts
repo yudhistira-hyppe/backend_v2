@@ -22,6 +22,8 @@ export class notifChallenge {
 
     @Prop()
     datetime: string;
+    @Prop()
+    createdAt: string;
 
     @Prop()
     userID: any[];
@@ -33,6 +35,8 @@ export class notifChallenge {
     isSend: boolean;
     @Prop()
     nameChallenge: string;
+    @Prop()
+    all: number;
 }
 
 export const notifChallengeSchema = SchemaFactory.createForClass(notifChallenge);

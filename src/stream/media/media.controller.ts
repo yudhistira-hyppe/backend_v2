@@ -828,6 +828,8 @@ export class MediaController {
 
                 //Face comparing
                 face_detect_selfiepict = await this.awsService.comparing(data_comparing);
+                console.log(JSON.stringify(face_detect_selfiepict))
+                console.log(face_detect_selfiepict)
                 if (face_detect_selfiepict.FaceMatches.length > 0) {
                     emailuserbasic = datauserbasicsService.email;
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
@@ -2568,7 +2570,7 @@ export class MediaController {
             ];
             try {
                 let data = await this.mediaproofpictsService.updateKyc(id, noktp, nama, tglLahir, tempatLahir, jenisKelamin, "FAILED", kycHandle);
-                await this.userbasicsService.updateStatusKycName(nama, jenisKelamin, email, false, "unverified", tglLahir);
+                await this.userbasicsService.updateStatusKycFailed(email, false, "unverified");
                 await this.utilsService.sendFcmV2(email.toString(), email.toString(), 'KYC', 'REQUEST', 'KYC_REJECT');
 
                 return { response_code: 202, data, messages };

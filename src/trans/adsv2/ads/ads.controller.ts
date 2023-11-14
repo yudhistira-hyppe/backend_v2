@@ -29,6 +29,9 @@ import { CreateAccountbalancesDto } from '../../../trans/accountbalances/dto/cre
 import { AdsBalaceCreditService } from '../adsbalacecredit/adsbalacecredit.service';
 import { AdsPriceCreditsService } from '../adspricecredits/adspricecredits.service';
 import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
+import { UservouchersService } from 'src/trans/uservouchers/uservouchers.service';
+import { CreateUservouchersDto } from 'src/trans/uservouchers/dto/create-uservouchers.dto';
+import { AdsRewardsService } from '../adsrewards/adsrewards.service';
 const sharp = require('sharp');
 
 @Controller('api/adsv2/ads')
@@ -54,6 +57,8 @@ export class AdsController {
         private readonly basic2SS: UserbasicnewService,
         private adsBalaceCreditService: AdsBalaceCreditService,
         private readonly adsPriceCreditsService: AdsPriceCreditsService,
+        private readonly uservouchersService: UservouchersService,
+        private readonly adsRewardsService: AdsRewardsService, 
         private readonly adsService: AdsService) {
         this.locks = new Map();
     }
@@ -275,6 +280,10 @@ export class AdsController {
             );
         }
         AdsDto_.typeAdsID = new mongoose.Types.ObjectId(AdsDto_.typeAdsID.toString());
+        if (await this.utilsService.ceckData(getAdsType)) {
+            AdsDto_.CPA = getAdsType.CPA;
+            AdsDto_.CPV = getAdsType.CPV;
+        }
 
         //VALIDASI PARAM name
         var ceck_name = await this.utilsService.validateParam("name", AdsDto_.name, "string")
@@ -658,6 +667,7 @@ export class AdsController {
             var getSetting_CreditPrice = await this.adsPriceCreditsService.findStatusActive();
             if (await this.utilsService.ceckData(getSetting_CreditPrice)) {
                 AdsDto_.idAdspricecredits = getSetting_CreditPrice._id;
+                AdsDto_.adspricecredits = getSetting_CreditPrice.creditPrice;
             }
             let data = await this.adsService.create(AdsDto_);
             if (AdsDto_.status == "UNDER_REVIEW") {
@@ -766,6 +776,26 @@ export class AdsController {
                     AdsBalaceCreditDto_.kredit = 0;
                     AdsBalaceCreditDto_.type = "USE";
                     AdsBalaceCreditDto_.description = "ADS CREATION";
+
+                    const getUserVoucher = await this.uservouchersService.findUserVouchers(ads.userID.toString());
+
+                    let buyAds = ads.credit;
+                    if (await this.utilsService.ceckData(getUserVoucher)) {
+                        for (let i = 0; i < getUserVoucher.length; i++) {
+                            let sisaKredit = Number(getUserVoucher[i].totalCredit) - Number(getUserVoucher[i].usedCredit);
+                            if (buyAds <= sisaKredit) {
+                                let CreateUservouchersDto_ = new CreateUservouchersDto();
+                                CreateUservouchersDto_.usedCredit = Number(getUserVoucher[i].usedCredit) + Number(buyAds);
+                                await this.uservouchersService.update(getUserVoucher[i]._id.toString(), CreateUservouchersDto_);
+                                break;
+                            } else {
+                                buyAds = buyAds - sisaKredit;
+                                let CreateUservouchersDto_ = new CreateUservouchersDto();
+                                CreateUservouchersDto_.usedCredit = Number(getUserVoucher[i].usedCredit) + Number(sisaKredit);
+                                await this.uservouchersService.update(getUserVoucher[i]._id.toString(), CreateUservouchersDto_);
+                            }
+                        }
+                    }
                 }
                 if ((ads.status == "UNDER_REVIEW") && (AdsDto_.status == "IN_ACTIVE")) {
                     //--------------------INSERT BALANCE KREDIT--------------------
@@ -931,10 +961,11 @@ export class AdsController {
         var end_date = null;
         if (body.end_date != undefined) {
             end_date = new Date(body.end_date);
+            end_date = new Date(end_date.setDate(end_date.getDate() + 1));
         }
 
         try {
-            const ads_dashboard = await this.adsService.dashboard(start_date, end_date);
+            const ads_dashboard = await this.adsService.dashboard2(start_date, end_date);
 
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
@@ -988,6 +1019,7 @@ export class AdsController {
         var end_date = null;
         if (body.end_date != undefined) {
             end_date = new Date(body.end_date);
+            end_date = new Date(end_date.setDate(end_date.getDate() + 1));
         }
 
         try {
@@ -1111,6 +1143,7 @@ export class AdsController {
         var end_date = null;
         if (body.end_date != undefined) {
             end_date = new Date(body.end_date);
+            end_date = new Date(end_date.setDate(end_date.getDate() + 1));
         }
 
         try {
@@ -1512,8 +1545,21 @@ export class AdsController {
         }
         body.type_ads = array_type_ads;
 
+        //----------------START DATE----------------
+        var start_date = null;
+        if (body.start_date != undefined) {
+            start_date = new Date(body.start_date);
+        }
+
+        //----------------END DATE----------------
+        var end_date = null;
+        if (body.end_date != undefined) {
+            end_date = new Date(body.end_date);
+            end_date = new Date(end_date.setDate(end_date.getDate() + 1));
+        }
+
         try {
-            const ads_dashboard = await this.adsService.list(body.userId, body.name_ads, body.start_date, body.end_date, body.type_ads, body.plan_ads, body.status_list, body.page, body.limit, body.sorting);
+            const ads_dashboard = await this.adsService.list(body.userId, body.name_ads, start_date, end_date, body.type_ads, body.plan_ads, body.status_list, body.page, body.limit, body.sorting);
 
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
@@ -1703,8 +1749,31 @@ export class AdsController {
                 CreateUserAdsDto_.scoreGeografis = data_ads[0].scoreGeografis;
                 CreateUserAdsDto_.scoreInterest = data_ads[0].scoreMinat;
                 CreateUserAdsDto_.scoreTotal = data_ads[0].scoreTotal;
+                CreateUserAdsDto_.updateAt = [current_date];
+                CreateUserAdsDto_.statusView = true;
+                CreateUserAdsDto_.viewed = 1;
                 this.userAdsService.create(CreateUserAdsDto_);
+            } else {
+                var data_Update_UserAds = {
+                    $inc: { 'viewed': 1 },
+                    $push: { "updateAt": current_date },
+                }
+                if (((ceckData.viewed != undefined ? ceckData.viewed : 0) + 1) == (data_ads[0].audiensFrekuensi != undefined ? data_ads[0].audiensFrekuensi : 0)) {
+                    data_Update_UserAds["isActive"] = false;
+                }
+                await this.userAdsService.updateData(ceckData._id.toString(), data_Update_UserAds)
             }
+
+            //update Ads
+            var data_Update_Ads = {}
+            if ((data_ads[0].totalView + 1) <= data_ads[0].tayang) {
+                data_Update_Ads["$inc"] = { 'usedCredit': Number(data_ads[0].CPV), 'totalView': 1 };
+            }
+            if (data_ads[0].tayang == (data_ads[0].totalView + 1)) {
+                data_Update_Ads["status"] = "IN_ACTIVE";
+                data_Update_Ads["isActive"] = false;
+            }
+            await this.adsService.updateData(data_ads[0]._id.toString(), data_Update_Ads)
 
             //Get Pict User Ads
             var get_profilePict = null;
@@ -1731,6 +1800,12 @@ export class AdsController {
             data_response['fullName'] = data_userbasic_ads.fullName;
             data_response['email'] = data_userbasic_ads.email;
             data_response['username'] = data_ads[0].username;
+            data_response['avartar'] = data_ads[0].avatar;
+            data_response['scoreUmur'] = data_ads[0].scoreUmur;
+            data_response['scoreKelamin'] = data_ads[0].scoreKelamin;
+            data_response['scoreMinat'] = data_ads[0].scoreMinat;
+            data_response['scoreGeografis'] = data_ads[0].scoreGeografis;
+            data_response['scoreTotal'] = data_ads[0].scoreTotal;
             if (await this.utilsService.ceckData(get_profilePict)) {
                 data_response['avartar'] = {
                     mediaBasePath: (get_profilePict.mediaBasePath != undefined) ? get_profilePict.mediaBasePath : null,
@@ -2130,13 +2205,13 @@ export class AdsController {
         }
 
         //Get CPV
-        if (dataTypeAds.CPV == undefined || dataTypeAds.CPV == undefined) {
+        if (dataTypeAds.CPV == undefined || dataTypeAds.CPA == undefined) {
             AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed typeAds CPV not found' });
             await this.adslogsService.create(AdsLogsDto_);
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
             await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed typeAds CPV not found'
+                'Unabled to proceed typeAds CPV And CPA not found'
             );
         }
 
@@ -2156,7 +2231,7 @@ export class AdsController {
             //update Ads
             var data_Update_Ads = {}
             if ((dataAds.totalView + 1) <= dataAds.tayang) {
-                data_Update_Ads["$inc"] = { 'usedCredit': Number(dataTypeAds.CPV), 'totalView': 1 };
+                data_Update_Ads["$inc"] = { 'usedCredit': Number(dataAds.CPV), 'totalView': 1 };
             }
             if (dataAds.tayang == (dataAds.totalView + 1)) {
                 data_Update_Ads["status"] = "IN_ACTIVE";
@@ -2307,6 +2382,17 @@ export class AdsController {
             );
         }
 
+        const dataRewards = await this.adsRewardsService.findStatusActive(dataAds.typeAdsID.toString());
+        if (!(await this.utilsService.ceckData(dataRewards))) {
+            AdsLogsDto_.responseAds = JSON.stringify({ response: 'Unabled to proceed rewards not found' });
+            await this.adslogsService.create(AdsLogsDto_);
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed rewards not found'
+            );
+        }
+
         //Ceck Data AdsType
         const dataTypeAds = await this.adsTypeService.findOne(dataAds.typeAdsID.toString());
         if (!(await this.utilsService.ceckData(dataTypeAds))) {
@@ -2345,10 +2431,15 @@ export class AdsController {
             //Update User Ads
             var data_Update_UserAds = {
                 statusClick: true,
-                timeViewSecond: Number(AdsAction_.watchingTime),
-                $inc: { 'viewed': 1, 'cliked': 1 },
-                $push: { "updateAt": current_date_string, 'timeView': Number(AdsAction_.watchingTime), "clickTime": current_date_string, },
+                $inc: { 'cliked': 1 },
+                $push: { "clickTime": current_date_string, },
             }
+            // var data_Update_UserAds = {
+            //     statusClick: true,
+            //     timeViewSecond: Number(AdsAction_.watchingTime),
+            //     $inc: { 'viewed': 1, 'cliked': 1 },
+            //     $push: { "updateAt": current_date_string, 'timeView': Number(AdsAction_.watchingTime), "clickTime": current_date_string, },
+            // }
             if (((dataAdsUser.viewed != undefined ? dataAdsUser.viewed : 0) + 1) == (dataAds.audiensFrekuensi != undefined ? dataAds.audiensFrekuensi : 0)) {
                 data_Update_UserAds["isActive"] = false;
             }
@@ -2357,7 +2448,7 @@ export class AdsController {
             //update Ads
             var data_Update_Ads = {}
             if ((dataAds.totalView + 1) <= dataAds.tayang) {
-                data_Update_Ads["$inc"] = { 'usedCredit': Number(dataTypeAds.CPA), 'totalView': 1 };
+                data_Update_Ads["$inc"] = { 'usedCredit': Number(dataAds.CPA), 'totalClick': 1 };
             }
             if (dataAds.tayang == (dataAds.totalView + 1)) {
                 data_Update_Ads["status"] = "IN_ACTIVE";
@@ -2369,7 +2460,7 @@ export class AdsController {
             var CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
             CreateAccountbalancesDto_.iduser = data_userbasic._id;
             CreateAccountbalancesDto_.debet = 0;
-            CreateAccountbalancesDto_.kredit = dataTypeAds.rewards;
+            CreateAccountbalancesDto_.kredit = dataRewards.rewardPrice;
             CreateAccountbalancesDto_.type = "rewards";
             CreateAccountbalancesDto_.timestamp = current_date.toISOString();
             CreateAccountbalancesDto_.description = "rewards form ads view";
@@ -2379,13 +2470,13 @@ export class AdsController {
             //Send Fcm
             var eventType = "TRANSACTION";
             var event = "ADS VIEW";
-            this.utilsService.sendFcmV2(data_userbasic.email.toString(), data_userbasic.email.toString(), eventType, event, "REWARDS", null, null, null, dataTypeAds.rewards.toString());
+            this.utilsService.sendFcmV2(data_userbasic.email.toString(), data_userbasic.email.toString(), eventType, event, "REWARDS", null, null, null, dataRewards.rewardPrice.toString());
 
             //Set Response
             var response = {
                 response_code: 202,
                 data: {
-                    nominal: Number(dataTypeAds.rewards),
+                    nominal: Number(dataRewards.rewardPrice),
                     rewards: true,
                 },
                 messages: {

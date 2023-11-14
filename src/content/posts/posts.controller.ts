@@ -678,7 +678,7 @@ export class PostsController {
       }
     }
     try {
-      datapostchallenge = await this.postchallengeService.findBypostID(body.postID.toString());
+      datapostchallenge = await this.postchallengeService.findBypostID2(body.postID.toString());
     } catch (e) {
       datapostchallenge = null;
     }
@@ -701,6 +701,7 @@ export class PostsController {
         cats = [];
 
       }
+
 
 
 
@@ -792,109 +793,132 @@ export class PostsController {
         startDatetime = datapostchallenge.startDatetime;
         endDatetime = datapostchallenge.endDatetime;
 
-        if (datenow >= new Date(startDatetime) && datenow <= new Date(endDatetime)) {
-          var timestamps_end = await this.utilsService.getDateTimeString();
-          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+        // if (datenow >= new Date(startDatetime) && datenow <= new Date(endDatetime)) {
+        //   // var timestamps_end = await this.utilsService.getDateTimeString();
+        //   // this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
 
-          await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed, content is participating in the challenge',
-          );
-
-
-        } else {
-          if (tags.length > 0) {
-            const stringSet = new Set(tags);
-            const uniqstring = [...stringSet];
-
-            console.log(uniqstring)
-
-            for (let i = 0; i < uniqstring.length; i++) {
-              let id = uniqstring[i];
-
-              let datatag2 = null;
-              try {
-                datatag2 = await this.tagCountService.findOneById(id);
-              } catch (e) {
-                datatag2 = null;
-              }
-
-              let total = 0;
-              if (datatag2 !== null) {
-                let postidlist = datatag2.listdata;
-                total = datatag2.total;
-
-                for (let i = 0; i < postidlist.length; i++) {
-                  if (postidlist[i].postID === body.postID) {
-                    postidlist.splice(i, 1);
-                  }
-                }
-                let tagCountDto_ = new TagCountDto();
-                tagCountDto_.total = total - 1;
-                tagCountDto_.listdata = postidlist;
-                await this.tagCountService.update(id, tagCountDto_);
-              }
+        //   // await this.errorHandler.generateNotAcceptableException(
+        //   //   'Unabled to proceed, content is participating in the challenge',
+        //   // );
 
 
+        // } else {
+        if (tags.length > 0) {
+          const stringSet = new Set(tags);
+          const uniqstring = [...stringSet];
+
+          console.log(uniqstring)
+
+          for (let i = 0; i < uniqstring.length; i++) {
+            let id = uniqstring[i];
+
+            let datatag2 = null;
+            try {
+              datatag2 = await this.tagCountService.findOneById(id);
+            } catch (e) {
+              datatag2 = null;
             }
 
-          }
+            let total = 0;
+            if (datatag2 !== null) {
+              let postidlist = datatag2.listdata;
+              total = datatag2.total;
 
-          //interest
-
-          if (cats.length > 0) {
-            const stringSetin = new Set(cats);
-            const uniqstringin = [...stringSetin];
-
-            console.log(uniqstringin)
-
-            for (let i = 0; i < uniqstringin.length; i++) {
-              let idin = uniqstringin[i];
-
-              let datain = null;
-              try {
-                datain = await this.interestCountService.findOneById(idin);
-              } catch (e) {
-                datain = null;
-              }
-
-              let totalin = 0;
-              if (datain !== null) {
-                let postidlistin = datain.listdata;
-                totalin = datain.total;
-
-                for (let i = 0; i < postidlistin.length; i++) {
-                  if (postidlistin[i].postID === body.postID) {
-                    postidlistin.splice(i, 1);
-                  }
+              for (let i = 0; i < postidlist.length; i++) {
+                if (postidlist[i].postID === body.postID) {
+                  postidlist.splice(i, 1);
                 }
-                let tagCountDto_ = new TagCountDto();
-                tagCountDto_.total = totalin - 1;
-                tagCountDto_.listdata = postidlistin;
-                await this.tagCountService.update(idin, tagCountDto_);
               }
-
-
+              let tagCountDto_ = new TagCountDto();
+              tagCountDto_.total = total - 1;
+              tagCountDto_.listdata = postidlist;
+              await this.tagCountService.update(id, tagCountDto_);
             }
-          }
-          data = await this.postContentService.updatePost(body, headers);
-          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
-          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
-          if (saleAmount > 0) {
-            await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
-            //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
-          }
 
-          var timestamps_end = await this.utilsService.getDateTimeString();
-          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
 
-          return data;
+          }
 
         }
+
+        //interest
+
+        if (cats.length > 0) {
+          const stringSetin = new Set(cats);
+          const uniqstringin = [...stringSetin];
+
+          console.log(uniqstringin)
+
+          for (let i = 0; i < uniqstringin.length; i++) {
+            let idin = uniqstringin[i];
+
+            let datain = null;
+            try {
+              datain = await this.interestCountService.findOneById(idin);
+            } catch (e) {
+              datain = null;
+            }
+
+            let totalin = 0;
+            if (datain !== null) {
+              let postidlistin = datain.listdata;
+              totalin = datain.total;
+
+              for (let i = 0; i < postidlistin.length; i++) {
+                if (postidlistin[i].postID === body.postID) {
+                  postidlistin.splice(i, 1);
+                }
+              }
+              let tagCountDto_ = new TagCountDto();
+              tagCountDto_.total = totalin - 1;
+              tagCountDto_.listdata = postidlistin;
+              await this.tagCountService.update(idin, tagCountDto_);
+            }
+
+
+          }
+        }
+        data = await this.postContentService.updatePost(body, headers);
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+        // if (saleAmount > 0) {
+        //   await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+        //   //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+        // }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
+        let datapostchallenge2 = null;
+        try {
+          datapostchallenge2 = await this.postchallengeService.findOneBypostid(body.postID.toString());
+        } catch (e) {
+          datapostchallenge2 = null;
+        }
+
+        if (datapostchallenge2.length > 0) {
+
+          for (let y = 0; y < datapostchallenge2.length; y++) {
+            let postid = null;
+            let idChallenge = null;
+            let idSubChallenge = null;
+            postid = datapostchallenge2[y].postID;
+            idSubChallenge = datapostchallenge2[y].idSubChallenge;
+            idChallenge = datapostchallenge2[y].idChallenge;
+            await this.PostsService.deletePostChalenge(postid, idChallenge, idSubChallenge);
+          }
+
+        }
+
+
+
+
+
+        return data;
+
+        //}
       }
 
-
     }
-
     else {
 
       var datapostawal = null;
@@ -1219,7 +1243,8 @@ export class PostsController {
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
 
         return data;
-      } else {
+      }
+      else {
         var datenow = new Date(Date.now());
         startDatetime = datapostchallenge.startDatetime;
         endDatetime = datapostchallenge.endDatetime;
@@ -1836,7 +1861,7 @@ export class PostsController {
       var splitreq2position = splitposition.split('#');
 
       if (splitreq2stiker.length !== splitreq2image.length && splitreq2stiker.length !== splitreq2type.length && splitreq2stiker.length !== splitreq2position.length) {
-        throw new BadRequestException("Unabled to proceed,the amount of data must be the same");
+        throw new BadRequestException("Unabled to proceed,the length of data must be the same");
       } else {
         for (var i = 0; i < splitreq2stiker.length; i++) {
           let id = splitreq2stiker[i];
@@ -2499,7 +2524,13 @@ export class PostsController {
     }
     const insightsService_data = await this.insightsService.findemail(headers['x-auth-user']);
     const userbasicsService_data = await this.userbasicsService.findOne(headers['x-auth-user']);
-    const contenteventsService_data = await this.contenteventsService.findByCriteria(headers['x-auth-user'], postID_, eventType_, withEvents_, pageRow_, pageNumber_);
+    const contenteventsService_data_ = await this.contenteventsService.findByCriteria(headers['x-auth-user'], postID_, eventType_, withEvents_, pageRow_, pageNumber_);
+    let contenteventsService_data = contenteventsService_data_;
+    if (eventType_ =="FOLLOWER") {
+      contenteventsService_data = [...new Map(contenteventsService_data_.map(item => [item["receiverParty"], item])).values()];
+    } else if (eventType_ == "FOLLOWING") {
+      contenteventsService_data = [...new Map(contenteventsService_data_.map(item => [item["senderParty"], item])).values()];
+    }
     var getProfile_ = await this.utilsService.generateProfile(headers['x-auth-user'], 'PROFILE');
     var avatar_ = {}
     if (getProfile_ != null || getProfile_ != undefined) {
@@ -3490,6 +3521,7 @@ export class PostsController {
     var email = null;
     var page = null;
     var limit = null;
+    var dataApsaraThumnail = null;
     var request_json = JSON.parse(JSON.stringify(request.body));
     if (request_json["email"] !== undefined) {
       email = request_json["email"];
@@ -3550,8 +3582,12 @@ export class PostsController {
           }
 
           if (getchildata.music.apsaraThumnail != undefined) {
-            var dataApsaraThumnail = await this.mediamusicService.getImageApsara([getchildata.music.apsaraThumnail]);
-            getchildata.music.apsaraThumnailUrl = dataApsaraThumnail.ImageInfo.find(x => x.ImageId == getchildata.music.apsaraThumnail).URL;
+            try {
+              dataApsaraThumnail = await this.mediamusicService.getImageApsara([getchildata.music.apsaraThumnail]);
+              getchildata.music.apsaraThumnailUrl = dataApsaraThumnail.ImageInfo.find(x => x.ImageId == getchildata.music.apsaraThumnail).URL;
+            } catch (e) {
+              console.log(dataApsaraThumnail)
+            }
             // getchildata.music.apsaraThumnailUrl = dataApsaraThumnail.ImageInfo[0].URL;
           }
 
@@ -3795,12 +3831,14 @@ export class PostsController {
     var datapost = null;
     var createAt = null;
     var saleAmount = null;
+    var postTypeparent = null;
     try {
       datapost = await this.PostsService.findByPostId(postID);
     } catch (e) {
       datapost = null;
     }
     if (datapost !== null) {
+      postTypeparent = datapost.postType;
       createAt = datapost.createdAt;
       if (datapost.saleAmount !== undefined) {
         saleAmount = datapost.saleAmount;
@@ -3842,10 +3880,10 @@ export class PostsController {
           tagar = "";
         }
 
-        if (tagar != undefined && tagar != "") {
-
+        if (tagar != undefined && tagar != "" && tagar.length > 0) {
+          var tag2 = tagar.replace("#", "");
           try {
-            datatag = await this.tagCountService.listag(tagar.toLowerCase());
+            datatag = await this.tagCountService.listag(tag2);
           } catch (e) {
             datatag = null;
           }
@@ -3853,8 +3891,8 @@ export class PostsController {
           if (datatag != null && datatag.length > 0) {
 
             for (let i = 0; i < datatag.length; i++) {
-              var postIDpost = datatag[i].postID;
-              var postType = datatag[i].postType;
+              let postIDpost = datatag[i].postID;
+              let postType = datatag[i].postType;
 
               if (postIDpost == postID) {
                 try {
@@ -3895,8 +3933,7 @@ export class PostsController {
                         } else if (postType == "pict") {
                           poin = poinPict;
                         }
-                        await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                        await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+
                         try {
                           var Postchallenge_ = new Postchallenge();
                           Postchallenge_.postID = postID;
@@ -3909,10 +3946,17 @@ export class PostsController {
                           Postchallenge_.updatedAt = timedate;
                           Postchallenge_.idUser = mongoose.Types.ObjectId(iduser);
                           Postchallenge_.score = poin;
+                          Postchallenge_.postType = postTypeparent;
+
                           await this.postchallengeService.create(Postchallenge_);
+
+
                         } catch (e) {
 
                         }
+                        await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+                        await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+
                         var detail = await this.userchallengesService.findOne(iduserchall.toString());
                         var activity = detail.activity;
                         objintr = { "type": nametable, "id": idref, "desc": action }
@@ -3986,11 +4030,11 @@ export class PostsController {
                     "score": datauserchall[y].score,
                     "ranking": datauserchall[y].ranking,
                   }
-                  if (postType == "vid") {
+                  if (postTypeparent == "vid") {
                     poin = poinViewVid;
-                  } else if (postType == "diary") {
+                  } else if (postTypeparent == "diary") {
                     poin = poinViewDiary;
-                  } else if (postType == "pict") {
+                  } else if (postTypeparent == "pict") {
                     poin = poinPict;
                   }
                   await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
@@ -4007,6 +4051,7 @@ export class PostsController {
                     Postchallenge_.updatedAt = timedate;
                     Postchallenge_.idUser = mongoose.Types.ObjectId(iduser);
                     Postchallenge_.score = poin;
+                    Postchallenge_.postType = postTypeparent;
                     await this.postchallengeService.create(Postchallenge_);
                   } catch (e) {
 

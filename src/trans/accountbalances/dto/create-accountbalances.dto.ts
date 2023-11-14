@@ -14,3 +14,17 @@ export class CreateAccountbalancesDto {
 
 
 }
+
+
+export class CreateAccountbalances{
+    readonly _id: mongoose.Types.ObjectId;
+    iduser: mongoose.Types.ObjectId;
+    debet: number;
+    kredit: number;
+    type: String;
+    timestamp: String;
+    description: String;
+    idtrans: mongoose.Types.ObjectId;
+
+
+}

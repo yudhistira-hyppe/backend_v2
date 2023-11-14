@@ -41,6 +41,8 @@ import { ConfigService } from '@nestjs/config';
 import { SettingsDocument, SettingsMixed } from 'src/trans/settings2/schemas/settings2.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
+import { time } from 'console';
+import { GetprofilecontenteventService } from './getprofilecontentevent/getprofilecontentevent.service';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -83,7 +85,8 @@ export class UtilsService {
     private notificationsService: NotificationsService,
     private deepArService: DeepArService,
     private userscoresService: UserscoresService,
-    private basic2SS: UserbasicnewService
+    private basic2SS: UserbasicnewService,
+    private getprofilecontenteventService: GetprofilecontenteventService, 
 
   ) { }
 
@@ -1612,10 +1615,17 @@ export class UtilsService {
 
     var CreateInsightsDto_ = new CreateInsightsDto();
     if (await this.ceckData(get_insight)) {
+      const FOLLOWER = await this.getprofilecontenteventService.findByCriteria(email, "FOLLOWER");
+      const FOLLOWER_ = [...new Map(FOLLOWER.map(item => [item["receiverParty"], item])).values()];
+      const FOLLOWING = await this.getprofilecontenteventService.findByCriteria(email, "FOLLOWING");
+      const FOLLOWING_ = [...new Map(FOLLOWING.map(item => [item["senderParty"], item])).values()];
+
+      let aFOLLOWER_ = <any>FOLLOWER_.length;
+      let aFOLLOWING_ = <any>FOLLOWING_.length;
       if (get_insight.shares != undefined) { CreateInsightsDto_.shares = get_insight.shares; }
-      if (get_insight.followers != undefined) { CreateInsightsDto_.followers = get_insight.followers; }
+      if (get_insight.followers != undefined) { CreateInsightsDto_.followers = aFOLLOWER_; }
       if (get_insight.comments != undefined) { CreateInsightsDto_.comments = get_insight.comments; }
-      if (get_insight.followings != undefined) { CreateInsightsDto_.followings = get_insight.followings; }
+      if (get_insight.followings != undefined) { CreateInsightsDto_.followings = aFOLLOWING_; }
       if (get_insight.reactions != undefined) { CreateInsightsDto_.reactions = get_insight.reactions; }
       if (get_insight.posts != undefined) { CreateInsightsDto_.posts = get_insight.posts; }
       if (get_insight.views != undefined) { CreateInsightsDto_.views = get_insight.views; }
@@ -2068,8 +2078,8 @@ export class UtilsService {
       noCampaignID += "-01";
     } else if (typeAdsID == this.configService.get("ID_ADS_IN_BETWEEN")) {
       noCampaignID += "-02";
-    } else if (typeAdsID == this.configService.get("ID_ADS_IN_POPUP")) {
-      noCampaignID += "-003";
+    } else if (typeAdsID == this.configService.get("ID_ADS_IN_CONTENT")) {
+      noCampaignID += "-03";
     }
 
     if (ObjectivitasId == this.configService.get("ID_ADS_OBJECTTIVITAS_AWARENESS")) {
@@ -2436,7 +2446,7 @@ export class UtilsService {
     }
   }
 
-  async sendNotifChallenge(email: string, titlein: string, bodyin: any, eventType: string, event: string, postID_?: string, postType?: string) {
+  async sendNotifChallenge(type: string, email: string, titlein: string, bodyin: any, bodyeng: any, eventType: string, event: string, postID_: string, postType: string, challengeSession: string, timesend: string) {
 
     console.log(postID_);
     var emailuserbasic = null;
@@ -2457,6 +2467,7 @@ export class UtilsService {
     var date = splitdt[0].replace("T", " ");
     var mediaprofilepicts = null;
     var bodypayload = null;
+    var datanotifchall = null;
     let createNotificationsDto = new CreateNotificationsDto();
 
     const datauserbasicsService = await this.userbasicsService.findOne(
@@ -2518,33 +2529,129 @@ export class UtilsService {
         },
         username: user_userAuth.username.toString()
       };
+      try {
+        languages = datauserbasicsService.languages;
+        idlanguages = languages.oid.toString();
+        datalanguage = await this.languagesService.findOne(idlanguages)
+        langIso = datalanguage.langIso;
 
-      payload = {
-        data: {
-
-          title: titlein,
-          body: bodyin,
-          postID: postID_,
-          postType: postType
-        }
+        console.log(idlanguages)
+      } catch (e) {
+        languages = null;
+        idlanguages = "";
+        datalanguage = null;
+        langIso = "";
       }
+
       var option = {
         priority: "high",
         contentAvailable: true
       }
 
+
+      if (langIso === "en") {
+
+        if (type == "PEMENANG") {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyeng,
+              postID: postID_.toString(),
+              postType: eventType,
+              challengeSession: challengeSession,
+              index: "1",
+              winner: "true"
+            }
+          }
+        }
+        else if (type == "BERAKHIR") {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyeng,
+              postID: postID_.toString(),
+              postType: eventType,
+              challengeSession: challengeSession,
+              index: "1"
+
+            }
+          }
+        } else {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyeng,
+              postID: postID_.toString(),
+              postType: eventType
+            }
+          }
+        }
+
+      } else {
+        if (type == "PEMENANG") {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: postID_.toString(),
+              postType: eventType,
+              challengeSession: challengeSession,
+              index: "1",
+              winner: "true"
+            }
+          }
+        }
+        else if (type == "BERAKHIR") {
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: postID_.toString(),
+              postType: eventType,
+              challengeSession: challengeSession,
+              index: "1",
+            }
+          }
+        } else {
+
+          payload = {
+            data: {
+
+              title: titlein,
+              body: bodyin,
+              postID: postID_.toString(),
+              postType: eventType
+            }
+          }
+        }
+
+      }
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
 
 
       var arraydevice = [];
+      var adm = null;
+
+
       datadevice = await this.userdevicesService.findActive(emailuserbasic);
       for (var i = 0; i < datadevice.length; i++) {
         var deviceid = datadevice[i].deviceID;
-        var adm = await admin.messaging().sendToDevice(deviceid, payload, option);
-        console.log(adm);
-        arraydevice.push(deviceid);
+        try {
+          adm = await admin.messaging().sendToDevice(deviceid, payload, option);
+          console.log(adm);
+          arraydevice.push(deviceid);
+        } catch (e) {
+          // e.toString();
+        }
+
 
       }
+
       var generateID = await this.generateId();
       createNotificationsDto._id = generateID;
       createNotificationsDto.notificationID = generateID;
@@ -2553,15 +2660,22 @@ export class UtilsService {
       createNotificationsDto.event = event;
       createNotificationsDto.mate = emailuserbasic;
       createNotificationsDto.devices = arraydevice;
-      createNotificationsDto.title = titlein.toString();
-      createNotificationsDto.body = bodyin;
+      // createNotificationsDto.title = titlein.toString();
+      createNotificationsDto.title = payload.data.title;
+      createNotificationsDto.body = bodyeng;
       createNotificationsDto.bodyId = bodyin;
       createNotificationsDto.active = true;
       createNotificationsDto.flowIsDone = true;
       createNotificationsDto.createdAt = date;
       createNotificationsDto.updatedAt = date;
-      createNotificationsDto.actionButtons = null;
-      createNotificationsDto.contentEventID = null;
+      createNotificationsDto.sendNotifChallenge = timesend;
+
+      if (type == "PEMENANG" || type == "BERAKHIR") {
+        createNotificationsDto.contentEventID = payload.data.challengeSession;
+      }
+      else {
+        createNotificationsDto.contentEventID = null;
+      }
       createNotificationsDto.senderOrReceiverInfo = senderreceiver;
 
 
@@ -2571,7 +2685,12 @@ export class UtilsService {
       if (postID_ != undefined) {
         createNotificationsDto.postType = postType;
       }
-
+      if (type == "PEMENANG") {
+        createNotificationsDto.actionButtons = "true";
+      }
+      else {
+        createNotificationsDto.actionButtons = null;
+      }
 
       console.log('notif: ' + JSON.stringify(createNotificationsDto));
       await this.notificationsService.create(createNotificationsDto);

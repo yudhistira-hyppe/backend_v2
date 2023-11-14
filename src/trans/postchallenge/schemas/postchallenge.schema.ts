@@ -23,6 +23,8 @@ export class Postchallenge {
     @Prop()
     session: number;
     @Prop()
+    postType: string;
+    @Prop()
     updatedAt: String;
     @Prop({ type: mongoose.Schema.Types.ObjectId })
     idUser: mongoose.Types.ObjectId;

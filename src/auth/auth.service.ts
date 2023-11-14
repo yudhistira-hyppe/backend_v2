@@ -2010,6 +2010,12 @@ export class AuthService {
   }
 
   async updateprofile(req: any, head: any) {
+    console.log("");
+    console.log("");
+    console.log("----------------------------HEAD---------------------------", head);
+    console.log("----------------------------REG---------------------------", req);
+    console.log("");
+    console.log("");
     if (!(await this.utilsService.validasiTokenEmail(head))) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed',
@@ -2134,22 +2140,42 @@ export class AuthService {
         user_langIso = req.body.langIso;
       }
     } else {
-      throw new NotAcceptableException({
-        response_code: 406,
-        messages: {
-          info: ['Unabled to proceed'],
-        },
-      });
+      if (req.body.area != undefined) {
+        user_area = req.body.area;
+      }
+
+      if (req.body.gender != undefined) {
+        user_gender = req.body.gender;
+      }else{
+        user_gender = "";
+      }
+
+      if (req.body.dob != undefined) {
+        user_dob = req.body.dob;
+      } else {
+        user_dob = "";
+      }
+
+      if (req.body.country != undefined) {
+        user_country = req.body.country;
+      }
+      
+      // throw new NotAcceptableException({
+      //   response_code: 406,
+      //   messages: {
+      //     info: ['Unabled to proceedssssssss'],
+      //   },
+      // });
     }
 
-    if (user_email_header != user_email) {
-      throw new NotAcceptableException({
-        response_code: 406,
-        messages: {
-          info: ['Unabled to proceed'],
-        },
-      });
-    }
+    // if (user_email_header != user_email) {
+    //   throw new NotAcceptableException({
+    //     response_code: 406,
+    //     messages: {
+    //       info: ['Unabled to proceed'],
+    //     },
+    //   });
+    // }
 
     var type = 'ENROL';
     var current_date = await this.utilsService.getDateTimeString();
@@ -2161,19 +2187,19 @@ export class AuthService {
 
     //Ceck User ActivityEvent Parent
     const user_activityevents = await this.activityeventsService.findParentWitoutDevice(
-      user_email,
+      user_email_header,
       type,
       false,
     );
 
     //Ceck User Userbasics
     const datauserbasicsService = await this.userbasicsService.findOne(
-      user_email,
+      user_email_header,
     );
 
     //Ceck User Userauths
     const datauserauthsService = await this.userauthsService.findOneByEmail(
-      user_email,
+      user_email_header,
     );
 
     if (await this.utilsService.ceckData(datauserauthsService)) {
@@ -2198,7 +2224,6 @@ export class AuthService {
       }
       if (await this.utilsService.isAuthVerified(Data)) {
         if (Object.keys(user_activityevents).length > 0) {
-
           if ((event == 'UPDATE_BIO') && (status == 'IN_PROGRESS')) {
             //Update Profile Bio
             try {
@@ -2521,6 +2546,39 @@ export class AuthService {
                 error,
               );
             }
+          }else{
+            var data_update_userbasict = {};
+            user_email = user_email_header;
+            console.log("user_area", user_area)
+            if (user_area != null) {
+              var areas = await this.areasService.findOneName(user_area);
+              if ((await this.utilsService.ceckData(areas))) {
+                var areas_id = (await areas)._id;
+                data_update_userbasict['states'] = {
+                  $ref: 'areas',
+                  $id: areas_id,
+                  $db: 'hyppe_infra_db',
+                };
+              }
+            }
+            if (user_gender != null) {
+              data_update_userbasict['gender'] = user_gender;
+            }
+            if (user_dob != null) {
+              data_update_userbasict['dob'] = user_dob;
+            }
+            if (user_country != null) {
+              var countries = await this.countriesService.findOneName(user_country);
+              if ((await this.utilsService.ceckData(countries))) {
+                var countries_id = (await countries)._id;
+                data_update_userbasict['countries'] = {
+                  $ref: 'countries',
+                  $id: countries_id,
+                  $db: 'hyppe_infra_db',
+                };
+              }
+            }
+            await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
           }
 
           return {
@@ -2703,6 +2761,39 @@ export class AuthService {
                 'Unabled to proceed update profile detail. Error:' + error,
               );
             }
+          } else {
+            var data_update_userbasict = {};
+            user_email = user_email_header;
+            console.log("user_email", user_email)
+            if (user_area != null) {
+              var areas = await this.areasService.findOneName(user_area);
+              if ((await this.utilsService.ceckData(areas))) {
+                var areas_id = (await areas)._id;
+                data_update_userbasict['states'] = {
+                  $ref: 'areas',
+                  $id: areas_id,
+                  $db: 'hyppe_infra_db',
+                };
+              }
+            }
+            if (user_gender != null) {
+              data_update_userbasict['gender'] = user_gender;
+            }
+            if (user_dob != null) {
+              data_update_userbasict['dob'] = user_dob;
+            }
+            if (user_country != null) {
+              var countries = await this.countriesService.findOneName(user_country);
+              if ((await this.utilsService.ceckData(countries))) {
+                var countries_id = (await countries)._id;
+                data_update_userbasict['countries'] = {
+                  $ref: 'countries',
+                  $id: countries_id,
+                  $db: 'hyppe_infra_db',
+                };
+              }
+            }
+            await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
           }
 
           return {
@@ -9051,7 +9142,20 @@ export class AuthService {
           CreateReferralDto_._class = "io.melody.core.domain.Referral";
           var insertdata = await this.referralService.create(CreateReferralDto_);
           var idref = insertdata._id;
-          this.userChallenge(iduser.toString(), idref.toString(), "referral", "REFERAL");
+
+          let userid = null;
+          const databasics = await this.userbasicsService.findOne(
+            user_email_parent
+          );
+          if (databasics !== null) {
+            userid = databasics._id;
+          }
+
+          try {
+            this.userChallenge(userid.toString(), idref.toString(), "referral", "REFERAL");
+          } catch (e) {
+
+          }
 
 
           var _id_1 = (await this.utilsService.generateId());
@@ -9836,7 +9940,11 @@ export class AuthService {
 
                         if (databasic !== null) {
                           var idref = insertdata._id;
-                          this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
+                          try {
+                            this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
+                          } catch (e) {
+
+                          }
                         }
 
                         var _id_1 = (await this.utilsService.generateId());
@@ -12185,9 +12293,9 @@ export class AuthService {
                   let idChallenges2 = datauschall[x].idChallenge;
                   let rank = x + 1;
 
-                  if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                    await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                  }
+                  //if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                  await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                  // }
 
                 }
               }
