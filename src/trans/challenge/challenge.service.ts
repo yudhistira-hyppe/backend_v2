@@ -271,7 +271,8 @@ export class ChallengeService {
           objectChallenge: 1,
           startChallenge: 1,
           endChallenge: 1,
-          createdAt: 1
+          createdAt: 1,
+          updatedAt: 1
         }
       },
     );
@@ -375,7 +376,7 @@ export class ChallengeService {
       pipeline.push({
         "$sort":
         {
-          "createdAt": setascending
+          "updatedAt": setascending
         }
       });
     }
