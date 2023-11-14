@@ -9824,9 +9824,8 @@ export class NewPostService {
         { $match: { postID: postID } },
         {
           $addFields: {
-            ubasic_id: '$userProfile.$id',
             salePrice: { $cmp: ["$saleAmount", 0] }
-  
+    
           },
         },
         {
@@ -9837,16 +9836,14 @@ export class NewPostService {
             as: 'userbasics_data',
           },
         },
-  
+    
         {
           $project: {
-            refs: { $arrayElemAt: ['$contentMedias', 0] },
             user: { $arrayElemAt: ['$userbasics_data', 0] },
-  
-            profilpictid: '$user.profilePict.$id',
+    
             insight_id: '$user.insight.$id',
-            userAuth_id: '$user.userAuth.$id',
             fullName: '$user.fullName',
+            username: '$user.username',
             createdAt: '$createdAt',
             updatedAt: '$updatedAt',
             postID: '$postID',
@@ -9887,16 +9884,19 @@ export class NewPostService {
             monetize: {
               $cond: { if: { $eq: ["$salePrice", -1] }, then: false, else: true }
             },
+            mediaSource:{
+                "$arrayElemAt":[
+                    "$mediaSource", 0
+                ]
+            }
           }
         },
         {
           $project: {
-            refs: '$refs.$ref',
-            idmedia: '$refs.$id',
-            profilpictid: '$user.profilePict.$id',
+            user: "$user",
             insight_id: '$user.insight.$id',
-            userAuth_id: '$user.userAuth.$id',
             fullName: '$user.fullName',
+            username: '$user.username',
             createdAt: '$createdAt',
             updatedAt: '$updatedAt',
             postID: '$postID',
@@ -9927,74 +9927,27 @@ export class NewPostService {
             saleAmount: '$saleAmount',
             monetize: '$monetize',
             refe: '$refs.ref',
+            mediaSource: "$mediaSource"
           }
         },
-  
-        // {
-        //   $lookup: {
-        //     from: 'mediaprofilepicts',
-        //     localField: 'profilpictid',
-        //     foreignField: '_id',
-        //     as: 'profilePict_data',
-        //   },
-        // },
-        // {
-        //   $lookup: {
-        //     from: 'insights2',
-        //     localField: 'insight_id',
-        //     foreignField: '_id',
-        //     as: 'insight_data',
-        //   },
-        // },
-        // {
-        //   $lookup: {
-        //     from: 'userauths',
-        //     localField: 'userAuth_id',
-        //     foreignField: '_id',
-        //     as: 'userAuth_data',
-        //   },
-        // },
-        // {
-        //   $lookup: {
-        //     from: 'mediapicts',
-        //     localField: 'idmedia',
-        //     foreignField: '_id',
-        //     as: 'mediaPict_data',
-        //   },
-        // },
-        // {
-        //   $lookup: {
-        //     from: 'mediadiaries',
-        //     localField: 'idmedia',
-        //     foreignField: '_id',
-        //     as: 'mediadiaries_data',
-        //   },
-        // },
-        // {
-        //   $lookup: {
-        //     from: 'mediavideos',
-        //     localField: 'idmedia',
-        //     foreignField: '_id',
-        //     as: 'mediavideos_data',
-        //   },
-        // },
+        {
+            "$addFields":
+            {
+                'cleanUri':
+                {
+                    "$replaceOne":
+                    {
+                        input:"$mediaSource.mediaUri",
+                        find:"_0001.jpeg",
+                        replacement:""
+                    }
+                },
+            }
+        },
         {
           $project: {
-            // mediapict: { $arrayElemAt: ['$mediaPict_data', 0] },
-            // mediadiaries: { $arrayElemAt: ['$mediadiaries_data', 0] },
-            // mediavideos: { $arrayElemAt: ['$mediavideos_data', 0] },
-  
-            // profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
-            // insights: { $arrayElemAt: ['$insight_data', 0] },
-            // auth: { $arrayElemAt: ['$userAuth_data', 0] },
-            // mediapictPath: '$mediapict.mediaBasePath',
-            // mediadiariPath: '$mediadiaries.mediaBasePath',
-            // mediavideoPath: '$mediavideos.mediaBasePath',
-            // refs: '$refs',
-            // idmedia: '$idmedia',
-            // rotate: '$mediadiaries.rotate',
             fullName: '$fullName',
-            username: '$auth.username',
+            username: '$username',
             createdAt: '$createdAt',
             updatedAt: '$updatedAt',
             postID: '$postID',
@@ -10019,7 +9972,97 @@ export class NewPostService {
             saleView: '$saleView',
             saleAmount: '$saleAmount',
             monetize: '$monetize',
-  
+            rotate: 
+            {
+                "$ifNull":
+                [
+                    "$mediaSource.rotate",
+                    null
+                ]
+            },
+            mediaBasePath:
+            {
+                "$ifNull":
+                [
+                    "$mediaSource.mediaBasePath",
+                    null
+                ]
+            },
+            mediaUri:
+            {
+                "$ifNull":
+                [
+                    "$mediaSource.mediaUri",
+                    null
+                ]
+            },
+            mediaType:
+            {
+                "$ifNull":
+                [
+                    "$mediaSource.mediaType",
+                    null
+                ]
+            },
+            mediaThumbEndpoint:
+            {
+                "$ifNull":
+                [
+                    "$mediaSource.mediaThumbEndpoint",
+                    {
+                        "$concat":
+                        [
+                            "/thumb/",
+                            "$cleanUri"
+                        ]
+                    }
+                ]
+            },
+            mediaEndpoint:
+            {
+                "$ifNull":
+                [
+                    "$mediaSource.mediaEndpoint",
+                    {
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$eq":
+                                [
+                                    "$postType", "pict"
+                                ]
+                            },
+                            then:
+                            {
+                                "$concat":
+                                [
+                                    "/pict/",
+                                    "$cleanUri"
+                                ]
+                            },
+                            else:
+                            {
+                                "$concat":
+                                [
+                                    "/stream/",
+                                    "$cleanUri"
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            mediaThumbUri:
+            {
+                "$ifNull":
+                [
+                    "$mediaSource.mediaThumbUri",
+                    null
+                ]
+            }
+    
+            // belum diganti!!
             // insight: {
             //   shares: '$insights.shares',
             //   followers: '$insights.followers',
@@ -10036,143 +10079,11 @@ export class NewPostService {
             //   mediaType: '$profilpict.mediaType',
             //   mediaEndpoint: '$profilpict.fsTargetUri',
             //   medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
-  
+    
             // },
-  
+    
           }
         },
-  
-        {
-          $addFields: {
-  
-            concats: '/profilepict',
-            pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
-            concatmediapict: '/pict',
-            media_pict: { $replaceOne: { input: "$mediapict.mediaUri", find: "_0001.jpeg", replacement: "" } },
-  
-  
-            concatmediadiari: '/stream',
-            concatthumbdiari: '/thumb',
-            media_diari: '$mediadiaries.mediaUri',
-  
-            concatmediavideo: '/stream',
-            concatthumbvideo: '/thumb',
-            media_video: '$mediavideos.mediaUri'
-          },
-        },
-        {
-          $project: {
-            rotate: '$mediadiaries.rotate',
-            mediaBasePath: {
-              $switch: {
-                branches: [
-                  { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediapict.mediaBasePath' },
-                  { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaBasePath' },
-                  { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaBasePath' }
-                ],
-                default: ''
-              }
-            },
-            mediaUri: {
-              $switch: {
-                branches: [
-                  { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediapict.mediaUri' },
-                  { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaUri' },
-                  { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaUri' }
-                ],
-                default: ''
-              }
-            },
-            mediaType: {
-              $switch: {
-                branches: [
-                  { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediapict.mediaType' },
-                  { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaType' },
-                  { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaType' }
-                ],
-                default: ''
-              }
-            },
-  
-            mediaThumbEndpoint: {
-              $switch: {
-                branches: [
-                  { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediadiaries.mediaThumb' },
-                  { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatthumbdiari", "/", "$media_diari"] }, },
-                  { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatthumbvideo", "/", "$media_video"] }, }
-                ],
-                default: ''
-              }
-            },
-  
-            mediaEndpoint: {
-              $switch: {
-                branches: [
-                  { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': { $concat: ["$concatmediapict", "/", "$media_pict"] }, },
-                  { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatmediadiari", "/", "$media_diari"] }, },
-                  { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatmediavideo", "/", "$media_video"] }, }
-                ],
-                default: ''
-              }
-            },
-  
-            mediaThumbUri: {
-              $switch: {
-                branches: [
-                  { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediadiaries.mediaThumb' },
-                  { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaThumb' },
-                  { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaThumb' }
-                ],
-                default: ''
-              }
-            },
-  
-            fullName: '$fullName',
-            username: '$auth.username',
-            createdAt: '$createdAt',
-            updatedAt: '$updatedAt',
-            postID: '$postID',
-            email: '$email',
-            postType: '$postType',
-            description: '$description',
-            title: '$description',
-            active: '$active',
-            metadata: '$metadata',
-            location: '$location',
-            tags: '$tags',
-            likes: '$likes',
-            shares: '$shares',
-            comments: '$comments',
-            isOwned: '$isOwned',
-            views: '$views',
-            privacy: '$privacy',
-            isViewed: '$isViewed',
-            allowComments: '$allowComments',
-            certified: '$certified',
-            saleLike: '$saleLike',
-            saleView: '$saleView',
-            saleAmount: '$saleAmount',
-            monetize: '$monetize',
-            // insight: {
-            //   shares: '$insights.shares',
-            //   followers: '$insights.followers',
-            //   comments: '$insights.comments',
-            //   followings: '$insights.followings',
-            //   reactions: '$insights.reactions',
-            //   posts: '$insights.posts',
-            //   views: '$insights.views',
-            //   likes: '$insights.likes'
-            // },
-            // avatar: {
-            //   mediaBasePath: '$profilpict.mediaBasePath',
-            //   mediaUri: '$profilpict.mediaUri',
-            //   mediaType: '$profilpict.mediaType',
-            //   mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
-  
-  
-            // },
-          }
-        }
   
       ]);
       return query;
