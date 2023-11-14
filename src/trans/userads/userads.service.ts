@@ -4870,6 +4870,12 @@ export class UserAdsService {
                 }
             },
             {
+                $match:
+                {
+                    adsObjectivitasId: { $ne: null }
+                },
+            },
+            {
                 $lookup:
                 {
                     from: "ads",
