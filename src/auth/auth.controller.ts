@@ -1494,7 +1494,8 @@ export class AuthController {
         //   );
         // }
       }
-    } else {
+    }
+    else {
 
 
       if (await this.utilsService.ceckData(data_userbasics)) {

@@ -45,7 +45,7 @@ export class DisqusController {
     private readonly contenteventsService: ContenteventsService,
     private readonly userauthsService: UserauthsService,
     private readonly errorHandler: ErrorHandler,
-    private readonly logapiSS : LogapisService) { }
+    private readonly logapiSS: LogapisService) { }
 
   @Post('disqus')
   async create(@Body() CreateDisqusDto: CreateDisqusDto) {
@@ -80,7 +80,7 @@ export class DisqusController {
   async disqus(@Headers() headers, @Body() ContentDto_: ContentDto,) {
     var timestamps_start = await this.utilsService.getDateTimeString();
     var fullurl = headers.host + "/api/posts/disqus";
-    
+
     console.log('>>>>>>>>>> HEADER <<<<<<<<<<', JSON.stringify(headers))
     console.log('>>>>>>>>>> CONTENT DTO <<<<<<<<<<', JSON.stringify(ContentDto_))
     var email_header = headers['x-auth-user'];
@@ -108,8 +108,8 @@ export class DisqusController {
           let xres = await this.buildDisqus(ContentDto_, true);
 
           console.log("processDisqus >>> receiver: ", xres.disqusLogs[0].receiver);
-          this.disqusService.sendDMNotif(String(xres.room), JSON.stringify(xres));
-
+          var xc = this.disqusService.sendDMNotif(String(xres.room), JSON.stringify(xres));
+          console.log(xc)
           var timestamps_end = await this.utilsService.getDateTimeString();
           var reqbody = JSON.parse(JSON.stringify(ContentDto_));
           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);
@@ -150,7 +150,7 @@ export class DisqusController {
           let xres = await this.buildComments(ContentDto_, true);
           if (ContentDto_.tagComment != undefined) {
             console.log("TAG COMMAND =============================================> ", ContentDto_.tagComment_);
-            if (ContentDto_.tagComment_.length>0){
+            if (ContentDto_.tagComment_.length > 0) {
               for (var n = 0; n < ContentDto_.tagComment_.length; n++) {
                 console.log("TAG COMMAND " + n + "=============================================> ", ContentDto_.tagComment_[n]);
                 var userAuth = await this.userauthsService.findByUsername(ContentDto_.tagComment_[n]);
@@ -303,7 +303,480 @@ export class DisqusController {
                       if (o.disqusLogs[x].medias[0] != undefined) {
                         if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
                           if (o.disqusLogs[x].medias[0].mediaType != undefined) {
-                            if (o.disqusLogs[x].medias[0].apsaraId != undefined){
+                            if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
+                              var ApsaraId = o.disqusLogs[x].medias[0].apsaraId;
+                              console.log(ApsaraId)
+                              if (o.disqusLogs[x].medias[0].mediaType == 'image') {
+                                var apsaraThumnailUrl = papsara.ImageInfo.find(x => x.ImageId == ApsaraId).URL;
+                                o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl;
+                              } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
+                                console.log("MASUK PAK EKO")
+                                var apsaraThumnailUrl = vapsara.VideoList.find(x => x.VideoId == ApsaraId).CoverURL;
+                                o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl;
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              tmp.push(o);
+            }
+          }
+
+          // if (dm != undefined && dm.length > 0) {
+          //   for (let i = 0; i < dm.length; i++) {
+          //     let o = dm[i];
+          //     if (o.emot != undefined && o.emot.length > 0) {
+          //       for (let x = 0; x < o.disqusLogs.length; x++) {
+          //         let dl = o.disqusLogs[x];
+          //         if (dl.reactionUri != undefined) {
+          //           for (let y = 0; y < o.emot.length; y++) {
+          //             if (dl.reactionUri == o.emot[y].URL) {
+          //               if (o.disqusLogs[x].medias != undefined) {
+          //                 if (o.disqusLogs[x].medias.length > 0) {
+          //                   if (o.disqusLogs[x].medias.length > 0) {
+          //                     if (o.disqusLogs[x].medias[0] != undefined) {
+          //                       if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
+          //                         if (o.disqusLogs[x].medias[0].mediaType != undefined) {
+          //                           var ApsaraId = o.disqusLogs[x].medias[0].apsaraId;
+          //                           if (o.disqusLogs[x].medias[0].mediaType == 'image') {
+          //                             var apsaraThumnailUrl = papsara.ImageInfo.find(x => x.ImageId == ApsaraId).URL;
+          //                             o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl;
+          //                           } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
+          //                             var apsaraThumnailUrl = vapsara.VideoList.find(x => x.VideoId == ApsaraId).CoverURL;
+          //                             o.disqusLogs[x].medias[0].mediaThumbEndpoint = apsaraThumnailUrl;
+          //                           }
+          //                         }
+          //                       }
+          //                     }
+          //                   }
+          //                 }
+          //               }
+          //               o.disqusLogs[x].reaction_icon = o.emot[y].icon;
+          //               break;
+          //             }
+          //           }
+          //         }
+          //       }
+          //     }
+          //     tmp.push(o);
+          //   }
+          // }
+          // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> tmp', JSON.stringify(tmp));
+
+          res.data = tmp;
+
+          /*
+          var aDisqusContacts : any[] = []; 
+          if (ContentDto_.receiverParty != undefined) {
+            aDisqusContacts = await this.disquscontactsService.findDisqusByEmail(String(ContentDto_.email));
+          } else {
+            aDisqusContacts = await this.disquscontactsService.findByEmailAndMate(String(ContentDto_.email), String(ContentDto_.receiverParty));
+          } 
+          var withDetail = ContentDto_.withDetail;
+          var detailOnly = ContentDto_.detailOnly;
+          
+          let tmp : DisqusResDto[] = [];
+          for (let i = 0; i < aDisqusContacts.length; i++) {
+            let con = aDisqusContacts[i];
+            var retVal = new DisqusResDto();
+
+            retVal.disqusID = con.disqus_data[0].disqusID;
+            if ((aDisqusContacts[0].disqus_data[0].email != undefined) && (aDisqusContacts[0].disqus_data[0].mate != undefined)) {
+              //if (detailOnly == undefined || detailOnly == false) {
+                retVal.email = aDisqusContacts[0].disqus_data[0].email;
+                retVal.room = aDisqusContacts[0].disqus_data[0].room;
+  
+                retVal.eventType = aDisqusContacts[0].disqus_data[0].eventType;
+                retVal.active = aDisqusContacts[0].disqus_data[0].active;
+                retVal.createdAt = aDisqusContacts[0].disqus_data[0].createdAt;
+                retVal.updatedAt = aDisqusContacts[0].disqus_data[0].updatedAt;
+                retVal.lastestMessage = aDisqusContacts[0].disqus_data[0].lastestMessage;
+  
+                var profile = await this.utilsService.generateProfile(aDisqusContacts[0].disqus_data[0].email, 'PROFILE');
+                if (profile.username!=undefined){
+                  retVal.username = profile.username;
+                }
+                if (profile.fullName != undefined) {
+                  retVal.fullName = profile.fullName;
+                }
+                if (profile.avatar != undefined) {
+                  retVal.avatar = profile.avatar;
+                }
+  
+                var profile_mate = await this.utilsService.generateProfile(aDisqusContacts[0].disqus_data[0].mate, 'PROFILE');
+                var mateInfo = {};
+                if (profile_mate.username != undefined) {
+                  mateInfo['username'] = profile_mate.username;
+                }
+                if (profile_mate.fullName != undefined) {
+                  mateInfo['fullName'] = profile_mate.fullName;
+                }
+                if (profile_mate.avatar != undefined) {
+                  mateInfo['avatar'] = profile_mate.avatar;
+                }
+                mateInfo['email'] = aDisqusContacts[0].disqus_data[0].mate;
+                retVal.mate = mateInfo;
+  
+                var senderReciverInfo = {};
+                var currentEmail = (ContentDto_.email) ? ContentDto_.email : email_header;
+                if ((profile_mate != null) && (profile != null) && (currentEmail == profile_mate.email)) {
+                  senderReciverInfo['email'] = profile.fullName;
+                  senderReciverInfo['username'] = profile.username;
+                  senderReciverInfo['fullName'] = profile.fullName;
+                  if (profile.avatar != null) {
+                    senderReciverInfo['avatar'] = profile.avatar;
+                  }
+                } else if ((profile_mate != null) && (profile != null) && (currentEmail == profile.email)) {
+                  senderReciverInfo['email'] = profile_mate.fullName;
+                  senderReciverInfo['username'] = profile_mate.username;
+                  senderReciverInfo['fullName'] = profile_mate.fullName;
+                  if (profile_mate.avatar != null) {
+                    senderReciverInfo['avatar'] = profile_mate.avatar;
+                  }
+                }
+                retVal.senderOrReceiverInfo = senderReciverInfo;
+  
+                if ((ContentDto_.pageNumber != undefined) && (ContentDto_.pageRow != undefined)) {
+                  var pageNumber = Number(ContentDto_.pageNumber);
+                  var pageRow = Number(ContentDto_.pageRow);
+                  var offset = pageNumber * pageRow;
+                  // retVal['disqusLogs'] = profile.avatar;
+                  // retVal.put("disqusLogs",streamSupplier.get().skip(offset).limit(pageRow).collect(Collectors.toList()));
+                } else {
+                  // retVal['disqusLogs'] = profile.avatar;
+                  // retVal.put("disqusLogs", streamSupplier.get().collect(Collectors.toList()));
+                }
+              //}            
+
+              tmp.push(retVal);
+          }
+
+          res.data = tmp;
+
+          if (withDetail || detailOnly) {
+
+          }
+          }
+          */
+        } else if (type == "COMMENT") {
+          // console.log("Payload Query Comment >>>>>> : ", ContentDto_);
+          // var DisqusResponseComment_ = new DisqusResponseComment();
+          // let com = await this.disqusService.findDisqusByPost(String(ContentDto_.postID), type);
+
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(ContentDto_));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);
+
+          var data = await this.disqusService.getDiscus(String(ContentDto_.postID), type, Number(ContentDto_.pageNumber), Number(ContentDto_.pageRow));
+          return {
+            data: data
+          }
+
+          // console.log('com', com);
+
+          // let tmp_: DisqusComment[] = [];
+          // for (let i = 0; i < com.length; i++) {
+          //   let con = com[i];
+          //   var retVal_ = new DisqusComment();
+
+          //   retVal_.disqusID = con.disqusID;
+          //   retVal_.active = con.active;
+          //   var profile = await this.utilsService.generateProfile(String(con.email), 'PROFILE');
+          //   if (profile.fullName != undefined) {
+          //     retVal_.fullName = profile.fullName;
+          //   }
+          //   if (profile.username != undefined) {
+          //     retVal_.username = profile.username;
+          //   }
+          //   if (profile.avatar != undefined) {
+          //     retVal_.avatar = profile.avatar;
+          //   }
+          //   if (profile.isIdVerified != undefined) {
+          //     retVal_.isIdVerified = ((profile.isIdVerified) === "true");
+          //   }
+          //   retVal_.postId = con.postID.toString();
+          //   retVal_.eventType = con.eventType;
+          //   retVal_.disqusID = con.disqusID;
+          //   retVal_.email = con.email;
+          //   retVal_.updatedAt = con.updatedAt;
+          //   retVal_.createdAt = con.createdAt;
+          //   let get_count = await this.disqusLogService.findDiscusLog(String(con.disqusID));
+          //   retVal_.comment = get_count.length;
+          //   let dl = await this.disqusLogService.findLogByDisqusId(String(con.disqusID), Number(ContentDto_.pageNumber), Number(ContentDto_.pageRow));
+          //   retVal_.disqusLogs = dl;                       
+          //   tmp_.push(retVal_);
+          // }
+          // DisqusResponseComment_.data = tmp_;
+          // return DisqusResponseComment_;
+        }
+
+        isValid = true;
+      }
+
+      if (isValid) {
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(ContentDto_));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);
+
+        res.response_code = 202;
+        let ms = new Messages();
+        ms.info = ["The process successful"];
+        res.messages = ms;
+
+        return res;
+        //inDto.buildResultInfo(inDto.getEventType(), ResBundle.instance().bundleAsStr(ResBundle.PR_DEFAULT_SUCCESS));
+      } else {
+        //inDto.buildErrorInfo(inDto.getEventType(), ResBundle.instance().bundleAsStr(ResBundle.AC_ERR_DEFAULT));
+      }
+    } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(ContentDto_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+
+    //return await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
+  }
+
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
+  @FormDataRequest()
+  @Post('posts/disqus/v2')
+  async disqusv2(@Headers() headers, @Body() ContentDto_: ContentDto,) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/disqus/v2";
+
+    console.log('>>>>>>>>>> HEADER <<<<<<<<<<', JSON.stringify(headers))
+    console.log('>>>>>>>>>> CONTENT DTO <<<<<<<<<<', JSON.stringify(ContentDto_))
+    var email_header = headers['x-auth-user'];
+    let type = "";
+    let isQuery = 'false';
+    let res = new DisqusResponseApps();
+
+    if (ContentDto_.eventType == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(ContentDto_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException('Unabled to proceed eventType is required',);
+    } else {
+      type = ContentDto_.eventType.toString();
+    }
+
+    if ((type == "DIRECT_MSG") || (type == "COMMENT")) {
+      var isValid = false;
+      isQuery = String(ContentDto_.isQuery);
+      console.log("processDisqus >>> event: " + ContentDto_.eventType + " with isQuery: " + isQuery);
+      if (isQuery == undefined || isQuery == 'false') {
+        if (type == "DIRECT_MSG") {
+
+          let xres = await this.buildDisqus(ContentDto_, true);
+
+          console.log("processDisqus >>> receiver: ", xres.disqusLogs[0].receiver);
+          var xc = this.disqusService.sendDMNotif(String(xres.room), JSON.stringify(xres));
+          console.log(xc)
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(ContentDto_));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);
+
+          res.response_code = 202;
+          let m = new Messages();
+          m.info = ["The process successful"]
+          res.messages = m;
+          res.data = [xres];
+          return res;
+          //retVal.push(this.buildDisqus(ContentDto_, true));
+          //ContentDto_.disqus = retVal;
+          //isValid = true;
+          //for (var retValCount = 0; retValCount < retVal.length; retValCount++){
+          //  if (retVal[retValCount].room != undefined) {
+          //    var roomName = retVal[retValCount].room;
+          //  }
+          // String roomName = AppUtils.getAsStr(it, QueryEnum.ROOM_FLD.getName());
+          //var roomName = retVal[retValCount].room;
+          //}
+        } else if ((type == "COMMENT") && (ContentDto_.postID != undefined)) {
+          console.log("Payload Insert Comment >>>>>> : ", ContentDto_);
+          if (ContentDto_.email == undefined) {
+            ContentDto_.email = email_header;
+          }
+          if (ContentDto_.postID != undefined) {
+            var Posts_ = new Posts();
+            Posts_ = await this.postDisqusService.findid(ContentDto_.postID.toString());
+            ContentDto_.receiverParty = Posts_.email;
+            ContentDto_.postType = Posts_.postType;
+          }
+          if (ContentDto_.tagComment != undefined) {
+            var _tagComment_ = ContentDto_.tagComment;
+            ContentDto_.tagComment_ = _tagComment_.toString().split(',').map(function (n) {
+              return n.toString();
+            });
+          }
+          let xres = await this.buildComments(ContentDto_, true);
+          if (ContentDto_.tagComment != undefined) {
+            console.log("TAG COMMAND =============================================> ", ContentDto_.tagComment_);
+            if (ContentDto_.tagComment_.length > 0) {
+              for (var n = 0; n < ContentDto_.tagComment_.length; n++) {
+                console.log("TAG COMMAND " + n + "=============================================> ", ContentDto_.tagComment_[n]);
+                var userAuth = await this.userauthsService.findByUsername(ContentDto_.tagComment_[n]);
+                if (await this.utilsService.ceckData(userAuth)) {
+                  var UserEmail = userAuth.email.toString();
+                  this.sendCommentFCM(UserEmail, "COMMENT_TAG", ContentDto_.postID.toString(), ContentDto_.email.toString())
+                }
+              }
+            }
+          }
+
+          if (ContentDto_.parentID != undefined) {
+            if (ContentDto_.parentID != "") {
+              var discuslogGet = await this.disqusLogService.findDisqusLogByParentID(ContentDto_.parentID.toString())
+              if (await this.utilsService.ceckData(discuslogGet)) {
+                var UserEmail = discuslogGet.sender.toString();
+                if (ContentDto_.receiverParty != ContentDto_.email.toString()) {
+                  this.sendCommentFCM(UserEmail, "COMMENT_TAG", ContentDto_.postID.toString(), ContentDto_.email.toString())
+                }
+              }
+            }
+          }
+          if (ContentDto_.receiverParty != ContentDto_.email.toString()) {
+            this.sendCommentFCM(ContentDto_.receiverParty.toString(), "COMMENT", ContentDto_.postID.toString(), ContentDto_.email.toString())
+          }
+          this.insightsService.updateComment(ContentDto_.receiverParty.toString());
+          this.postDisqusService.updateCommentPlus(ContentDto_.postID.toString());
+
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(ContentDto_));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);
+
+          res.response_code = 202;
+          let m = new Messages();
+          m.info = ["The process successful"]
+          res.messages = m;
+          res.data = [xres];
+          return res;
+        }
+      } else {
+        if (type == "DIRECT_MSG") {
+
+          console.log("processDisqus >>> DIRECT_MSG: ", String(ContentDto_.email));
+          let tmp: DisqusResDto[] = [];
+
+          let dm = [];
+          if (ContentDto_.disqusID != undefined) {
+            dm = await this.disqusService.queryDiscussV2ByDisqusIs(String(ContentDto_.disqusID), String(ContentDto_.email));
+          } else {
+            dm = await this.disqusService.queryDiscussV2(String(ContentDto_.email));
+          }
+          //console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DM ', JSON.stringify(dm));
+
+          var ApsaraArrayImage = [];
+          var ApsaraArrayVideo = [];
+
+          let vapsara = undefined;
+          let papsara = undefined;
+          if (dm != undefined && dm.length > 0) {
+            for (let i = 0; i < dm.length; i++) {
+              let o = dm[i];
+              for (let x = 0; x < o.disqusLogs.length; x++) {
+                let dl = o.disqusLogs[x];
+                if (o.disqusLogs[x].medias != undefined) {
+                  if (o.disqusLogs[x].medias.length > 0) {
+                    if (o.disqusLogs[x].medias.length > 0) {
+                      if (o.disqusLogs[x].medias[0] != undefined) {
+                        if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
+                          if (o.disqusLogs[x].medias[0].mediaType != undefined) {
+                            if (o.disqusLogs[x].medias[0].mediaType == 'image') {
+                              if (!(ApsaraArrayVideo.includes((o.disqusLogs[x].medias[0].apsaraId)))) {
+                                ApsaraArrayImage.push((o.disqusLogs[x].medias[0].apsaraId));
+                              }
+                            } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
+                              if (!(ApsaraArrayVideo.includes((o.disqusLogs[x].medias[0].apsaraId)))) {
+                                ApsaraArrayVideo.push((o.disqusLogs[x].medias[0].apsaraId));
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            // for (let i = 0; i < dm.length; i++) {
+            //   let o = dm[i];
+            //   if (o.emot != undefined && o.emot.length > 0) {
+            //     for (let x = 0; x < o.disqusLogs.length; x++) {
+            //       let dl = o.disqusLogs[x];
+            //       if (dl.reactionUri != undefined) {
+            //         for (let y = 0; y < o.emot.length; y++) {
+            //           if (dl.reactionUri == o.emot[y].URL) {
+            //             if (o.disqusLogs[x].medias != undefined) {
+            //               if (o.disqusLogs[x].medias.length > 0) {
+            //                 if (o.disqusLogs[x].medias.length > 0) {
+            //                   if (o.disqusLogs[x].medias[0] != undefined) {
+            //                     if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
+            //                       if (o.disqusLogs[x].medias[0].mediaType != undefined) {
+            //                         if (o.disqusLogs[x].medias[0].mediaType == 'image') {
+            //                           ApsaraArrayImage.push((o.disqusLogs[x].medias[0].apsaraId));
+            //                         } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
+            //                           ApsaraArrayVideo.push((o.disqusLogs[x].medias[0].apsaraId));
+            //                         }
+            //                       }
+            //                     }
+            //                   }
+            //                 }
+            //               }
+            //             }
+            //             break;
+            //           }
+            //         }
+            //       }
+            //     }
+            //   }
+            // }
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ApsaraArrayImage ', ApsaraArrayImage);
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ApsaraArrayVideo ', ApsaraArrayVideo);
+          }
+
+          if (ApsaraArrayVideo.length > 0) {
+            vapsara = await this.postDisqusService.getVideoApsara(ApsaraArrayVideo);
+          }
+          //console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> vapsara', JSON.stringify(vapsara));
+
+          if (ApsaraArrayImage.length > 0) {
+            papsara = await this.postDisqusService.getImageApsara(ApsaraArrayImage);
+          }
+          //console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> papsara', JSON.stringify(papsara));
+
+          if (dm != undefined && dm.length > 0) {
+            for (let i = 0; i < dm.length; i++) {
+              let o = dm[i];
+              for (let x = 0; x < o.disqusLogs.length; x++) {
+                let dl = o.disqusLogs[x];
+                if (dl.reactionUri != undefined) {
+                  for (let y = 0; y < o.emot.length; y++) {
+                    if (dl.reactionUri == o.emot[y].URL) {
+                      o.disqusLogs[x].reaction_icon = o.emot[y].icon;
+                      break;
+                    }
+                  }
+                }
+                if (o.disqusLogs[x].medias != undefined) {
+                  if (o.disqusLogs[x].medias.length > 0) {
+                    if (o.disqusLogs[x].medias.length > 0) {
+                      if (o.disqusLogs[x].medias[0] != undefined) {
+                        if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
+                          if (o.disqusLogs[x].medias[0].mediaType != undefined) {
+                            if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
                               var ApsaraId = o.disqusLogs[x].medias[0].apsaraId;
                               console.log(ApsaraId)
                               if (o.disqusLogs[x].medias[0].mediaType == 'image') {
@@ -1287,6 +1760,217 @@ export class DisqusController {
     return retVal;
   }
 
+  private async buildDisqusv2(dto: ContentDto, buildInteractive: boolean) {
+    let cts = await this.disquscontactsService.findByEmailAndMate(dto.email.toString(), dto.receiverParty.toString());
+    let dis = new Disqus();
+    if (cts != undefined && cts.length > 0) {
+      let ct = cts[0];
+      console.log(ct.disqus_data_.disqusID);
+      dis = await this.disqusService.findById(ct.disqus_data_.disqusID);
+      console.log(dis._id);
+    } else {
+      var DataId = await this.utilsService.generateId();
+      dis._id = DataId;
+      dis.room = DataId;
+      dis.disqusID = DataId;
+      dis.eventType = dto.eventType;
+      dis.email = dto.email;
+      dis.mate = dto.receiverParty;
+      dis.active = dto.active;
+      dis.createdAt = await this.utilsService.getDateTimeString();
+      dis.updatedAt = await this.utilsService.getDateTimeString();
+    }
+
+    if (dto.postID != undefined) {
+      if (buildInteractive) {
+        // Add reaction in post
+        // let post = await this.postDisqusService.findid(dto.postID.toString());
+        // let y = Number(post.reactions);
+        // y = y + 1;
+        // let yy = <any> y;
+        // post.reactions = yy;
+
+        // let cser = await this.contenteventsService.findSenderOrReceiverByPostID(String(post.postID), 'REACTION', String(dto.email), String(dto.receiverParty));
+
+        // let insSender = this.insightsService.findemail(String(dto.email));
+        // let insReceiver = this.insightsService.findemail(String(dto.receiverParty));
+      }
+    }
+
+    //add disquslog
+
+    let dl = new Disquslogs();
+    var dlid = await this.utilsService.generateId();
+    dl.createdAt = await this.utilsService.getDateTimeString();
+    dl._id = dlid;
+    dl.sender = dto.email;
+    dl.receiver = dto.receiverParty;
+    dl.postType = dto.postType;
+    dl.txtMessages = dto.txtMessages;
+    dl.reactionUri = dto.reactionUri;
+    dl.disqusID = dis.disqusID;
+    if (dto.postID != undefined) {
+      dl.postID = dto.postID;
+
+      var post = await this.postDisqusService.findByPostId(dto.postID.toString());
+      var media = await this.postDisqusService.findOnepostID3(post);
+      var media_ = {}
+      if (await this.utilsService.ceckData(media)) {
+        if (post.createdAt != undefined) {
+          media_["createdAt"] = post.createdAt;
+        }
+        if (media[0].datacontent[0].mediaBasePath != undefined) {
+          media_["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
+        }
+        if (post.postType != undefined) {
+          media_["postType"] = post.postType;
+        }
+        if (media[0].datacontent[0].mediaUri != undefined) {
+          media_["mediaUri"] = media[0].datacontent[0].mediaUri;
+        }
+        if (media[0].datacontent[0].mediaUri != undefined) {
+          media_["mediaThumbUri"] = media[0].datacontent[0].mediaThumb;
+        }
+        if (post.description != undefined) {
+          media_["description"] = post.description;
+        }
+        if (post.active != undefined) {
+          media_["active"] = post.active;
+        }
+        if (media[0].datacontent[0].mediaType != undefined) {
+          media_["mediaType"] = media[0].datacontent[0].mediaType;
+        }
+        if (media[0].datacontent[0].mediaType != undefined) {
+          media_["mediaThumbEndpoint"] = "/thumb/" + post.postID;
+        }
+        if (post.postID != undefined) {
+          media_["postID"] = post.postID;
+        }
+        if (media[0].datacontent[0].mediaUri != undefined) {
+          media_["mediaEndpoint"] = "/stream/" + media[0].datacontent[0].mediaUri;
+        }
+        if (media[0].datacontent[0].apsara != undefined) {
+          media_["apsara"] = media[0].datacontent[0].apsara
+        }
+        if (media[0].datacontent[0].apsaraId != undefined) {
+          media_["apsaraId"] = media[0].datacontent[0].apsaraId
+        }
+        dl.medias = [media_];
+      }
+    }
+    let ndl = await this.disqusLogService.create(dl);
+
+    let agg = await this.aggrDisqusLogV2(String(dto.eventType), dl);
+    let retVal = new DisqusResDto();
+    let arr: DisquslogsDto[] = [];
+    arr.push(agg);
+    retVal.disqusLogs = arr;
+
+    var usp = { "$ref": "disquslogs", "$id": String(ndl._id), "$db": "hyppe_content_db" };
+    let usparr = [];
+    if (dis.disqusLogs != undefined) {
+      usparr = dis.disqusLogs;
+    }
+    usparr.push(usp);
+    dis.disqusLogs = usparr;
+
+    dis.updatedAt = dl.createdAt;
+    dis.lastestMessage = dl.txtMessages.substring(0, 21);
+    dis.mateActive = true;
+    dis.emailActive = true;
+    this.disqusService.create(dis);
+
+    if (cts == undefined || cts.length < 1) {
+
+      let c0 = new Disquscontacts();
+      var usy = { "$ref": "disqus", "$id": String(dis._id), "$db": "hyppe_content_db" };
+      c0.disqus = usy;
+      var c0id = await this.utilsService.generateId();
+      c0._id = c0id;
+      c0.mate = dto.receiverParty;
+      c0.email = dto.email;
+      this.disquscontactsService.create(c0);
+
+      let c1 = new Disquscontacts();
+      var usy = { "$ref": "disqus", "$id": String(dis._id), "$db": "hyppe_content_db" };
+      c1.disqus = usy;
+      var c1id = await this.utilsService.generateId();
+      c1._id = c1id;
+      c1.mate = dto.email;
+      c1.email = dto.receiverParty;
+      this.disquscontactsService.create(c1);
+    }
+
+    retVal.type = "MESSAGES";
+    retVal.email = dis.email;
+    retVal.room = dis.room;
+    retVal.disqusID = dis.disqusID;
+
+    retVal.eventType = dis.eventType;
+    retVal.active = dis.active;
+    retVal.createdAt = dis.createdAt;
+    retVal.updatedAt = dis.updatedAt;
+    retVal.lastestMessage = dis.lastestMessage;
+
+    var profile = await this.utilsService.generateProfile(String(dis.email), 'PROFILE');
+    if (profile.username != undefined) {
+      retVal.username = profile.username;
+    }
+    if (profile.fullName != undefined) {
+      retVal.fullName = profile.fullName;
+    }
+    if (profile.avatar != undefined) {
+      retVal.avatar = profile.avatar;
+    }
+    if (profile.urluserBadge != undefined) {
+      retVal.urluserBadge = profile.urluserBadge;
+    } else {
+      retVal.urluserBadge = [];
+    }
+
+
+    var profile_mate = await this.utilsService.generateProfile(String(dis.mate), 'PROFILE');
+    var mateInfo = {};
+    if (profile_mate.username != undefined) {
+      mateInfo['username'] = profile_mate.username;
+    }
+    if (profile_mate.fullName != undefined) {
+      mateInfo['fullName'] = profile_mate.fullName;
+    }
+    if (profile_mate.avatar != undefined) {
+      mateInfo['avatar'] = profile_mate.avatar;
+    }
+    if (profile_mate.urluserBadge != undefined) {
+      mateInfo['urluserBadge'] = profile_mate.urluserBadge;
+    } else {
+      mateInfo['urluserBadge'] = [];
+    }
+    mateInfo['email'] = dis.mate;
+    retVal.mate = mateInfo;
+
+    var senderReciverInfo = {};
+    var currentEmail = dto.email;
+    if ((profile_mate != null) && (profile != null) && (currentEmail == profile_mate.email)) {
+      senderReciverInfo['email'] = profile.fullName;
+      senderReciverInfo['username'] = profile.username;
+      senderReciverInfo['fullName'] = profile.fullName;
+      if (profile.avatar != null) {
+        senderReciverInfo['avatar'] = profile.avatar;
+      }
+    } else if ((profile_mate != null) && (profile != null) && (currentEmail == profile.email)) {
+      senderReciverInfo['email'] = profile_mate.fullName;
+      senderReciverInfo['username'] = profile_mate.username;
+      senderReciverInfo['fullName'] = profile_mate.fullName;
+      if (profile_mate.avatar != null) {
+        senderReciverInfo['avatar'] = profile_mate.avatar;
+      }
+    }
+    retVal.senderOrReceiverInfo = senderReciverInfo;
+
+    return retVal;
+  }
+
+
   private async buildDisqus0(ContentDto_: ContentDto, buildInteractive: boolean) {
     var cts: Disquscontacts[] = [];
     cts = await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
@@ -1342,7 +2026,7 @@ export class DisqusController {
     @Headers() headers,
     @Body() request: any,
     @Req() req) {
-    
+
     var fullurl = req.get("Host") + req.originalUrl;
 
     return this.DisqusService.deletedicuss(headers['x-auth-user'], fullurl, request);

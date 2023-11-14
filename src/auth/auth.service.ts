@@ -12283,13 +12283,13 @@ export class AuthService {
         );
 
       //Ceck UserAuth
-      const user_auths = await this.userauthsService.findOne(user_email);
-      const passuser = user_auths.password;
+      // const user_auths = await this.userauthsService.findOne(user_email);
+      const passuser = datauserbasicsService.password;
       isMatch = await this.utilsService.comparePassword(user_oldPass, passuser);
 
       if (Object.keys(user_activityevents).length > 0) {
         if (isMatch) {
-          this.userauthsService.updatebyEmail(user_email, {
+          this.basic2SS.updatebyEmail(user_email, {
             isEmailVerified: true,
             password: await this.utilsService.generatePassword(user_newPass),
           });
