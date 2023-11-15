@@ -343,7 +343,7 @@ export class TopupsController {
         //KALKULATE PPH 15%
         if (DP > (Number(60000000)) && (DP <= Number(250000000))) {
           pph = 0.15;
-          pph_15_persen = (DP - 250000000) * pph;
+          pph_15_persen = (DP - 60000000) * pph;
         }else{
           if (DP > Number(250000000)){
             pph_15_persen = 28500000; 
@@ -352,7 +352,7 @@ export class TopupsController {
         //KALKULATE PPH 25%
         if (DP > (Number(250000000)) && (DP <= Number(500000000))) {
           pph = 0.25;
-          pph_25_persen = (DP - 60000000) * pph;
+          pph_25_persen = (DP - 250000000) * pph;
         }else{
           if (DP > Number(250000000)) {
             pph_25_persen = 62500000;
@@ -370,11 +370,13 @@ export class TopupsController {
 
 
         let PPH = pph_5_persen + pph_15_persen + pph_25_persen + pph_30_persen;
+        console.log("----------------------------PPH----------------------------",PPH);
         if (Topups_.npwp.toLowerCase() == "yes") {
           pphPrice = PPH;
         }else{
           pphPrice = PPH*1.2;
         }
+        console.log("----------------------------pphPrice----------------------------", pphPrice);
 
         //TOT CALCULATE
         let tot = <any>(Topups_.topup - pphPrice);
