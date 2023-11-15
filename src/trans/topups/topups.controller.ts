@@ -323,56 +323,73 @@ export class TopupsController {
   async getDataTopup(Topups_: Topups){
     try{
       if (Topups_.npwp !=undefined){
-        if (Topups_.npwp.toLowerCase()=="yes") {
-          //PPH
-          let pph = 0;
-          if (Number(Topups_.topup) <= Number(2500000)) {
-            pph = 0.05;
-            console.log(pph);
-          } else if ((Number(2500000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(30000000))) {
-            pph = 0.15;
-            console.log(pph);
-          } else if ((Number(30000000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(62500000))) {
-            pph = 0.25;
-            console.log(pph);
-          } else if ((Number(62500000) < Number(Topups_.topup)) && (Number(Topups_.topup) <= Number(150000000))) {
-            pph = 0.3;
-            console.log(pph);
-          } else {
-            pph = 0.3;
-            console.log(pph);
-          }
+        //PPH
+        let pph_5_persen = 0;
+        let pph_15_persen = 0;
+        let pph_25_persen = 0;
+        let pph_30_persen = 0;
+        let pphPrice = 0;
+        let pph = 0;
 
-          //PPH CALCULATE
-          let pphPrice = <any>((Topups_.topup / 2) * pph);
-          //TOT CALCULATE
-          let tot = <any>(Topups_.topup - pphPrice);
-
-          Topups_._id = new mongoose.Types.ObjectId();
-          Topups_.pph = pphPrice;
-          Topups_.total = tot;
-          Topups_.approveByFinance = false;
-          Topups_.approveByStrategy = false;
-          Topups_.approve = false;
-          Topups_.status = "NEW";
-          Topups_.pphPersen = <any>pph;
-          return {
-            status: true,
-            Topups: Topups_
+        let DP = Number(Topups_.topup)/2;
+        
+        //KALKULATE PPH 5%
+        if (DP <= (Number(60000000))) {
+          pph = 0.05;
+          pph_5_persen = <any>((Topups_.topup / 2) * pph);
+        }else{
+          pph_5_persen = 3000000;
+        }
+        //KALKULATE PPH 15%
+        if (DP > (Number(60000000)) && (DP <= Number(250000000))) {
+          pph = 0.15;
+          pph_15_persen = (DP - 250000000) * pph;
+        }else{
+          if (DP > Number(250000000)){
+            pph_15_persen = 28500000; 
           }
+        }
+        //KALKULATE PPH 25%
+        if (DP > (Number(250000000)) && (DP <= Number(500000000))) {
+          pph = 0.25;
+          pph_25_persen = (DP - 60000000) * pph;
+        }else{
+          if (DP > Number(250000000)) {
+            pph_25_persen = 62500000;
+          }
+        }
+        //KALKULATE PPH 30%
+        if (DP > Number(500000000)) {
+          pph = 0.3;
+          pph_30_persen = (DP - 500000000) * pph;
         } else {
-          Topups_._id = new mongoose.Types.ObjectId();
-          Topups_.pph = 0;
-          Topups_.total = Topups_.topup;
-          Topups_.approveByFinance = false;
-          Topups_.approveByStrategy = false;
-          Topups_.approve = false;
-          Topups_.status = "NEW";
-          Topups_.pphPersen = 0;
-          return {
-            status: true,
-            Topups: Topups_
+          if (DP > Number(500000000)) {
+            pph_30_persen = 150000000;
           }
+        }
+
+
+        let PPH = pph_5_persen + pph_15_persen + pph_25_persen + pph_30_persen;
+        if (Topups_.npwp.toLowerCase() == "yes") {
+          pphPrice = PPH;
+        }else{
+          pphPrice = PPH*1.2;
+        }
+
+        //TOT CALCULATE
+        let tot = <any>(Topups_.topup - pphPrice);
+
+        Topups_._id = new mongoose.Types.ObjectId();
+        Topups_.pph = pphPrice;
+        Topups_.total = tot;
+        Topups_.approveByFinance = false;
+        Topups_.approveByStrategy = false;
+        Topups_.approve = false;
+        Topups_.status = "NEW";
+        Topups_.pphPersen = <any>pph;
+        return {
+          status: true,
+          Topups: Topups_
         }
       }else{
         Topups_._id = new mongoose.Types.ObjectId();
