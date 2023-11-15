@@ -3,7 +3,7 @@ import mongoose, { Document } from 'mongoose';
 
 export type NewcontenteventsDocument = Newcontentevents & Document;
 
-@Schema()
+@Schema({ collection: 'newContentEvents' })
 export class Newcontentevents {
     @Prop()
     _id: String;

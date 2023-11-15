@@ -949,9 +949,9 @@ export class NewcontenteventsService {
         const query = this.NewcontenteventsModel.find(Where)
             .limit(pageRow)
             .skip(pageRow * pageNumber).sort(sort);
+        console.log(query)
         return query;
     }
-
     async findfriend(email: string) {
 
         let query = await this.NewcontenteventsModel.aggregate(
