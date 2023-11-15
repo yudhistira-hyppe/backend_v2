@@ -264,7 +264,7 @@ export class ThemeController {
                 'Unabled to proceed param name is required',
             );
         }
-        var profile = await this.utilsService.generateProfile(headers['x-auth-user'], "FULL");
+        var profile = await this.utilsService.generateProfile2(headers['x-auth-user'], "FULL");
         if (!(await this.utilsService.ceckData(profile))) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
@@ -388,7 +388,7 @@ export class ThemeController {
                 'Unabled to proceed email header dan token not match',
             );
         }
-        var profile = await this.utilsService.generateProfile(headers['x-auth-user'], "FULL");
+        var profile = await this.utilsService.generateProfile2(headers['x-auth-user'], "FULL");
         if (!(await this.utilsService.ceckData(profile))) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
