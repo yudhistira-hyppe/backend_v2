@@ -108,15 +108,19 @@ export class UserbankaccountsService {
     async findnorekkembar(noRek: string): Promise<Userbankaccounts> {
         return this.userbankaccountsModel.findOne({ noRek: noRek }).exec();
     }
-    async findnorek(noRek: string, idBank: string): Promise<Userbankaccounts> {
+    async findnorek(noRek: string, idBank: ObjectId): Promise<Userbankaccounts> {
         return this.userbankaccountsModel.findOne({ noRek: noRek, idBank: idBank }).exec();
     }
 
-    async findnorekWithdraw(noRek: string, idBank: string, nama: string): Promise<Userbankaccounts> {
+    async findnorekWithdraw(noRek: string, idBank: ObjectId, nama: string): Promise<Userbankaccounts> {
         return this.userbankaccountsModel.findOne({ noRek: noRek, idBank: idBank, nama: nama }).exec();
     }
-    async findnorekWithdrawuser(noRek: string, idBank: string, userid: ObjectId): Promise<Userbankaccounts> {
+    async findnorekWithdrawuser(noRek: string, idBank: ObjectId, userid: ObjectId): Promise<Userbankaccounts> {
         return this.userbankaccountsModel.findOne({ userId: userid, noRek: noRek, idBank: idBank }).exec();
+    }
+
+    async findnorekWithdrawuser2(noRek: string, idBank: ObjectId, userid: string): Promise<Userbankaccounts> {
+        return this.userbankaccountsModel.findOne({ userId: new Types.ObjectId(userid), noRek: noRek, idBank: idBank, active: true }).exec();
     }
     async create(CreateUserbankaccountsDto: CreateUserbankaccountsDto): Promise<Userbankaccounts> {
         let data = await this.userbankaccountsModel.create(CreateUserbankaccountsDto);

@@ -75,8 +75,8 @@ export class TransactionsController {
         private readonly mediavideosService: MediavideosService,
         private readonly mediapictsService: MediapictsService,
         private readonly languagesService: LanguagesService,
-        private readonly adsService: AdsService, 
-        private readonly adsBalaceCreditService: AdsBalaceCreditService, 
+        private readonly adsService: AdsService,
+        private readonly adsBalaceCreditService: AdsBalaceCreditService,
         private readonly voucherpromoService: VoucherpromoService,
         private readonly logapiSS: LogapisService,
         private readonly adsPriceCreditsService: AdsPriceCreditsService,
@@ -89,7 +89,7 @@ export class TransactionsController {
     async create(@Res() res, @Headers('x-auth-token') auth: string, @Headers('x-auth-user') email: string, @Body() CreateTransactionsDto: CreateTransactionsDto, @Request() request) {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = request.get("Host") + request.originalUrl;
-        
+
         const messages = {
             "info": ["The create successful"],
         };
@@ -884,14 +884,14 @@ export class TransactionsController {
                             CreateTransactionsDto.response = datareqva;
 
                             //VOUCHER PROMO
-                            if (CreateTransactionsDto.voucherpromo!=undefined){
+                            if (CreateTransactionsDto.voucherpromo != undefined) {
                                 if (CreateTransactionsDto.voucherpromo.length > 0) {
                                     var valueAllPromo = 0;
                                     var dataVoucherPromo = [];
                                     for (var i = 0; 1 < CreateTransactionsDto.voucherpromo.length; i++) {
                                         var voucherPending = 0;
                                         var dataVoucher = await this.voucherpromoService.findOneActive(CreateTransactionsDto.voucherpromo[i]);
-                                        if (dataVoucher.quantity != undefined){
+                                        if (dataVoucher.quantity != undefined) {
                                             if (dataVoucher.quantity > 0) {
                                                 var ceckPromoUsedPending = await this.transactionsService.findCodePromoUsedPending(CreateTransactionsDto.voucherpromo[i]);
                                                 if (await this.utilsService.ceckData(ceckPromoUsedPending)) {
@@ -1572,7 +1572,7 @@ export class TransactionsController {
                         await this.transactionsService.updateoneVoucher(idtransaction, idbalance, payload);
                         await this.utilsService.sendFcmWebMode(emailseller.toString(), titleinsuksesvoucher, titleensuksesvoucher, bodyinsuksesvoucher, bodyensuksesvoucher, eventType, event, undefined, "TRANSACTION", noinvoice, "TRANSACTION");
                         await this.utilsService.sendFcmWebMode(emailbuyer.toString(), titleinsuksesbelivoucher, titleensuksesbelivoucher, bodyinsuksesbelivoucher, bodyensuksesbelivoucher, eventType, event, postid, "TRANSACTION", noinvoice, "TRANSACTION");
-                        
+
                         for (var i = 0; i < lengtvoucherid; i++) {
                             var postvcid = detail[i].id.toString();
                             var jml = detail[i].qty;
@@ -1613,9 +1613,9 @@ export class TransactionsController {
                         }
 
                         //UPDATE VOUCHER PROMO
-                        if (datatransaksi.voucherpromo!=undefined) {
-                            if (datatransaksi.voucherpromo.length>0) {
-                                for (var i = 0; i < datatransaksi.voucherpromo.length;i++){
+                        if (datatransaksi.voucherpromo != undefined) {
+                            if (datatransaksi.voucherpromo.length > 0) {
+                                for (var i = 0; i < datatransaksi.voucherpromo.length; i++) {
                                     this.voucherpromoService.updateQuantity(datatransaksi.voucherpromo[i]);
                                 }
                             }
@@ -1836,7 +1836,8 @@ export class TransactionsController {
         var setauth = JSON.parse(Buffer.from(auth.split('.')[1], 'base64').toString());
         var setemail = setauth.email;
         var reqbody = JSON.parse(JSON.stringify(OyDisbursements));
-        
+
+
         if (OyDisbursements.pin != undefined) {
             if (OyDisbursements.email != undefined) {
                 var ubasic = await this.userbasicsService.findOne(OyDisbursements.email);
@@ -1862,7 +1863,7 @@ export class TransactionsController {
                 } else {
                     var timestamps_end = await this.utilsService.getDateTimeString();
                     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
-                    
+
                     await this.errorHandler.generateNotAcceptableException(
                         "Unabled to proceed, User not found",
                     );
@@ -1922,7 +1923,7 @@ export class TransactionsController {
 
             throw new BadRequestException("Unabled to proceed");
         }
-        // var ubasic = await this.userbasicsService.findOne(email);
+        var ubasic = await this.userbasicsService.findOne(email);
 
         var iduser = ubasic._id;
         var amounreq = OyDisbursements.amount;
@@ -1947,6 +1948,9 @@ export class TransactionsController {
         var iduseradmin = "62144381602c354635ed786a";
         var datainquiry = null;
         var data = null;
+        var dtnow = new Date(Date.now());
+        dtnow.setHours(dtnow.getHours() + 7); // timestamp
+        dtnow = new Date(dtnow);
         // var valueinquiry = null;
         var idinquirycharge = "63217ae5ec46000002007405";
         var totalinquiry = null;
@@ -1990,7 +1994,7 @@ export class TransactionsController {
         }
 
         try {
-            datarek = await this.userbankaccountsService.findnorek(recipient_account, idbank);
+            datarek = await this.userbankaccountsService.findnorekWithdrawuser2(recipient_account, idbank, iduser.toString());
             var idbankaccount = datarek._doc._id;
             norekdb = datarek._doc.noRek;
             namarek = datarek._doc.nama;
@@ -2065,7 +2069,7 @@ export class TransactionsController {
 
                     if (statuscode === "000") {
                         let dtburs = new Date(strdate);
-                        dtburs.setHours(dtburs.getHours() + 14); // timestamp
+                        dtburs.setHours(dtburs.getHours() + 7); // timestamp
                         dtburs = new Date(dtburs);
                         let dtb = dtburs.toISOString();
                         await this.accontbalanceWithdraw(iduser, valuedisbcharge, "disbursement");
@@ -2077,13 +2081,14 @@ export class TransactionsController {
                         datawithdraw.description = OyDisbursements.note;
                         datawithdraw.idUser = iduser;
                         datawithdraw.status = statusmessage;
-                        datawithdraw.timestamp = dtb;
+                        datawithdraw.timestamp = dtnow.toISOString();
                         datawithdraw.verified = false;
                         datawithdraw.partnerTrxid = partnertrxid;
                         datawithdraw.statusOtp = null;
                         datawithdraw.totalamount = totalamount;
                         datawithdraw.idAccountBank = idbankaccount;
                         datawithdraw.responOy = datadisbursemen;
+                        datawithdraw.statusCode = statusdisb;
                         var datatr = await this.withdrawsService.create(datawithdraw);
                         await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
 
@@ -2142,9 +2147,9 @@ export class TransactionsController {
 
 
                     }
-                    else if (statuscode === "101" || statuscode === "102") {
+                    else if (statuscode === "101" || statuscode === "102" || statuscode === "301") {
                         let dtburs = new Date(strdate);
-                        dtburs.setHours(dtburs.getHours() + 14); // timestamp
+                        dtburs.setHours(dtburs.getHours() + 7); // timestamp
                         dtburs = new Date(dtburs);
                         let dtb = dtburs.toISOString();
                         await this.accontbalanceWithdraw(iduser, valuedisbcharge, "disbursement");
@@ -2156,13 +2161,14 @@ export class TransactionsController {
                         datawithdraw.description = OyDisbursements.note;
                         datawithdraw.idUser = iduser;
                         datawithdraw.status = statusmessage;
-                        datawithdraw.timestamp = dtb;
+                        datawithdraw.timestamp = dtnow.toISOString();
                         datawithdraw.verified = false;
                         datawithdraw.partnerTrxid = partnertrxid;
                         datawithdraw.statusOtp = null;
                         datawithdraw.totalamount = totalamount;
                         datawithdraw.idAccountBank = idbankaccount;
                         datawithdraw.responOy = datadisbursemen;
+                        datawithdraw.statusCode = statusdisb;
                         var datatr = await this.withdrawsService.create(datawithdraw);
                         await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
 
@@ -2224,7 +2230,7 @@ export class TransactionsController {
                     }
                     else {
                         let dtburs = new Date();
-                        dtburs.setHours(dtburs.getHours() + 14); // timestamp
+                        dtburs.setHours(dtburs.getHours() + 7); // timestamp
                         dtburs = new Date(dtburs);
                         let dtb = dtburs.toISOString();
                         let datawithdraw = new CreateWithdraws();
@@ -2234,13 +2240,14 @@ export class TransactionsController {
                         datawithdraw.description = OyDisbursements.note;
                         datawithdraw.idUser = iduser;
                         datawithdraw.status = statusmessage;
-                        datawithdraw.timestamp = dtb;
+                        datawithdraw.timestamp = dtnow.toISOString();
                         datawithdraw.verified = false;
                         datawithdraw.partnerTrxid = partnertrxid;
                         datawithdraw.statusOtp = null;
                         datawithdraw.totalamount = totalamount;
                         datawithdraw.idAccountBank = idbankaccount;
                         datawithdraw.responOy = datadisbursemen;
+                        datawithdraw.statusCode = statusdisb;
                         var datatr = await this.withdrawsService.create(datawithdraw);
 
                         var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2256,7 +2263,7 @@ export class TransactionsController {
                 else {
                     // throw new BadRequestException("Request is Rejected (API Key is not Valid)");
                     let dtburs = new Date();
-                    dtburs.setHours(dtburs.getHours() + 14); // timestamp
+                    dtburs.setHours(dtburs.getHours() + 7); // timestamp
                     dtburs = new Date(dtburs);
                     let dtb = dtburs.toISOString();
                     let datawithdraw = new CreateWithdraws();
@@ -2266,13 +2273,14 @@ export class TransactionsController {
                     datawithdraw.description = OyDisbursements.note;
                     datawithdraw.idUser = iduser;
                     datawithdraw.status = statusmessagedis;
-                    datawithdraw.timestamp = dtb;
+                    datawithdraw.timestamp = dtnow.toISOString();
                     datawithdraw.verified = false;
                     datawithdraw.partnerTrxid = partnertrxid;
                     datawithdraw.statusOtp = null;
                     datawithdraw.totalamount = totalamount;
                     datawithdraw.idAccountBank = idbankaccount;
                     datawithdraw.responOy = datadisbursemen;
+                    datawithdraw.statusCode = statusdisb;
                     var datatr = await this.withdrawsService.create(datawithdraw);
 
                     var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2306,6 +2314,9 @@ export class TransactionsController {
         var datarek = null;
         var databank = null;
         var idbank = null;
+        var datasettingdisbvercharge = null;
+        var valuedisbcharge = null;
+        var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
 
         var recipient_name = payload.recipient_name;
         var recipient_bank = payload.recipient_bank;
@@ -2313,6 +2324,14 @@ export class TransactionsController {
         var partner_trx_id = payload.partner_trx_id;
         var statusCallback = payload.status.code;
         var statusMessage = payload.status.message;
+
+        try {
+            datasettingdisbvercharge = await this.settingsService.findOne(idBankDisbursmentCharge);
+            valuedisbcharge = datasettingdisbvercharge._doc.value;
+
+        } catch (e) {
+            throw new BadRequestException("Setting value not found..!");
+        }
         try {
             databank = await this.banksService.findbankcode(recipient_bank);
             idbank = databank._doc._id;
@@ -2352,7 +2371,7 @@ export class TransactionsController {
 
             else if (statusCallback === "210") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload);
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload, statusCallback);
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
@@ -2366,20 +2385,45 @@ export class TransactionsController {
 
             else if (statusCallback === "300") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
+                let data = null;
+                let statusCode = null;
+                let idUser = null;
+                let totalamount = null;
+                try {
+                    data = await this.withdrawsService.findParteneridtrx(partner_trx_id);
+                } catch (e) {
+                    data = null;
+                }
+
+                if (data !== null) {
+                    try {
+                        statusCode = data.statusCode;
+                    } catch (e) {
+                        statusCode = 0;
+                    }
+                    idUser = data.idUser;
+                    totalamount = data.totalamount;
+
+                    if (statusCallback !== statusCode.toString() && statusCallback === "300") {
+                        await this.accontbalanceWithdrawTopup(idUser, valuedisbcharge, "disbursement");
+                        await this.accontbalanceWithdrawTopup(idUser, totalamount, "withdraw");
+                    }
+                    await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Transaction is FAILED", payload, statusCallback);
+                }
+
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
 
                 return res.status(HttpStatus.OK).json({
                     response_code: 202,
-                    "message": "Disbursement is FAILED"
+                    "message": "Transaction is FAILED"
                 });
 
             }
             else if (statusCallback === "301") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload);
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload, statusCallback);
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
@@ -2390,7 +2434,7 @@ export class TransactionsController {
                 });
 
             } else {
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload, statusCallback);
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
@@ -2532,6 +2576,345 @@ export class TransactionsController {
                 } catch (e) {
                     datareqinq = null;
                 }
+                var statuscode = datareqinq.status.code;
+                account_name = datareqinq.account_name;
+                if (account_name === null || account_name === undefined || account_name === "") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                    throw new BadRequestException("Maaf nomor rekening dan nama akun tidak ada...!");
+                }
+                namaakun = account_name.toLowerCase();
+                totalamount = amount - valuedisbcharge - valuebankcharge;
+                if (statuscode == "000") {
+                    await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+
+                    datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                    var idbankaccount = datarek._doc._id;
+                    norekdb = datarek._doc.noRek;
+                    namarek = datarek._doc.nama;
+                    iduser = datarek._doc.userId;
+                    statusInquiry = datarek._doc.statusInquiry;
+                    nama = namarek.toLowerCase();
+                    if (nama == namaakun) {
+                        data = {
+                            "name": account_name,
+                            "bankName": bankname,
+                            "bankAccount": norek,
+                            "bankCode": bankcode,
+                            "amount": amount,
+                            "totalAmount": totalamount,
+                            "adminFee": valuedisbcharge,
+                            "chargeInquiry": valuebankcharge,
+                            "statusInquiry": statusInquiry
+                        }
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                        return res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": "Inquiry is success"
+                        });
+                    } else {
+                        await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                        await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                        datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                        var idbankaccount = datarek._doc._id;
+                        norekdb = datarek._doc.noRek;
+                        namarek = datarek._doc.nama;
+                        iduser = datarek._doc.userId;
+                        statusInquiry = datarek._doc.statusInquiry;
+
+                        data = {
+                            "name": account_name,
+                            "bankName": bankname,
+                            "bankAccount": norek,
+                            "bankCode": bankcode,
+                            "statusInquiry": statusInquiry
+                        }
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                        return res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": "Nama Akun bank tidak sama"
+                        });
+                    }
+
+                }
+                else if (statuscode == "201") {
+                    await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                    datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                    var idbankaccount = datarek._doc._id;
+                    norekdb = datarek._doc.noRek;
+                    namarek = datarek._doc.nama;
+                    iduser = datarek._doc.userId;
+                    statusInquiry = datarek._doc.statusInquiry;
+                    data = {
+                        "name": account_name,
+                        "bankName": bankname,
+                        "bankAccount": norek,
+                        "bankCode": bankcode,
+                        "statusInquiry": statusInquiry
+                    }
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                    return res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": "Request is Rejected (User ID is not Found)"
+                    });
+
+                }
+                else if (statuscode == "208") {
+                    await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                    datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                    var idbankaccount = datarek._doc._id;
+                    norekdb = datarek._doc.noRek;
+                    namarek = datarek._doc.nama;
+                    iduser = datarek._doc.userId;
+                    statusInquiry = datarek._doc.statusInquiry;
+                    data = {
+                        "name": account_name,
+                        "bankName": bankname,
+                        "bankAccount": norek,
+                        "bankCode": bankcode,
+                        "statusInquiry": statusInquiry
+                    }
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                    return res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": "Request is Rejected (API Key is not Valid)"
+                    });
+
+                }
+                else if (statuscode == "209") {
+                    await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                    datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                    var idbankaccount = datarek._doc._id;
+                    norekdb = datarek._doc.noRek;
+                    namarek = datarek._doc.nama;
+                    iduser = datarek._doc.userId;
+                    statusInquiry = datarek._doc.statusInquiry;
+                    data = {
+                        "name": account_name,
+                        "bankName": bankname,
+                        "bankAccount": norek,
+                        "bankCode": bankcode,
+                        "statusInquiry": statusInquiry
+                    }
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                    return res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": "Request is Rejected (Bank Account is not found)"
+                    });
+                } else {
+                    await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                    datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                    var idbankaccount = datarek._doc._id;
+                    norekdb = datarek._doc.noRek;
+                    namarek = datarek._doc.nama;
+                    iduser = datarek._doc.userId;
+                    statusInquiry = datarek._doc.statusInquiry;
+                    data = {
+                        "name": account_name,
+                        "bankName": bankname,
+                        "bankAccount": norek,
+                        "bankCode": bankcode,
+                        "statusInquiry": statusInquiry
+                    }
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                    return res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": "Request is Rejected"
+                    });
+                }
+            } else {
+                totalamount = amount - valuedisbcharge;
+                data = {
+                    "name": namarek,
+                    "bankName": bankname,
+                    "bankAccount": norek,
+                    "bankCode": bankcode,
+                    "amount": amount,
+                    "totalAmount": totalamount,
+                    "adminFee": valuedisbcharge,
+                    "chargeInquiry": 0,
+                    "statusInquiry": statusInquiry
+                }
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                return res.status(HttpStatus.OK).json({
+                    response_code: 202,
+                    "data": data,
+                    "message": "Inquiry is success"
+                });
+            }
+
+
+
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("recipient_account not found...!");
+        }
+
+
+
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('api/transactions/withdraw/listdetail/v2')
+    async detailwithdraw2(@Res() res, @Req() request: Request, @Headers() headers) {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/withdraw/listdetail/v2';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+
+        const messages = {
+            "info": ["Disbursement Request has been completed (success)"],
+        };
+        var datarek = null;
+        var databank = null;
+        var idbank = null;
+        var bankcode = null;
+        var bankname = null;
+        var norek = null;
+        var norekdb = null;
+        var namarek = null;
+        var iduser = null;
+        var data = {};
+        var nama = null;
+        var amount = 0;
+        var totalamount = 0;
+        var valuebankcharge = 0;
+        var valuedisbcharge = 0;
+        var datasettingbankvercharge = null;
+        var datasettingdisbvercharge = null;
+        var idbankverificationcharge = "62bd4104f37a00001a004367";
+        var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
+        var statusInquiry = null;
+        var email = null;
+        var datareqinq = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["bankcode"] !== undefined) {
+            bankcode = request_json["bankcode"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["norek"] !== undefined) {
+            norek = request_json["norek"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["amount"] !== undefined) {
+            amount = request_json["amount"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var ubasic = null;
+        var idubasic = null;
+        try {
+            ubasic = await this.basic2SS.findbyemail(email);
+            idubasic = ubasic._id;
+        } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("user not found");
+        }
+
+
+        try {
+            datasettingbankvercharge = await this.settingsService.findOne(idbankverificationcharge);
+            valuebankcharge = datasettingbankvercharge._doc.value;
+            datasettingdisbvercharge = await this.settingsService.findOne(idBankDisbursmentCharge);
+            valuedisbcharge = datasettingdisbvercharge._doc.value;
+
+        } catch (e) {
+            valuebankcharge = 0;
+            valuedisbcharge = 0;
+
+        }
+        try {
+            databank = await this.banksService.findbankcode(bankcode);
+            idbank = databank._doc._id;
+            bankname = databank._doc.bankname;
+            datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+            var idbankaccount = datarek._doc._id;
+            norekdb = datarek._doc.noRek;
+            namarek = datarek._doc.nama;
+            iduser = datarek._doc.userId;
+            statusInquiry = datarek._doc.statusInquiry;
+
+        } catch (e) {
+            datarek = null;
+            statusInquiry = null;
+        }
+
+
+
+        if (datarek !== null) {
+            let datareqinquiry = new OyAccountInquirys();
+            datareqinquiry.bank_code = bankcode;
+            datareqinquiry.account_number = norek;
+            if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
+                var account_name = null;
+                var namaakun = null;
+                try {
+                    datareqinq = await this.oyPgService.inquiryAccount(datareqinquiry);
+                } catch (e) {
+                    datareqinq = null;
+                }
+
+                console.log(datareqinq);
+
                 var statuscode = datareqinq.status.code;
                 account_name = datareqinq.account_name;
                 if (account_name === null || account_name === undefined || account_name === "") {
@@ -4005,6 +4388,33 @@ export class TransactionsController {
             iduser: iduser,
             debet: amount,
             kredit: 0,
+            type: tipe,
+            timestamp: dt.toISOString(),
+            description: desccontent,
+
+        };
+
+        await this.accountbalancesService.createdata(dataacountbalance);
+    }
+
+    async accontbalanceWithdrawTopup(iduser: { oid: String }, amount: number, tipe: string) {
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var desccontent = "";
+
+        if (tipe === "inquiry") {
+            desccontent = "inquiry";
+        } else if (tipe === "disbursement") {
+            desccontent = "FAILED TRANSACTION";
+        } else {
+            desccontent = "FAILED TRANSACTION";
+        }
+
+        var dataacountbalance = {
+            iduser: iduser,
+            debet: 0,
+            kredit: amount,
             type: tipe,
             timestamp: dt.toISOString(),
             description: desccontent,
@@ -5743,10 +6153,7 @@ export class TransactionsController {
                     databankvacharge = await this.settingsService.findOne(idbankvacharge);
                     valuevacharge = databankvacharge._doc.value;
                     valuemradmin = datamradmin._doc.value;
-                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
-
-
-
+                    nominalmradmin = Math.ceil(amounts * valuemradmin / 100);
 
                 } catch (e) {
                     datamradmin = null;
@@ -5855,7 +6262,7 @@ export class TransactionsController {
                     "view": databuy[0].saleview,
                     "bank": namabank,
                     "paymentmethode": namamethode,
-                    "amount": amount,
+                    "amount": amounts,
                     "totalamount": databuy[0].totalamount,
                     "status": databuy[0].status,
                     "fullName": databuy[0].fullName,
@@ -5876,7 +6283,9 @@ export class TransactionsController {
                     "mediaThumbUri": mediaThumbUri,
                     "apsara": apsaradefine,
                     "apsaraId": idapsaradefine,
-                    "media": dataapsara
+                    "media": dataapsara,
+                    "adminFee": nominalmradmin,
+                    "serviceFee": valuevacharge,
 
                 };
             }
@@ -6036,7 +6445,7 @@ export class TransactionsController {
                     "amount": amounts,
                     "totalamount": databuy[0].totalamount,
                     // "adminFee": nominalmradmin,
-                    "serviceFee": valuevacharge,
+                    // "serviceFee": valuevacharge,
                     "status": databuy[0].status,
                     "fullName": databuy[0].fullName,
                     "email": databuy[0].email,
@@ -6089,7 +6498,7 @@ export class TransactionsController {
                 } catch (e) {
                     var timestamps_end = await this.utilsService.getDateTimeString();
                     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
-                    
+
                     throw new BadRequestException("Data not found...!");
                 }
                 try {
@@ -6098,7 +6507,7 @@ export class TransactionsController {
                     databankvacharge = await this.settingsService.findOne(idbankvacharge);
                     valuevacharge = databankvacharge._doc.value;
                     valuemradmin = datamradmin._doc.value;
-                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
+                    nominalmradmin = Math.ceil(amounts * valuemradmin / 100);
 
 
 
@@ -6210,7 +6619,7 @@ export class TransactionsController {
                     "view": databuy[0].saleview,
                     "bank": namabank,
                     "paymentmethode": namamethode,
-                    "amount": amount,
+                    "amount": amounts,
                     "totalamount": databuy[0].totalamount,
                     "status": databuy[0].status,
                     "fullName": databuy[0].fullName,
@@ -6450,7 +6859,7 @@ export class TransactionsController {
                     databankvacharge = await this.settingsService.findOne(idbankvacharge);
                     valuevacharge = databankvacharge._doc.value;
                     valuemradmin = datamradmin._doc.value;
-                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
+                    nominalmradmin = Math.ceil(amounts * valuemradmin / 100);
 
 
 
@@ -6562,7 +6971,7 @@ export class TransactionsController {
                     "view": databuy[0].saleview,
                     "bank": namabank,
                     "paymentmethode": namamethode,
-                    "amount": amount,
+                    "amount": amounts,
                     "totalamount": databuy[0].totalamount,
                     "status": databuy[0].status,
                     "fullName": databuy[0].fullName,
@@ -8803,7 +9212,7 @@ export class TransactionsController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var setemail = auth.email;
-        
+
         const messages = {
             "info": ["The process successful"],
         };
@@ -9156,13 +9565,13 @@ export class TransactionsController {
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/historys/voucherused')
     async finddatavoucheruse(@Req() request: Request, @Headers() headers): Promise<any> {
-        
+
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = headers.host + '/api/transactions/historys/voucherused';
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var setemail = auth.email;
-        
+
         const messages = {
             "info": ["The process successful"],
         };
@@ -9289,7 +9698,7 @@ export class TransactionsController {
         if (body.type == undefined) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
-            
+
             await this.errorHandler.generateBadRequestException(
                 'Unabled to proceed type is required',
             );
@@ -9457,7 +9866,7 @@ export class TransactionsController {
             if (!(await this.utilsService.ceckData(post))) {
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
-                
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, post not found',
                 );
@@ -9468,7 +9877,7 @@ export class TransactionsController {
             if (!(await this.utilsService.ceckData(media))) {
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
-                
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, post not found',
                 );
@@ -9478,7 +9887,7 @@ export class TransactionsController {
             if (!(body.paymentmethod)) {
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
-                
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, paymentmethod is required',
                 );
@@ -9489,7 +9898,7 @@ export class TransactionsController {
             if (!(await this.utilsService.ceckData(payment_method))) {
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
-                
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, payment method not found',
                 );
@@ -9500,7 +9909,7 @@ export class TransactionsController {
             if (!(await this.utilsService.ceckData(bank))) {
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
-                
+
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, Bank not found',
                 );
@@ -9677,7 +10086,8 @@ export class TransactionsController {
                     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
 
                     await this.errorHandler.generateNotAcceptableException("Request is Rejected (Amount type is not supported for the requested bank code)");
-                } else if (Va.status.code == "216") {var timestamps_end = await this.utilsService.getDateTimeString();
+                } else if (Va.status.code == "216") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
                     var timestamps_end = await this.utilsService.getDateTimeString();
                     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
 
@@ -11625,7 +12035,7 @@ export class TransactionsController {
                         } catch (e) {
                             var timestamps_end = await this.utilsService.getDateTimeString();
                             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
-                            
+
                             throw new BadRequestException("Data not found...!");
                         }
                         var dataapsara = null;
@@ -11766,7 +12176,7 @@ export class TransactionsController {
                         } catch (e) {
                             var timestamps_end = await this.utilsService.getDateTimeString();
                             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
-                            
+
                             throw new BadRequestException("Data not found...!");
                         }
                         try {
@@ -11795,7 +12205,7 @@ export class TransactionsController {
                         } catch (e) {
                             var timestamps_end = await this.utilsService.getDateTimeString();
                             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
-                            
+
                             throw new BadRequestException("Data not found...!");
                         }
 
@@ -13082,7 +13492,7 @@ export class TransactionsController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var setemail = auth.email;
-        
+
         var data = null;
         var date = null;
 
@@ -13158,7 +13568,7 @@ export class TransactionsController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var setemail = auth.email;
-        
+
         var startdate = null;
         var enddate = null;
         var iduser = null;
@@ -13564,13 +13974,13 @@ export class TransactionsController {
         await this.utilsService.sendFcmWebMode(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", no, "TRANSACTION");
     }
 
-    async insertBalanceCredit(iduser: string, debet: number, kredit: number, type: String, description: String, idtrans: string, getSetting_CreditPrice: AdsPriceCredits){
+    async insertBalanceCredit(iduser: string, debet: number, kredit: number, type: String, description: String, idtrans: string, getSetting_CreditPrice: AdsPriceCredits) {
         var AdsBalaceCreditDto_ = new AdsBalaceCreditDto();
         AdsBalaceCreditDto_._id = new mongoose.Types.ObjectId;
         AdsBalaceCreditDto_.iduser = new mongoose.Types.ObjectId(iduser);
         AdsBalaceCreditDto_.debet = debet;
         AdsBalaceCreditDto_.kredit = kredit;
-        AdsBalaceCreditDto_.type = type; 
+        AdsBalaceCreditDto_.type = type;
         AdsBalaceCreditDto_.timestamp = await this.utilsService.getDateTimeString();
         AdsBalaceCreditDto_.description = description;
         AdsBalaceCreditDto_.idtrans = new mongoose.Types.ObjectId(idtrans);

@@ -16,8 +16,61 @@ export class UserchallengesService {
         return _Userchallenges_;
     }
 
+    async findData(userchallenges: Userchallenges): Promise<Userchallenges[]> {
+        return this.UserchallengesModel.find(userchallenges).exec();
+    }
+
+    async updateByUSer(id: string, idSubChallenge: string, userchallenges: Userchallenges) {
+        let result = await this.UserchallengesModel.updateOne({ _id: new Types.ObjectId(id), idSubChallenge: new Types.ObjectId(idSubChallenge) }, userchallenges).exec();
+        return result;
+    }
+
     async findOne(id: string): Promise<Userchallenges> {
         return this.UserchallengesModel.findOne({ _id: new Types.ObjectId(id) }).exec();
+    }
+
+    async findOneByid(id: string, idSubChallenge: string): Promise<Userchallenges> {
+        return this.UserchallengesModel.findOne({ _id: new Types.ObjectId(id), idSubChallenge: new Types.ObjectId(idSubChallenge) }).exec();
+    }
+
+    async findByChallengeandUser(challenge: string, user: string) {
+        var mongo = require('mongoose');
+        var data = await this.UserchallengesModel.aggregate([
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+                            {
+                                "idChallenge": new mongo.Types.ObjectId(challenge),
+                            },
+                            {
+                                "idUser": new mongo.Types.ObjectId(user),
+                            },
+                            {
+                                "isActive": true
+                            }
+                        ]
+                }
+            }
+        ]);
+
+        return data;
+    }
+
+    async findByChallengeandUser2(challenge: string, user: string, idSubChallenge: string) {
+
+        var data = await this.UserchallengesModel.aggregate([
+            {
+                $match: {
+                    "idChallenge": new Types.ObjectId(challenge),
+                    "idSubChallenge": new Types.ObjectId(idSubChallenge),
+                    "idUser": new Types.ObjectId(user),
+                }
+            }
+        ]);
+
+        return data[0];
     }
 
     async find(): Promise<Userchallenges[]> {
@@ -69,23 +122,26 @@ export class UserchallengesService {
         );
     }
 
-
-
-    async delete(id: string) {
-        const data = await this.UserchallengesModel.findByIdAndRemove({ _id: new Types.ObjectId(id) }).exec();
-        return data;
+    async delete(userchallenge: any[], user: string, data: Userchallenges) {
+        var mongo = require('mongoose');
+        return await this.UserchallengesModel.updateMany(
+            {
+                "_id":
+                {
+                    "$in": userchallenge
+                },
+                "idUser": mongo.Types.ObjectId(user),
+            },
+            {
+                "$set": data
+            }
+        );
     }
 
     async userChallengebyIdChall(iduser: string, idchallenge: string) {
         var query = await this.UserchallengesModel.aggregate([
 
-            {
-                $match: {
-                    "idChallenge": new Types.ObjectId(idchallenge),
-                    "idUser": new Types.ObjectId(iduser),
-                    "isActive": true
-                }
-            },
+
             {
                 $set: {
                     "timenow":
@@ -102,6 +158,48 @@ export class UserchallengesService {
                     }
                 }
             },
+            {
+                $match: {
+                    "idChallenge": new Types.ObjectId(idchallenge),
+                    "idUser": new Types.ObjectId(iduser),
+                    "isActive": true
+                }
+            },
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+
+                            {
+                                $expr:
+                                {
+                                    $gte:
+                                        [
+                                            "$timenow",
+                                            "$startDatetime",
+
+                                        ]
+                                },
+
+                            },
+                            {
+                                $expr:
+                                {
+                                    $lte:
+                                        [
+                                            "$timenow",
+                                            "$endDatetime",
+
+                                        ]
+                                },
+
+                            },
+
+                        ]
+                }
+            },
+
             {
                 $lookup: {
                     from: 'subChallenge',
@@ -132,9 +230,9 @@ export class UserchallengesService {
                     },
                     "timenow": 1,
 
-
                 }
             },
+
 
         ]);
         return query;
@@ -168,12 +266,69 @@ export class UserchallengesService {
                 }
             },
             {
+                $set: {
+                    "size": { $subtract: [{ $size: "$history" }, 1] },
+                }
+            },
+            {
+                $project: {
+                    "idChallenge": 1,
+                    "idSubChallenge": 1,
+                    "idUser": 1,
+                    "objectChallenge": 1,
+                    "startDatetime": 1,
+                    "endDatetime": 1,
+                    "createdAt": 1,
+                    "updatedAt": 1,
+                    "isActive": 1,
+                    "ranking": 1,
+                    "score": 1,
+                    "activity": 1,
+                    "history": 1,
+                    "rejectRemark": 1,
+                    "size": "$size",
 
-                $sort: { score: -1, createdAt: 1 }
+                }
+            },
+            {
+                $project: {
+                    "idChallenge": 1,
+                    "idSubChallenge": 1,
+                    "idUser": 1,
+                    "objectChallenge": 1,
+                    "startDatetime": 1,
+                    "endDatetime": 1,
+                    "createdAt": 1,
+                    "updatedAt": 1,
+                    "isActive": 1,
+                    "ranking": 1,
+                    "score": 1,
+                    "activity": 1,
+                    "history": 1,
+                    "rejectRemark": 1,
+                    "size": 1,
+                    "jam": {
+                        $arrayElemAt: ["$history.updatedAt", "$size"]
+                    },
+                }
+            },
+            {
+
+                $sort: {
+                    score: - 1,
+                    jam: 1
+                }
             }
         ]);
         return query;
     }
+
+    async updateScoreNull(id: string, updatedAt: string) {
+        let data = await this.UserchallengesModel.updateOne({ "_id": new Types.ObjectId(id) },
+            { $set: { "score": 0, "updatedAt": updatedAt, } });
+        return data;
+    }
+
 
     async updateRangking(id: string, rangking: number, updatedAt: string) {
         let data = await this.UserchallengesModel.updateOne({ "_id": new Types.ObjectId(id) },
@@ -187,6 +342,11 @@ export class UserchallengesService {
         return data;
     }
 
+    async updateScoring(id: string, idSubChallenge: string, score: number) {
+        let data = await this.UserchallengesModel.updateOne({ "_id": new Types.ObjectId(id), "idSubChallenge": new Types.ObjectId(idSubChallenge) },
+            { $set: { "score": score, } });
+        return data;
+    }
     async updateHistory(id: string, idSubChallenge: string, data: {}) {
         let result = await this.UserchallengesModel.updateOne({ _id: new Types.ObjectId(id), idSubChallenge: new Types.ObjectId(idSubChallenge) }, { $push: { history: data } }).exec();
         return result;
@@ -371,7 +531,7 @@ export class UserchallengesService {
                                             "$idUser", konvertid
                                         ]
                                 }
-                            },
+                            }
                         ]
                 }
             },
@@ -380,11 +540,295 @@ export class UserchallengesService {
             },
         ]);
 
-        if (query.length == 1) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return query;
+    }
+
+    async checkuserstatusjoin(target: string) {
+        var mongo = require('mongoose');
+        var konvertid = new mongo.Types.ObjectId(target);
+        var result = await this.UserchallengesModel.aggregate([
+            {
+                "$match":
+                {
+                    "idUser": konvertid
+                }
+            },
+            {
+                "$set":
+                {
+                    "datenow":
+                    {
+                        "$dateToString":
+                        {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date":
+                            {
+                                $add: [new Date(), + 25200000]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: "challenge",
+                    as: "challengedata",
+                    let:
+                    {
+                        "fk_challenge": "$idChallenge",
+                        "now": "$datenow"
+                    },
+                    pipeline:
+                        [
+                            {
+                                "$addFields":
+                                {
+                                    "setend":
+                                    {
+                                        "$concat":
+                                            [
+                                                "$endChallenge",
+                                                " ",
+                                                "$startTime"
+                                            ]
+                                    },
+                                }
+                            },
+                            {
+                                "$match":
+                                {
+                                    "$and":
+                                        [
+                                            {
+                                                "$expr":
+                                                {
+                                                    "$eq":
+                                                        [
+                                                            "$_id", "$$fk_challenge"
+                                                        ]
+                                                }
+                                            },
+                                            {
+                                                "$expr":
+                                                {
+                                                    "$eq":
+                                                        [
+                                                            "$statusChallenge", "PUBLISH"
+                                                        ]
+                                                }
+                                            },
+                                            {
+                                                "$expr":
+                                                {
+                                                    "$gt":
+                                                        [
+                                                            "$setend", "$$now"
+                                                        ]
+                                                }
+                                            }
+                                        ]
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                "$unwind":
+                {
+                    path: "$challengedata"
+                }
+            },
+            {
+                "$group":
+                {
+                    _id: null,
+                    total:
+                    {
+                        "$sum": 1
+                    }
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: 0,
+                    join_status:
+                    {
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$eq":
+                                    [
+                                        "$total", 0
+                                    ]
+                            },
+                            then: false,
+                            else: true
+                        }
+                    }
+                }
+            }
+        ]);
+
+        return result[0];
+    }
+
+    async wilayahpengguna(id: string) {
+        var mongo = require('mongoose');
+        var data = await this.UserchallengesModel.aggregate([
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+                            {
+                                idChallenge: new mongo.Types.ObjectId(id)
+                            },
+                            {
+                                isActive: true
+                            }
+                        ]
+                }
+            },
+            {
+                "$group":
+                {
+                    _id: "$idUser"
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: 'userbasics',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'basic_data'
+                },
+            },
+            {
+                "$project":
+                {
+                    state:
+                    {
+                        "$ifNull":
+                            [
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$basic_data.states.$id", 0
+                                        ]
+                                },
+                                null
+                            ]
+                    }
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: 'areas',
+                    localField: 'state',
+                    foreignField: '_id',
+                    as: 'wilayah'
+                },
+            },
+            {
+                "$project":
+                {
+                    stateName:
+                    {
+                        "$ifNull":
+                            [
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$wilayah.stateName", 0
+                                        ]
+                                },
+                                "Lainnya"
+                            ]
+                    }
+                }
+            },
+            {
+                "$group":
+                {
+                    _id: "$stateName",
+                    total:
+                    {
+                        "$sum": 1
+                    }
+                }
+            },
+            {
+                "$group":
+                {
+                    _id: null,
+                    totaldata:
+                    {
+                        "$sum": "$total"
+                    },
+                    data:
+                    {
+                        "$push":
+                        {
+                            _id: "$_id",
+                            total: "$total"
+                        }
+                    }
+                }
+            },
+            {
+                "$unwind":
+                {
+                    path: "$data"
+                }
+            },
+            {
+                "$sort":
+                {
+                    _id: 1
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: "$data._id",
+                    //total:{}"$data.total",
+                    persentase:
+                    {
+                        "$multiply":
+                            [
+                                {
+                                    "$divide":
+                                        [
+                                            "$data.total", "$totaldata"
+                                        ]
+                                }, 100
+                            ]
+                    }
+                }
+            },
+            {
+                "$group":
+                {
+                    _id: "$_id",
+                    persentase:
+                    {
+                        "$first": "$persentase"
+                    }
+                }
+            },
+            {
+                "$sort":
+                {
+                    _id: 1
+                }
+            }
+        ]);
+
+        return data
     }
 }

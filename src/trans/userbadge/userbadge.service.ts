@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId, Types } from 'mongoose';
+import mongoose, { Model, ObjectId, Types } from 'mongoose';
 import { Userbadge, UserbadgeDocument } from './schemas/userbadge.schema';
 
 @Injectable()
@@ -31,7 +31,16 @@ export class UserbadgeService {
         }
         return data;
     }
+    async updateNonactive(id: string): Promise<Object> {
+        let data = await this.UserbadgeModel.updateOne({ "_id": id },
+            {
+                $set: {
+                    "isActive": false,
 
+                }
+            });
+        return data;
+    }
     async getUserbadge(iduser: string, idsubchallenge: string) {
         var query = await this.UserbadgeModel.aggregate(
             [
@@ -45,6 +54,65 @@ export class UserbadgeService {
             ]
         );
         return query[0];
+
+    }
+
+    async getUserbadgeExpired() {
+        var query = await this.UserbadgeModel.aggregate(
+            [
+
+                {
+                    $set: {
+                        "timenow":
+                        {
+                            "$dateToString": {
+                                "format": "%Y-%m-%d %H:%M:%S",
+                                "date": {
+                                    $add: [
+                                        new Date(),
+                                        25200000
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "$match":
+                    {
+                        "$and":
+                            [
+
+                                {
+                                    $expr:
+                                    {
+                                        $gte:
+                                            [
+                                                "$timenow",
+                                                "$endDatetime",
+
+                                            ]
+                                    },
+
+                                },
+                                {
+                                    $expr:
+                                    {
+                                        $eq:
+                                            [
+                                                "$isActive", true
+
+                                            ]
+                                    },
+
+                                },
+
+                            ]
+                    }
+                },
+            ]
+        );
+        return query;
 
     }
 

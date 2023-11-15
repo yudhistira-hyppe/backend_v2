@@ -11,6 +11,7 @@ import { PostContentService } from '../../../content/posts/postcontent.service';
 import { AccountbalancesService } from '../../../trans/accountbalances/accountbalances.service';
 import { UserAdsService } from '../../../trans/userads/userads.service';
 import { OssContentPictService } from '../../../content/posts/osscontentpict.service';
+import { UtilsService } from 'src/utils/utils.service';
 
 @Injectable()
 export class AdsService {
@@ -23,6 +24,7 @@ export class AdsService {
         private readonly adsBalaceCreditService: AdsBalaceCreditService,
         private readonly AccountbalancesService: AccountbalancesService,
         private readonly userAdsService: UserAdsService,
+        private readonly utilsService: UtilsService,
         private readonly ossContentPictService: OssContentPictService,
     ) { }
 
@@ -76,7 +78,6 @@ export class AdsService {
             const ObjectMatch = {
                 $match: {
                     adsObjectivitasId: { $ne: null },
-                    status:"ACTIVE",
                     timestamp: {
                         $gte: start_date.toISOString(),
                         $lte: end_date.toISOString()
@@ -93,13 +94,13 @@ export class AdsService {
             paramaggregate.push(ObjectMatch)
         }
         paramaggregate.push({
-                $lookup: {
-                    from: "userbasics",
-                    localField: "userID",
-                    foreignField: "_id",
-                    as: "userbasics_data"
-                }
-            },
+            $lookup: {
+                from: "userbasics",
+                localField: "userID",
+                foreignField: "_id",
+                as: "userbasics_data"
+            }
+        },
             {
                 $lookup: {
                     from: "adstypes",
@@ -240,6 +241,11 @@ export class AdsService {
                     ],
                     typeAdsID: [
                         {
+                            $match: {
+                                status: "ACTIVE",
+                            }
+                        },
+                        {
                             $group: {
                                 _id: "$typeAdsID",
                                 nameType: { $first: '$nameType' },
@@ -258,6 +264,11 @@ export class AdsService {
                     ],
                     adsObjectivitasId: [
                         {
+                            $match: {
+                                status: "ACTIVE",
+                            }
+                        },
+                        {
                             $group: {
                                 _id: "$adsObjectivitasId",
                                 name_id: { $first: '$name_id' },
@@ -267,6 +278,11 @@ export class AdsService {
                         }
                     ],
                     tayangQualication: [
+                        {
+                            $match: {
+                                status: "ACTIVE",
+                            }
+                        },
                         {
                             $group: {
                                 _id: "$tayangQualication",
@@ -319,22 +335,6 @@ export class AdsService {
                     totCredit: 1,
                     adsObjectivitas: "$adsObjectivitasId",
                     adsPlanShows: "$tayangQualication",
-                    // totalCredit: {
-                    //     "$let": {
-                    //         "vars": {
-                    //             "tmp": { "$arrayElemAt": ["$totalCredit", 0] },
-                    //         },
-                    //         "in": "$$tmp.sum_val"
-                    //     }
-                    // },
-                    // creditPrice: {
-                    //     "$let": {
-                    //         "vars": {
-                    //             "tmp": { "$arrayElemAt": ["$creditPrice", 0] },
-                    //         },
-                    //         "in": "$$tmp._id"
-                    //     }
-                    // },
                 }
             },
             {
@@ -473,7 +473,8 @@ export class AdsService {
                         }
                     }
                 }
-            },);
+            },
+            );
         let query = await this.adsModel.aggregate(paramaggregate);
         return query;
 
@@ -481,6 +482,10 @@ export class AdsService {
 
     async campaignDashboard(userId: string, start_date: any, end_date: any): Promise<any> {
         return await this.userAdsService.campaignDashboard(userId, start_date, end_date);
+    }
+
+    async dashboard2(start_date: any, end_date: any): Promise<any> {
+        return await this.userAdsService.Dashboard(start_date, end_date);
     }
 
     async campaignDetail(adsId: string): Promise<any> {
@@ -694,24 +699,24 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$viewTime",
-                                            "includeArrayIndex": "viewTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "viewTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -743,31 +748,31 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$viewTime",
-                                            "includeArrayIndex": "viewTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "viewTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
                                         "$project": {
                                             "userID": 1,
                                             "viewTime": {
-                                                "$substr": ["$viewTime", 0, 10]
+                                                "$substr": ["$updateAt", 0, 10]
                                             }
                                         }
                                     }, {
@@ -806,30 +811,30 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$viewTime",
-                                            "includeArrayIndex": "viewTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "viewTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
                                         "$project": {
                                             "viewTime": {
-                                                "$substr": ["$viewTime", 0, 10]
+                                                "$substr": ["$updateAt", 0, 10]
                                             }
                                         }
                                     }, {
@@ -847,8 +852,8 @@ export class AdsService {
                                             }, {
                                                 "clickTime": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -861,8 +866,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -886,8 +891,8 @@ export class AdsService {
                                             }, {
                                                 "clickTime": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -900,8 +905,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -930,10 +935,10 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -960,7 +965,8 @@ export class AdsService {
                                                 }
                                             }, {
                                                 "$project": {
-                                                    "CPV": {
+                                                    "CPV":1,
+                                                    "CPV_adstypes": {
                                                         "$let": {
                                                             "vars": {
                                                                 "tmp": {
@@ -975,14 +981,14 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$viewTime",
-                                            "includeArrayIndex": "viewTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "viewTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -1016,8 +1022,8 @@ export class AdsService {
                                             }, {
                                                 "clickTime": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -1044,7 +1050,8 @@ export class AdsService {
                                                 }
                                             }, {
                                                 "$project": {
-                                                    "CPA": {
+                                                    "CPA":1,
+                                                    "CPA_adstypes": {
                                                         "$let": {
                                                             "vars": {
                                                                 "tmp": {
@@ -1065,8 +1072,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -1098,10 +1105,10 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -1360,14 +1367,14 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$clickTime",
-                                            "includeArrayIndex": "clickTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -1457,10 +1464,10 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -1719,14 +1726,14 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$clickTime",
-                                            "includeArrayIndex": "clickTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -1816,10 +1823,10 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -2078,14 +2085,14 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$clickTime",
-                                            "includeArrayIndex": "clickTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -2175,10 +2182,10 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -2437,14 +2444,14 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$clickTime",
-                                            "includeArrayIndex": "clickTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -2536,10 +2543,10 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -2798,14 +2805,14 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$clickTime",
-                                            "includeArrayIndex": "clickTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -2948,7 +2955,7 @@ export class AdsService {
                                                                         "$arrayElemAt": ["$viewed", 0]
                                                                     }
                                                                 },
-                                                                "in": "$$tmp.reach"
+                                                                "in": "$$tmp.impresi"
                                                             }
                                                         }]
                                                     }, 100]
@@ -3105,7 +3112,10 @@ export class AdsService {
                                             },
                                             "in": {
                                                 "name": {
-                                                    "$arrayElemAt": ["$userAdsArea._id", "$$this"]
+                                                    $ifNull: [
+                                                        { "$arrayElemAt": ["$userAdsArea._id", "$$this"] },
+                                                        "Lainnya"
+                                                    ]
                                                 },
                                                 "count": {
                                                     "$arrayElemAt": ["$userAdsArea.areasCount", "$$this"]
@@ -6136,123 +6146,67 @@ export class AdsService {
         }
         $match['adsObjectivitasId'] = { $ne: null };
         $match['timestamp'] = {
-            $gte: start_date.toISOString(),
-            $lte: end_date.toISOString()
+            $gte: await this.utilsService.formatDateString(start_date),
+            $lte: await this.utilsService.formatDateString(end_date)
         };
         var query = await this.adsModel.aggregate(
             [{
                 $match
-        }, {
-            "$project": {
-                "status": {
-                    "$switch": {
-                        "branches": [{
-                            "case": {
-                                "$eq": ["$status", "DRAFT"]
-                            },
-                            "then": "DRAFT"
-                        }, {
-                            "case": {
-                                "$or": [{
-                                    "$eq": ["$status", "FINISH"]
-                                }, {
-                                    "$eq": ["$status", "IN_ACTIVE"]
-                                }, {
-                                    "$eq": ["$status", "REPORTED"]
-                                }]
-                            },
-                            "then": "IN_ACTIVE"
-                        }, {
-                            "case": {
-                                "$or": [{
-                                    "$eq": ["$status", "APPROVE"]
-                                }, {
-                                    "$eq": ["$status", "ACTIVE"]
-                                }]
-                            },
-                            "then": "ACTIVE"
-                        }, {
-                            "case": {
-                                "$eq": ["$status", "UNDER_REVIEW"]
-                            },
-                            "then": "UNDER_REVIEW"
-                        }],
-                        "default": "OTHER"
-                    }
-                }
-            }
-        }, {
-            "$facet": {
-                "status": [{
-                    "$group": {
-                        "_id": "$status",
-                        "status": {
-                            "$first": "$status"
-                        },
-                        "count": {
-                            "$sum": 1
+            }, {
+                "$project": {
+                    "status": {
+                        "$switch": {
+                            "branches": [{
+                                "case": {
+                                    "$eq": ["$status", "DRAFT"]
+                                },
+                                "then": "DRAFT"
+                            }, {
+                                "case": {
+                                    "$or": [{
+                                        "$eq": ["$status", "FINISH"]
+                                    }, {
+                                        "$eq": ["$status", "IN_ACTIVE"]
+                                    }, {
+                                        "$eq": ["$status", "REPORTED"]
+                                    }]
+                                },
+                                "then": "IN_ACTIVE"
+                            }, {
+                                "case": {
+                                    "$or": [{
+                                        "$eq": ["$status", "APPROVE"]
+                                    }, {
+                                        "$eq": ["$status", "ACTIVE"]
+                                    }]
+                                },
+                                "then": "ACTIVE"
+                            }, {
+                                "case": {
+                                    "$eq": ["$status", "UNDER_REVIEW"]
+                                },
+                                "then": "UNDER_REVIEW"
+                            }],
+                            "default": "OTHER"
                         }
                     }
-                }]
-            }
-        }]
+                }
+            }, {
+                "$facet": {
+                    "status": [{
+                        "$group": {
+                            "_id": "$status",
+                            "status": {
+                                "$first": "$status"
+                            },
+                            "count": {
+                                "$sum": 1
+                            }
+                        }
+                    }]
+                }
+            }]
         );
-        console.log(JSON.stringify([{
-            $match
-        }, {
-            "$project": {
-                "status": {
-                    "$switch": {
-                        "branches": [{
-                            "case": {
-                                "$eq": ["$status", "DRAFT"]
-                            },
-                            "then": "DRAFT"
-                        }, {
-                            "case": {
-                                "$or": [{
-                                    "$eq": ["$status", "FINISH"]
-                                }, {
-                                    "$eq": ["$status", "IN_ACTIVE"]
-                                }, {
-                                    "$eq": ["$status", "REPORTED"]
-                                }]
-                            },
-                            "then": "IN_ACTIVE"
-                        }, {
-                            "case": {
-                                "$or": [{
-                                    "$eq": ["$status", "APPROVE"]
-                                }, {
-                                    "$eq": ["$status", "ACTIVE"]
-                                }]
-                            },
-                            "then": "ACTIVE"
-                        }, {
-                            "case": {
-                                "$eq": ["$status", "UNDER_REVIEW"]
-                            },
-                            "then": "UNDER_REVIEW"
-                        }],
-                        "default": "OTHER"
-                    }
-                }
-            }
-        }, {
-            "$facet": {
-                "status": [{
-                    "$group": {
-                        "_id": "$status",
-                        "status": {
-                            "$first": "$status"
-                        },
-                        "count": {
-                            "$sum": 1
-                        }
-                    }
-                }]
-            }
-        }]));
         return query;
     }
 
@@ -6273,9 +6227,6 @@ export class AdsService {
         });
         //------------FILTER DATE START END------------
         if (start_date != undefined && end_date != undefined) {
-            start_date = new Date(start_date);
-            end_date = new Date(end_date);
-            end_date.setDate(end_date.getDate() + 1);
             // $match["liveAt"] = {
             //     $gte: start_date.toISOString(),
             //     $lte: end_date.toISOString()
@@ -6376,35 +6327,35 @@ export class AdsService {
         paramaggregate.push({ $match });
         //------------FACET VIEWED------------
         var viewedFacet = [];
-        if (start_date != undefined && end_date != undefined) {
-            viewedFacet.push({
-                $match: {
-                    viewTime: {
-                        $elemMatch: {
-                            $gte: start_date.toISOString(),
-                            $lte: end_date.toISOString()
-                        }
-                    }
-                }
-            });
-        }
+        // if (start_date != undefined && end_date != undefined) {
+        //     viewedFacet.push({
+        //         $match: {
+        //             updateAt: {
+        //                 $elemMatch: {
+        //                     $gte: start_date.toISOString(),
+        //                     $lte: end_date.toISOString()
+        //                 }
+        //             }
+        //         }
+        //     });
+        // }
         viewedFacet.push({
             $unwind:
             {
-                path: "$viewTime",
-                includeArrayIndex: 'viewTime_index',
+                path: "$updateAt",
+                includeArrayIndex: 'updateAt_index',
             }
         });
-        if (start_date != undefined && end_date != undefined) {
-            viewedFacet.push({
-                $match: {
-                    viewTime: {
-                        $gte: start_date.toISOString(),
-                        $lte: end_date.toISOString()
-                    }
-                }
-            });
-        }
+        // if (start_date != undefined && end_date != undefined) {
+        //     viewedFacet.push({
+        //         $match: {
+        //             updateAt: {
+        //                 $gte: start_date.toISOString(),
+        //                 $lte: end_date.toISOString()
+        //             }
+        //         }
+        //     });
+        // }
         viewedFacet.push({
             $group: {
                 _id: "$userID",
@@ -6427,18 +6378,18 @@ export class AdsService {
             });
         //------------FACET CTA------------
         var CTACountFacet = [];
-        if (start_date != undefined && end_date != undefined) {
-            CTACountFacet.push({
-                $match: {
-                    clickTime: {
-                        $elemMatch: {
-                            $gte: start_date.toISOString(),
-                            $lte: end_date.toISOString()
-                        }
-                    }
-                }
-            });
-        }
+        // if (start_date != undefined && end_date != undefined) {
+        //     CTACountFacet.push({
+        //         $match: {
+        //             clickTime: {
+        //                 $elemMatch: {
+        //                     $gte: start_date.toISOString(),
+        //                     $lte: end_date.toISOString()
+        //                 }
+        //             }
+        //         }
+        //     });
+        // }
         CTACountFacet.push({
             $unwind:
             {
@@ -6446,16 +6397,16 @@ export class AdsService {
                 includeArrayIndex: 'clickTime_index',
             }
         });
-        if (start_date != undefined && end_date != undefined) {
-            CTACountFacet.push({
-                $match: {
-                    clickTime: {
-                        $gte: start_date.toISOString(),
-                        $lte: end_date.toISOString()
-                    }
-                }
-            });
-        }
+        // if (start_date != undefined && end_date != undefined) {
+        //     CTACountFacet.push({
+        //         $match: {
+        //             clickTime: {
+        //                 $gte: start_date.toISOString(),
+        //                 $lte: end_date.toISOString()
+        //             }
+        //         }
+        //     });
+        // }
         CTACountFacet.push({
             $project: {
                 clickTime: {
@@ -6797,7 +6748,7 @@ export class AdsService {
                 "$limit": limit
             });
         }
-        console.log(paramaggregate);
+        console.log(JSON.stringify(paramaggregate));
         var query = await this.adsModel.aggregate(paramaggregate);
 
         var listdata = [];
@@ -6918,7 +6869,7 @@ export class AdsService {
                 },
                 {
                     $set: {
-                        "tayang": {
+                        "tayangStart": {
                             $concat: [
                                 "$liveAt",
                                 " 00:00:00"
@@ -7500,12 +7451,12 @@ export class AdsService {
                             {
                                 "userID":
                                 {
-                                    $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                    $ne: new mongoose.Types.ObjectId(idUser)
                                 }
                             },
                             {
                                 $expr: {
-                                    $lt: ["$tayang", "$testDate"]
+                                    $lt: ["$tayangStart", "$testDate"]
                                 }
                             },
                             {
@@ -7517,7 +7468,6 @@ export class AdsService {
                                 typeAdsID: new mongoose.Types.ObjectId(idTypeAds),
 
                             }
-
                         ]
                     },
 
@@ -7527,14 +7477,14 @@ export class AdsService {
                         from: "userbasics",
                         as: "userBasic",
                         let: {
-                            localID: '$email'
+                            localID: new mongoose.Types.ObjectId(idUser)
                         },
                         pipeline: [
                             {
                                 $match:
                                 {
                                     $expr: {
-                                        $eq: ['$email', '$$localID']
+                                        $eq: ['$_id', '$$localID']
                                     }
                                 }
                             },
@@ -7543,7 +7493,7 @@ export class AdsService {
                                     from: "accountbalances",
                                     as: "balances",
                                     let: {
-                                        localID: "$_id"
+                                        localID: new mongoose.Types.ObjectId(idUser)
                                     },
                                     pipeline: [
                                         {
@@ -7609,6 +7559,68 @@ export class AdsService {
                                 }
                             },
                             {
+                                $project: {
+                                    balances: {
+                                        $arrayElemAt: ["$balances", 0]
+                                    },
+                                    debet: {
+                                        $arrayElemAt: ["$balances.debet", 0]
+                                    },
+                                    kredit: {
+                                        $arrayElemAt: ["$balances.kredit", 0]
+                                    },
+                                    total: {
+                                        $arrayElemAt: ["$balances.total", 0]
+                                    },
+                                    "email": 1,
+
+                                    "userInterests": 1,
+                                    "states": ["$states"],
+                                    "gender": ["$gender"],
+                                    "age":
+                                    {
+                                        $cond: {
+                                            if: {
+                                                $and: ['$dob', {
+                                                    $ne: ["$dob", ""]
+                                                }]
+                                            },
+                                            then: {
+                                                $toInt: {
+                                                    $divide: [{
+                                                        $subtract: [new Date(), {
+                                                            $toDate: "$dob"
+                                                        }]
+                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                }
+                                            },
+                                            else: 0
+                                        }
+                                    },
+
+                                }
+                            }
+                        ],
+
+                    }
+                },
+                {
+                    "$lookup": {
+                        from: "userbasics",
+                        as: "userBasicAds",
+                        let: {
+                            localID: '$userID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $expr: {
+                                        $eq: ['$_id', '$$localID']
+                                    }
+                                }
+                            },
+                            {
                                 "$lookup":
                                 {
                                     from: "userauths",
@@ -7645,18 +7657,7 @@ export class AdsService {
                             },
                             {
                                 $project: {
-                                    balances: {
-                                        $arrayElemAt: ["$balances", 0]
-                                    },
-                                    debet: {
-                                        $arrayElemAt: ["$balances.debet", 0]
-                                    },
-                                    kredit: {
-                                        $arrayElemAt: ["$balances.kredit", 0]
-                                    },
-                                    total: {
-                                        $arrayElemAt: ["$balances.total", 0]
-                                    },
+
                                     "email": 1,
                                     "userName":
                                     {
@@ -7678,29 +7679,6 @@ export class AdsService {
                                                 ]
                                         }
                                     },
-                                    "userInterests": 1,
-                                    "states": ["$states"],
-                                    "gender": ["$gender"],
-                                    "age":
-                                    {
-                                        $cond: {
-                                            if: {
-                                                $and: ['$dob', {
-                                                    $ne: ["$dob", ""]
-                                                }]
-                                            },
-                                            then: {
-                                                $toInt: {
-                                                    $divide: [{
-                                                        $subtract: [new Date(), {
-                                                            $toDate: "$dob"
-                                                        }]
-                                                    }, (365 * 24 * 60 * 60 * 1000)]
-                                                }
-                                            },
-                                            else: 0
-                                        }
-                                    },
 
                                 }
                             }
@@ -7711,6 +7689,12 @@ export class AdsService {
                 {
                     $unwind: {
                         path: "$userBasic",
+                        "preserveNullAndEmptyArrays": true
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$userBasicAds",
                         "preserveNullAndEmptyArrays": true
                     }
                 },
@@ -7836,12 +7820,12 @@ export class AdsService {
                                     $and: [
                                         {
                                             $expr: {
-                                                $eq: ['$remark', '$$ket']
+                                                $eq: ['$remark', 'similarity']
                                             }
                                         },
                                         {
                                             $expr: {
-                                                $eq: ['$jenis', '$$type']
+                                                $eq: ['$jenis', 'AdsGender']
                                             }
                                         }
                                     ]
@@ -8051,7 +8035,6 @@ export class AdsService {
                         }
                     }
                 },
-
                 {
                     "$lookup": {
                         from: "userads",
@@ -8063,6 +8046,13 @@ export class AdsService {
                         },
                         pipeline: [
                             {
+                                $set: {
+                                    viewed: {
+                                        $ifNull: ["$viewed", 0]
+                                    }
+                                }
+                            },
+                            {
                                 $match:
                                 {
                                     $and: [
@@ -8072,7 +8062,9 @@ export class AdsService {
                                             }
                                         },
                                         {
-                                            isActive: true
+                                            $expr: {
+                                                $eq: ['$adsID', '$$idAds']
+                                            }
                                         },
 
                                     ]
@@ -8094,6 +8086,22 @@ export class AdsService {
 
                         ],
 
+                    }
+                },
+                {
+                    $addFields: {
+                        isValid:
+                        {
+                            $and: [
+                                {
+                                    $in: [
+                                        "$_id",
+                                        "$adsUser.adsID"
+                                    ]
+                                },
+
+                            ]
+                        }
                     }
                 },
                 {
@@ -8160,62 +8168,138 @@ export class AdsService {
                     }
                 },
                 {
+                    $set: {
+                        priorityViewed: "$adsUser.viewed"
+                    }
+                },
+                {
                     $sort: {
+                        isValid: 1,
+                        priorityViewed: 1,
                         sorts: - 1,
                         priority: 1,
                         scoreTotal: - 1
                     }
                 },
                 {
-                    $limit: 1
+                    $limit: 13
+                },
+                {
+                    $set: {
+                        validasi: {
+                            $ifNull: [{
+                                $arrayElemAt: ["$adsUser.isActive", 0]
+                            }, true]
+                        }
+                    }
+                },
+                {
+                    $set: {
+                        balancesReplace: { $ifNull: ["$userBasic.balances.total", 0] }
+                    }
                 },
                 {
                     $match: {
-                        $or:
-                            [
-                                {
-                                    $and: [
-                                        {
-                                            $expr: {
-                                                $eq: [{ $arrayElemAt: ["$adsUser.isActive", 0] }, true]
-                                            }
-                                        },
-                                        {
-                                            $expr: {
-                                                $eq: ['$sorts', true]
-                                            }
-                                        },
-                                        {
-                                            "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
-                                        },
-                                        {
-                                            $expr: {
-                                                $lt: [
-                                                    {
-                                                        $arrayElemAt: ["$balances.total", 0]
-                                                    }, 49000
-                                                ]
-                                            }
-                                        },
+                        $or: [
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$isValid', true]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$sorts', true]
+                                        }
+                                    },
+                                    {
+                                        "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$balancesReplace", 49000
+                                            ]
+                                        }
+                                    },
 
-                                    ]
-                                },
-                                {
-                                    $and: [
-                                        {
-                                            $expr: {
-                                                $eq: [{ $arrayElemAt: ["$adsUser.isActive", 0] }, true]
-                                            }
-                                        },
-                                        {
-                                            $expr: {
-                                                $eq: ['$sorts', true]
-                                            }
-                                        },
+                                ]
+                            },
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$isValid', true]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ["$validasi", true]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$sorts', true]
+                                        }
+                                    },
+                                    {
+                                        "userID": {
+                                            $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                        }
+                                    },
 
-                                    ]
-                                },
-                            ]
+                                ]
+                            },
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$isValid', false]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ["$validasi", true]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$sorts', true]
+                                        }
+                                    },
+                                    {
+                                        "userID": {
+                                            $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                        }
+                                    },
+
+                                ]
+                            },
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$isValid', false]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$sorts', true]
+                                        }
+                                    },
+                                    {
+                                        "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$balancesReplace", 49000
+                                            ]
+                                        }
+                                    },
+
+                                ]
+                            },
+                        ]
                     }
                 },
                 {
@@ -8286,20 +8370,28 @@ export class AdsService {
                 },
                 {
                     $project: {
+                        _id: 1,
+                        totalView: 1,
+                        CPV: 1,
+                        audiensFrekuensi: 1,
                         balances: "$userBasic.balances",
-                        totalSaldo: "$userBasic.balances.total",
-                        username: "$userBasic.userName",
-                        avatar: "$userBasic.avatar",
-                        email: "$userBasic.email",
+                        totalSaldo: "$balancesReplace",
+                        username: "$userBasicAds.userName",
+                        avatar: "$userBasicAds.avatar",
+                        email: "$userBasicAds.email",
                         ctaNames: {
                             $arrayElemAt: ["$cta.value", "$ctaButton"]
                         },
                         test: 1,
                         sekarang: 1,
                         ctaButton: 1,
-                        viewed: { $arrayElemAt: ["$adsUser.viewed", 0] },
+                        viewed: {
+                            $arrayElemAt: ["$adsUser.viewed", 0]
+                        },
                         //tester:"$adsUser",
-                        isAdsActive: { $arrayElemAt: ["$adsUser.isActive", 0] },
+                        isAdsActive: {
+                            $arrayElemAt: ["$adsUser.isActive", 0]
+                        },
                         placingID: 1,
                         placingName: 1,
                         timestamps: 1,
@@ -8314,8 +8406,9 @@ export class AdsService {
                         demografis: 1,
                         umur: 1,
                         testDate: 1,
-                        skipTime: 1,
+                        skipTime: { $ifNull: ["$skipTime", 0] },
                         tayang: 1,
+                        tayangStart: 1,
                         tayangEnd: 1,
                         adsUserId: 1,
                         adsUser: 1,
@@ -8335,10 +8428,14 @@ export class AdsService {
                         isValid: 1,
                         objectivitasId: "$objectivitas.name_id",
                         objectivitasEn: "$objectivitas.name_en",
+                        mediaBasePath: 1,
+                        mediaUri: 1,
+                        mediaThumBasePath: 1,
+                        mediaThumUri: 1,
 
                     }
                 },
-                { $limit: 1 }
+
             ]
         );
         console.log(JSON.stringify(
@@ -8974,7 +9071,7 @@ export class AdsService {
                             {
                                 "userID":
                                 {
-                                    $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                    $ne: new mongoose.Types.ObjectId(idUser)
                                 }
                             },
                             {
@@ -8991,7 +9088,6 @@ export class AdsService {
                                 typeAdsID: new mongoose.Types.ObjectId(idTypeAds),
 
                             }
-
                         ]
                     },
 
@@ -9001,14 +9097,14 @@ export class AdsService {
                         from: "userbasics",
                         as: "userBasic",
                         let: {
-                            localID: '$email'
+                            localID: new mongoose.Types.ObjectId(idUser)
                         },
                         pipeline: [
                             {
                                 $match:
                                 {
                                     $expr: {
-                                        $eq: ['$email', '$$localID']
+                                        $eq: ['$_id', '$$localID']
                                     }
                                 }
                             },
@@ -9017,7 +9113,7 @@ export class AdsService {
                                     from: "accountbalances",
                                     as: "balances",
                                     let: {
-                                        localID: "$_id"
+                                        localID: new mongoose.Types.ObjectId(idUser)
                                     },
                                     pipeline: [
                                         {
@@ -9083,6 +9179,68 @@ export class AdsService {
                                 }
                             },
                             {
+                                $project: {
+                                    balances: {
+                                        $arrayElemAt: ["$balances", 0]
+                                    },
+                                    debet: {
+                                        $arrayElemAt: ["$balances.debet", 0]
+                                    },
+                                    kredit: {
+                                        $arrayElemAt: ["$balances.kredit", 0]
+                                    },
+                                    total: {
+                                        $arrayElemAt: ["$balances.total", 0]
+                                    },
+                                    "email": 1,
+
+                                    "userInterests": 1,
+                                    "states": ["$states"],
+                                    "gender": ["$gender"],
+                                    "age":
+                                    {
+                                        $cond: {
+                                            if: {
+                                                $and: ['$dob', {
+                                                    $ne: ["$dob", ""]
+                                                }]
+                                            },
+                                            then: {
+                                                $toInt: {
+                                                    $divide: [{
+                                                        $subtract: [new Date(), {
+                                                            $toDate: "$dob"
+                                                        }]
+                                                    }, (365 * 24 * 60 * 60 * 1000)]
+                                                }
+                                            },
+                                            else: 0
+                                        }
+                                    },
+
+                                }
+                            }
+                        ],
+
+                    }
+                },
+                {
+                    "$lookup": {
+                        from: "userbasics",
+                        as: "userBasicAds",
+                        let: {
+                            localID: '$userID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $expr: {
+                                        $eq: ['$_id', '$$localID']
+                                    }
+                                }
+                            },
+                            {
                                 "$lookup":
                                 {
                                     from: "userauths",
@@ -9119,18 +9277,7 @@ export class AdsService {
                             },
                             {
                                 $project: {
-                                    balances: {
-                                        $arrayElemAt: ["$balances", 0]
-                                    },
-                                    debet: {
-                                        $arrayElemAt: ["$balances.debet", 0]
-                                    },
-                                    kredit: {
-                                        $arrayElemAt: ["$balances.kredit", 0]
-                                    },
-                                    total: {
-                                        $arrayElemAt: ["$balances.total", 0]
-                                    },
+
                                     "email": 1,
                                     "userName":
                                     {
@@ -9152,29 +9299,6 @@ export class AdsService {
                                                 ]
                                         }
                                     },
-                                    "userInterests": 1,
-                                    "states": ["$states"],
-                                    "gender": ["$gender"],
-                                    "age":
-                                    {
-                                        $cond: {
-                                            if: {
-                                                $and: ['$dob', {
-                                                    $ne: ["$dob", ""]
-                                                }]
-                                            },
-                                            then: {
-                                                $toInt: {
-                                                    $divide: [{
-                                                        $subtract: [new Date(), {
-                                                            $toDate: "$dob"
-                                                        }]
-                                                    }, (365 * 24 * 60 * 60 * 1000)]
-                                                }
-                                            },
-                                            else: 0
-                                        }
-                                    },
 
                                 }
                             }
@@ -9185,6 +9309,12 @@ export class AdsService {
                 {
                     $unwind: {
                         path: "$userBasic",
+                        "preserveNullAndEmptyArrays": true
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$userBasicAds",
                         "preserveNullAndEmptyArrays": true
                     }
                 },
@@ -9310,12 +9440,12 @@ export class AdsService {
                                     $and: [
                                         {
                                             $expr: {
-                                                $eq: ['$remark', '$$ket']
+                                                $eq: ['$remark', 'similarity']
                                             }
                                         },
                                         {
                                             $expr: {
-                                                $eq: ['$jenis', '$$type']
+                                                $eq: ['$jenis', 'AdsGender']
                                             }
                                         }
                                     ]
@@ -9525,7 +9655,6 @@ export class AdsService {
                         }
                     }
                 },
-
                 {
                     "$lookup": {
                         from: "userads",
@@ -9537,6 +9666,13 @@ export class AdsService {
                         },
                         pipeline: [
                             {
+                                $set: {
+                                    viewed: {
+                                        $ifNull: ["$viewed", 0]
+                                    }
+                                }
+                            },
+                            {
                                 $match:
                                 {
                                     $and: [
@@ -9546,7 +9682,9 @@ export class AdsService {
                                             }
                                         },
                                         {
-                                            isActive: true
+                                            $expr: {
+                                                $eq: ['$adsID', '$$idAds']
+                                            }
                                         },
 
                                     ]
@@ -9568,6 +9706,22 @@ export class AdsService {
 
                         ],
 
+                    }
+                },
+                {
+                    $addFields: {
+                        isValid:
+                        {
+                            $and: [
+                                {
+                                    $in: [
+                                        "$_id",
+                                        "$adsUser.adsID"
+                                    ]
+                                },
+
+                            ]
+                        }
                     }
                 },
                 {
@@ -9634,62 +9788,138 @@ export class AdsService {
                     }
                 },
                 {
+                    $set: {
+                        priorityViewed: "$adsUser.viewed"
+                    }
+                },
+                {
                     $sort: {
+                        isValid: 1,
+                        priorityViewed: 1,
                         sorts: - 1,
                         priority: 1,
                         scoreTotal: - 1
                     }
                 },
                 {
-                    $limit: 1
+                    $limit: 13
+                },
+                {
+                    $set: {
+                        validasi: {
+                            $ifNull: [{
+                                $arrayElemAt: ["$adsUser.isActive", 0]
+                            }, true]
+                        }
+                    }
+                },
+                {
+                    $set: {
+                        balancesReplace: { $ifNull: ["$balances.total", 0] }
+                    }
                 },
                 {
                     $match: {
-                        $or:
-                            [
-                                {
-                                    $and: [
-                                        {
-                                            $expr: {
-                                                $eq: [{ $arrayElemAt: ["$adsUser.isActive", 0] }, true]
-                                            }
-                                        },
-                                        {
-                                            $expr: {
-                                                $eq: ['$sorts', true]
-                                            }
-                                        },
-                                        {
-                                            "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
-                                        },
-                                        {
-                                            $expr: {
-                                                $lt: [
-                                                    {
-                                                        $arrayElemAt: ["$balances.total", 0]
-                                                    }, 49000
-                                                ]
-                                            }
-                                        },
+                        $or: [
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$isValid', true]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$sorts', true]
+                                        }
+                                    },
+                                    {
+                                        "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$balancesReplace", 49000
+                                            ]
+                                        }
+                                    },
 
-                                    ]
-                                },
-                                {
-                                    $and: [
-                                        {
-                                            $expr: {
-                                                $eq: [{ $arrayElemAt: ["$adsUser.isActive", 0] }, true]
-                                            }
-                                        },
-                                        {
-                                            $expr: {
-                                                $eq: ['$sorts', true]
-                                            }
-                                        },
+                                ]
+                            },
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$isValid', true]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ["$validasi", true]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$sorts', true]
+                                        }
+                                    },
+                                    {
+                                        "userID": {
+                                            $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                        }
+                                    },
 
-                                    ]
-                                },
-                            ]
+                                ]
+                            },
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$isValid', false]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ["$validasi", true]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$sorts', true]
+                                        }
+                                    },
+                                    {
+                                        "userID": {
+                                            $ne: new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                        }
+                                    },
+
+                                ]
+                            },
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$isValid', false]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ['$sorts', true]
+                                        }
+                                    },
+                                    {
+                                        "userID": new mongoose.Types.ObjectId("6214438e602c354635ed7876")
+                                    },
+                                    {
+                                        $expr: {
+                                            $lt: ["$balancesReplace", 49000
+                                            ]
+                                        }
+                                    },
+
+                                ]
+                            },
+                        ]
                     }
                 },
                 {
@@ -9760,20 +9990,25 @@ export class AdsService {
                 },
                 {
                     $project: {
+                        audiensFrekuensi: 1,
                         balances: "$userBasic.balances",
-                        totalSaldo: "$userBasic.balances.total",
-                        username: "$userBasic.userName",
-                        avatar: "$userBasic.avatar",
-                        email: "$userBasic.email",
+                        totalSaldo: "$balancesReplace",
+                        username: "$userBasicAds.userName",
+                        avatar: "$userBasicAds.avatar",
+                        email: "$userBasicAds.email",
                         ctaNames: {
                             $arrayElemAt: ["$cta.value", "$ctaButton"]
                         },
                         test: 1,
                         sekarang: 1,
                         ctaButton: 1,
-                        viewed: { $arrayElemAt: ["$adsUser.viewed", 0] },
+                        viewed: {
+                            $arrayElemAt: ["$adsUser.viewed", 0]
+                        },
                         //tester:"$adsUser",
-                        isAdsActive: { $arrayElemAt: ["$adsUser.isActive", 0] },
+                        isAdsActive: {
+                            $arrayElemAt: ["$adsUser.isActive", 0]
+                        },
                         placingID: 1,
                         placingName: 1,
                         timestamps: 1,
@@ -9788,7 +10023,7 @@ export class AdsService {
                         demografis: 1,
                         umur: 1,
                         testDate: 1,
-                        skipTime: 1,
+                        skipTime: { $ifNull: ["$skipTime", 0] },
                         tayang: 1,
                         tayangEnd: 1,
                         adsUserId: 1,
@@ -9812,7 +10047,7 @@ export class AdsService {
 
                     }
                 },
-                { $limit: 1 }
+
             ]
         ))
         return query;

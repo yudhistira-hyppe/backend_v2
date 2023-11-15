@@ -49,6 +49,7 @@ export class Userbasicnew {
     isFollowPrivate: boolean;
     @Prop()
     isPostPrivate: boolean;
+
     @Prop()
     createdAt: String;
     @Prop()
@@ -113,6 +114,7 @@ export class Userbasicnew {
     otp_pin: String;
     @Prop()
     otpToken: String;
+
     @Prop()
     otp_expired_time: String;
     @Prop()

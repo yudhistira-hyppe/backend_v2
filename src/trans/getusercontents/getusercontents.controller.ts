@@ -4645,13 +4645,19 @@ export class GetusercontentsController {
 
         var tempdatapict = [];
         var temporipict = [];
+        var tempapsaraId_result = null;
+        var tempapsaraThumbId_result = null;
+        var tempapsaraId = [];
+        var tempapsaraThumbId = [];
+        var tempdatapict = [];
+        var resultpictapsara = null;
         // console.log(lengpict);
         if (lengpict > 0) {
 
             if (arrpict[0]._id !== undefined) {
 
                 for (let i = 0; i < lengpict; i++) {
-                    uploadSource = arrpict[i].uploadSource;
+                    //uploadSource = arrpict[i].uploadSource;
                     try {
                         apsaraId = arrpict[i].apsaraId;
                     } catch (e) {
@@ -4663,68 +4669,102 @@ export class GetusercontentsController {
                         apsaraThumbId = "";
                     }
 
-                    if (apsaraThumbId !== undefined) {
-                        tempdatapict.push(arrpict[i].apsaraThumbId);
-
-                    }
-                    if (apsaraId !== undefined) {
-                        temporipict.push(arrpict[i].apsaraId);
-
+                    if (apsaraId != "") {
+                        tempapsaraId.push(arrpict[i].apsaraId);
                     }
 
+                    if (apsaraId != "") {
+                        tempapsaraThumbId.push(arrpict[i].apsaraThumbId);
+                    }
+                }
+                console.log("");
+                tempapsaraId_result = await this.postContentService.getImageApsara(tempapsaraId);
+                tempapsaraThumbId_result = await this.postContentService.getImageApsara(tempapsaraThumbId);
+
+                let gettempresultpictapsara_tempapsaraId = tempapsaraId_result.ImageInfo;
+                let gettempresultpictapsara_tempapsaraThumbId = tempapsaraThumbId_result.ImageInfo;
+
+                for (let i = 0; i < lengpict; i++) {
+
+                    var checkpictketemu = false;
+                    // uploadSource = arrpict[i].uploadSource;
+                    var dataUpsaraThum = (arrpict[i].apsaraThumbId != undefined);
+                    var dataUpsara = (arrpict[i].apsaraId != undefined);
+
+                    if (arrpict[i].isApsara) {
+                        for (var j = 0; j < gettempresultpictapsara_tempapsaraId.length; j++) {
+                            if (gettempresultpictapsara_tempapsaraId[j].ImageId == arrpict[i].apsaraId) {
+                                arrpict[i].mediaEndpoint = gettempresultpictapsara_tempapsaraId[j].URL;
+                                if (!dataUpsaraThum) {
+                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara_tempapsaraId[j].URL;
+                                }
+                            }
+                        }
+                        for (var j = 0; j < gettempresultpictapsara_tempapsaraThumbId.length; j++) {
+                            if (gettempresultpictapsara_tempapsaraThumbId[j].ImageId == arrpict[i].apsaraThumbId) {
+                                arrpict[i].mediaThumbEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
+                                if (!dataUpsara) {
+                                    arrpict[i].mediaEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
+                                }
+                            }
+                        }
+                    }
+                    picts.push(arrpict[i]);
                 }
 
                 // console.log(tempdatapict);
 
 
-                var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
-                var gettempresultpictapsara = resultpictapsara.ImageInfo;
-                var resultpictapsaraOri = await this.postContentService.getImageApsara(temporipict);
-                var gettempresultpictapsaraori = resultpictapsaraOri.ImageInfo;
-                for (var i = 0; i < lengpict; i++) {
-                    //var checkpictketemu = false;
+                // var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                // var gettempresultpictapsara = resultpictapsara.ImageInfo;
+                // var resultpictapsaraOri = await this.postContentService.getImageApsara(temporipict);
+                // var gettempresultpictapsaraori = resultpictapsaraOri.ImageInfo;
+                // for (var i = 0; i < lengpict; i++) {
+                //     //var checkpictketemu = false;
 
-                    uploadSource = arrpict[i].uploadSource;
-
-
-                    if (uploadSource == "OSS") {
-                        //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
-
-                    } else {
+                //     uploadSource = arrpict[i].uploadSource;
 
 
-                        if (gettempresultpictapsara.length > 0) {
-                            for (let j = 0; j < gettempresultpictapsara.length; j++) {
+                //     if (uploadSource == "OSS") {
+                //         //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
 
-                                if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
-
-
-                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                //     } else {
 
 
+                //         if (gettempresultpictapsara.length > 0) {
+                //             for (let j = 0; j < gettempresultpictapsara.length; j++) {
 
-                                }
-
-                            }
-                        }
-
-                        if (gettempresultpictapsaraori.length > 0) {
-                            for (let j = 0; j < gettempresultpictapsaraori.length; j++) {
+                //                 if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
 
 
-                                if (gettempresultpictapsaraori[j].ImageId == arrpict[i].apsaraId) {
-
-                                    arrpict[i].mediaEndpoint = gettempresultpictapsaraori[j].URL;
-
-                                }
-                            }
-                        }
-                    }
+                //                     arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
 
 
 
-                    picts.push(arrpict[i]);
-                }
+                //                 }
+
+                //             }
+                //         }
+
+                //         if (gettempresultpictapsaraori.length > 0) {
+                //             for (let j = 0; j < gettempresultpictapsaraori.length; j++) {
+
+
+                //                 if (gettempresultpictapsaraori[j].ImageId == arrpict[i].apsaraId) {
+
+                //                     arrpict[i].mediaEndpoint = gettempresultpictapsaraori[j].URL;
+
+                //                 }
+                //             }
+                //         }
+                //     }
+
+
+
+                //     picts.push(arrpict[i]);
+                // }
+
+
             } else {
                 picts = [];
             }
@@ -4962,13 +5002,19 @@ export class GetusercontentsController {
 
         var tempdatapict = [];
         var temporipict = [];
+        var tempapsaraId_result = null;
+        var tempapsaraThumbId_result = null;
+        var tempapsaraId = [];
+        var tempapsaraThumbId = [];
+        var tempdatapict = [];
+        var resultpictapsara = null;
         // console.log(lengpict);
         if (lengpict > 0) {
 
             if (arrpict[0]._id !== undefined) {
 
                 for (let i = 0; i < lengpict; i++) {
-                    uploadSource = arrpict[i].uploadSource;
+                    //uploadSource = arrpict[i].uploadSource;
                     try {
                         apsaraId = arrpict[i].apsaraId;
                     } catch (e) {
@@ -4980,68 +5026,102 @@ export class GetusercontentsController {
                         apsaraThumbId = "";
                     }
 
-                    if (apsaraThumbId !== undefined) {
-                        tempdatapict.push(arrpict[i].apsaraThumbId);
-
-                    }
-                    if (apsaraId !== undefined) {
-                        temporipict.push(arrpict[i].apsaraId);
-
+                    if (apsaraId != "") {
+                        tempapsaraId.push(arrpict[i].apsaraId);
                     }
 
+                    if (apsaraId != "") {
+                        tempapsaraThumbId.push(arrpict[i].apsaraThumbId);
+                    }
+                }
+                console.log("");
+                tempapsaraId_result = await this.postContentService.getImageApsara(tempapsaraId);
+                tempapsaraThumbId_result = await this.postContentService.getImageApsara(tempapsaraThumbId);
+
+                let gettempresultpictapsara_tempapsaraId = tempapsaraId_result.ImageInfo;
+                let gettempresultpictapsara_tempapsaraThumbId = tempapsaraThumbId_result.ImageInfo;
+
+                for (let i = 0; i < lengpict; i++) {
+
+                    var checkpictketemu = false;
+                    // uploadSource = arrpict[i].uploadSource;
+                    var dataUpsaraThum = (arrpict[i].apsaraThumbId != undefined);
+                    var dataUpsara = (arrpict[i].apsaraId != undefined);
+
+                    if (arrpict[i].isApsara) {
+                        for (var j = 0; j < gettempresultpictapsara_tempapsaraId.length; j++) {
+                            if (gettempresultpictapsara_tempapsaraId[j].ImageId == arrpict[i].apsaraId) {
+                                arrpict[i].mediaEndpoint = gettempresultpictapsara_tempapsaraId[j].URL;
+                                if (!dataUpsaraThum) {
+                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara_tempapsaraId[j].URL;
+                                }
+                            }
+                        }
+                        for (var j = 0; j < gettempresultpictapsara_tempapsaraThumbId.length; j++) {
+                            if (gettempresultpictapsara_tempapsaraThumbId[j].ImageId == arrpict[i].apsaraThumbId) {
+                                arrpict[i].mediaThumbEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
+                                if (!dataUpsara) {
+                                    arrpict[i].mediaEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
+                                }
+                            }
+                        }
+                    }
+                    picts.push(arrpict[i]);
                 }
 
                 // console.log(tempdatapict);
 
 
-                var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
-                var gettempresultpictapsara = resultpictapsara.ImageInfo;
-                var resultpictapsaraOri = await this.postContentService.getImageApsara(temporipict);
-                var gettempresultpictapsaraori = resultpictapsaraOri.ImageInfo;
-                for (var i = 0; i < lengpict; i++) {
-                    //var checkpictketemu = false;
+                // var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                // var gettempresultpictapsara = resultpictapsara.ImageInfo;
+                // var resultpictapsaraOri = await this.postContentService.getImageApsara(temporipict);
+                // var gettempresultpictapsaraori = resultpictapsaraOri.ImageInfo;
+                // for (var i = 0; i < lengpict; i++) {
+                //     //var checkpictketemu = false;
 
-                    uploadSource = arrpict[i].uploadSource;
-
-
-                    if (uploadSource == "OSS") {
-                        //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
-
-                    } else {
+                //     uploadSource = arrpict[i].uploadSource;
 
 
-                        if (gettempresultpictapsara.length > 0) {
-                            for (let j = 0; j < gettempresultpictapsara.length; j++) {
+                //     if (uploadSource == "OSS") {
+                //         //arrpict[i].mediaThumbEndpoint = arrpict[i].mediaEndpoint;
 
-                                if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
-
-
-                                    arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                //     } else {
 
 
+                //         if (gettempresultpictapsara.length > 0) {
+                //             for (let j = 0; j < gettempresultpictapsara.length; j++) {
 
-                                }
-
-                            }
-                        }
-
-                        if (gettempresultpictapsaraori.length > 0) {
-                            for (let j = 0; j < gettempresultpictapsaraori.length; j++) {
+                //                 if (gettempresultpictapsara[j].ImageId == arrpict[i].apsaraThumbId) {
 
 
-                                if (gettempresultpictapsaraori[j].ImageId == arrpict[i].apsaraId) {
-
-                                    arrpict[i].mediaEndpoint = gettempresultpictapsaraori[j].URL;
-
-                                }
-                            }
-                        }
-                    }
+                //                     arrpict[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
 
 
 
-                    picts.push(arrpict[i]);
-                }
+                //                 }
+
+                //             }
+                //         }
+
+                //         if (gettempresultpictapsaraori.length > 0) {
+                //             for (let j = 0; j < gettempresultpictapsaraori.length; j++) {
+
+
+                //                 if (gettempresultpictapsaraori[j].ImageId == arrpict[i].apsaraId) {
+
+                //                     arrpict[i].mediaEndpoint = gettempresultpictapsaraori[j].URL;
+
+                //                 }
+                //             }
+                //         }
+                //     }
+
+
+
+                //     picts.push(arrpict[i]);
+                // }
+
+
             } else {
                 picts = [];
             }
@@ -6228,19 +6308,23 @@ export class GetusercontentsController {
                         for (var j = 0; j < gettempresultpictapsara_tempapsaraId.length; j++) {
                             if (gettempresultpictapsara_tempapsaraId[j].ImageId == data[i].apsaraId) {
                                 data[i].mediaEndpoint = gettempresultpictapsara_tempapsaraId[j].URL;
-                                if (!dataUpsaraThum) {
+                                if (!dataUpsara) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara_tempapsaraId[j].URL;
                                     data[i].mediaThumbEndpoint = gettempresultpictapsara_tempapsaraId[j].URL;
                                 }
                             }
                         }
-                        for (var j = 0; j < gettempresultpictapsara_tempapsaraThumbId.length; j++) {
-                            if (gettempresultpictapsara_tempapsaraThumbId[j].ImageId == data[i].apsaraThumbId) {
-                                data[i].mediaThumbEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
-                                if (!dataUpsara) {
-                                    data[i].mediaEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
-                                }
-                            }
-                        }
+                        // for (var j = 0; j < gettempresultpictapsara_tempapsaraThumbId.length; j++) {
+                        //     if (gettempresultpictapsara_tempapsaraThumbId[j].ImageId == data[i].apsaraThumbId) {
+                        //         data[i].mediaThumbEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
+                        //         if (!dataUpsara) {
+                        //             data[i].mediaThumbEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
+                        //         }
+                        //     }
+                        // }
+                    } else {
+                        data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
+
                     }
                     // emailreceiver = data[i].email;
                     // boosted = data[i].boosted;

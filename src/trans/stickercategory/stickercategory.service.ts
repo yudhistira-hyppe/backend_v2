@@ -38,18 +38,18 @@ export class StickerCategoryService {
         {
             "$sort":
             {
-                createdAt:-1
+                createdAt:1
             }
         }
     );
 
-    if (page > 0) {
+    if (page != null && page > 0) {
         pipeline.push({
             "$skip": limit * page
         });
     }
 
-    if (limit > 0) {
+    if (limit != null && limit > 0) {
         pipeline.push({
             "$limit": limit
         });
@@ -95,73 +95,98 @@ export class StickerCategoryService {
     }
 
     pipeline.push({
-      "$lookup":
-      {
-          from:"mediaStiker",
-          as:"stiker_data",
-          let:
-          {
-              fk_id:"$name",
-              fk_type:"$type"
+        "$lookup": {
+          "from": "mediaStiker",
+          "as": "stiker_data",
+          "let": {
+            "fk_id": "$name",
+            "fk_type": "$type"
           },
-          pipeline:
-          [
+          "pipeline": [
             {
                 "$match":
                 {
                     "$and":
                     [
                         {
-                            "type":"$$fk_type"
+                            "$expr":
+                            {
+                                "$eq":
+                                [
+                                    "$type","$$fk_type"
+                                ]
+                            }
                         },
                         {
                             "$expr":
                             {
                                 "$eq":
                                 [
-                                    "$kategori", "$$fk_id"
+                                    "$kategori","$$fk_id"
                                 ]
                             }
                         },
                         {
-                            isDelete:false
-                        },
-                        {
-                            status:true
+                            "isDelete":false
                         }
                     ]
                 }
             },
             {
-                "$sort":
+                "$sort": 
                 {
-                    index:1
+                    "index": 1
                 }
             }
           ]
-      }          
-  })
+        }
+      })
 
     var data = await this.dataModel.aggregate(pipeline);
 
     return data[0];
   }
 
-  async update(id: string, updateStickerCategoryDto: CreateStickerCategoryDto, updatechild: boolean) {
+  async findone2(id:string): Promise<stickerCategory>
+  {
+    var data = await this.dataModel.findOne({ _id: new Types.ObjectId(id) }).exec();
+
+    return data;
+  }
+
+  async update(id: string, updateStickerCategoryDto: CreateStickerCategoryDto){
     let data = await this.dataModel.findByIdAndUpdate(id, updateStickerCategoryDto, { new: true });
     if (!data) {
       throw new Error('Data is not found!');
-    }
+    }    
 
-    if(updatechild == true)
-    {
-        var convert = updateStickerCategoryDto.name;
-        var converttipe = updateStickerCategoryDto.type;
-        var olddata = await this.findOne(convert.toString(), converttipe.toString(), "name");
-        await this.mstikService.updatedatabasedonkategori(olddata.name, convert.toString(), converttipe.toString());
-    }
     return data;
   }
+
+  async checkdata(keyword:string, tipe:string, id:string):Promise<stickerCategory>
+ {
+    var match = {};
+    match['name'] = {
+        "$regex":keyword,
+        "$options":"i"
+    };
+
+    match['type'] = tipe;
+
+    match['active'] = true;
+
+    if(id != null)
+    {
+        match['_id'] = {
+            "$ne": new Types.ObjectId(id)
+        };
+    }
+
+
+    var result = await this.dataModel.findOne(match).exec();
+
+    return result;
+ }
 
   async remove(id: number) {
     return `This action removes a #${id} stickerCategory`;

@@ -92,6 +92,9 @@ export class AdsDto {
     width: number;
     height: number;
     idAdspricecredits: mongoose.Types.ObjectId;
+    adspricecredits: number;
+    CPA: number;
+    CPV: number;
 }
 
 export class AdsAction {

@@ -57,7 +57,7 @@ export class ActivityeventsController {
     var timestamps_start = await this.utilsService.getDateTimeString();
     var fullurl = headers.host + "/api/activityevents/logactivitas";
     var setinput = {
-      "year":year
+      "year": year
     };
     var reqbody = JSON.parse(JSON.stringify(setinput));
 
@@ -247,7 +247,7 @@ export class ActivityeventsController {
     var email = auth.email;
     var timestamps_start = await this.utilsService.getDateTimeString();
     var fullurl = headers.host + "/api/activityevents/logactivitas/useractive";
-    
+
     var datasesi = null;
     var countUser = [];
     var sumUser = [];

@@ -39,7 +39,91 @@ export class ContenteventsService {
     query.where('email', email);
     return query.exec();
   }
+  async findLiked(postID: string, startdate: string, enddate: string) {
 
+    var pipeline = [];
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+    if (startdate && startdate !== undefined) {
+
+      pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+
+    }
+    if (enddate && enddate !== undefined) {
+
+      pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
+
+    }
+    pipeline.push(
+      {
+        $match:
+        {
+
+          "postID": postID,
+          "eventType": "LIKE",
+          "event": "DONE",
+          "active": true,
+
+
+        }
+      },
+
+      { $count: "myCount" }
+    );
+
+
+    let query = this.ContenteventsModel.aggregate(pipeline);
+
+    return query.exec();
+  }
+
+  async findViewed(postID: string, startdate: string, enddate: string) {
+
+    var pipeline = [];
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+    if (startdate && startdate !== undefined) {
+
+      pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+
+    }
+    if (enddate && enddate !== undefined) {
+
+      pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
+
+    }
+    pipeline.push(
+      {
+        $match:
+        {
+
+          "postID": postID,
+          "eventType": "VIEW",
+          "event": "DONE",
+          "active": true,
+
+
+        }
+      },
+
+      { $count: "myCount" }
+    );
+
+
+    let query = this.ContenteventsModel.aggregate(pipeline);
+
+    return query.exec();
+  }
   async findisLike(email: string, postID: string) {
     let query = this.ContenteventsModel.aggregate([
 
@@ -1078,7 +1162,7 @@ export class ContenteventsService {
   }
 
   async updateUnFollowing(email: string, eventType: string, receiverParty: string) {
-    this.ContenteventsModel.updateOne(
+    this.ContenteventsModel.updateMany(
       {
         email: email,
         eventType: eventType,
@@ -1135,7 +1219,7 @@ export class ContenteventsService {
   }
 
   async updateUnFollower(email: string, eventType: string, receiverParty: string) {
-    this.ContenteventsModel.updateOne(
+    this.ContenteventsModel.updateMany(
       {
         email: email,
         eventType: eventType,
@@ -4205,5 +4289,21 @@ export class ContenteventsService {
         }
       });
     return data;
+  }
+
+
+  async listview(email: string, postid: string) {
+    const query = await this.ContenteventsModel.aggregate([
+      {
+        $match: {
+          "email": email,
+          "postID": postid,
+          "event": "DONE",
+          "eventType": { $in: ["VIEW", "VIEWCHALLENGE"] }
+        }
+      }
+
+    ]);
+    return query;
   }
 }

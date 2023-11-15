@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateWithdrawsDto, OyDisburseCallbackWithdraw } from './dto/create-withdraws.dto';
-import { Model, Types } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { Withdraws, WithdrawsDocument } from './schemas/withdraws.schema';
 import { ObjectId } from 'mongodb';
 
@@ -21,6 +21,17 @@ export class WithdrawsService {
         return this.withdrawsModel.findOne({ _id: id }).exec();
     }
 
+    async findWitoutSucces(): Promise<Withdraws[]> {
+        return this.withdrawsModel.find({
+            "$and": [
+                { "statusCode": { "$ne": "300" } },
+                { "statusCode": { "$ne": "000" } },
+                { "statusCode": { "$ne": null } },
+                { "statusCode": { "$ne": "204" } },
+            ]
+        }).exec();
+    }
+
     async findParteneridtrx(partnerTrxid: string): Promise<Withdraws> {
         return this.withdrawsModel.findOne({ partnerTrxid: partnerTrxid }).exec();
     }
@@ -30,6 +41,12 @@ export class WithdrawsService {
         if (!data) {
             throw new Error('Todo is not found!');
         }
+        return data;
+    }
+
+    async updateoneData(id: string, CreateWithdrawsDto_: CreateWithdrawsDto, responseData: any): Promise<Object> {
+        let data = await this.withdrawsModel.updateOne({ "_id": new mongoose.Types.ObjectId(id) },
+            { $set: { "status": CreateWithdrawsDto_.status, "statusCode": CreateWithdrawsDto_.statusCode, "description": CreateWithdrawsDto_.description, verified: CreateWithdrawsDto_.verified }, $push: { responseData: responseData } });
         return data;
     }
 
@@ -44,9 +61,9 @@ export class WithdrawsService {
         return data;
     }
 
-    async updatefailed(partnerTrxid: string, status: string, description: string, payload: OyDisburseCallbackWithdraw): Promise<Object> {
+    async updatefailed(partnerTrxid: string, status: string, description: string, payload: OyDisburseCallbackWithdraw, statusCode: string): Promise<Object> {
         let data = await this.withdrawsModel.updateOne({ "partnerTrxid": partnerTrxid },
-            { $set: { "status": status, "description": description, verified: false, payload: payload } });
+            { $set: { "status": status, "description": description, verified: false, payload: payload, statusCode: statusCode } });
         return data;
     }
 

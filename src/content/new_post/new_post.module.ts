@@ -13,10 +13,12 @@ import { PostsModule } from '../posts/posts.module';
 import { GetusercontentsModule } from 'src/trans/getusercontents/getusercontents.module';
 import { MediamusicModule } from '../mediamusic/mediamusic.module';
 import { NewcontenteventsModule } from '../newcontentevents/newcontentevents.module';
+import { SettingsModule } from 'src/trans/settings/settings.module';
 @Module({
   imports:[
     ConfigModule.forRoot(),
     UtilsModule,
+    SettingsModule,
     ContenteventsModule,
     UserbasicnewModule,
     LogapisModule,

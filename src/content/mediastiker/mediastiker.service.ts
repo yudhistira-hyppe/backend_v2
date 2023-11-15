@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, ObjectId, Types } from 'mongoose';
 import { Mediastiker, MediastikerDocument } from './schemas/mediastiker.schema';
 import { first, pipe } from 'rxjs';
+import { start } from 'repl';
 
 @Injectable()
 export class MediastikerService {
@@ -21,10 +22,16 @@ export class MediastikerService {
         return this.MediastikerModel.findOne({ _id: new Types.ObjectId(id) }).exec();
     }
     async findByname(name: string): Promise<Mediastiker> {
-        return this.MediastikerModel.findOne({ name: name }).exec();
+        return this.MediastikerModel.findOne({ name: name, isDelete: false }).exec();
+    }
+    async findBynameTes(name: string): Promise<Mediastiker> {
+        return this.MediastikerModel.findOne({ name: name, isDelete: true }).exec();
+    }
+    async findBynamekategori(type: string, kategori: string): Promise<Mediastiker> {
+        return this.MediastikerModel.findOne({ type: type, kategori: kategori, isDelete: false }).exec();
     }
     async findByIndex(index: number, type: string, kategori: string): Promise<Mediastiker> {
-        return this.MediastikerModel.findOne({ index: index, type: type, kategori: kategori }).exec();
+        return this.MediastikerModel.findOne({ index: index, type: type, kategori: kategori, isDelete: false }).exec();
     }
     async findByKategori(target: string): Promise<Mediastiker[]> {
         return this.MediastikerModel.aggregate([
@@ -108,7 +115,21 @@ export class MediastikerService {
             {
                 "$match":
                 {
-                    'index': { $gte: nourut }, 'type': type, 'kategori': kategori
+                    'index': { $gte: nourut }, 'type': type, 'kategori': kategori, isDelete: false
+                }
+            },
+            {
+                $sort: { 'index': 1 }
+            }
+        ]);
+        return query;
+    }
+    async findByNourutTest(nourut: number, type: string, kategori: string) {
+        var query = this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    'index': { $gte: nourut }, 'type': type, 'kategori': kategori, isDelete: true
                 }
             },
             {
@@ -122,7 +143,22 @@ export class MediastikerService {
             {
                 "$match":
                 {
-                    'type': type, 'kategori': kategori
+                    'type': type, 'kategori': kategori, isDelete: false
+                }
+            },
+            {
+                $sort: { 'index': -1 }
+            }
+        ]);
+        return query;
+    }
+
+    async findByTypekategoriTes(type: string, kategori: string) {
+        var query = this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    'type': type, 'kategori': kategori, isDelete: true
                 }
             },
             {
@@ -136,7 +172,23 @@ export class MediastikerService {
             {
                 "$match":
                 {
-                    'index': { $gte: nourutStart, $lte: nourutEnd }, 'type': type, 'kategori': kategori
+                    'index': { $gte: nourutStart, $lte: nourutEnd }, 'type': type, 'kategori': kategori, isDelete: false
+                }
+            },
+            {
+                $sort: { 'index': -1 }
+            }
+
+        ]);
+        return query;
+    }
+
+    async findByNourutLebihkecilTes(nourutStart: number, nourutEnd: number, type: string, kategori: string) {
+        var query = this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    'index': { $gte: nourutStart, $lte: nourutEnd }, 'type': type, 'kategori': kategori, isDelete: false
                 }
             },
             {
@@ -151,7 +203,24 @@ export class MediastikerService {
             {
                 "$match":
                 {
-                    'index': { $lte: nourutStart, $gte: nourutEnd }, 'type': type, 'kategori': kategori
+                    'index': { $lte: nourutStart, $gte: nourutEnd }, 'type': type, 'kategori': kategori, isDelete: false
+
+                }
+            },
+            {
+                $sort: { 'index': 1 }
+            }
+
+        ]);
+        return query;
+    }
+
+    async findByNourutLebihbesarTest(nourutStart: number, nourutEnd: number, type: string, kategori: string) {
+        var query = this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    'index': { $lte: nourutStart, $gte: nourutEnd }, 'type': type, 'kategori': kategori, isDelete: true
 
                 }
             },
@@ -167,7 +236,30 @@ export class MediastikerService {
             { $set: { "index": index, "updatedAt": updatedAt, } });
         return data;
     }
-
+    async findByKategoriTes(target: string): Promise<Mediastiker[]> {
+        return this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+                            {
+                                kategori: target
+                            },
+                            {
+                                isDelete: true
+                            }
+                        ]
+                }
+            },
+            {
+                "$sort":
+                {
+                    index: 1
+                }
+            }
+        ]);
+    }
     async trend() {
         var data = await this.MediastikerModel.aggregate([
             {
@@ -190,7 +282,7 @@ export class MediastikerService {
                                                 isDelete: false
                                             },
                                             {
-                                                used:
+                                                countused:
                                                 {
                                                     "$ne": 0
                                                 }
@@ -199,9 +291,19 @@ export class MediastikerService {
                                 }
                             },
                             {
+                                "$addFields":
+                                {
+                                    "lowername":
+                                    {
+                                        "$toLower": "$name"
+                                    }
+                                }
+                            },
+                            {
                                 "$sort":
                                 {
-                                    used: -1
+                                    countused: -1,
+                                    lowername: 1
                                 }
                             },
                             {
@@ -225,7 +327,7 @@ export class MediastikerService {
                                                 isDelete: false
                                             },
                                             {
-                                                used:
+                                                countused:
                                                 {
                                                     "$ne": 0
                                                 }
@@ -234,9 +336,19 @@ export class MediastikerService {
                                 }
                             },
                             {
+                                "$addFields":
+                                {
+                                    "lowername":
+                                    {
+                                        "$toLower": "$name"
+                                    }
+                                }
+                            },
+                            {
                                 "$sort":
                                 {
-                                    used: -1
+                                    countused: -1,
+                                    lowername: 1
                                 }
                             },
                             {
@@ -260,7 +372,7 @@ export class MediastikerService {
                                                 isDelete: false
                                             },
                                             {
-                                                used:
+                                                countused:
                                                 {
                                                     "$ne": 0
                                                 }
@@ -269,9 +381,19 @@ export class MediastikerService {
                                 }
                             },
                             {
+                                "$addFields":
+                                {
+                                    "lowername":
+                                    {
+                                        "$toLower": "$name"
+                                    }
+                                }
+                            },
+                            {
                                 "$sort":
                                 {
-                                    used: -1
+                                    countused: -1,
+                                    lowername: 1
                                 }
                             },
                             {
@@ -308,29 +430,44 @@ export class MediastikerService {
         var firstmatch = [];
         if (setname != null) {
             firstmatch.push({
-                name:
-                {
-                    "$regex": setname,
-                    "$options": "i"
-                }
+                "$or":
+                    [
+                        {
+                            "name":
+                            {
+                                "$regex": setname,
+                                "$options": "i"
+                            }
+                        },
+                        {
+                            "nameEn":
+                            {
+                                "$regex": setname,
+                                "$options": "i"
+                            }
+                        },
+                    ]
             })
         }
 
         if (startdate != null) {
+            // var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+            // var dateend = currentdate.toISOString().split(" ")[0];
+            var convertstart = startdate.split(" ")[0];
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-            var dateend = currentdate.toISOString();
+            var convertend = currentdate.toISOString().split("T")[0];
 
             firstmatch.push(
                 {
                     "createdAt":
                     {
-                        "$gte": startdate
+                        "$gte": convertstart
                     }
                 },
                 {
                     "createdAt":
                     {
-                        "$lte": dateend
+                        "$lt": convertend
                     }
                 },
             );
@@ -339,13 +476,13 @@ export class MediastikerService {
         if (startused != null) {
             firstmatch.push(
                 {
-                    "used":
+                    "countused":
                     {
                         "$gte": startused
                     }
                 },
                 {
-                    "used":
+                    "countused":
                     {
                         "$lte": endused
                     }
@@ -386,12 +523,24 @@ export class MediastikerService {
             )
         }
 
+        pipeline.push(
+            {
+                "$addFields":
+                {
+                    "lowername":
+                    {
+                        "$toLower": "$name"
+                    }
+                }
+            }
+        );
+
         if (sorting != null) {
             if (sorting == "name+") {
                 pipeline.push({
                     "$sort":
                     {
-                        name: 1
+                        lowername: 1
                     }
                 })
             }
@@ -399,7 +548,7 @@ export class MediastikerService {
                 pipeline.push({
                     "$sort":
                     {
-                        name: -1
+                        lowername: -1
                     }
                 })
             }
@@ -419,11 +568,21 @@ export class MediastikerService {
                     }
                 })
             }
+            else if (sorting == "index") {
+                pipeline.push({
+                    "$sort":
+                    {
+                        index: 1,
+                        createdAt: 1
+                    }
+                });
+            }
             else {
                 pipeline.push({
                     "$sort":
                     {
-                        used: -1
+                        countused: -1,
+                        lowername: 1
                     }
                 })
             }
@@ -969,31 +1128,10 @@ export class MediastikerService {
                 }
             },
             {
-                "$lookup":
-                {
-                    from: 'countStiker',
-                    localField: '_id',
-                    foreignField: 'stikerId',
-                    as: 'count_data',
-                }
-            },
-            {
                 "$project":
                 {
-                    // used:
-                    // {
-                    //     "$arrayElemAt":
-                    //     [
-                    //         "$count_data.countused",0
-                    //     ]
-                    // },
-                    search:
-                    {
-                        "$arrayElemAt":
-                            [
-                                "$count_data.countsearch", 0
-                            ]
-                    },
+                    // used:"$countused",
+                    search: "$countsearch",
                     used:
                     {
                         "$arrayElemAt":
@@ -1161,10 +1299,31 @@ export class MediastikerService {
                 {
                     "$match":
                     {
-                        "name":
+                        "$or":
+                            [
+                                {
+                                    "name":
+                                    {
+                                        "$regex": keyword,
+                                        "$options": "i"
+                                    }
+                                },
+                                {
+                                    "nameEn":
+                                    {
+                                        "$regex": keyword,
+                                        "$options": "i"
+                                    }
+                                },
+                            ]
+                    }
+                },
+                {
+                    "$addFields":
+                    {
+                        "lowername":
                         {
-                            "$regex": keyword,
-                            "$options": "i"
+                            "$toLower": "$name"
                         }
                     }
                 },
@@ -1172,7 +1331,7 @@ export class MediastikerService {
                     "$sort":
                     {
                         countused: -1,
-                        name: 1
+                        lowername: 1
                     }
                 },
                 {
@@ -1239,9 +1398,19 @@ export class MediastikerService {
         else if (jenis == "STICKER" || jenis == "EMOJI") {
             pipeline.push(
                 {
+                    "$addFields":
+                    {
+                        "lowername":
+                        {
+                            "$toLower": "$name"
+                        }
+                    }
+                },
+                {
                     "$sort":
                     {
-                        "index": 1
+                        "index": 1,
+                        "lowername": 1
                     }
                 },
                 {
@@ -1305,6 +1474,20 @@ export class MediastikerService {
         return data;
     }
 
+    async updatejamaah(listid: any[], status: string) {
+        try {
+            for (var i = 0; i < listid.length; i++) {
+                var result = await this.myLoop(i, listid[i], status);
+                console.log(result);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+
+        // return result;
+        return true;
+    }
+
     async updatedata(list: any[], type: string) {
         if (list !== undefined) {
             for (let i = 0; i < list.length; i++) {
@@ -1326,6 +1509,43 @@ export class MediastikerService {
 
             }
         }
+    }
+
+    async myLoop(i: number, data: string, insertdata: string) {
+        var updatedata = new Mediastiker();
+        if (insertdata == "active") {
+            updatedata.status = true;
+        }
+        else if (insertdata == "noneactive") {
+            updatedata.status = false;
+        }
+        else if (insertdata == "delete") {
+            updatedata.isDelete = true;
+        }
+
+        try {
+            var result = await this.MediastikerModel.updateOne(
+                {
+                    "_id": data
+                },
+                updatedata,
+                function (err, docs) {
+                    if (err) {
+                        console.log(err)
+                    }
+                    else {
+                        console.log("Updated Docs : ", docs);
+                    }
+                }
+            );
+        }
+        catch (e) {
+            console.log(e);
+        }
+
+        console.log(result);
+
+        return result;
     }
 
     async updateUsed(_id: string) {

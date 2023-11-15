@@ -15,6 +15,8 @@ export class CreateWithdrawsDto {
     idAccountBank: { oid: String; };
     updatedAt: string;
     responOy: {};
+    responseData: any[];
+    statusCode: string;
 }
 
 export class OyDisburseCallbackWithdraw {

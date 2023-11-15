@@ -39,8 +39,11 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { Settings2Schema, SettingsMixed } from 'src/trans/settings2/schemas/settings2.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
+import { GetprofilecontenteventModule } from './getprofilecontentevent/getprofilecontentevent.module';
+
 @Module({
   imports: [
+    GetprofilecontenteventModule,
     LogapisModule,
     UserbasicsModule,
     ScheduleModule,
