@@ -253,4 +253,54 @@ export class AdsObjectivitasController {
             "Ads Objectivitas retrieved succesfully", data, data_all.length, pageNumber
         );
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('/version/2')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async getAll2(
+        @Query('pageNumber') pageNumber: number,
+        @Query('pageRow') pageRow: number,
+        @Query('search') search: string, @Headers() headers, @Req() req) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+
+        if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unauthorized',
+            );
+        }
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+            
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed email header dan token not match',
+            );
+        }
+        var profile = await this.utilsService.generateProfile2(headers['x-auth-user'], "FULL");
+        if (!(await this.utilsService.ceckData(profile))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+            
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed user not found',
+            );
+        }
+        const pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
+        const pageRow_ = (pageRow != undefined) ? pageRow : 8;
+        const search_ = search;
+        const langIso = (profile.langIso != undefined) ? profile.langIso : "id";
+        const data_all = await this.adsObjectivitasService.filAll();
+        const data = await this.adsObjectivitasService.findCriteria(pageNumber_, pageRow_, search_, langIso.toString());
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+        return await this.errorHandler.generateAcceptResponseCodeWithData(
+            "Ads Objectivitas retrieved succesfully", data, data_all.length, pageNumber
+        );
+    }
 }
