@@ -292,7 +292,9 @@ export class MediastikerController {
             }
 
             if (datastiker !== null) {
-
+                await this.errorHandler.generateBadRequestException(
+                    'Maaf Nama Stiker sudah ada',
+                );
             } else {
                 insertdata.name = name;
             }
@@ -426,7 +428,8 @@ export class MediastikerController {
                 }
             }
 
-        } else {
+        }
+        else {
             insertdata.updatedAt = timedate;
             insertdata.status = status;
             insertdata.type = type;
