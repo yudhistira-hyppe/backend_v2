@@ -205,7 +205,7 @@ export class TopupsController {
     }
 
     try{
-      const topupsList = await this.topupsService.findCriteria(start_date, end_date, body.page, body.limit, body.search, body.createBy, body.status, body.sorting);
+      const topupsList = await this.topupsService.findCriteria(start_date, end_date, body.page, body.limit, body.search, body.createBy, body.status, body.sorting, body.approveByFinance, body.approveByStrategy);
       return await this.errorHandler.generateAcceptResponseCodeWithData(
         "Get List succesfully", topupsList, topupsList.length, body.page
       );

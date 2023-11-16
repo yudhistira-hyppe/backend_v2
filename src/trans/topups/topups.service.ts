@@ -29,7 +29,7 @@ export class TopupsService {
     return this.TopupsModel.findOne({ _id: new mongoose.Types.ObjectId(id) }).exec();
   }
 
-  async findCriteria(start_date: any, end_date: any, pageNumber: number, pageRow: number, search: string, createBy: string, status: [], sort: any): Promise<Topups[]> {
+  async findCriteria(start_date: any, end_date: any, pageNumber: number, pageRow: number, search: string, createBy: string, status: [], sort: any, approveByFinance: boolean, approveByStrategy: boolean): Promise<Topups[]> {
     var perPage = pageRow, page = Math.max(0, pageNumber);
     var where = {
       $and: []
@@ -64,6 +64,18 @@ export class TopupsService {
         where_status['status'] = { $in: status };
         where.$and.push(where_status);
       }
+    }
+
+    if (approveByFinance != undefined) {
+      let where_approveByFinance = {};
+      where_approveByFinance['approveByFinance'] = approveByFinance;
+      where.$and.push(where_approveByFinance);
+    }
+
+    if (approveByStrategy != undefined) {
+      let where_approveByStrategy = {};
+      where_approveByStrategy['approveByStrategy'] = approveByStrategy;
+      where.$and.push(where_approveByStrategy);
     }
 
     if (search != undefined) {
