@@ -4647,4 +4647,33 @@ export class UserbasicnewService {
 
         return data;
     }
+
+    async updateStatusKycName(nama: string, gender: string, email: string, status: Boolean, statusKyc: string, dob: string, datakyc: any[]): Promise<Object> {
+        let data = await this.UserbasicnewModel.updateOne({ "email": email },
+          {
+            $set: {
+              "isIdVerified": status,
+              "statusKyc": statusKyc,
+              "fullName": nama,
+              "gender": gender,
+              "dob": dob,
+              "kyc": datakyc
+            }
+          },
+        );
+        return data;
+    }
+
+    async updateStatusKycFailed(email: string, status: Boolean, statusKyc: string, datakyc:any[]): Promise<Object> {
+        let data = await this.UserbasicnewModel.updateOne({ "email": email },
+          {
+            $set: {
+              "isIdVerified": status,
+              "statusKyc": statusKyc,
+              "kyc":datakyc
+            }
+          },
+        );
+        return data;
+    }
 }

@@ -40,7 +40,8 @@ import { Settings2Schema, SettingsMixed } from 'src/trans/settings2/schemas/sett
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
 import { GetprofilecontenteventModule } from './getprofilecontentevent/getprofilecontentevent.module';
-
+import { NewUserDevicesModule } from 'src/trans/newUserDevices/newUserDevices.module';
+import { NewNotificationModule } from 'src/content/newnotification/newnotification.module';
 @Module({
   imports: [
     GetprofilecontenteventModule,
@@ -77,6 +78,8 @@ import { GetprofilecontenteventModule } from './getprofilecontentevent/getprofil
     UserauthsModule,
     JwtrefreshtokenModule,
     UserbasicnewModule,
+    NewUserDevicesModule,
+    NewNotificationModule,
     JwtModule.register({
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },

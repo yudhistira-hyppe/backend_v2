@@ -2583,6 +2583,150 @@ export class MediaController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Post('api/mediaproofpicts/approve/v2')
+    async reportHandleAproval2(@Req() request) {
+        var id = null;
+        var nama = null;
+        var tempatLahir = null;
+        var jenisKelamin = null;
+        var tglLahir = null;
+        var noktp = null;
+        var status = null;
+        var datakyc = null;
+        var loaddatakyc = null;
+        var iduserhandle = null;
+        var kycHandle = [];
+        var dataemailuser = null;
+        var databasic = null;
+        var email = null;
+        var reasonId = null;
+        var reasonValue = null;
+        var remark = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if (request_json["id"] !== undefined) {
+            id = request_json["id"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        nama = request_json["nama"];
+        tempatLahir = request_json["tempatLahir"];
+        jenisKelamin = request_json["jenisKelamin"];
+        tglLahir = request_json["tglLahir"];
+        noktp = request_json["noktp"];
+        status = request_json["status"];
+        iduserhandle = request_json["iduserhandle"];
+        reasonId = request_json["reasonId"];
+        reasonValue = request_json["reasonValue"];
+        remark = request_json["remark"];
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var iduser = mongoose.Types.ObjectId(iduserhandle);
+
+        try {
+            dataemailuser = await this.basic2SS.findOne(id);
+            email = dataemailuser.email;
+            loaddatakyc = dataemailuser.kyc[0];
+
+            var setutil = require('util');
+            console.log(setutil.inspect(loaddatakyc, { showHidden:false, depth:null }));
+
+            loaddatakyc['idcardnumber'] = noktp;
+            loaddatakyc['nama'] = nama;
+            loaddatakyc['tglLahir'] = tglLahir;
+            loaddatakyc['tempatLahir'] = tempatLahir;
+            loaddatakyc['jenisKelamin'] = jenisKelamin;
+        } catch (e) {
+            dataemailuser = null;
+            email = "";
+            loaddatakyc = 
+            {
+                "idcardnumber": noktp, 
+                "nama": nama, 
+                "tglLahir": tglLahir, 
+                "tempatLahir": tempatLahir, 
+                "jenisKelamin": jenisKelamin
+            };
+        }
+
+        if (status === "DISETUJUI") {
+            loaddatakyc['kycHandle'] = [
+                {
+                    noktp: noktp,
+                    nama: nama,
+                    createdAt: dt.toISOString(),
+                    jenisKelamin: jenisKelamin,
+                    tempatLahir: tempatLahir,
+                    tglLahir: tglLahir,
+                    status: "FINISH",
+                    iduserhandle: iduser,
+                    reasonId: null,
+                    reasonValue: "",
+                    remark: ""
+                }
+
+            ];
+            loaddatakyc['status'] = 'DISETUJUI';
+            try {
+
+                let data = await this.mediaproofpictsService.updateKyc(id, noktp, nama, tglLahir, tempatLahir, jenisKelamin, "DISETUJUI", kycHandle);
+                await this.basic2SS.updateStatusKycName(nama, jenisKelamin, email, true, "verified", tglLahir, [loaddatakyc]);
+                await this.utilsService.sendFcmV2(email.toString(), email.toString(), 'KYC', 'REQUEST', 'KYC_VERIFIED');
+
+                return { response_code: 202, data:loaddatakyc.kycHandle[0], messages };
+
+            } catch (e) {
+                throw new BadRequestException("Unabled to proceed " + e);
+
+            }
+        } else if (status === "DITOLAK") {
+            loaddatakyc['kycHandle'] = [
+                {
+                    noktp: noktp,
+                    nama: nama,
+                    createdAt: dt.toISOString(),
+                    jenisKelamin: jenisKelamin,
+                    tempatLahir: tempatLahir,
+                    tglLahir: tglLahir,
+                    status: "FAILED",
+                    iduserhandle: iduser,
+                    reasonId: reasonId,
+                    reasonValue: reasonValue,
+                    remark: remark
+                }
+
+            ];
+
+            loaddatakyc['status'] = 'FAILED';
+            try {
+                let data = await this.mediaproofpictsService.updateKyc(id, noktp, nama, tglLahir, tempatLahir, jenisKelamin, "FAILED", kycHandle);
+                await this.basic2SS.updateStatusKycFailed(email, false, "unverified", [loaddatakyc]);
+                await this.utilsService.sendFcmV2(email.toString(), email.toString(), 'KYC', 'REQUEST', 'KYC_REJECT');
+
+                return { response_code: 202, data:loaddatakyc.kycHandle[0], messages };
+
+            } catch (e) {
+                throw new BadRequestException("Unabled to proceed " + e);
+
+
+            }
+        }
+    }
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
