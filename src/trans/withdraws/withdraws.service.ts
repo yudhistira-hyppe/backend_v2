@@ -50,9 +50,9 @@ export class WithdrawsService {
         return data;
     }
 
-    async updateone(partnerTrxid: string, payload: OyDisburseCallbackWithdraw): Promise<Object> {
+    async updateone(partnerTrxid: string, payload: OyDisburseCallbackWithdraw, statusCode: string): Promise<Object> {
         let data = await this.withdrawsModel.updateOne({ "partnerTrxid": partnerTrxid },
-            { $set: { "status": "Success", "description": "Withdraw success", verified: true, payload: payload } });
+            { $set: { "status": "Success", "description": "Withdraw success", verified: true, payload: payload, statusCode: statusCode } });
         return data;
     }
     async updateone101(partnerTrxid: string, status: string, payload: OyDisburseCallbackWithdraw): Promise<Object> {
