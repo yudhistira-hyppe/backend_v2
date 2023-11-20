@@ -243,26 +243,6 @@ export class UserbasicnewService {
                 as: 'insight_data',
             },
         },
-            // {
-            //     $lookup:
-            //     {
-            //         from: 'insights',
-            //         let:
-            //         {
-            //             "id": "$insight.$id"
-            //         },
-            //         as: "insight_data",
-            //         pipeline:
-            //             [
-            //                 {
-            //                     "$match":
-            //                     {
-
-            //                     }
-            //                 }
-            //             ]
-            //     }
-            // },
             {
                 $lookup:
                 {
