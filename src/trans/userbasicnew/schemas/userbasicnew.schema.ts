@@ -224,7 +224,7 @@ export class Userbasicnew {
     @Prop()
     kyc: any[]
     @Prop()
-    isGuest: boolean;
+    guestMode: boolean;
 }
 
 export const UserbasicnewSchema = SchemaFactory.createForClass(Userbasicnew);

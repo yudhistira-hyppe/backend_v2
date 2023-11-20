@@ -243,26 +243,26 @@ export class UserbasicnewService {
                 as: 'insight_data',
             },
         },
-            {
-                $lookup:
-                {
-                    from: 'insights',
-                    let:
-                    {
-                        "id": "$insight.$id"
-                    },
-                    as: "insight_data",
-                    pipeline:
-                        [
-                            {
-                                "$match":
-                                {
+            // {
+            //     $lookup:
+            //     {
+            //         from: 'insights',
+            //         let:
+            //         {
+            //             "id": "$insight.$id"
+            //         },
+            //         as: "insight_data",
+            //         pipeline:
+            //             [
+            //                 {
+            //                     "$match":
+            //                     {
 
-                                }
-                            }
-                        ]
-                }
-            },
+            //                     }
+            //                 }
+            //             ]
+            //     }
+            // },
             {
                 $lookup:
                 {
@@ -4650,29 +4650,29 @@ export class UserbasicnewService {
 
     async updateStatusKycName(nama: string, gender: string, email: string, status: Boolean, statusKyc: string, dob: string, datakyc: any[]): Promise<Object> {
         let data = await this.UserbasicnewModel.updateOne({ "email": email },
-          {
-            $set: {
-              "isIdVerified": status,
-              "statusKyc": statusKyc,
-              "fullName": nama,
-              "gender": gender,
-              "dob": dob,
-              "kyc": datakyc
-            }
-          },
+            {
+                $set: {
+                    "isIdVerified": status,
+                    "statusKyc": statusKyc,
+                    "fullName": nama,
+                    "gender": gender,
+                    "dob": dob,
+                    "kyc": datakyc
+                }
+            },
         );
         return data;
     }
 
-    async updateStatusKycFailed(email: string, status: Boolean, statusKyc: string, datakyc:any[]): Promise<Object> {
+    async updateStatusKycFailed(email: string, status: Boolean, statusKyc: string, datakyc: any[]): Promise<Object> {
         let data = await this.UserbasicnewModel.updateOne({ "email": email },
-          {
-            $set: {
-              "isIdVerified": status,
-              "statusKyc": statusKyc,
-              "kyc":datakyc
-            }
-          },
+            {
+                $set: {
+                    "isIdVerified": status,
+                    "statusKyc": statusKyc,
+                    "kyc": datakyc
+                }
+            },
         );
         return data;
     }
