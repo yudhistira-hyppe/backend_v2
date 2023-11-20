@@ -26,14 +26,20 @@ export class LogapisService {
     insertdata.timestamps_end = end;
     insertdata.url = url;
     
-    if(email != null)
-    {
-      insertdata.email = email;
-    }
-
     if(iduser != null)
     {
       insertdata.iduser = mongo.Types.ObjectId(iduser);
+    }
+
+    if(email != null)
+    {
+      insertdata.email = email;
+      var getdata = await this.getrealdata(email);
+      if(getdata != null && getdata != undefined)
+      {
+        insertdata.email = getdata.email;
+        insertdata.iduser = getdata._id;
+      }
     }
 
     if(username != null)
@@ -47,6 +53,117 @@ export class LogapisService {
     }
 
     await this.APIModel.create(insertdata);
+  }
+
+  async getrealdata(target:string)
+  {
+    var data = await this.APIModel.aggregate([
+      {
+        "$project":
+        {
+          "target":target
+        }
+      },
+      {
+        "$limit":1
+      },
+      {
+        "$lookup":
+        {
+          "from":"newUserBasics",
+          "let":
+          {
+            "keyword":"$target"
+          },
+          "as":"basics_data",
+          "pipeline":
+          [
+            {
+              "$match":
+              {
+                "$or":
+                [
+                  {
+                    "$expr":
+                    {
+                      "$eq":
+                      [
+                        "$email","$$keyword"
+                      ]
+                    }
+                  },
+                  {
+                    "$expr":
+                    {
+                      "$eq":
+                      [
+                        "$emailLogin","$$keyword"
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "$limit":1
+            },
+            {
+              "$addFields":
+              {
+                "cekemail":
+                {
+                  "$indexOfBytes":
+                  [
+                    "$email","@"
+                  ]
+                }
+              }
+            },
+          ]
+        }
+      },
+      {
+        "$project":
+        {
+          "_id":1,
+          "email":
+          {
+            "$cond":
+            {
+              if:
+              {
+                "$eq":
+                [
+                  {
+                    "$arrayElemAt":
+                    [
+                      "$basics_data.cekemail", 0
+                    ]
+                  },
+                  -1
+                ]
+              },
+              then:
+              {
+                "$arrayElemAt":
+                [
+                  "$basics_data.emailLogin", 0
+                ]
+              },
+              else:
+              {
+                "$arrayElemAt":
+                [
+                  "$basics_data.email", 0
+                ]
+              },
+            }
+          }
+        }
+      }
+    ]);
+
+    return data[0];
   }
 
   findAll() {

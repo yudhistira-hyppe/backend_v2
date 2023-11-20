@@ -739,6 +739,466 @@ export class ActivityeventsService {
 
   }
 
+  async filteruser2(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number, descending: any, type: string) {
+
+    var arrlokasi = [];
+    var idlokasi = null;
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+    var lenglokasi = null;
+    var order = null;
+
+    if (descending === true) {
+      order = -1;
+    } else {
+      order = 1;
+    }
+    try {
+      lenglokasi = lokasi.length;
+    } catch (e) {
+      lenglokasi = 0;
+    }
+    if (lenglokasi > 0) {
+
+      for (let i = 0; i < lenglokasi; i++) {
+        let idkat = lokasi[i];
+        idlokasi = mongoose.Types.ObjectId(idkat);
+        arrlokasi.push(idlokasi);
+      }
+    }
+
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+    var dt = dateend.substring(0, 10);
+    try {
+      var currentdatelogin = new Date(new Date(endlogin).setDate(new Date(endlogin).getDate() + 1));
+
+      var dateendlogin = currentdatelogin.toISOString();
+    } catch (e) {
+      dateendlogin = "";
+    }
+    var dtlogin = dateendlogin.substring(0, 10);
+    var pipeline = [];
+
+    if (type != undefined && type == "ALL") {
+
+
+    } else {
+      pipeline.push({
+        $match:
+        {
+          "event": "LOGIN"
+        }
+      },);
+    }
+
+    pipeline.push(
+
+      {
+        $group: {
+          _id: "$payload.email",
+          createAt: {
+            $last: "$createdAt"
+          }
+        }
+      },
+      {
+        $project: {
+          createdAt: "$createAt",
+          email: "$_id",
+        }
+      },
+      {
+        $sort: {
+          "createdAt": - 1
+        }
+      },
+      {
+          '$lookup': 
+          {
+              from: 'newUserBasics',
+              localField: 'email',
+              foreignField: 'email',
+              as: 'user'
+          }
+      },
+      {
+          '$set': {
+              age: {
+                  '$cond': {
+                      if: {
+                          '$and': 
+                          [
+                              { 
+                                  '$arrayElemAt': 
+                                  [ 
+                                      '$user.dob', 0 
+                                  ] 
+                              },
+                              {
+                                  '$ne': 
+                                  [ 
+                                      { 
+                                          '$arrayElemAt': 
+                                          [ 
+                                              '$user.dob', 0 
+                                          ] 
+                                      }, 
+                                      '' 
+                                  ]
+                              }
+                          ]
+                      },
+                      then: {
+                          '$toInt': {
+                              '$divide': 
+                              [
+                                  {
+                                      '$subtract': 
+                                      [
+                                          new Date(),
+                                          {
+                                              '$toDate': 
+                                              { 
+                                                  '$arrayElemAt': 
+                                                  [ 
+                                                      '$user.dob', 0 
+                                                  ] 
+                                              }
+                                          }
+                                      ]
+                                  },
+                                  31536000000
+                              ]
+                          }
+                      },
+                      else: 0
+                  }
+              }
+          }
+      },
+      {
+          '$project': 
+          {
+              iduser: 
+              { 
+                  '$arrayElemAt': 
+                  [ 
+                      '$user._id', 0 
+                  ] 
+              },
+              jenis: 
+              {
+                  '$cond': 
+                  {
+                  if: 
+                  {
+                      '$eq': 
+                      [ 
+                          { 
+                              '$arrayElemAt': 
+                              [ 
+                                  '$user.isIdVerified', 0 
+                              ] 
+                          }, 
+                          true 
+                      ]
+                  },
+                  then: 'PREMIUM',
+                  else: 'BASIC'
+              }
+          },
+          age: 1,
+          email: 1,
+          createdAt: 
+          { 
+              '$arrayElemAt': 
+              [ 
+                  '$user.createdAt', 0 
+              ] 
+          },
+          fullName: 
+          { 
+              '$arrayElemAt': 
+              [ 
+                  '$user.fullName', 0 
+              ] 
+          },
+          gender: 
+          {
+              "$arrayElemAt":
+              [
+                  "$user.gender", 0
+              ]
+          },
+          username: 
+          { 
+              '$arrayElemAt': 
+              [ 
+                  '$user.username', 0 
+              ] 
+          },
+          role: 
+          { 
+              '$arrayElemAt': 
+              [ 
+                  '$user.roles', 0 
+              ] 
+          },
+          countries: 
+          { 
+              '$arrayElemAt': 
+              [ 
+                  '$user.countriesName', 0 
+              ] 
+          },
+          cities: 
+          { 
+              '$arrayElemAt': 
+              [ 
+                  '$user.citiesName', 0 
+              ] 
+          },
+          areas: 
+          { 
+              '$arrayElemAt': 
+              [ 
+                  '$user.statesName', 0 
+              ] 
+          },
+          areasId: 
+          { 
+              '$arrayElemAt': 
+              [ 
+                  '$user.states.$id', 0 
+              ] 
+          },
+          avatar: 
+          {
+              mediaBasePath: 
+              {
+                  "$ifNull":
+                  [
+                      { '$arrayElemAt': [ '$user.mediaBasePath', 0 ] },
+                      null
+                  ]
+              },
+              mediaUri:
+              {
+                  "$ifNull":
+                  [
+                      { '$arrayElemAt': [ '$user.mediaUri', 0 ] },
+                      null
+                  ]
+              },
+              mediaType: 
+              {
+                  "$ifNull":
+                  [
+                      { '$arrayElemAt': [ '$user.mediaType', 0 ] },
+                      null
+                  ]
+              },
+              mediaEndpoint: 
+              {
+                  "$ifNull":
+                  [
+                      { '$arrayElemAt': [ '$user.mediaEndpoint', 0 ] },
+                      null
+                  ]
+              },
+          },
+          lastlogin: '$createdAt',
+          urluserBadge: 
+          {
+              '$ifNull': 
+              [
+                  {
+                      '$filter': 
+                      {
+                          input: { '$arrayElemAt': [ '$user.userBadge', 0 ] },
+                          as: 'listbadge',
+                          cond: 
+                          {
+                              '$and': 
+                              [
+                                  { 
+                                      '$eq': 
+                                      [ 
+                                          '$$listbadge.isActive', true 
+                                      ] 
+                                  },
+                                  {
+                                      '$lte': 
+                                      [
+                                          {
+                                              '$dateToString': 
+                                              {
+                                                  format: '%Y-%m-%d %H:%M:%S',
+                                                  date: 
+                                                  {
+                                                      '$add': 
+                                                      [ 
+                                                          new Date(), 25200000 
+                                                      ]
+                                                  }
+                                              }
+                                          },
+                                          '$$listbadge.endDatetime'
+                                      ]
+                                  }
+                              ]
+                          }
+                      }
+                  },
+                  []
+              ]
+          }
+        }
+      },
+      {
+          '$project': 
+          {
+              iduser: 1,
+              jenis: 1,
+              age: 1,
+              email: 1,
+              createdAt: 1,
+              fullName: 1,
+              gender: 1,
+              username: 1,
+              role: 1,
+              countries: 1,
+              cities: 1,
+              areas: 1,
+              areasId: 1,
+              avatar: 1,
+              lastlogin: 1,
+              urluserBadge: 
+              {
+                  '$ifNull': 
+                  [ 
+                      { 
+                          '$arrayElemAt': 
+                          [ 
+                              '$urluserBadge', 0 
+                          ] 
+                      }, 
+                      null 
+                  ]
+              }
+          }
+      },
+      {
+        $sort: {
+          lastlogin: order
+        }
+      },
+    );
+
+    if (username && username !== undefined) {
+
+      pipeline.push({
+        $match: {
+          username: {
+            $regex: username,
+            $options: 'i'
+          },
+
+        }
+      },);
+
+    }
+
+    if (regender && regender !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              gender: {
+                $in: regender
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+
+    if (startage && startage !== undefined) {
+      pipeline.push({ $match: { age: { $gt: startage } } });
+    }
+    if (endage && endage !== undefined) {
+      pipeline.push({ $match: { age: { $lt: endage } } });
+    }
+
+    if (startdate && startdate !== undefined) {
+      pipeline.push({ $match: { createdAt: { $gte: startdate } } });
+    }
+    if (enddate && enddate !== undefined) {
+      pipeline.push({ $match: { createdAt: { $lte: dt } } });
+    }
+
+    if (jenis && jenis !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              jenis: {
+                $in: jenis
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+
+    if (lokasi && lokasi !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              areasId: {
+                $in: arrlokasi
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+
+    if (startlogin && startlogin !== undefined) {
+      pipeline.push({ $match: { lastlogin: { $gte: startlogin } } });
+    }
+    if (endlogin && endlogin !== undefined) {
+      pipeline.push({ $match: { lastlogin: { $lte: dtlogin } } });
+    }
+
+    if (type != undefined && type == "ALL") {
+
+
+    } else {
+      if (page > 0) {
+        pipeline.push({ $skip: (page * limit) });
+      }
+      if (limit > 0) {
+        pipeline.push({ $limit: limit });
+      }
+    }
+
+    let query = await this.activityeventsModel.aggregate(pipeline);
+
+    return query;
+
+  }
+
   async sesipengguna(startdate: string, enddate: string) {
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));

@@ -315,6 +315,88 @@ export class GetuserprofilesController {
 
 
   }
+
+  @Post('api/getuserprofiles/v2')
+  //@FormDataRequest()
+  @UseGuards(JwtAuthGuard)
+  async profileuser2(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/getuserprofiles/v2';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var username = null;
+    var gender = null;
+    var startage = null;
+    var endage = null;
+    var jenis = null;
+    var data = null;
+    var page = null;
+    var lokasi = null;
+    var countrow = null;
+    var startdate = null;
+    var enddate = null;
+    var startlogin = null;
+    var endlogin = null;
+    var limit = null;
+    var datafilter = null;
+    var totalfilter = 0;
+    var descending = null;
+    var type = null;
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    startage = request_json["startage"];
+    endage = request_json["endage"];
+    username = request_json["username"];
+    gender = request_json["gender"];
+    jenis = request_json["jenis"];
+    lokasi = request_json["lokasi"];
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
+    startlogin = request_json["startlogin"];
+    endlogin = request_json["endlogin"];
+    descending = request_json["descending"];
+    type = request_json["type"];
+    var allrow = 0;
+    var totalallrow = 0;
+    var totalrow = 0;
+    var totalpage = 0;
+    if (request_json["page"] !== undefined) {
+      page = request_json["page"];
+    } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed");
+    }
+    if (request_json["limit"] !== undefined) {
+      limit = request_json["limit"];
+    } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    try {
+      data = await this.activityeventsService.filteruser2(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin, page, limit, descending, type);
+      totalrow = data.length;
+    } catch (e) {
+      data = [];
+      totalrow = 0;
+    }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+    return { response_code: 202, data, page, limit, totalrow, totalallrow, totalfilter, totalpage, messages };
+
+
+  }
   @Post('api/getuserprofiles/search')
   //@FormDataRequest()
   @UseGuards(JwtAuthGuard)
