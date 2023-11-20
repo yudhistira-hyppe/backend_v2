@@ -11038,7 +11038,7 @@ export class AuthService {
                   await this.basic2SS.updatebyemail(user_email, updatedata);
                 } catch (error) {
                   await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed update userauths Email Verified. Error:' +
+                    'Unabled to proceed update Email Verified. Error:' +
                     error,
                   );
                 }
@@ -11046,7 +11046,6 @@ export class AuthService {
                 const datajwtrefreshtokenService = await this.jwtrefreshtokenService.findOne(user_email);
 
                 //Create Or Update refresh Token
-                console.log('masuk kesini');
                 await this.updateRefreshToken2(user_email);
 
                 //Create ActivityEvent child VERIFY_OTP
@@ -11504,18 +11503,20 @@ export class AuthService {
                   },
                 };
               } else {
-                this.userauthsService.findOneupdatebyEmail(user_email);
-                const user_userAuth = await this.userauthsService.findOne(
+                this.basic2SS.findOneupdatebyEmail(user_email);
+                const user_Basic = await this.basic2SS.findbyemail(
                   user_email,
                 );
-                if (await this.utilsService.ceckData(user_userAuth)) {
-                  if (Number(user_userAuth.otpAttempt) >= 3) {
+                if (await this.utilsService.ceckData(user_Basic)) {
+                  if (Number(user_Basic.otpAttempt) >= 3) {
                     try {
+                      var updateotp = new Userbasicnew(); 
                       var OTP_expires = await this.utilsService.generateOTPExpiresNextAttemptAllow();
-                      this.userauthsService.updatebyEmail(user_email, { otpNextAttemptAllow: OTP_expires, });
+                      updateotp.otpNextAttemptAllow = Long.fromString(OTP_expires.toString());
+                      this.basic2SS.update(user_email, updateotp);
                     } catch (e) {
                       await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed, Failed Update Userauths. Error : ' + e,
+                        'Unabled to proceed, Failed Update newUserBasics. Error : ' + e,
                       );
                     }
                   }
@@ -11641,7 +11642,7 @@ export class AuthService {
                   this.basic2SS.updatebyemail(user_email, updatedata);
                 } catch (error) {
                   await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Failed Update Userauths. Error:' +
+                    'Unabled to proceed Failed Update newUserBasics. Error:' +
                     error,
                   );
                 }
@@ -11715,9 +11716,9 @@ export class AuthService {
       var user_exist = false;
       var username = user_email.substr(0, user_email.indexOf('@'));
 
-      //Ceck data userbasic dan userauth
+      //Ceck data newuserbasic
       const datauserbasicsService =
-        await this.userauthsService.findOne(
+        await this.basic2SS.findbyemail(
           user_email,
         );
 
