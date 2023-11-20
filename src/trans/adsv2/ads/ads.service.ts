@@ -8210,6 +8210,11 @@ export class AdsService {
                                     },
                                     {
                                         $expr: {
+                                            $eq: ["$validasi", true]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
                                             $eq: ['$sorts', true]
                                         }
                                     },
@@ -8280,6 +8285,11 @@ export class AdsService {
                                     {
                                         $expr: {
                                             $eq: ['$isValid', false]
+                                        }
+                                    },
+                                    {
+                                        $expr: {
+                                            $eq: ["$validasi", true]
                                         }
                                     },
                                     {

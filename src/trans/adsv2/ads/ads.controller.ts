@@ -1737,20 +1737,22 @@ export class AdsController {
                 }
                 CreateUserAdsDto_.createdAt = current_date;
                 CreateUserAdsDto_.statusClick = false;
-                CreateUserAdsDto_.statusView = false;
-                CreateUserAdsDto_.viewed = 0;
+                CreateUserAdsDto_.statusView = true;
                 CreateUserAdsDto_.liveAt = data_ads[0].liveAt;
                 CreateUserAdsDto_.liveTypeuserads = data_ads[0].liveTypeAds;
                 CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_ads[0].typeAdsID);
                 CreateUserAdsDto_.nameType = data_ads[0].nameType;
-                CreateUserAdsDto_.isActive = true;
+                if (data_ads[0].audiensFrekuensi==1) {
+                    CreateUserAdsDto_.isActive = false;
+                }else{
+                    CreateUserAdsDto_.isActive = true;
+                }
                 CreateUserAdsDto_.scoreAge = data_ads[0].scoreUmur;
                 CreateUserAdsDto_.scoreGender = data_ads[0].scoreKelamin;
                 CreateUserAdsDto_.scoreGeografis = data_ads[0].scoreGeografis;
                 CreateUserAdsDto_.scoreInterest = data_ads[0].scoreMinat;
                 CreateUserAdsDto_.scoreTotal = data_ads[0].scoreTotal;
                 CreateUserAdsDto_.updateAt = [current_date];
-                CreateUserAdsDto_.statusView = true;
                 CreateUserAdsDto_.viewed = 1;
                 this.userAdsService.create(CreateUserAdsDto_);
             } else {
@@ -2440,17 +2442,17 @@ export class AdsController {
             //     $inc: { 'viewed': 1, 'cliked': 1 },
             //     $push: { "updateAt": current_date_string, 'timeView': Number(AdsAction_.watchingTime), "clickTime": current_date_string, },
             // }
-            if (((dataAdsUser.viewed != undefined ? dataAdsUser.viewed : 0) + 1) == (dataAds.audiensFrekuensi != undefined ? dataAds.audiensFrekuensi : 0)) {
-                data_Update_UserAds["isActive"] = false;
-            }
+            // if (((dataAdsUser.viewed != undefined ? dataAdsUser.viewed : 0) + 1) == (dataAds.audiensFrekuensi != undefined ? dataAds.audiensFrekuensi : 0)) {
+            //     data_Update_UserAds["isActive"] = false;
+            // }
             this.userAdsService.updateData(AdsAction_.useradsId.toString(), data_Update_UserAds)
 
             //update Ads
             var data_Update_Ads = {}
-            if ((dataAds.totalView + 1) <= dataAds.tayang) {
+            if ((dataAds.totalView) <= dataAds.tayang) {
                 data_Update_Ads["$inc"] = { 'usedCredit': Number(dataAds.CPA), 'totalClick': 1 };
             }
-            if (dataAds.tayang == (dataAds.totalView + 1)) {
+            if (dataAds.tayang == (dataAds.totalView)) {
                 data_Update_Ads["status"] = "IN_ACTIVE";
                 data_Update_Ads["isActive"] = false;
             }

@@ -104,7 +104,7 @@ export class MediastikerController {
 
         if (type !== "GIF") {
             try {
-                datastiker = await this.MediastikerService.findByname(name);
+                datastiker = await this.MediastikerService.findByname(name, type);
 
             } catch (e) {
                 datastiker = null;
@@ -280,23 +280,7 @@ export class MediastikerController {
             throw new BadRequestException("id required");
         }
 
-        if (request_json["name"] !== undefined) {
-            name = request_json["name"];
 
-            try {
-                datastiker = await this.MediastikerService.findByname(name);
-
-            } catch (e) {
-                datastiker = null;
-
-            }
-
-            if (datastiker !== null) {
-
-            } else {
-                insertdata.name = name;
-            }
-        }
         // if (request_json["nameEn"] !== undefined) {
         //     nameEn = request_json["nameEn"];
         //     insertdata.nameEn = nameEn;
@@ -316,6 +300,25 @@ export class MediastikerController {
             type = request_json["type"];
         } else {
             throw new BadRequestException("type required");
+        }
+        if (request_json["name"] !== undefined) {
+            name = request_json["name"];
+
+            try {
+                datastiker = await this.MediastikerService.findByname(name, type);
+
+            } catch (e) {
+                datastiker = null;
+
+            }
+
+            if (datastiker !== null) {
+                await this.errorHandler.generateBadRequestException(
+                    'Maaf Nama Stiker sudah ada',
+                );
+            } else {
+                insertdata.name = name;
+            }
         }
 
         var dt = new Date(Date.now());
@@ -426,7 +429,8 @@ export class MediastikerController {
                 }
             }
 
-        } else {
+        }
+        else {
             insertdata.updatedAt = timedate;
             insertdata.status = status;
             insertdata.type = type;

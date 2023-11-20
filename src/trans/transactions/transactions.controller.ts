@@ -2357,7 +2357,7 @@ export class TransactionsController {
 
             if (statusCallback === "000") {
 
-                await this.withdrawsService.updateone(partner_trx_id, payload);
+                await this.withdrawsService.updateone(partner_trx_id, payload, statusCallback);
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, setiduser, null, reqbody);
@@ -2404,7 +2404,7 @@ export class TransactionsController {
                     idUser = data.idUser;
                     totalamount = data.totalamount;
 
-                    if (statusCallback !== statusCode.toString() && statusCallback === "300") {
+                    if (statusCode !== "300" && statusCode !== "000") {
                         await this.accontbalanceWithdrawTopup(idUser, valuedisbcharge, "disbursement");
                         await this.accontbalanceWithdrawTopup(idUser, totalamount, "withdraw");
                     }
