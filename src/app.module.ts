@@ -118,7 +118,6 @@ import { MediastikerModule } from './content/mediastiker/mediastiker.module';
 import { StickerCategoryModule } from './trans/stickercategory/stickercategory.module';
 import { AdsPriceCreditsModule } from './trans/adsv2/adspricecredits/adspricecredits.module';
 import { NewPostModule } from './content/new_post/new_post.module';
-import { NewRefferalModule } from './trans/newRefferal/newRefferal.module';
 import { UserbasicnewModule } from './trans/userbasicnew/userbasicnew.module';
 import { AdsRewardsModule } from './trans/adsv2/adsrewards/adsrewards.module';
 import { GetprofilecontenteventModule } from './utils/getprofilecontentevent/getprofilecontentevent.module';
@@ -267,7 +266,6 @@ import { TopupsModule } from './trans/topups/topups.module';
     BadgeModule,
     StickerCategoryModule,
     NewPostModule,
-    NewRefferalModule,
     //  ChallengeModule
   ], providers: [],
 })

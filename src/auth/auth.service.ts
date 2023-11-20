@@ -45,7 +45,6 @@ import { UserchallengesService } from '../trans/userchallenges/userchallenges.se
 import { Userchallenges } from '../trans/userchallenges/schemas/userchallenges.schema';
 import { subChallengeService } from '../trans/challenge/subChallenge.service';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
-import { NewRefferalService } from 'src/trans/newRefferal/newRefferal.service'; 
 
 @Injectable()
 export class AuthService {
@@ -80,7 +79,6 @@ export class AuthService {
     private userchallengesService: UserchallengesService,
     private subChallengeService: subChallengeService,
     private readonly logapiSS: LogapisService,
-    private readonly referral2SS: NewRefferalService
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -2146,7 +2144,7 @@ export class AuthService {
 
       if (req.body.gender != undefined) {
         user_gender = req.body.gender;
-      }else{
+      } else {
         user_gender = "";
       }
 
@@ -2159,7 +2157,7 @@ export class AuthService {
       if (req.body.country != undefined) {
         user_country = req.body.country;
       }
-      
+
       // throw new NotAcceptableException({
       //   response_code: 406,
       //   messages: {
@@ -2546,7 +2544,7 @@ export class AuthService {
                 error,
               );
             }
-          }else{
+          } else {
             var data_update_userbasict = {};
             user_email = user_email_header;
             console.log("user_area", user_area)
@@ -5571,9 +5569,9 @@ export class AuthService {
       if (await this.utilsService.ceckData(datauserbasicsService)) {
         try {
           // var data_referral = await this.referralService.findAllByParent(user_email);
-          var data_referral = await this.referral2SS.findAllByParent(user_email);
+          var data_referral = await this.referralService.findAllByParent(user_email);
           // var data_referral_parent = await this.referralService.findAllByChildren(user_email);
-          var data_referral_parent = await this.referral2SS.findAllByChildren(user_email);
+          var data_referral_parent = await this.referralService.findAllByChildren(user_email);
 
           var fullurl = req.get("Host") + req.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();

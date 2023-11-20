@@ -35,7 +35,6 @@ import { DeepArService } from '../trans/deepar/deepar.service';
 import { UserscoresService } from '../trans/userscores/userscores.service';
 import { UserscoresDto } from 'src/trans/userscores/dto/create-userscores.dto';
 import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
-import { NewUserDevicesService } from 'src/trans/newUserDevices/newUserDevices.service';
 
 import mongoose, { Model, Types } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
@@ -87,7 +86,6 @@ export class UtilsService {
     private deepArService: DeepArService,
     private userscoresService: UserscoresService,
     private basic2SS: UserbasicnewService,
-    private device2SS: NewUserDevicesService,
     private getprofilecontenteventService: GetprofilecontenteventService,
 
   ) { }
@@ -618,7 +616,7 @@ export class UtilsService {
     };
 
     //SEND FCM
-    var datadevice = await this.device2SS.findActive(receiverParty);
+    var datadevice = await this.userdevicesService.findActive(receiverParty);
     var device_user = [];
     var getDate = await ((await this.getDateTime()).getTime()).toString();
 
