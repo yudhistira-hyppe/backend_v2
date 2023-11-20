@@ -28,7 +28,6 @@ import { NotificationsService } from "../content/notifications/notifications.ser
 import * as fs from 'fs';
 import { double } from 'aws-sdk/clients/lightsail';
 import { CreateNotificationsDto } from '../content/notifications/dto/create-notifications.dto';
-import { CreateNewNotificationsDto } from 'src/content/newnotification/dto/create-newnotification.dto';
 import { TemplatesRepo } from '../infra/templates_repo/schemas/templatesrepo.schema';
 import { BanksService } from '../trans/banks/banks.service';
 import { Banks } from '../trans/banks/schemas/banks.schema';
@@ -45,7 +44,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
 import { time } from 'console';
 import { GetprofilecontenteventService } from './getprofilecontentevent/getprofilecontentevent.service';
-import { NewNotificationService } from 'src/content/newnotification/newnotification.service';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -90,8 +88,7 @@ export class UtilsService {
     private userscoresService: UserscoresService,
     private basic2SS: UserbasicnewService,
     private device2SS: NewUserDevicesService,
-    private notif2SS: NewNotificationService,
-    private getprofilecontenteventService: GetprofilecontenteventService, 
+    private getprofilecontenteventService: GetprofilecontenteventService,
 
   ) { }
 
@@ -668,7 +665,7 @@ export class UtilsService {
 
     //INSERT NOTIFICATION
     var generateID = await this.generateId();
-    var createNotificationsDto = new CreateNewNotificationsDto();
+    var createNotificationsDto = new CreateNotificationsDto();
     createNotificationsDto._id = generateID;
     createNotificationsDto.notificationID = generateID;
     createNotificationsDto.email = receiverParty;
@@ -683,13 +680,13 @@ export class UtilsService {
     createNotificationsDto.flowIsDone = true;
     createNotificationsDto.createdAt = currentDate;
     createNotificationsDto.updatedAt = currentDate;
-    createNotificationsDto.idEmail = new mongoose.Types.ObjectId(profile_receiverParty.iduser.toString());
-    createNotificationsDto.user = {
-      _id: new mongoose.Types.ObjectId(profile_receiverParty.iduser.toString()),
-      idEmail: new mongoose.Types.ObjectId(profile_receiverParty.iduser.toString()),
-      email: receiverParty,
-      emailEvent: receiverParty
-    };
+    // createNotificationsDto.idEmail = new mongoose.Types.ObjectId(profile_receiverParty.iduser.toString());
+    // createNotificationsDto.user = {
+    //   _id: new mongoose.Types.ObjectId(profile_receiverParty.iduser.toString()),
+    //   idEmail: new mongoose.Types.ObjectId(profile_receiverParty.iduser.toString()),
+    //   email: receiverParty,
+    //   emailEvent: receiverParty
+    // };
     createNotificationsDto.actionButtons = null;
     createNotificationsDto.contentEventID = null;
     createNotificationsDto.senderOrReceiverInfo = senderOrReceiverInfo;
@@ -701,14 +698,14 @@ export class UtilsService {
     }
 
     if (eventType == "FOLLOWER") {
-      var ceckNotification = await this.notif2SS.findCriteria(receiverParty, eventType, senderParty);
+      var ceckNotification = await this.notificationsService.findCriteria(receiverParty, eventType, senderParty);
       if (await this.ceckData(ceckNotification)) {
-        await this.notif2SS.updateNotifiaction(receiverParty, eventType, senderParty, currentDate);
+        await this.notificationsService.updateNotifiaction(receiverParty, eventType, senderParty, currentDate);
       } else {
-        await this.notif2SS.create(createNotificationsDto);
+        await this.notificationsService.create(createNotificationsDto);
       }
     } else {
-      await this.notif2SS.create(createNotificationsDto);
+      await this.notificationsService.create(createNotificationsDto);
     }
   }
 
@@ -1316,12 +1313,10 @@ export class UtilsService {
   async getregSrc2(email: string) {
     var result = await this.basic2SS.findbyemail(email);
     var regSrc = null;
-    if(result.regSrc == undefined || regSrc == null)
-    {
+    if (result.regSrc == undefined || regSrc == null) {
       regSrc = "android";
     }
-    else
-    {
+    else {
       regSrc = result.regSrc;
     }
 

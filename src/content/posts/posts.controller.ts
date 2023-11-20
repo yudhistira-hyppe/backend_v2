@@ -48,7 +48,6 @@ import { ChallengeService } from 'src/trans/challenge/challenge.service';
 import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
 import { Postchallenge } from 'src/trans/postchallenge/schemas/postchallenge.schema';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
-import { NewcontenteventsService } from '../newcontentevents/newcontentevents.service';
 import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 
 import { MediastikerService } from 'src/content/mediastiker/mediastiker.service';
@@ -81,7 +80,6 @@ export class PostsController {
     private readonly logapiSS: LogapisService,
     private readonly basic2SS: UserbasicnewService,
     private readonly MediastikerService: MediastikerService,
-    private readonly contentEvent2SS: NewcontenteventsService,
     private readonly methodepaymentsService: MethodepaymentsService) { }
 
   @Post()
@@ -2526,7 +2524,7 @@ export class PostsController {
     const userbasicsService_data = await this.userbasicsService.findOne(headers['x-auth-user']);
     const contenteventsService_data_ = await this.contenteventsService.findByCriteria(headers['x-auth-user'], postID_, eventType_, withEvents_, pageRow_, pageNumber_);
     let contenteventsService_data = contenteventsService_data_;
-    if (eventType_ =="FOLLOWER") {
+    if (eventType_ == "FOLLOWER") {
       contenteventsService_data = [...new Map(contenteventsService_data_.map(item => [item["receiverParty"], item])).values()];
     } else if (eventType_ == "FOLLOWING") {
       contenteventsService_data = [...new Map(contenteventsService_data_.map(item => [item["senderParty"], item])).values()];
@@ -2732,7 +2730,7 @@ export class PostsController {
     }
     const insightsService_data = await this.insightsService.findemail(headers['x-auth-user']);
     const userbasicsService_data = await this.basic2SS.findbyemail(headers['x-auth-user']);
-    const contenteventsService_data = await this.contentEvent2SS.findByCriteria(userbasicsService_data._id.toString(), postID_, eventType_, withEvents_, pageRow_, pageNumber_);
+    const contenteventsService_data = await this.contenteventsService.findByCriteria(userbasicsService_data._id.toString(), postID_, eventType_, withEvents_, pageRow_, pageNumber_);
     var getProfile_ = await this.utilsService.generateProfile2(headers['x-auth-user'], 'PROFILE');
     var avatar_ = {}
     if (getProfile_ != null || getProfile_ != undefined) {

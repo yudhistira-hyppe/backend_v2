@@ -41,7 +41,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
 import { GetprofilecontenteventModule } from './getprofilecontentevent/getprofilecontentevent.module';
 import { NewUserDevicesModule } from 'src/trans/newUserDevices/newUserDevices.module';
-import { NewNotificationModule } from 'src/content/newnotification/newnotification.module';
+
 @Module({
   imports: [
     GetprofilecontenteventModule,
@@ -79,7 +79,6 @@ import { NewNotificationModule } from 'src/content/newnotification/newnotificati
     JwtrefreshtokenModule,
     UserbasicnewModule,
     NewUserDevicesModule,
-    NewNotificationModule,
     JwtModule.register({
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },
@@ -109,7 +108,7 @@ import { NewNotificationModule } from 'src/content/newnotification/newnotificati
     }),
     ConfigModule.forRoot(),
     MongooseModule.forFeature([{ name: SettingsMixed.name, schema: Settings2Schema }], 'SERVER_FULL')
-    
+
   ],
   controllers: [UtilsController],
   providers: [ErrorHandler, UtilsService],

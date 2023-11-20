@@ -123,7 +123,6 @@ import { UserbasicnewModule } from './trans/userbasicnew/userbasicnew.module';
 import { AdsRewardsModule } from './trans/adsv2/adsrewards/adsrewards.module';
 import { GetprofilecontenteventModule } from './utils/getprofilecontentevent/getprofilecontentevent.module';
 import { TopupsModule } from './trans/topups/topups.module';
-import { NewNotificationModule } from './content/newnotification/newnotification.module';
 @Module({
   imports: [
     TopupsModule,
@@ -269,7 +268,6 @@ import { NewNotificationModule } from './content/newnotification/newnotification
     StickerCategoryModule,
     NewPostModule,
     NewRefferalModule,
-    NewNotificationModule,
     //  ChallengeModule
   ], providers: [],
 })

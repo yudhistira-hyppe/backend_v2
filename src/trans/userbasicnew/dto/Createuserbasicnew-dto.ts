@@ -118,6 +118,7 @@ export class CreateuserbasicnewDto {
   fsTargetUri: string;
   mediaEndpoint: string;
   kyc: any[];
+  isGuest: boolean;
 }
 
 export class SearchUserbasicDto {

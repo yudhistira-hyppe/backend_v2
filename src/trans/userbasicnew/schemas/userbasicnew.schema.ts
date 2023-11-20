@@ -223,6 +223,8 @@ export class Userbasicnew {
     mediaEndpoint: string;
     @Prop()
     kyc: any[]
+    @Prop()
+    isGuest: boolean;
 }
 
 export const UserbasicnewSchema = SchemaFactory.createForClass(Userbasicnew);

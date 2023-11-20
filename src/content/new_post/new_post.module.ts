@@ -12,10 +12,9 @@ import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { PostsModule } from '../posts/posts.module';
 import { GetusercontentsModule } from 'src/trans/getusercontents/getusercontents.module';
 import { MediamusicModule } from '../mediamusic/mediamusic.module';
-import { NewcontenteventsModule } from '../newcontentevents/newcontentevents.module';
 import { SettingsModule } from 'src/trans/settings/settings.module';
 @Module({
-  imports:[
+  imports: [
     ConfigModule.forRoot(),
     UtilsModule,
     SettingsModule,
@@ -26,11 +25,10 @@ import { SettingsModule } from 'src/trans/settings/settings.module';
     GetusercontentsModule,
     DisquslogsModule,
     MediamusicModule,
-    NewcontenteventsModule,
     MongooseModule.forFeature([{ name: newPosts.name, schema: NewpostsSchema }], 'SERVER_FULL')
   ],
   controllers: [NewPostController],
   providers: [NewPostService],
   exports: [NewPostService]
 })
-export class NewPostModule {}
+export class NewPostModule { }
