@@ -2120,7 +2120,7 @@ export class AuthService {
 
       if (req.body.gender != undefined) {
         user_gender = req.body.gender;
-      }else{
+      } else {
         user_gender = "";
       }
 
@@ -2133,7 +2133,7 @@ export class AuthService {
       if (req.body.country != undefined) {
         user_country = req.body.country;
       }
-      
+
       // throw new NotAcceptableException({
       //   response_code: 406,
       //   messages: {
@@ -2520,7 +2520,7 @@ export class AuthService {
                 error,
               );
             }
-          }else{
+          } else {
             var data_update_userbasict = {};
             user_email = user_email_header;
             console.log("user_area", user_area)
@@ -9038,7 +9038,8 @@ export class AuthService {
           }
 
           try {
-            this.userChallenge(userid.toString(), idref.toString(), "referral", "REFERAL");
+            // this.userChallenge(userid.toString(), idref.toString(), "referral", "REFERAL");
+            await this.contenteventsService.scorereferralrequest(userid.toString(), idref.toString(), "referral", "REFERAL")
           } catch (e) {
 
           }
@@ -9827,7 +9828,9 @@ export class AuthService {
                         if (databasic !== null) {
                           var idref = insertdata._id;
                           try {
-                            this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
+                            // this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
+                            await this.contenteventsService.scorereferralrequest(databasic._id.toString(), idref.toString(), "referral", "REFERAL")
+
                           } catch (e) {
 
                           }
