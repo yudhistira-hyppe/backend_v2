@@ -34,7 +34,7 @@ export class TaskService {
   //   //this.postContentService.cronJobSeaweedDiariesStart();
   // }
 
-  @Cron('* */7 * * * *')
+  @Cron('0 */7 * * * *')
   challengeJob2() {
     this.logger.debug('Challenge JOB START');
     this.challengeService.sendNotifeChallenge();
@@ -43,9 +43,9 @@ export class TaskService {
 
   }
 
-  @Cron('* */10 * * * *')
+  @Cron('0 */10 * * * *')
   ceckStatus() {
-    this.logger.debug('DISBURSEMENT JOB START');
+    this.logger.debug('----------DISBURSEMENT JOB START----------', new Date());
     this.transactionsService.ceckStatusDisbursement();
   }
 }
