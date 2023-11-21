@@ -26,7 +26,10 @@ export class AccountbalancesService {
 
             {
                 $match: {
-                    "iduser": iduser
+                    "iduser": iduser,
+                    "description": {
+                        $ne: "FAILED TRANSACTION"
+                    }
                 }
             },
 
@@ -38,6 +41,13 @@ export class AccountbalancesService {
 
     async findsaldoall() {
         const query = await this.accountbalancesModel.aggregate([
+            {
+                $match: {
+                    "description": {
+                        $ne: "FAILED TRANSACTION"
+                    }
+                }
+            },
             { $group: { _id: null, totalsaldo: { $sum: { $subtract: ["$kredit", "$debet"] } }, totalpenarikan: { $sum: "$debet" } } },
 
 
@@ -46,7 +56,7 @@ export class AccountbalancesService {
     }
 
     async getReward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], similarity: any[], page: number, limit: number, sorting: boolean, idtransaction: string) {
-        
+
         var paramaggregate = [];
         var $match = {};
 
