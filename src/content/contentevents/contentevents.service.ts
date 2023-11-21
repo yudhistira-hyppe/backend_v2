@@ -4358,4 +4358,31 @@ export class ContenteventsService {
     const data = res.data;
     return data;
   }
+
+  async scorefollowrequest(iduser: string, idevent: string, namatabel: string, event: string) {
+    var call = {
+      "iduser": iduser,
+      "idevent": idevent,
+      "namatabel": namatabel,
+      "event": event
+    };
+    console.log(JSON.stringify(call))
+    let config = { headers: { "Content-Type": "application/json" } };
+    const res = await this.httpService.post(this.configService.get("URL_CHALLENGE") + "api/scorefollowchallenge", call, config).toPromise();
+    const data = res.data;
+    return data;
+  }
+  async scoreunfollowrequest(iduser: string, idevent: string, namatabel: string, event: string) {
+    var call = {
+      "iduser": iduser,
+      "idevent": idevent,
+      "namatabel": namatabel,
+      "event": event
+    };
+    console.log(JSON.stringify(call))
+    let config = { headers: { "Content-Type": "application/json" } };
+    const res = await this.httpService.post(this.configService.get("URL_CHALLENGE") + "api/scoreunfollowchallenge", call, config).toPromise();
+    const data = res.data;
+    return data;
+  }
 }
