@@ -1919,7 +1919,8 @@ export class PostsController {
       var iduser = null;
       if (databasic !== null) {
         iduser = databasic._id;
-        this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
+        //this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
+        await this.contenteventsService.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
       }
     }
 
@@ -2522,7 +2523,7 @@ export class PostsController {
     const userbasicsService_data = await this.userbasicsService.findOne(headers['x-auth-user']);
     const contenteventsService_data_ = await this.contenteventsService.findByCriteria(headers['x-auth-user'], postID_, eventType_, withEvents_, pageRow_, pageNumber_);
     let contenteventsService_data = contenteventsService_data_;
-    if (eventType_ =="FOLLOWER") {
+    if (eventType_ == "FOLLOWER") {
       contenteventsService_data = [...new Map(contenteventsService_data_.map(item => [item["receiverParty"], item])).values()];
     } else if (eventType_ == "FOLLOWING") {
       contenteventsService_data = [...new Map(contenteventsService_data_.map(item => [item["senderParty"], item])).values()];
