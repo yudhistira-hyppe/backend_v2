@@ -4342,4 +4342,20 @@ export class ContenteventsService {
     const data = res.data;
     return data;
   }
+
+  async scoreunlikerequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string) {
+    var call = {
+      "idevent": idevent,
+      "namatabel": namatabel,
+      "event": event,
+      "postID": postID,
+      "email_user": email_user,
+      "email_receiverParty ": email_receiverParty
+    };
+    console.log(JSON.stringify(call))
+    let config = { headers: { "Content-Type": "application/json" } };
+    const res = await this.httpService.post(this.configService.get("URL_CHALLENGE") + "api/scoreunlikechallenge", call, config).toPromise();
+    const data = res.data;
+    return data;
+  }
 }
