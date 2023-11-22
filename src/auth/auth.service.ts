@@ -9150,7 +9150,8 @@ export class AuthService {
           }
 
           try {
-            this.userChallenge(userid.toString(), idref.toString(), "referral", "REFERAL");
+            //this.userChallenge(userid.toString(), idref.toString(), "referral", "REFERAL");
+            await this.contenteventsService.scorereferralrequest(userid.toString(), idref.toString(), "referral", "REFERAL")
           } catch (e) {
 
           }
@@ -9939,7 +9940,9 @@ export class AuthService {
                         if (databasic !== null) {
                           var idref = insertdata._id;
                           try {
-                            this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
+                            // this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
+                            await this.contenteventsService.scorereferralrequest(databasic._id.toString(), idref.toString(), "referral", "REFERAL")
+
                           } catch (e) {
 
                           }

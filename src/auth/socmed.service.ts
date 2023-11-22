@@ -73,7 +73,7 @@ export class SocmedService {
     private readonly configService: ConfigService,
   ) { }
 
-  async signupsosmed(req: any, headers:any) {
+  async signupsosmed(req: any, headers: any) {
     var timestamps_start = await this.utilsService.getDateTimeString();
     var fullurl = headers.host + '/api/user/signup/socmed';
     var reqbody = JSON.parse(JSON.stringify(req.body));
@@ -89,7 +89,7 @@ export class SocmedService {
     var user_imei = null;
 
     if (req.body.email == undefined) {
-      
+
       var timestamps_end = await this.utilsService.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -99,7 +99,7 @@ export class SocmedService {
       );
     } else {
       if (req.body.email == '') {
-        
+
         var timestamps_end = await this.utilsService.getDateTimeString();
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -113,7 +113,7 @@ export class SocmedService {
     }
 
     if (req.body.socmedSource == undefined) {
-      
+
       var timestamps_end = await this.utilsService.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -122,7 +122,7 @@ export class SocmedService {
       );
     } else {
       if (req.body.socmedSource == '') {
-        
+
         var timestamps_end = await this.utilsService.getDateTimeString();
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -155,7 +155,7 @@ export class SocmedService {
     }
 
     if (!(await this.utilsService.validasiEmail(user_email.trim()))) {
-      
+
       var timestamps_end = await this.utilsService.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -279,9 +279,9 @@ export class SocmedService {
 
 
           } catch (error) {
-            
+
             var timestamps_end = await this.utilsService.getDateTimeString();
-            
+
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
             await this.errorHandler.generateNotAcceptableException(
@@ -309,9 +309,9 @@ export class SocmedService {
                 },
               );
           } catch (error) {
-            
+
             var timestamps_end = await this.utilsService.getDateTimeString();
-            
+
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
             await this.errorHandler.generateNotAcceptableException(
@@ -366,9 +366,9 @@ export class SocmedService {
 
 
           } catch (error) {
-            
+
             var timestamps_end = await this.utilsService.getDateTimeString();
-            
+
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
             await this.errorHandler.generateNotAcceptableException(
@@ -418,9 +418,9 @@ export class SocmedService {
 
 
           } catch (error) {
-            
+
             var timestamps_end = await this.utilsService.getDateTimeString();
-            
+
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
             await this.errorHandler.generateNotAcceptableException(
@@ -461,9 +461,9 @@ export class SocmedService {
                 //Insert User Userdevices
                 await this.userdevicesService.create(data_CreateUserdeviceDto);
               } catch (error) {
-                
+
                 var timestamps_end = await this.utilsService.getDateTimeString();
-                
+
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
                 await this.errorHandler.generateNotAcceptableException(
@@ -501,9 +501,9 @@ export class SocmedService {
               });
             }
           } catch (error) {
-            
+
             var timestamps_end = await this.utilsService.getDateTimeString();
-            
+
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
             await this.errorHandler.generateNotAcceptableException(
@@ -535,7 +535,7 @@ export class SocmedService {
 
         var vesion = await this.utilsService.getversion();
 
-        
+
         var timestamps_end = await this.utilsService.getDateTimeString();
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -595,7 +595,7 @@ export class SocmedService {
             tutor: arrayTutor
           },
           version: vesion,
-          version_ios : (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString(),
+          version_ios: (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString(),
           messages: {
             nextFlow: [
               "$.event: next should UPDATE_BIO",
@@ -605,7 +605,7 @@ export class SocmedService {
           },
         };
       } else {
-        
+
         var timestamps_end = await this.utilsService.getDateTimeString();
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -652,7 +652,7 @@ export class SocmedService {
               }
             }
           } catch (error) {
-            
+
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -687,7 +687,7 @@ export class SocmedService {
           //Insert Insights
           await this.insightsService.create(data_CreateInsightsDto);
         } catch (error) {
-          
+
           var timestamps_end = await this.utilsService.getDateTimeString();
           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -710,7 +710,7 @@ export class SocmedService {
               );
               ID_device = datauserdevicesService._id;
             } catch (error) {
-              
+
               var timestamps_end = await this.utilsService.getDateTimeString();
               this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -733,7 +733,7 @@ export class SocmedService {
               //Insert User Userdevices
               await this.userdevicesService.create(data_CreateUserdeviceDto);
             } catch (error) {
-              
+
               var timestamps_end = await this.utilsService.getDateTimeString();
               this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -777,7 +777,7 @@ export class SocmedService {
           //Insert UserAuth
           await this.userauthsService.create(data_CreateUserauthDto);
         } catch (error) {
-          
+
           var timestamps_end = await this.utilsService.getDateTimeString();
           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -868,7 +868,7 @@ export class SocmedService {
           //Insert UserBasic
           await this.userbasicsService.create(data_CreateUserbasicDto);
         } catch (error) {
-          
+
           var timestamps_end = await this.utilsService.getDateTimeString();
           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -927,7 +927,7 @@ export class SocmedService {
 
 
         } catch (error) {
-          
+
           var timestamps_end = await this.utilsService.getDateTimeString();
           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -938,37 +938,128 @@ export class SocmedService {
         }
 
         //Referral
-        if (user_referral != null && user_referral.length > 0) {
-          //Ceck User Userbasics Parent
-          const datauserbasicsService_parent = await this.userbasicsService.findOne(
-            user_referral,
-          );
-          if (await this.utilsService.ceckData(datauserbasicsService_parent)) {
+        // if (user_referral != null && user_referral.length > 0) {
+        //   //Ceck User Userbasics Parent
+        //   const datauserbasicsService_parent = await this.userbasicsService.findOne(
+        //     user_referral,
+        //   );
+        //   if (await this.utilsService.ceckData(datauserbasicsService_parent)) {
 
-            //Ceck User Referral parent children
-            const data_referral_parent_children = await this.referralService.findAllByParentChildren(
-              user_referral, user_email,
-            );
-            if (!(await this.utilsService.ceckData(data_referral_parent_children))) {
-              //Insert Referral
-              try {
+        //     //Ceck User Referral parent children
+        //     const data_referral_parent_children = await this.referralService.findAllByParentChildren(
+        //       user_referral, user_email,
+        //     );
+        //     if (!(await this.utilsService.ceckData(data_referral_parent_children))) {
+        //       //Insert Referral
+        //       try {
+        //         var CreateReferralDto_ = new CreateReferralDto();
+        //         CreateReferralDto_._id = (await this.utilsService.generateId()).toLowerCase();
+        //         CreateReferralDto_.parent = user_referral;
+        //         CreateReferralDto_.children = user_email;
+        //         if (user_imei != null) {
+        //           CreateReferralDto_.imei = user_imei;
+        //         }
+        //         CreateReferralDto_.active = true;
+        //         CreateReferralDto_.verified = true;
+        //         CreateReferralDto_.createdAt = current_date;
+        //         CreateReferralDto_.updatedAt = current_date;
+        //         CreateReferralDto_._class = _class_Referral;
+
+        //         this.referralService.create(CreateReferralDto_);
+
+        //         var _id_2 = (await this.utilsService.generateId());
+        //         var _id_4 = (await this.utilsService.generateId());
+
+        //         var CreateContenteventsDto2 = new CreateContenteventsDto();
+        //         CreateContenteventsDto2._id = _id_2
+        //         CreateContenteventsDto2.contentEventID = (await this.utilsService.generateId())
+        //         CreateContenteventsDto2.email = req.body.referral
+        //         CreateContenteventsDto2.eventType = "FOLLOWER"
+        //         CreateContenteventsDto2.active = true
+        //         CreateContenteventsDto2.event = "ACCEPT"
+        //         CreateContenteventsDto2.createdAt = current_date
+        //         CreateContenteventsDto2.updatedAt = current_date
+        //         CreateContenteventsDto2.sequenceNumber = 1
+        //         CreateContenteventsDto2.flowIsDone = true
+        //         CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+        //         CreateContenteventsDto2.receiverParty = req.body.email
+
+        //         var CreateContenteventsDto4 = new CreateContenteventsDto();
+        //         CreateContenteventsDto4._id = _id_4
+        //         CreateContenteventsDto4.contentEventID = (await this.utilsService.generateId())
+        //         CreateContenteventsDto4.email = req.body.email
+        //         CreateContenteventsDto4.eventType = "FOLLOWING"
+        //         CreateContenteventsDto4.active = true
+        //         CreateContenteventsDto4.event = "ACCEPT"
+        //         CreateContenteventsDto4.createdAt = current_date
+        //         CreateContenteventsDto4.updatedAt = current_date
+        //         CreateContenteventsDto4.sequenceNumber = 1
+        //         CreateContenteventsDto4.flowIsDone = true
+        //         CreateContenteventsDto4._class = "io.melody.hyppe.content.domain.ContentEvent"
+        //         CreateContenteventsDto4.senderParty = req.body.referral
+
+        //         //await this.contenteventsService.create(CreateContenteventsDto1);
+        //         await this.contenteventsService.create(CreateContenteventsDto2);
+        //         //await this.contenteventsService.create(CreateContenteventsDto3);
+        //         await this.contenteventsService.create(CreateContenteventsDto4);
+        //         await this.insightsService.updateFollower(req.body.referral);
+        //         await this.insightsService.updateFollowing(req.body.email);
+        //       } catch (error) {
+
+        //         var timestamps_end = await this.utilsService.getDateTimeString();
+        //         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
+        //         await this.errorHandler.generateNotAcceptableException(
+        //           'Unabled to proceed Create Refferal. Error:' +
+        //           error,
+        //         );
+        //       }
+        //     }
+        //   }
+        // }
+
+        if (req.body.referral != undefined && req.body.imei != undefined) {
+
+          if (req.body.referral != "" && req.body.imei != "") {
+            var data_refferal = await this.referralService.findOneInChild(req.body.email);
+            if (!(await this.utilsService.ceckData(data_refferal))) {
+              var data_imei = await this.referralService.findOneInIme(req.body.imei);
+              if (!(await this.utilsService.ceckData(data_imei))) {
                 var CreateReferralDto_ = new CreateReferralDto();
-                CreateReferralDto_._id = (await this.utilsService.generateId()).toLowerCase();
-                CreateReferralDto_.parent = user_referral;
-                CreateReferralDto_.children = user_email;
-                if (user_imei != null) {
-                  CreateReferralDto_.imei = user_imei;
-                }
+                CreateReferralDto_._id = (await this.utilsService.generateId())
+                CreateReferralDto_.parent = req.body.referral;
+                CreateReferralDto_.children = req.body.email;
                 CreateReferralDto_.active = true;
                 CreateReferralDto_.verified = true;
                 CreateReferralDto_.createdAt = current_date;
                 CreateReferralDto_.updatedAt = current_date;
-                CreateReferralDto_._class = _class_Referral;
+                CreateReferralDto_.imei = req.body.imei;
+                CreateReferralDto_._class = "io.melody.core.domain.Referral";
+                var insertdata = await this.referralService.create(CreateReferralDto_);
 
-                this.referralService.create(CreateReferralDto_);
-
+                var _id_1 = (await this.utilsService.generateId());
                 var _id_2 = (await this.utilsService.generateId());
+                var _id_3 = (await this.utilsService.generateId());
                 var _id_4 = (await this.utilsService.generateId());
+
+                // var CreateContenteventsDto1 = new CreateContenteventsDto();
+                // CreateContenteventsDto1._id = _id_1
+                // CreateContenteventsDto1.contentEventID = (await this.utilsService.generateId())
+                // CreateContenteventsDto1.email = req.body.referral
+                // CreateContenteventsDto1.eventType = "FOLLOWER"
+                // CreateContenteventsDto1.active = true
+                // CreateContenteventsDto1.event = "REQUEST"
+                // CreateContenteventsDto1.createdAt = current_date
+                // CreateContenteventsDto1.updatedAt = current_date
+                // CreateContenteventsDto1.sequenceNumber = 0
+                // CreateContenteventsDto1.flowIsDone = true
+                // CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
+                // CreateContenteventsDto1.senderParty = req.body.email
+                // CreateContenteventsDto1.transitions = [{
+                //   $ref: 'contentevents',
+                //   $id: Object(_id_2),
+                //   $db: 'hyppe_trans_db',
+                // }]
 
                 var CreateContenteventsDto2 = new CreateContenteventsDto();
                 CreateContenteventsDto2._id = _id_2
@@ -983,6 +1074,25 @@ export class SocmedService {
                 CreateContenteventsDto2.flowIsDone = true
                 CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
                 CreateContenteventsDto2.receiverParty = req.body.email
+
+                // var CreateContenteventsDto3 = new CreateContenteventsDto();
+                // CreateContenteventsDto3._id = _id_3
+                // CreateContenteventsDto3.contentEventID = (await this.utilsService.generateId())
+                // CreateContenteventsDto3.email = req.body.email
+                // CreateContenteventsDto3.eventType = "FOLLOWING"
+                // CreateContenteventsDto3.active = true
+                // CreateContenteventsDto3.event = "INITIAL"
+                // CreateContenteventsDto3.createdAt = current_date
+                // CreateContenteventsDto3.updatedAt = current_date
+                // CreateContenteventsDto3.sequenceNumber = 0
+                // CreateContenteventsDto3.flowIsDone = true
+                // CreateContenteventsDto3._class = "io.melody.hyppe.content.domain.ContentEvent"
+                // CreateContenteventsDto3.receiverParty = req.body.referral
+                // CreateContenteventsDto3.transitions = [{
+                //   $ref: 'contentevents',
+                //   $id: Object(_id_4),
+                //   $db: 'hyppe_trans_db',
+                // }]
 
                 var CreateContenteventsDto4 = new CreateContenteventsDto();
                 CreateContenteventsDto4._id = _id_4
@@ -1004,15 +1114,6 @@ export class SocmedService {
                 await this.contenteventsService.create(CreateContenteventsDto4);
                 await this.insightsService.updateFollower(req.body.referral);
                 await this.insightsService.updateFollowing(req.body.email);
-              } catch (error) {
-                
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Create Refferal. Error:' +
-                  error,
-                );
               }
             }
           }
@@ -1077,7 +1178,7 @@ export class SocmedService {
 
 
         } catch (error) {
-          
+
           var timestamps_end = await this.utilsService.getDateTimeString();
           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -1124,7 +1225,7 @@ export class SocmedService {
             data_CreateActivityeventsDto_parent,
           );
         } catch (error) {
-          
+
           var timestamps_end = await this.utilsService.getDateTimeString();
           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -1134,10 +1235,10 @@ export class SocmedService {
           );
         }
 
-        
+
         var timestamps_end = await this.utilsService.getDateTimeString();
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
-        
+
         if (arrayTutor != undefined) {
           const SETTING_TUTOR = this.configService.get("SETTING_TUTOR");
           const getSettingTutor = await this.utilsService.getSettingMixed(SETTING_TUTOR);
@@ -1198,7 +1299,7 @@ export class SocmedService {
           },
         };
       } else {
-        
+
         var timestamps_end = await this.utilsService.getDateTimeString();
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
@@ -3091,37 +3192,128 @@ export class SocmedService {
         }
 
         //Referral
-        if (user_referral != null && user_referral.length > 0) {
-          //Ceck User Userbasics Parent
-          const datauserbasicsService_parent = await this.userbasicsService.findOne(
-            user_referral,
-          );
-          if (await this.utilsService.ceckData(datauserbasicsService_parent)) {
+        // if (user_referral != null && user_referral.length > 0) {
+        //   //Ceck User Userbasics Parent
+        //   const datauserbasicsService_parent = await this.userbasicsService.findOne(
+        //     user_referral,
+        //   );
+        //   if (await this.utilsService.ceckData(datauserbasicsService_parent)) {
 
-            //Ceck User Referral parent children
-            const data_referral_parent_children = await this.referralService.findAllByParentChildren(
-              user_referral, user_email,
-            );
-            if (!(await this.utilsService.ceckData(data_referral_parent_children))) {
-              //Insert Referral
-              try {
+        //     //Ceck User Referral parent children
+        //     const data_referral_parent_children = await this.referralService.findAllByParentChildren(
+        //       user_referral, user_email,
+        //     );
+        //     if (!(await this.utilsService.ceckData(data_referral_parent_children))) {
+        //       //Insert Referral
+        //       try {
+        //         var CreateReferralDto_ = new CreateReferralDto();
+        //         CreateReferralDto_._id = (await this.utilsService.generateId()).toLowerCase();
+        //         CreateReferralDto_.parent = user_referral;
+        //         CreateReferralDto_.children = user_email;
+        //         if (user_imei != null) {
+        //           CreateReferralDto_.imei = user_imei;
+        //         }
+        //         CreateReferralDto_.active = true;
+        //         CreateReferralDto_.verified = true;
+        //         CreateReferralDto_.createdAt = current_date;
+        //         CreateReferralDto_.updatedAt = current_date;
+        //         CreateReferralDto_._class = _class_Referral;
+
+        //         this.referralService.create(CreateReferralDto_);
+
+        //         var _id_2 = (await this.utilsService.generateId());
+        //         var _id_4 = (await this.utilsService.generateId());
+
+        //         var CreateContenteventsDto2 = new CreateContenteventsDto();
+        //         CreateContenteventsDto2._id = _id_2
+        //         CreateContenteventsDto2.contentEventID = (await this.utilsService.generateId())
+        //         CreateContenteventsDto2.email = req.body.referral
+        //         CreateContenteventsDto2.eventType = "FOLLOWER"
+        //         CreateContenteventsDto2.active = true
+        //         CreateContenteventsDto2.event = "ACCEPT"
+        //         CreateContenteventsDto2.createdAt = current_date
+        //         CreateContenteventsDto2.updatedAt = current_date
+        //         CreateContenteventsDto2.sequenceNumber = 1
+        //         CreateContenteventsDto2.flowIsDone = true
+        //         CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+        //         CreateContenteventsDto2.receiverParty = req.body.email
+
+        //         var CreateContenteventsDto4 = new CreateContenteventsDto();
+        //         CreateContenteventsDto4._id = _id_4
+        //         CreateContenteventsDto4.contentEventID = (await this.utilsService.generateId())
+        //         CreateContenteventsDto4.email = req.body.email
+        //         CreateContenteventsDto4.eventType = "FOLLOWING"
+        //         CreateContenteventsDto4.active = true
+        //         CreateContenteventsDto4.event = "ACCEPT"
+        //         CreateContenteventsDto4.createdAt = current_date
+        //         CreateContenteventsDto4.updatedAt = current_date
+        //         CreateContenteventsDto4.sequenceNumber = 1
+        //         CreateContenteventsDto4.flowIsDone = true
+        //         CreateContenteventsDto4._class = "io.melody.hyppe.content.domain.ContentEvent"
+        //         CreateContenteventsDto4.senderParty = req.body.referral
+
+        //         //await this.contenteventsService.create(CreateContenteventsDto1);
+        //         await this.contenteventsService.create(CreateContenteventsDto2);
+        //         //await this.contenteventsService.create(CreateContenteventsDto3);
+        //         await this.contenteventsService.create(CreateContenteventsDto4);
+        //         await this.insightsService.updateFollower(req.body.referral);
+        //         await this.insightsService.updateFollowing(req.body.email);
+        //       } catch (error) {
+        //         await this.errorHandler.generateNotAcceptableException(
+        //           'Unabled to proceed Create Refferal. Error:' +
+        //           error,
+        //         );
+        //       }
+        //     }
+        //   }
+        // }
+
+        if (req.body.referral != undefined && req.body.imei != undefined) {
+
+          if (req.body.referral != "" && req.body.imei != "") {
+            var data_refferal = await this.referralService.findOneInChild(req.body.email);
+            if (!(await this.utilsService.ceckData(data_refferal))) {
+              var data_imei = await this.referralService.findOneInIme(req.body.imei);
+              if (!(await this.utilsService.ceckData(data_imei))) {
                 var CreateReferralDto_ = new CreateReferralDto();
-                CreateReferralDto_._id = (await this.utilsService.generateId()).toLowerCase();
-                CreateReferralDto_.parent = user_referral;
-                CreateReferralDto_.children = user_email;
-                if (user_imei != null) {
-                  CreateReferralDto_.imei = user_imei;
-                }
+                CreateReferralDto_._id = (await this.utilsService.generateId())
+                CreateReferralDto_.parent = req.body.referral;
+                CreateReferralDto_.children = req.body.email;
                 CreateReferralDto_.active = true;
                 CreateReferralDto_.verified = true;
                 CreateReferralDto_.createdAt = current_date;
                 CreateReferralDto_.updatedAt = current_date;
-                CreateReferralDto_._class = _class_Referral;
+                CreateReferralDto_.imei = req.body.imei;
+                CreateReferralDto_._class = "io.melody.core.domain.Referral";
+                var insertdata = await this.referralService.create(CreateReferralDto_);
 
-                this.referralService.create(CreateReferralDto_);
+                const databasic = await this.userbasicsService.findOne(
+                  req.body.referral,
+                );
 
+                var _id_1 = (await this.utilsService.generateId());
                 var _id_2 = (await this.utilsService.generateId());
+                var _id_3 = (await this.utilsService.generateId());
                 var _id_4 = (await this.utilsService.generateId());
+
+                // var CreateContenteventsDto1 = new CreateContenteventsDto();
+                // CreateContenteventsDto1._id = _id_1
+                // CreateContenteventsDto1.contentEventID = (await this.utilsService.generateId())
+                // CreateContenteventsDto1.email = req.body.referral
+                // CreateContenteventsDto1.eventType = "FOLLOWER"
+                // CreateContenteventsDto1.active = true
+                // CreateContenteventsDto1.event = "REQUEST"
+                // CreateContenteventsDto1.createdAt = current_date
+                // CreateContenteventsDto1.updatedAt = current_date
+                // CreateContenteventsDto1.sequenceNumber = 0
+                // CreateContenteventsDto1.flowIsDone = true
+                // CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
+                // CreateContenteventsDto1.senderParty = req.body.email
+                // CreateContenteventsDto1.transitions = [{
+                //   $ref: 'contentevents',
+                //   $id: Object(_id_2),
+                //   $db: 'hyppe_trans_db',
+                // }]
 
                 var CreateContenteventsDto2 = new CreateContenteventsDto();
                 CreateContenteventsDto2._id = _id_2
@@ -3136,6 +3328,25 @@ export class SocmedService {
                 CreateContenteventsDto2.flowIsDone = true
                 CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
                 CreateContenteventsDto2.receiverParty = req.body.email
+
+                // var CreateContenteventsDto3 = new CreateContenteventsDto();
+                // CreateContenteventsDto3._id = _id_3
+                // CreateContenteventsDto3.contentEventID = (await this.utilsService.generateId())
+                // CreateContenteventsDto3.email = req.body.email
+                // CreateContenteventsDto3.eventType = "FOLLOWING"
+                // CreateContenteventsDto3.active = true
+                // CreateContenteventsDto3.event = "INITIAL"
+                // CreateContenteventsDto3.createdAt = current_date
+                // CreateContenteventsDto3.updatedAt = current_date
+                // CreateContenteventsDto3.sequenceNumber = 0
+                // CreateContenteventsDto3.flowIsDone = true
+                // CreateContenteventsDto3._class = "io.melody.hyppe.content.domain.ContentEvent"
+                // CreateContenteventsDto3.receiverParty = req.body.referral
+                // CreateContenteventsDto3.transitions = [{
+                //   $ref: 'contentevents',
+                //   $id: Object(_id_4),
+                //   $db: 'hyppe_trans_db',
+                // }]
 
                 var CreateContenteventsDto4 = new CreateContenteventsDto();
                 CreateContenteventsDto4._id = _id_4
@@ -3157,11 +3368,6 @@ export class SocmedService {
                 await this.contenteventsService.create(CreateContenteventsDto4);
                 await this.insightsService.updateFollower(req.body.referral);
                 await this.insightsService.updateFollowing(req.body.email);
-              } catch (error) {
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Create Refferal. Error:' +
-                  error,
-                );
               }
             }
           }

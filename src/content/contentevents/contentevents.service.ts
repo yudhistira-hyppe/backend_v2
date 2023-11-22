@@ -5,12 +5,16 @@ import { CreateGetcontenteventsDto } from 'src/trans/getusercontents/getcontente
 import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
 import { CreateContenteventsDto } from './dto/create-contentevents.dto';
 import { Contentevents, ContenteventsDocument } from './schemas/contentevents.schema';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ContenteventsService {
   constructor(
     @InjectModel(Contentevents.name, 'SERVER_FULL')
     private readonly ContenteventsModel: Model<ContenteventsDocument>,
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
   ) { }
 
   async create(
@@ -4305,5 +4309,109 @@ export class ContenteventsService {
 
     ]);
     return query;
+  }
+
+  async scoreviewrequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string) {
+    var call = {
+      "idevent": idevent,
+      "namatabel": namatabel,
+      "event": event,
+      "postID": postID,
+      "email_user": email_user,
+      "email_receiverParty ": email_receiverParty
+    };
+    console.log(JSON.stringify(call))
+    let config = { headers: { "Content-Type": "application/json" } };
+    const res = await this.httpService.post(this.configService.get("URL_CHALLENGE") + "api/scoreviewchallenge", call, config).toPromise();
+    const data = res.data;
+    return data;
+  }
+
+  async scorelikerequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string) {
+    var call = {
+      "idevent": idevent,
+      "namatabel": namatabel,
+      "event": event,
+      "postID": postID,
+      "email_user": email_user,
+      "email_receiverParty ": email_receiverParty
+    };
+    console.log(JSON.stringify(call))
+    let config = { headers: { "Content-Type": "application/json" } };
+    const res = await this.httpService.post(this.configService.get("URL_CHALLENGE") + "api/scorelikechallenge", call, config).toPromise();
+    const data = res.data;
+    return data;
+  }
+
+  async scoreunlikerequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string) {
+    var call = {
+      "idevent": idevent,
+      "namatabel": namatabel,
+      "event": event,
+      "postID": postID,
+      "email_user": email_user,
+      "email_receiverParty ": email_receiverParty
+    };
+    console.log(JSON.stringify(call))
+    let config = { headers: { "Content-Type": "application/json" } };
+    const res = await this.httpService.post(this.configService.get("URL_CHALLENGE") + "api/scoreunlikechallenge", call, config).toPromise();
+    const data = res.data;
+    return data;
+  }
+
+  async scorefollowrequest(iduser: string, idevent: string, namatabel: string, event: string) {
+    var call = {
+      "iduser": iduser,
+      "idevent": idevent,
+      "namatabel": namatabel,
+      "event": event
+    };
+    console.log(JSON.stringify(call))
+    let config = { headers: { "Content-Type": "application/json" } };
+    const res = await this.httpService.post(this.configService.get("URL_CHALLENGE") + "api/scorefollowchallenge", call, config).toPromise();
+    const data = res.data;
+    return data;
+  }
+  async scoreunfollowrequest(iduser: string, idevent: string, namatabel: string, event: string) {
+    var call = {
+      "iduser": iduser,
+      "idevent": idevent,
+      "namatabel": namatabel,
+      "event": event
+    };
+    console.log(JSON.stringify(call))
+    let config = { headers: { "Content-Type": "application/json" } };
+    const res = await this.httpService.post(this.configService.get("URL_CHALLENGE") + "api/scoreunfollowchallenge", call, config).toPromise();
+    const data = res.data;
+    return data;
+  }
+
+  async scorereferralrequest(iduser: string, idevent: string, namatabel: string, event: string) {
+    var call = {
+      "iduser": iduser,
+      "idevent": idevent,
+      "namatabel": namatabel,
+      "event": event
+    };
+    console.log(JSON.stringify(call))
+    let config = { headers: { "Content-Type": "application/json" } };
+    const res = await this.httpService.post(this.configService.get("URL_CHALLENGE") + "api/scorereferralchallenge", call, config).toPromise();
+    const data = res.data;
+    return data;
+  }
+
+  async scorepostrequest(iduser: string, idevent: string, namatabel: string, event: string, postID: string) {
+    var call = {
+      "iduser": iduser,
+      "idevent": idevent,
+      "namatabel": namatabel,
+      "event": event,
+      "postID": postID
+    };
+    console.log(JSON.stringify(call))
+    let config = { headers: { "Content-Type": "application/json" } };
+    const res = await this.httpService.post(this.configService.get("URL_CHALLENGE") + "api/scorepostchallenge", call, config).toPromise();
+    const data = res.data;
+    return data;
   }
 }

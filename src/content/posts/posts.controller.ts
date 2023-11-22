@@ -1921,7 +1921,8 @@ export class PostsController {
       var iduser = null;
       if (databasic !== null) {
         iduser = databasic._id;
-        this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
+        //this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
+        await this.contenteventsService.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
       }
     }
 

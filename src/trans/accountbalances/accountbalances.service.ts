@@ -46,7 +46,7 @@ export class AccountbalancesService {
     }
 
     async getReward(name: string, start_date: any, end_date: any, gender: any[], age: any[], areas: any[], similarity: any[], page: number, limit: number, sorting: boolean, idtransaction: string) {
-        
+
         var paramaggregate = [];
         var $match = {};
 

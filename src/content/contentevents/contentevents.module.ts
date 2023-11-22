@@ -22,8 +22,10 @@ import { ChallengeModule } from 'src/trans/challenge/challenge.module';
 import { TagCountModule } from 'src/content/tag_count/tag_count.module';
 import { PostchallengeModule } from 'src/trans/postchallenge/postchallenge.module';
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
+import { HttpModule } from '@nestjs/axios';
 @Module({
     imports: [
+        HttpModule,
         PostchallengeModule,
         TagCountModule,
         UserchallengesModule,
