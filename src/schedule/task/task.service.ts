@@ -36,7 +36,7 @@ export class TaskService {
 
   @Cron('0 */7 * * * *')
   challengeJob2() {
-    this.logger.debug('Challenge JOB START');
+    this.logger.debug('----------Challenge JOB START----------', new Date());
     this.challengeService.sendNotifeChallenge();
     this.challengeService.updateBadgeex();
     this.challengeService.updateSubchallengeex();
