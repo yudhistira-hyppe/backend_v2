@@ -27,6 +27,26 @@ export class UserbasicnewService {
         return this.UserbasicnewModel.findOne({ email: email }).exec();
     }
 
+    async findbyemailLogin(email: string): Promise<Userbasicnew> {
+        return this.UserbasicnewModel.findOne({ emailLogin: email }).exec();
+    }
+
+    async findbyboth(email: string): Promise<Userbasicnew> {
+        return this.UserbasicnewModel.findOne(
+            { 
+                "$or": 
+                [
+                    {
+                        "email":email
+                    },
+                    {
+                        "emailLogin":email
+                    }
+                ] 
+            }
+        ).exec();
+    }
+
     async findbyusername(username: string): Promise<Userbasicnew> {
         return this.UserbasicnewModel.findOne({ username: username }).exec();
     }
@@ -56,6 +76,166 @@ export class UserbasicnewService {
                 "$match":
                 {
                     email: email
+                }
+            },
+            {
+                "$addFields":
+                {
+                    "urluserBadge":
+                    {
+                        "$ifNull":
+                            [
+                                {
+                                    "$filter":
+                                    {
+                                        input: "$userBadge",
+                                        as: "listbadge",
+                                        cond:
+                                        {
+                                            "$and":
+                                                [
+                                                    {
+                                                        "$eq":
+                                                            [
+                                                                "$$listbadge.isActive", true
+                                                            ]
+                                                    },
+                                                    {
+                                                        "$lte": [
+                                                            {
+                                                                "$dateToString": {
+                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                    "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "$$listbadge.endDatetime"
+                                                        ]
+                                                    }
+                                                ]
+                                        }
+                                    },
+                                },
+                                []
+                            ]
+                    },
+                }
+            },
+            {
+                "$project":
+                {
+                    "_id": 1,
+                    "profileID": 1,
+                    "email": 1,
+                    "emailLogin": 1,
+                    "fullName": 1,
+                    "dob": 1,
+                    "gender":
+                    {
+                        "$ifNull":
+                            [
+                                "$gender",
+                                "Other"
+                            ]
+                    },
+                    "status": 1,
+                    "event": 1,
+                    "isComplete": 1,
+                    "isCelebrity": 1,
+                    "isIdVerified": 1,
+                    "isPrivate": 1,
+                    "isFollowPrivate": 1,
+                    "isPostPrivate": 1,
+                    "createdAt": 1,
+                    "updatedAt": 1,
+                    "insight": 1,
+                    "userInterests": 1,
+                    "languages": 1,
+                    "_class": 1,
+                    "statusKyc": 1,
+                    "reportedUser": 1,
+                    "reportedUserHandle": 1,
+                    "listAddKyc": 1,
+                    "userAssets": 1,
+                    "__v": 1,
+                    "profilePict": 1,
+                    "bio": 1,
+                    "mobileNumber": 1,
+                    "timeEmailSend": 1,
+                    "icon": 1,
+                    "userBadge": 1,
+                    "countries": 1,
+                    "states": 1,
+                    "cities": 1,
+                    "idProofNumber": 1,
+                    "idProofStatus": 1,
+                    "pin": 1,
+                    "otppinVerified": 1,
+                    "tutor": 1,
+                    urluserBadge:
+                    {
+                        "$ifNull": [
+                            {
+                                "$arrayElemAt":
+                                    [
+                                        "$urluserBadge", 0
+                                    ]
+                            },
+                            null
+                        ]
+                    },
+                    "username": 1,
+                    "languagesLangIso": 1,
+                    "countriesName": 1,
+                    "citiesName": 1,
+                    "statesName": 1,
+                    "mediaBasePath": 1,
+                    "mediaUri": 1,
+                    "mediaType": 1,
+                    "mediaEndpoint": 1,
+                    "oneTimePassword": 1,
+                    "otpToken": 1,
+                    "isEmailVerified": 1,
+                    "authUsers": 1,
+                    "roles": 1,
+                    "otpNextAttemptAllow": 1,
+                    "follower": 1,
+                    "following": 1,
+                    "userEvent": 1,
+                    "languagesLang": 1,
+                    "password": 1,
+                    "userID": 1,
+                    "isExpiryPass": 1,
+                    "otpRequestTime": 1,
+                    "otpAttempt": 1,
+                    "location": 1,
+                    "isEnabled": 1,
+                    "isAccountNonExpired": 1,
+                    "isAccountNonLocked": 1,
+                    "isCredentialsNonExpired": 1,
+                    "_idAvatar": 1,
+                    "originalName": 1,
+                    "fsSourceUri": 1,
+                    "fsSourceName": 1,
+                    "fsTargetUri": 1,
+                    "kyc": 1
+                }
+            }
+        ]);
+
+        return result[0];
+    }
+
+    async finddetail2(email: string) {
+        var result = await this.UserbasicnewModel.aggregate([
+            {
+                "$match":
+                {
+                    emailLogin: email
                 }
             },
             {
