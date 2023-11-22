@@ -34,18 +34,18 @@ export class TaskService {
   //   //this.postContentService.cronJobSeaweedDiariesStart();
   // }
 
-  @Cron('0 */7 * * * *')
-  challengeJob2() {
-    this.logger.debug('----------Challenge JOB START----------', new Date());
-    this.challengeService.sendNotifeChallenge();
-    this.challengeService.updateBadgeex();
-    this.challengeService.updateSubchallengeex();
+  // @Cron('0 */7 * * * *')
+  // challengeJob2() {
+  //   this.logger.debug('----------Challenge JOB START----------', new Date());
+  //   this.challengeService.sendNotifeChallenge();
+  //   this.challengeService.updateBadgeex();
+  //   this.challengeService.updateSubchallengeex();
 
-  }
+  // }
 
-  @Cron('0 */10 * * * *')
-  ceckStatus() {
-    this.logger.debug('----------DISBURSEMENT JOB START----------', new Date());
-    this.transactionsService.ceckStatusDisbursement();
-  }
+  // @Cron('0 */10 * * * *')
+  // ceckStatus() {
+  //   this.logger.debug('----------DISBURSEMENT JOB START----------', new Date());
+  //   this.transactionsService.ceckStatusDisbursement();
+  // }
 }
