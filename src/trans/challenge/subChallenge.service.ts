@@ -14150,23 +14150,23 @@ export class subChallengeService {
                                 }
                             },
                             {
-                                $set: {
-                                    lastRank:
-                                    {
-                                        $ifNull:
-                                            [
-                                                {
-                                                    //$arrayElemAt: ["$history.ranking", 0] 
-                                                    $last: "$history.ranking"
-                                                },
-                                                0
-                                            ]
-                                    }
-                                }
-                            },
-                            {
-                                $set: {
-                                    userID: new Types.ObjectId(iduser)
+                                $project: {
+                                    "_id": 1,
+                                    "idSubChallenge": 1,
+                                    "idUser": 1,
+                                    "ranking": 1,
+                                    "score": 1,
+                                    "lastRank": 1,
+                                    "isUserLogin": 1,
+                                    "celeng": 1,
+                                    "postChallengess": 1,
+                                    "objectChallenge": 1,
+                                    "username": 1,
+                                    "email": 1,
+                                    "avatar": 1,
+                                    "currentstatistik": 1,
+                                    "winnerBadge": 1,
+                                    "winnerBadgeOther": 1,
                                 }
                             },
                             {
@@ -14197,6 +14197,28 @@ export class subChallengeService {
                             {
                                 $limit: 11
                             },
+
+                            {
+                                $set: {
+                                    lastRank:
+                                    {
+                                        $ifNull:
+                                            [
+                                                {
+                                                    //$arrayElemAt: ["$history.ranking", 0] 
+                                                    $last: "$history.ranking"
+                                                },
+                                                0
+                                            ]
+                                    }
+                                }
+                            },
+                            {
+                                $set: {
+                                    userID: new Types.ObjectId(iduser)
+                                }
+                            },
+
                             {
                                 "$lookup":
                                 {
@@ -16673,23 +16695,23 @@ export class subChallengeService {
                                 }
                             },
                             {
-                                $set: {
-                                    lastRank:
-                                    {
-                                        $ifNull:
-                                            [
-                                                {
-                                                    //$arrayElemAt: ["$history.ranking", 0] 
-                                                    $last: "$history.ranking"
-                                                },
-                                                0
-                                            ]
-                                    }
-                                }
-                            },
-                            {
-                                $set: {
-                                    userID: new Types.ObjectId(iduser)
+                                $project: {
+                                    "_id": 1,
+                                    "idSubChallenge": 1,
+                                    "idUser": 1,
+                                    "ranking": 1,
+                                    "score": 1,
+                                    "lastRank": 1,
+                                    "isUserLogin": 1,
+                                    "celeng": 1,
+                                    "postChallengess": 1,
+                                    "objectChallenge": 1,
+                                    "username": 1,
+                                    "email": 1,
+                                    "avatar": 1,
+                                    "currentstatistik": 1,
+                                    "winnerBadge": 1,
+                                    "winnerBadgeOther": 1,
                                 }
                             },
                             {
@@ -16720,6 +16742,28 @@ export class subChallengeService {
                             {
                                 $limit: 11
                             },
+
+                            {
+                                $set: {
+                                    lastRank:
+                                    {
+                                        $ifNull:
+                                            [
+                                                {
+                                                    //$arrayElemAt: ["$history.ranking", 0] 
+                                                    $last: "$history.ranking"
+                                                },
+                                                0
+                                            ]
+                                    }
+                                }
+                            },
+                            {
+                                $set: {
+                                    userID: new Types.ObjectId(iduser)
+                                }
+                            },
+
                             {
                                 "$lookup":
                                 {
@@ -19058,9 +19102,9 @@ export class subChallengeService {
                     session: 1
                 }
             },
-            // {
-            //     $limit: 1
-            // }
+            //            {
+            //                $limit: 1
+            //            }
         );
 
 
