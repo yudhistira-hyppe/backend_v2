@@ -1919,8 +1919,8 @@ export class PostsController {
       var iduser = null;
       if (databasic !== null) {
         iduser = databasic._id;
-        this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
-        //await this.contenteventsService.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
+        // this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
+        this.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
       }
     }
 
@@ -3977,6 +3977,6 @@ export class PostsController {
   }
 
   async scorepostrequest(iduser: string, idevent: string, namatabel: string, event: string, postID: string) {
-    await this.contenteventsService.scorepostrequest(iduser, idevent, "posts", "POST", postID);
+    await this.contenteventsService.scorepostrequest(iduser, idevent, namatabel, event, postID);
   }
 }
