@@ -16590,7 +16590,6 @@ export class subChallengeService {
         var pipeline = [];
 
         pipeline.push(
-
             {
                 $set: {
                     "timenow":
@@ -19103,12 +19102,10 @@ export class subChallengeService {
                     session: 1
                 }
             },
-            //            {
-            //                $limit: 1
-            //            }
-
+            // {
+            //     $limit: 1
+            // }
         );
-
 
         if (status !== undefined) {
             pipeline.push(
