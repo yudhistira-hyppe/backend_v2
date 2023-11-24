@@ -14945,10 +14945,10 @@ export class subChallengeService {
                                     ranking: 1,
                                     lastRank: 1,
                                     idSubChallenge: 1,
-                                    history: //"$lemburTai",
-                                    {
-                                        $arrayElemAt: ["$lemburTai", 0]
-                                    },
+                                    // history: //"$lemburTai",
+                                    // {
+                                    //     $arrayElemAt: ["$lemburTai", 0]
+                                    // },
                                     username:
                                     {
                                         "$arrayElemAt":
@@ -17500,10 +17500,10 @@ export class subChallengeService {
                                     ranking: 1,
                                     lastRank: 1,
                                     idSubChallenge: 1,
-                                    history: //"$lemburTai",
-                                    {
-                                        $arrayElemAt: ["$lemburTai", 0]
-                                    },
+                                    // history: //"$lemburTai",
+                                    // {
+                                    //     $arrayElemAt: ["$lemburTai", 0]
+                                    // },
                                     username:
                                     {
                                         "$arrayElemAt":
