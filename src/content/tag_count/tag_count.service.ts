@@ -11802,10 +11802,7 @@ export class TagCountService {
         pipeline.push(
             {
                 $match: {
-                    _id: {
-                        $regex: tag,
-                        $options: 'i'
-                    },
+                    _id: tag
 
                 }
             },
