@@ -14171,6 +14171,11 @@ export class subChallengeService {
                             },
                             {
                                 $set: {
+                                    userID: new Types.ObjectId(iduser)
+                                }
+                            },
+                            {
+                                $set: {
                                     isUserLogin:
                                     {
                                         "$cond":
@@ -14213,11 +14218,7 @@ export class subChallengeService {
                                     }
                                 }
                             },
-                            {
-                                $set: {
-                                    userID: new Types.ObjectId(iduser)
-                                }
-                            },
+
 
                             {
                                 "$lookup":
@@ -16475,7 +16476,7 @@ export class subChallengeService {
                     ageChallenge: 1,
                     age: 1,
                     kelamin: 1,
-                    tester: "$joinUser",
+                    //tester: "$joinUser",
                     "_id": 1,
                     "challengeId": 1,
                     "startDatetime": 1,
@@ -16515,7 +16516,7 @@ export class subChallengeService {
                     },
                     "challenge_data": 1,
                     subChallenges: 1,
-                    testColi: "$getlastrank.isUserLogin",
+                    //testColi: "$getlastrank.isUserLogin",
                     scoreStatus:
                     {
                         "$switch":
@@ -16589,7 +16590,6 @@ export class subChallengeService {
         var pipeline = [];
 
         pipeline.push(
-
 
             {
                 $set: {
@@ -16716,6 +16716,11 @@ export class subChallengeService {
                             },
                             {
                                 $set: {
+                                    userID: new Types.ObjectId(iduser)
+                                }
+                            },
+                            {
+                                $set: {
                                     isUserLogin:
                                     {
                                         "$cond":
@@ -16758,11 +16763,7 @@ export class subChallengeService {
                                     }
                                 }
                             },
-                            {
-                                $set: {
-                                    userID: new Types.ObjectId(iduser)
-                                }
-                            },
+
 
                             {
                                 "$lookup":
@@ -19020,7 +19021,7 @@ export class subChallengeService {
                     ageChallenge: 1,
                     age: 1,
                     kelamin: 1,
-                    tester: "$joinUser",
+                    //tester: "$joinUser",
                     "_id": 1,
                     "challengeId": 1,
                     "startDatetime": 1,
@@ -19060,7 +19061,7 @@ export class subChallengeService {
                     },
                     "challenge_data": 1,
                     subChallenges: 1,
-                    testColi: "$getlastrank.isUserLogin",
+                    //testColi: "$getlastrank.isUserLogin",
                     scoreStatus:
                     {
                         "$switch":
@@ -19105,6 +19106,7 @@ export class subChallengeService {
             //            {
             //                $limit: 1
             //            }
+
         );
 
 
