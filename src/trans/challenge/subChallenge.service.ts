@@ -14202,16 +14202,23 @@ export class subChallengeService {
                             {
                                 $limit: 11
                             },
-
+                            {
+                                $set: {
+                                    lemburTai:
+                                    {
+                                        $sortArray: { input: "$history", sortBy: { updatedAt: -1 } }
+                                    }
+                                }
+                            },
                             {
                                 $set: {
                                     lastRank:
                                     {
                                         $ifNull:
                                             [
+                                                //$arrayElemAt: ["$history.ranking", 0] 
                                                 {
-                                                    //$arrayElemAt: ["$history.ranking", 0] 
-                                                    $last: "$history.ranking"
+                                                    $arrayElemAt: ["$lemburTai.ranking", 0]
                                                 },
                                                 0
                                             ]
@@ -14924,6 +14931,7 @@ export class subChallengeService {
                                         ]
                                 }
                             },
+
                             {
                                 "$project":
                                 {
@@ -14937,7 +14945,10 @@ export class subChallengeService {
                                     ranking: 1,
                                     lastRank: 1,
                                     idSubChallenge: 1,
-                                    history: 1,
+                                    history: //"$lemburTai",
+                                    {
+                                        $arrayElemAt: ["$lemburTai", 0]
+                                    },
                                     username:
                                     {
                                         "$arrayElemAt":
@@ -14978,7 +14989,7 @@ export class subChallengeService {
                                                     {
                                                         case:
                                                         {
-                                                            "$lt": ["$ranking", "$lastRank"]
+                                                            $lt: ["$ranking", "$lastRank"]
                                                         },
                                                         then: "UP"
                                                     },
@@ -16746,16 +16757,23 @@ export class subChallengeService {
                             {
                                 $limit: 11
                             },
-
+                            {
+                                $set: {
+                                    lemburTai:
+                                    {
+                                        $sortArray: { input: "$history", sortBy: { updatedAt: -1 } }
+                                    }
+                                }
+                            },
                             {
                                 $set: {
                                     lastRank:
                                     {
                                         $ifNull:
                                             [
+                                                //$arrayElemAt: ["$history.ranking", 0] 
                                                 {
-                                                    //$arrayElemAt: ["$history.ranking", 0] 
-                                                    $last: "$history.ranking"
+                                                    $arrayElemAt: ["$lemburTai.ranking", 0]
                                                 },
                                                 0
                                             ]
@@ -17468,6 +17486,7 @@ export class subChallengeService {
                                         ]
                                 }
                             },
+
                             {
                                 "$project":
                                 {
@@ -17481,7 +17500,10 @@ export class subChallengeService {
                                     ranking: 1,
                                     lastRank: 1,
                                     idSubChallenge: 1,
-                                    history: 1,
+                                    history: //"$lemburTai",
+                                    {
+                                        $arrayElemAt: ["$lemburTai", 0]
+                                    },
                                     username:
                                     {
                                         "$arrayElemAt":
@@ -17522,7 +17544,7 @@ export class subChallengeService {
                                                     {
                                                         case:
                                                         {
-                                                            "$lt": ["$ranking", "$lastRank"]
+                                                            $lt: ["$ranking", "$lastRank"]
                                                         },
                                                         then: "UP"
                                                     },
@@ -19106,7 +19128,6 @@ export class subChallengeService {
             //     $limit: 1
             // }
         );
-
         if (status !== undefined) {
             pipeline.push(
                 {
