@@ -5737,8 +5737,8 @@ export class AuthController {
       try {
         fileselfiepict = "/" + datauserdetail[0].dokumen.dokumen[0].mediaSelfiepicts.mediaEndpoint;
 
-        if (datauserdetail[0].dokument[0].mediaSelfiepicts.mediaEndpoint != null) {
-          arrsuport.push(fileproofpict);
+        if (datauserdetail[0].dokumen.dokumen[0].mediaSelfiepicts.mediaEndpoint != null) {
+          arrsuport.push(fileselfiepict);
         }
 
       } catch (e) {
@@ -5749,7 +5749,7 @@ export class AuthController {
 
         fileproofpict = "/" + datauserdetail[0].dokumen.dokumen[0].mediaproofpicts.mediaEndpoint;
 
-        if (datauserdetail[0].dokument[0].mediaproofpicts.mediaEndpoint != null) {
+        if (datauserdetail[0].dokumen.dokumen[0].mediaproofpicts.mediaEndpoint != null) {
           arrsuport.push(fileproofpict);
         }
 
@@ -5777,7 +5777,7 @@ export class AuthController {
       }
 
       try {
-        bankacount = datauserdetail[0].userbankaccounts;
+        bankacount = datauserdetail[0].databank;
 
         if (bankacount[0]._id === undefined) {
           bankacount = [];

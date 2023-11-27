@@ -414,15 +414,16 @@ export class UserbasicnewService {
             );
         }
 
-        pipeline.push({
-            $lookup:
+        pipeline.push(
             {
-                from: 'insights',
-                localField: 'insight.$id',
-                foreignField: '_id',
-                as: 'insight_data',
+                $lookup:
+                {
+                    from: 'insights',
+                    localField: 'insight.$id',
+                    foreignField: '_id',
+                    as: 'insight_data',
+                },
             },
-        },
             {
                 $lookup:
                 {
@@ -712,6 +713,19 @@ export class UserbasicnewService {
                                 }
                             },
                             {
+                                "$set":
+                                {
+                                    "proofPict2":
+                                    {
+                                        "$ifNull":
+                                        [
+                                            "$proofPict.$id",
+                                            "$_id"
+                                        ]
+                                    }
+                                }
+                            },
+                            {
                                 "$project":
                                 {
                                     valid: "$kyc.valid",
@@ -731,23 +745,23 @@ export class UserbasicnewService {
                                             {
                                                 mediaproofpicts:
                                                 {
-                                                    mediaId: "$proofPict.$id",
+                                                    mediaId: "$proofPict2",
                                                     mediaBasePath: "$kyc.mediaBasePath",
                                                     mediaUri: "$kyc.mediaUri",
                                                     postType: "$kyc.mediaType",
-                                                    mediaEndpoint:
+                                                    mediaEndpoint:  
                                                     {
                                                         "$concat":
                                                             [
                                                                 "proofpict",
                                                                 "/",
-                                                                "$proofPict.$id"
+                                                                "$proofPict2"
                                                             ]
                                                     }
                                                 },
                                                 mediaSelfiepicts:
                                                 {
-                                                    mediaId: "$proofPict.$id",
+                                                    mediaId: "$proofPict2",
                                                     mediaBasePath: "$kyc.mediaSelfieBasePath",
                                                     mediaUri: "$kyc.mediaSelfieUri",
                                                     postType: "$kyc.mediaSelfieType",
@@ -755,9 +769,9 @@ export class UserbasicnewService {
                                                     {
                                                         "$concat":
                                                             [
-                                                                "proofpict",
+                                                                "selfiepict",
                                                                 "/",
-                                                                "$proofPict.$id"
+                                                                "$proofPict2"
                                                             ]
                                                     }
                                                 },
@@ -4836,4 +4850,16 @@ export class UserbasicnewService {
         );
         return data;
     }
+
+    async updateIdVerifiedUser(id: ObjectId, isIdVerified: boolean, statusKyc: string): Promise<Object> {
+        let data = await this.UserbasicnewModel.updateOne({ "_id": id },
+          {
+            $set: {
+              "isIdVerified": isIdVerified,
+              "statusKyc": statusKyc
+            }
+          });
+    
+        return data;
+      }
 }
