@@ -21,6 +21,7 @@ export class PostsReadController {
     @Post('api/posts/getuserposts/my')
     @UseGuards(JwtAuthGuard)
     async contentlandingpagemy(@Body() body, @Headers('x-auth-user') email: string): Promise<any> {
+        console.log('=============================================MY PAGE HIT=============================================')
 
         var pageNumber = null;
         var pageRow = null;
@@ -376,6 +377,7 @@ export class PostsReadController {
     @Post('api/posts/getuserposts/byprofile')
     @UseGuards(JwtAuthGuard)
     async contentbyprofile(@Body() body, @Headers('x-auth-user') emailLogin: string): Promise<any> {
+        console.log('=============================================BY PROFILE PAGE HIT=============================================')
 
         var pageNumber = null;
         var pageRow = null;
@@ -748,6 +750,7 @@ export class PostsReadController {
     @Post('api/getusercontents/landingpage')
     @UseGuards(JwtAuthGuard)
     async contentlandingpage(@Req() request: Request, @Headers() headers): Promise<any> {
+        console.log('=============================================LANDING PAGE HIT=============================================')
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = request.get("Host") + request.originalUrl;
         var token = headers['x-auth-token'];
