@@ -6632,6 +6632,7 @@ export class PostsReadService {
 
       );
     }
+    console.log(JSON.stringify(pipeline))
     var query = await this.PostsReadModel.aggregate(pipeline);
     return query;
   }

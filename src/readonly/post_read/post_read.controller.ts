@@ -54,6 +54,7 @@ export class PostsReadController {
             lengpict = data.length;
 
         } catch (e) {
+            console.log("ERROR", e);
             data = null;
             lengpict = 0;
 
@@ -414,6 +415,7 @@ export class PostsReadController {
             lengpict = data.length;
             console.log("data", data);
         } catch (e) {
+            console.log("ERROR", e);
             data = null;
             lengpict = 0;
 
