@@ -22,6 +22,7 @@ export class PostsReadController {
     @UseGuards(JwtAuthGuard)
     async contentlandingpagemy(@Body() body, @Headers('x-auth-user') email: string): Promise<any> {
         console.log('=============================================MY PAGE HIT=============================================')
+        console.log('============================================= BODY =============================================', JSON.stringify(body))
 
         var pageNumber = null;
         var pageRow = null;
@@ -379,6 +380,7 @@ export class PostsReadController {
     @UseGuards(JwtAuthGuard)
     async contentbyprofile(@Body() body, @Headers('x-auth-user') emailLogin: string): Promise<any> {
         console.log('=============================================BY PROFILE PAGE HIT=============================================')
+        console.log('============================================= BODY =============================================', JSON.stringify(body))
 
         var pageNumber = null;
         var pageRow = null;
