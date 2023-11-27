@@ -50,7 +50,7 @@ export class PostsReadController {
 
         try {
 
-            data = await this.postsService.landingpageMy2(email, postType, parseInt(pageNumber), parseInt(pageRow), email);
+            data = await this.postsReadService.landingpageMy2(email, postType, parseInt(pageNumber), parseInt(pageRow), email);
             lengpict = data.length;
 
         } catch (e) {
@@ -410,7 +410,7 @@ export class PostsReadController {
 
         try {
 
-            data = await this.postsService.landingpageMy2(email, postType, parseInt(pageNumber), parseInt(pageRow), emailLogin);
+            data = await this.postsReadService.landingpageMy2(email, postType, parseInt(pageNumber), parseInt(pageRow), emailLogin);
             lengpict = data.length;
             console.log("data", data);
         } catch (e) {
