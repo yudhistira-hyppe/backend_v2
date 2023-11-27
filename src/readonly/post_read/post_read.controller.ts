@@ -1,4 +1,4 @@
-import { Body, Controller, Headers, Post, UseGuards, BadRequestException, Req } from '@nestjs/common';
+import { Body, Controller, Headers, Post, UseGuards, BadRequestException, Req, UseInterceptors } from '@nestjs/common';
 import { PostsReadService } from './post_read.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
@@ -7,6 +7,7 @@ import { Request } from 'express';
 import { PostContentService } from 'src/content/posts/postcontent.service';
 import { PostsService } from 'src/content/posts/posts.service';
 import { ContenteventsService } from 'src/content/contentevents/contentevents.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 @Controller()
 export class PostsReadController {
     constructor(
@@ -19,6 +20,7 @@ export class PostsReadController {
     ) { }
 
     @Post('api/posts/getuserposts/my')
+    @UseInterceptors(FileInterceptor('postContent'))
     @UseGuards(JwtAuthGuard)
     async contentlandingpagemy(@Body() body, @Headers('x-auth-user') email: string): Promise<any> {
         console.log('=============================================MY PAGE HIT=============================================')
@@ -377,6 +379,7 @@ export class PostsReadController {
     }
 
     @Post('api/posts/getuserposts/byprofile')
+    @UseInterceptors(FileInterceptor('postContent'))
     @UseGuards(JwtAuthGuard)
     async contentbyprofile(@Body() body, @Headers('x-auth-user') emailLogin: string): Promise<any> {
         console.log('=============================================BY PROFILE PAGE HIT=============================================')
