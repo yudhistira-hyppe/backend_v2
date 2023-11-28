@@ -123,8 +123,10 @@ import { GetprofilecontenteventModule } from './utils/getprofilecontentevent/get
 import { TopupsModule } from './trans/topups/topups.module';
 import { SettingsReadModule } from './readonly/setting_read/setting_read.module';
 import { PostsReadModule } from './readonly/post_read/post_read.module';
+import { ChallengeReadModule } from './readonly/challenge_read/challenge_read.module';
 @Module({
   imports: [
+    ChallengeReadModule,
     SettingsReadModule,
     PostsReadModule,
     TopupsModule,

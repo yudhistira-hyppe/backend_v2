@@ -9,6 +9,8 @@ import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { SettingsReadModule } from '../setting_read/setting_read.module';
 import { PostsModule } from 'src/content/posts/posts.module';
 import { ContenteventsModule } from 'src/content/contentevents/contentevents.module';
+import { NotificationReadService } from './notification_read.service';
+import { NotificationsRead, NotificationsReadSchema } from './schema/notifications_read.schema';
 
 @Module({
     imports: [
@@ -16,12 +18,16 @@ import { ContenteventsModule } from 'src/content/contentevents/contentevents.mod
         PostsModule,
         LogapisModule,
         ContenteventsModule,
+        //NotificationReadModule,
         UtilsModule,
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: PostsRead.name, schema: PostsReadSchema }], 'SERVER_FULL_READ')
+        MongooseModule.forFeature([
+            { name: NotificationsRead.name, schema: NotificationsReadSchema },
+            { name: PostsRead.name, schema: PostsReadSchema }
+        ], 'SERVER_FULL_READ')
     ],
     controllers: [PostsReadController],
-    providers: [PostsReadService],
-    exports: [PostsReadService],
+    providers: [PostsReadService, NotificationReadService],
+    exports: [PostsReadService, NotificationReadService],
 })
 export class PostsReadModule { }

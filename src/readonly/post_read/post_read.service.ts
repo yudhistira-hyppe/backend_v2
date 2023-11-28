@@ -1,6 +1,5 @@
 import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { SettingsService } from '../../trans/settings/settings.service';
 import mongoose, { Model } from 'mongoose';
 import { PostsRead, PostsReadDocument } from './schema/post_read.schema';
 import { SettingsReadService } from '../setting_read/setting_read.service';
