@@ -11180,27 +11180,36 @@ export class AuthService {
                 }
 
                 let mediaprofilepicts_res = {};
-                if (datauserbasicsService.profilePict != undefined) {
-                  if (datauserbasicsService.mediaBasePath != null) {
-                    mediaprofilepicts_res["mediaBasePath"] = datauserbasicsService.mediaBasePath;
-                  }
+                if (datauserbasicsService.mediaBasePath != null) {
+                  mediaprofilepicts_res["mediaBasePath"] = datauserbasicsService.mediaBasePath;
+                }
+                else
+                {
+                  mediaprofilepicts_res["mediaBasePath"] = null;
+                }
 
-                  if (datauserbasicsService.mediaUri != null) {
-                    mediaprofilepicts_res["mediaUri"] = datauserbasicsService.mediaUri;
-                  }
+                if (datauserbasicsService.mediaUri != null) {
+                  mediaprofilepicts_res["mediaUri"] = datauserbasicsService.mediaUri;
+                }
+                else
+                {
+                  mediaprofilepicts_res["mediaUri"] = null;
+                }
 
-                  if (datauserbasicsService.mediaType != null) {
-                    mediaprofilepicts_res["mediaType"] = datauserbasicsService.mediaType;
-                  }
+                if (datauserbasicsService.mediaType != null) {
+                  mediaprofilepicts_res["mediaType"] = datauserbasicsService.mediaType;
+                }
+                else
+                {
+                  mediaprofilepicts_res["mediaType"] = null;
+                }
 
-                  if (datauserbasicsService.mediaEndpoint != null) {
-                    mediaprofilepicts_res["mediaEndpoint"] = datauserbasicsService.mediaEndpoint;
-                  }
-                  else {
-                    if (datauserbasicsService.profilePict.$id != null && datauserbasicsService.profilePict.$id != undefined) {
-                      mediaprofilepicts_res["mediaEndpoint"] = "/profilepict/" + datauserbasicsService.profilePict.$id.toString();
-                    }
-                  }
+                if (datauserbasicsService.mediaEndpoint != null) {
+                  mediaprofilepicts_res["mediaEndpoint"] = datauserbasicsService.mediaEndpoint;
+                }
+                else
+                {
+                  mediaprofilepicts_res["mediaEndpoint"] = null;
                 }
 
                 let insights = null;
@@ -11399,7 +11408,7 @@ export class AuthService {
                         CreateReferralDto_._class = "io.melody.core.domain.Referral";
                         var insertdata = await this.referralService.create(CreateReferralDto_);
 
-                        const databasic = await this.userbasicsService.findOne(
+                        const databasic = await this.basic2SS.findbyemail(
                           req.body.referral,
                         );
 

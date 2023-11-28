@@ -4861,5 +4861,17 @@ export class UserbasicnewService {
           });
     
         return data;
-      }
+    }
+
+    async updateNoneActive(email: string, emaillogin:string): Promise<Object> {
+        let data = await this.UserbasicnewModel.updateOne({ "email": email },
+          {
+            $set: {
+              "email": email + "_noneactive",
+              "emailLogin": emaillogin + "_noneactive",
+            }
+          });
+    
+        return data;
+    }
 }

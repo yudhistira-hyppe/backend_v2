@@ -10088,4 +10088,25 @@ export class NewPostService {
       ]);
       return query;
     }
+
+    async updateNoneActive(email: string) {
+      this.loaddata.updateMany(
+        {
+          email: email,
+        },
+        {
+          $set: {
+            "active": false,
+            "email": email + '_noneactive'
+          }
+        },
+        function (err, docs) {
+          if (err) {
+            //console.log(err);
+          } else {
+            //console.log(docs);
+          }
+        },
+      );
+    }
 }

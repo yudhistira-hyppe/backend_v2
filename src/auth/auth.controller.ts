@@ -2161,6 +2161,13 @@ export class AuthController {
   async verifyaccount(@Req() request: any) {
     return await this.authService.signup(request);
   }
+  
+  @Post('api/user/verifyaccount/v2')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async verifyaccount2(@Req() request: any) {
+    // return await this.authService.signup(request);
+    return await this.authService.signup3(request);
+  }
 
   @Post('api/user/updateprofile')
   @HttpCode(HttpStatus.ACCEPTED)
@@ -3024,6 +3031,97 @@ export class AuthController {
         await this.userauthsService.updateNoneActive(request.body.email);
         await this.userdevicesService.updateNoneActive(request.body.email);
         await this.postsService.updateNoneActive(request.body.email);
+        await this.contenteventsService.updateNoneActive(request.body.email);
+        await this.insightsService.updateNoneActive(request.body.email);
+
+        var fullurl = request.get("Host") + request.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(request.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+        return {
+          "response_code": 202,
+          "messages": {
+            "info": [
+              "The process successful, User is not Active"
+            ]
+          }
+        };
+      } else {
+        var fullurl = request.get("Host") + request.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(request.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, User not found',
+        );
+      }
+    } catch (e) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, ' + e,
+      );
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/user/noneactive/v2')
+  async noneActive2(@Req() request: any, @Headers() headers) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
+    if (request.body.email == undefined) {
+      console.log('email kosong');
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, Param email is required',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      console.log('header kosong');
+
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
+    if (request.body.email != headers['x-auth-user']) {
+      console.log('email beda ama tokennya');
+
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      console.log("ok");
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, Param email dan email header not match',
+      );
+    }
+
+    try {
+      //Ceck User Userbasics
+      const user_userbasics = await this.basic2SS.findbyemail(request.body.email);
+      if (await this.utilsService.ceckData(user_userbasics)) {
+        // await this.userbasicsService.updateNoneActive(request.body.email);
+        await this.basic2SS.updateNoneActive(request.body.email, user_userbasics.emailLogin.toString());
+        await this.userdevicesService.updateNoneActive(request.body.email);
+        
+        //await this.postsService.updateNoneActive(request.body.email);
+        await this.NewPostService.updateNoneActive(request.body.email);
         await this.contenteventsService.updateNoneActive(request.body.email);
         await this.insightsService.updateNoneActive(request.body.email);
 
