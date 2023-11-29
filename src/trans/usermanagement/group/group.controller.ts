@@ -12,6 +12,8 @@ import { ObjectId } from 'mongodb';
 import mongoose, { Schema } from 'mongoose';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { request } from 'http';
+import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
+import { CreateuserbasicnewDto } from 'src/trans/userbasicnew/dto/Createuserbasicnew-dto';
 
 @Controller('/api/group')
 export class GroupController {
@@ -23,7 +25,8 @@ export class GroupController {
         private readonly userbasicsService: UserbasicsService,
         private readonly divisionService: DivisionService,
         private readonly userauthsService: UserauthsService,
-        private readonly logapiSS: LogapisService
+        private readonly logapiSS: LogapisService,
+        private readonly basic2SS: UserbasicnewService,
     ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -407,6 +410,92 @@ export class GroupController {
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
+    @Post('/user/v2')
+    async addusergroup2(@Body() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/group/user/v2';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var reqbody = JSON.parse(JSON.stringify(request));
+
+        if (request.email == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Add user to group param email is required',
+            );
+        }
+        if (request.groupId == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Add user to group param groupId is required',
+            );
+        }
+
+        var data_userbasic = await this.basic2SS.findbyemail(request.email);
+        if (await this.utilsService.ceckData(data_userbasic)) {
+            var group = await this.groupService.findbyuser(new mongoose.Types.ObjectId(data_userbasic._id.toString()));
+            
+            if (await this.utilsService.ceckData(group)) {
+                console.log(group._id.toString());
+                if (group._id.toString() != request.groupId) {
+                    await this.groupService.deleteUserGroup(group._id, new mongoose.Types.ObjectId(data_userbasic._id.toString()));
+                    await this.groupService.addUserGroup(request.groupId, new mongoose.Types.ObjectId(data_userbasic._id.toString()));
+                }
+            } else {
+                await this.groupService.addUserGroup(request.groupId, new mongoose.Types.ObjectId(data_userbasic._id.toString()));
+            }
+
+            var updatedata = new CreateuserbasicnewDto();
+            var temparray = data_userbasic.roles;
+            var cekadmin = false;
+            try
+            {
+                var getrole = temparray.find((element) => element == "ROLE_ADMIN");
+                if(getrole != null && getrole != undefined)
+                {
+                    cekadmin = true;
+                }
+            }
+            catch(e)
+            {
+                cekadmin = false;
+            }
+
+            if(cekadmin == false)
+            {
+                temparray.push("ROLE_ADMIN");
+                updatedata.roles = temparray;
+                await this.basic2SS.update(data_userbasic._id.toString(), updatedata);
+            }
+
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+            return {
+                "response_code": 202,
+                "messages": {
+                    "info": [
+                        "Update user to group successfully"
+                    ]
+                },
+            };
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed user not found',
+            );
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
     @Delete('/user')
     async deleteusergroup(
         @Query('email') email: string, @Request() request, @Headers() headers) {
@@ -503,6 +592,91 @@ export class GroupController {
             }
         }else{
             await this.userauthsService.deleteUserRole(req.body.email, 'ROLE_ADMIN')
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+        return {
+            "response_code": 202,
+            "messages": {
+                "info": [
+                    "Update user to successfully"
+                ]
+            },
+        };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('statususer/v2')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async updatestatususer2(@Request() req, @Headers('x-auth-token') auth: string, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+        var token = headers['x-auth-token'];
+        var setauth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = setauth.email;
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        
+        if (req.body.email == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed param email is required',
+            );
+        }
+        if (req.body.status == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed param status is required',
+            );
+        }
+
+        var data_userbasic = await this.basic2SS.findbyemail(req.body.email);
+        if (await this.utilsService.ceckData(data_userbasic)) {
+            var updatedata = new CreateuserbasicnewDto();
+            var temparray = data_userbasic.roles;
+            var cekadmin = false;
+            try
+            {
+                var getrole = temparray.find((element) => element == "ROLE_ADMIN");
+                if(getrole != null && getrole != undefined)
+                {
+                    cekadmin = true;
+                }
+            }
+            catch(e)
+            {
+                cekadmin = false;
+            }
+
+            if(req.body.status == true)
+            {
+                if(cekadmin == false)
+                {
+                    temparray.push("ROLE_ADMIN");
+                }
+            }
+            else
+            {
+                if(cekadmin == true)
+                {
+                    temparray = temparray.filter((element) => element != "ROLE_ADMIN");
+                }   
+            }
+
+            updatedata.roles = temparray;
+            await this.basic2SS.update(data_userbasic._id.toString(), updatedata);
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, null);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed user not found',
+            );
         }
 
         var timestamps_end = await this.utilsService.getDateTimeString();
