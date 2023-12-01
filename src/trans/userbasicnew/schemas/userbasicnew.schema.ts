@@ -148,6 +148,10 @@ export class Userbasicnew {
     @Prop()
     follower: any[];
     @Prop()
+    tempfollowing: any[];
+    @Prop()
+    tempfollower: any[];
+    @Prop()
     citiesName: string;
     @Prop()
     statesName: string;

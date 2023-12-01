@@ -45,6 +45,7 @@ import { UserchallengesService } from '../trans/userchallenges/userchallenges.se
 import { Userchallenges } from '../trans/userchallenges/schemas/userchallenges.schema';
 import { subChallengeService } from '../trans/challenge/subChallenge.service';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { CreateuserbasicnewDto } from 'src/trans/userbasicnew/dto/Createuserbasicnew-dto';
 
 @Injectable()
 export class AuthService {
@@ -5945,6 +5946,77 @@ export class AuthService {
     }
   }
 
+  async referralqrcode2(req: any, head: any): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
+    if (await this.utilsService.validasiTokenEmail(head)) {
+      if (head['x-auth-user'] == undefined) {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed auth-user undefined',
+        );
+      }
+      if (req.body.refCode == undefined) {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, reqbody);
+
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed refCode undefined',
+        );
+      }
+      var user_email = head['x-auth-user'];
+      var user_email_refCode = req.body.refCode;
+      var current_date = await this.utilsService.getDateTimeString();
+
+      //Ceck User Userbasics
+      const datauserbasicsService = await this.basic2SS.findbyemail(
+        user_email,
+      );
+
+      if ((await this.utilsService.ceckData(datauserbasicsService))) {
+        var data = {
+          refCode: user_email_refCode,
+          email: user_email,
+          fullName: datauserbasicsService.fullName,
+          username: datauserbasicsService.username,
+          image_profile: datauserbasicsService.fsSourceUri,
+        }
+        var html_data = await this.utilsService.generateReferralImage(data);
+
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, reqbody);
+
+        return html_data;
+      } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, reqbody);
+
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed user not found',
+        );
+      }
+    } else {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(req.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, head['x-auth-user'], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email not match',
+      );
+    }
+  }
+
   async resendotp(req: any): Promise<any> {
     var user_email = null;
     if (req.body.email != undefined) {
@@ -9236,6 +9308,360 @@ export class AuthService {
           await this.contenteventsService.create(CreateContenteventsDto4);
           await this.insightsService.updateFollower(user_email_parent);
           await this.insightsService.updateFollowing(user_email_children);
+
+          if (useLanguage == "id") {
+            errorMessages = "Selamat kode referral berhasil digunakan";
+          } else if (useLanguage == "en") {
+            errorMessages = "Congratulation referral applied successfully";
+          } else {
+            errorMessages = "Selamat kode referral berhasil digunakan";
+          }
+
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
+          return {
+            "response_code": 202,
+            "messages": {
+              "info": [
+                errorMessages
+              ]
+            }
+          };
+        } else {
+          if (useLanguage == "id") {
+            errorMessages = "Referral Tidak Berhasil, Perangkat kamu telah terdaftar, harap gunakan perangkat lainnya";
+          } else if (useLanguage == "en") {
+            errorMessages = "Referral Failed, Your device has been registered, please use another device";
+          } else {
+            errorMessages = "Referral Tidak Berhasil, Perangkat kamu telah terdaftar, harap gunakan perangkat lainnya";
+          }
+
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(req.body));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
+          await this.errorHandler.generateNotAcceptableException(
+            errorMessages,
+          );
+        }
+      } else {
+        if (useLanguage == "id") {
+          errorMessages = "Referral Tidak Berhasil, Username telah terdaftar sebagai referral kamu, silahkan ganti dengan username lainnya";
+        } else if (useLanguage == "en") {
+          errorMessages = "Referral Failed, Username has been registered, please use another username";
+        } else {
+          errorMessages = "Referral Tidak Berhasil, Username telah terdaftar sebagai referral kamu, silahkan ganti dengan username lainnya";
+        }
+
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
+        await this.errorHandler.generateNotAcceptableException(
+          errorMessages,
+        );
+      }
+    }
+  }
+
+  async referral3(req: any, head: any): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
+    var user_email_parent = null;
+    var user_username_parent = null;
+    var user_imei_children = null;
+    var user_email_children = null;
+    var email_ceck = false;
+    var iduser = null;
+    var current_date = await this.utilsService.getDateTimeString();
+
+    if (head['x-auth-user'] == undefined) {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(req.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, required param email header',
+      );
+    } else {
+      user_email_children = head['x-auth-user'];
+    }
+
+    if (req.body.imei == undefined) {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(req.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, required param imei',
+      );
+    } else {
+      user_imei_children = req.body.imei;
+    }
+
+    var detaildata = await this.basic2SS.findbyemail(head['x-auth-user']);
+
+    if (req.body.email == undefined) {
+      if (req.body.username != undefined) {
+        email_ceck = true;
+        user_username_parent = req.body.username;
+      } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, required param email or username',
+        );
+      }
+    } else {
+      email_ceck = false;
+      user_email_parent = req.body.email;
+    }
+
+    //Ceck User Userbasics
+    const datauserbasicsService = await this.basic2SS.findbyemail(
+      req.body.email,
+    );
+
+    if (datauserbasicsService !== null) {
+      iduser = datauserbasicsService._id;
+    }
+
+    var datauserauthService_parent = null;
+    var datauserauthService_children = null;
+
+    var useLanguage = detaildata.languagesLangIso;
+    var errorMessages = "";
+    //Ceck User auth child
+    datauserauthService_children = await this.basic2SS.findbyemail(user_email_children);
+    if (!(await this.utilsService.ceckData(datauserauthService_children))) {
+      if (useLanguage == "id") {
+        errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
+      } else if (useLanguage == "en") {
+        errorMessages = "User not found, please check the username again";
+      } else {
+        errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
+      }
+
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(req.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        errorMessages,
+      );
+    }
+
+    //baca dulu!!
+    if (email_ceck) {
+      //Ceck User auth parent
+      datauserauthService_parent = await this.basic2SS.findbyusername(user_username_parent);
+      if (await this.utilsService.ceckData(datauserauthService_parent)) {
+        user_email_parent = datauserauthService_parent.email;
+      } else {
+        if (useLanguage == "id") {
+          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
+        } else if (useLanguage == "en") {
+          errorMessages = "User not found, please check the username again";
+        } else {
+          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
+        }
+
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
+        await this.errorHandler.generateNotAcceptableException(
+          errorMessages,
+        );
+      }
+    } else {
+      //Ceck User auth parent
+      datauserauthService_parent = await this.basic2SS.findbyemail(user_email_parent);
+      if (!(await this.utilsService.ceckData(datauserauthService_parent))) {
+        if (useLanguage == "id") {
+          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
+        } else if (useLanguage == "en") {
+          errorMessages = "User not found, please check the username again";
+        } else {
+          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
+        }
+
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(req.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
+        await this.errorHandler.generateNotAcceptableException(
+          errorMessages,
+        );
+      }
+    }
+
+    if (user_email_parent != "" && user_imei_children != "") {
+      var data_refferal = await this.referralService.findOneInChildParent(user_email_children, user_email_parent);
+      if (!(await this.utilsService.ceckData(data_refferal))) {
+        var data_imei = await this.referralService.findOneInIme(user_imei_children);
+        if (!(await this.utilsService.ceckData(data_imei))) {
+          var CreateReferralDto_ = new CreateReferralDto();
+          CreateReferralDto_._id = (await this.utilsService.generateId())
+          CreateReferralDto_.parent = user_email_parent;
+          CreateReferralDto_.children = user_email_children;
+          CreateReferralDto_.active = true;
+          CreateReferralDto_.verified = true;
+          CreateReferralDto_.createdAt = current_date;
+          CreateReferralDto_.updatedAt = current_date;
+          CreateReferralDto_.imei = user_imei_children;
+          CreateReferralDto_._class = "io.melody.core.domain.Referral";
+          var insertdata = await this.referralService.create(CreateReferralDto_);
+          var idref = insertdata._id;
+
+          let userid = null;
+          const databasics = await this.userbasicsService.findOne(
+            user_email_parent
+          );
+          if (databasics !== null) {
+            userid = databasics._id;
+          }
+
+          try {
+            //this.userChallenge(userid.toString(), idref.toString(), "referral", "REFERAL");
+            await this.contenteventsService.scorereferralrequest(userid.toString(), idref.toString(), "referral", "REFERAL")
+          } catch (e) {
+
+          }
+
+
+          var _id_1 = (await this.utilsService.generateId());
+          var _id_2 = (await this.utilsService.generateId());
+          var _id_3 = (await this.utilsService.generateId());
+          var _id_4 = (await this.utilsService.generateId());
+
+          // var CreateContenteventsDto1 = new CreateContenteventsDto();
+          // CreateContenteventsDto1._id = _id_1
+          // CreateContenteventsDto1.contentEventID = (await this.utilsService.generateId())
+          // CreateContenteventsDto1.email = LoginRequest_.referral
+          // CreateContenteventsDto1.eventType = "FOLLOWER"
+          // CreateContenteventsDto1.active = true
+          // CreateContenteventsDto1.event = "REQUEST"
+          // CreateContenteventsDto1.createdAt = current_date
+          // CreateContenteventsDto1.updatedAt = current_date
+          // CreateContenteventsDto1.sequenceNumber = 0
+          // CreateContenteventsDto1.flowIsDone = true
+          // CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
+          // CreateContenteventsDto1.senderParty = LoginRequest_.email
+          // CreateContenteventsDto1.transitions = [{
+          //   $ref: 'contentevents',
+          //   $id: Object(_id_2),
+          //   $db: 'hyppe_trans_db',
+          // }]
+
+          var CreateContenteventsDto2 = new CreateContenteventsDto();
+          CreateContenteventsDto2._id = _id_2
+          CreateContenteventsDto2.contentEventID = (await this.utilsService.generateId())
+          CreateContenteventsDto2.email = user_email_parent
+          CreateContenteventsDto2.eventType = "FOLLOWER"
+          CreateContenteventsDto2.active = true
+          CreateContenteventsDto2.event = "ACCEPT"
+          CreateContenteventsDto2.createdAt = current_date
+          CreateContenteventsDto2.updatedAt = current_date
+          CreateContenteventsDto2.sequenceNumber = 1
+          CreateContenteventsDto2.flowIsDone = true
+          CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+          CreateContenteventsDto2.receiverParty = user_email_children
+          CreateContenteventsDto2.parentContentEventID = _id_1
+
+          // var CreateContenteventsDto3 = new CreateContenteventsDto();
+          // CreateContenteventsDto3._id = _id_3
+          // CreateContenteventsDto3.contentEventID = (await this.utilsService.generateId())
+          // CreateContenteventsDto3.email = LoginRequest_.email
+          // CreateContenteventsDto3.eventType = "FOLLOWING"
+          // CreateContenteventsDto3.active = true
+          // CreateContenteventsDto3.event = "INITIAL"
+          // CreateContenteventsDto3.createdAt = current_date
+          // CreateContenteventsDto3.updatedAt = current_date
+          // CreateContenteventsDto3.sequenceNumber = 0
+          // CreateContenteventsDto3.flowIsDone = true
+          // CreateContenteventsDto3._class = "io.melody.hyppe.content.domain.ContentEvent"
+          // CreateContenteventsDto3.receiverParty = LoginRequest_.referral
+          // CreateContenteventsDto3.transitions = [{
+          //   $ref: 'contentevents',
+          //   $id: Object(_id_4),
+          //   $db: 'hyppe_trans_db',
+          // }]
+
+          var CreateContenteventsDto4 = new CreateContenteventsDto();
+          CreateContenteventsDto4._id = _id_4
+          CreateContenteventsDto4.contentEventID = (await this.utilsService.generateId())
+          CreateContenteventsDto4.email = user_email_children
+          CreateContenteventsDto4.eventType = "FOLLOWING"
+          CreateContenteventsDto4.active = true
+          CreateContenteventsDto4.event = "ACCEPT"
+          CreateContenteventsDto4.createdAt = current_date
+          CreateContenteventsDto4.updatedAt = current_date
+          CreateContenteventsDto4.sequenceNumber = 1
+          CreateContenteventsDto4.flowIsDone = true
+          CreateContenteventsDto4._class = "io.melody.hyppe.content.domain.ContentEvent"
+          CreateContenteventsDto4.senderParty = user_email_parent
+          CreateContenteventsDto4.parentContentEventID = _id_3
+
+          //await this.contenteventsService.create(CreateContenteventsDto1);
+          await this.contenteventsService.create(CreateContenteventsDto2);
+          //await this.contenteventsService.create(CreateContenteventsDto3);
+          await this.contenteventsService.create(CreateContenteventsDto4);
+          await this.insightsService.updateFollower(user_email_parent);
+          await this.insightsService.updateFollowing(user_email_children);
+
+          //data following x-auth-user bertambah satu
+          var cekfollow = false;
+          var updatedata = new CreateuserbasicnewDto();
+          var temparray = null;
+          if(detaildata.guestMode == false)
+          {
+            temparray = detaildata.following;
+          }
+          else
+          {
+            temparray = detaildata.tempfollowing;
+          }
+          try
+          {
+              var getrole = temparray.find((element) => element == user_email_parent);
+              if(getrole != null && getrole != undefined)
+              {
+                cekfollow = true;
+              }
+          }
+          catch(e)
+          {
+            cekfollow = false;
+          } 
+
+          if(cekfollow == false)
+          {
+            temparray.push(user_email_parent);
+            if(detaildata.guestMode == true)
+            {
+              updatedata.tempfollowing = temparray;
+            }
+            else
+            {
+              updatedata.following = temparray;
+            }
+
+            await this.basic2SS.update(detaildata._id.toString(), updatedata);
+          }
 
           if (useLanguage == "id") {
             errorMessages = "Selamat kode referral berhasil digunakan";

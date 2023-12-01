@@ -87,6 +87,8 @@ export class CreateuserbasicnewDto {
   userEvent: string;
   following: any[];
   follower: any[];
+  tempfollowing: any[];
+  tempfollower: any[];
   citiesName: string;
   statesName: string;
   countriesName: string;

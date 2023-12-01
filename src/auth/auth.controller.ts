@@ -2216,10 +2216,24 @@ export class AuthController {
     return await this.authService.referral2(request, headers);
   }
 
+  @Post('api/user/referral/v3')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async referral3(@Req() request: any, @Headers() headers) {
+    return await this.authService.referral3(request, headers);
+  }
+
   @Post('api/user/referral-qrcode')
   @HttpCode(HttpStatus.ACCEPTED)
   async referral_qrcode(@Req() request: any, @Headers() headers, @Res() response) {
     var data = await this.authService.referralqrcode(request, headers);
+    response.set("Content-Type", "image/jpeg");
+    response.send(data);
+  }
+
+  @Post('api/user/referral-qrcode/v2')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async referral_qrcode2(@Req() request: any, @Headers() headers, @Res() response) {
+    var data = await this.authService.referralqrcode2(request, headers);
     response.set("Content-Type", "image/jpeg");
     response.send(data);
   }
