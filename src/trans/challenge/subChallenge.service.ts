@@ -7144,7 +7144,7 @@ export class subChallengeService {
                                         },
                                         then: {
                                             $arrayElemAt: [{
-                                                $arrayElemAt: ["$challenges.winner1.badgeProfile", 0]
+                                                $arrayElemAt: ["$challenges.winner1.name", 0]
                                             }, 0]
                                         }
                                     },
@@ -7155,7 +7155,7 @@ export class subChallengeService {
                                         },
                                         then: {
                                             $arrayElemAt: [{
-                                                $arrayElemAt: ["$challenges.winner2.badgeProfile", 0]
+                                                $arrayElemAt: ["$challenges.winner2.name", 0]
                                             }, 0]
                                         }
                                     },
@@ -7166,7 +7166,51 @@ export class subChallengeService {
                                         },
                                         then: {
                                             $arrayElemAt: [{
-                                                $arrayElemAt: ["$challenges.winner3.badgeProfile", 0]
+                                                $arrayElemAt: ["$challenges.winner3.name", 0]
+                                            }, 0]
+                                        }
+                                    },
+
+                                ],
+                            default: ""
+                        }
+                    },
+                    idBadge:
+                    {
+                        "$switch":
+                        {
+                            branches:
+                                [
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$rankNew", 1]
+                                        },
+                                        then: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$challenges.winner1._id", 0]
+                                            }, 0]
+                                        }
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$rankNew", 2]
+                                        },
+                                        then: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$challenges.winner2._id", 0]
+                                            }, 0]
+                                        }
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$rankNew", 3]
+                                        },
+                                        then: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$challenges.winner3._id", 0]
                                             }, 0]
                                         }
                                     },
@@ -7176,7 +7220,8 @@ export class subChallengeService {
                         }
                     },
 
-                }
+                },
+
             }
         );
         var query = await this.subChallengeModel.aggregate(pipeline);

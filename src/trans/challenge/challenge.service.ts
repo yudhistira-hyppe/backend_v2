@@ -4260,14 +4260,14 @@ export class ChallengeService {
 
                   if (dt > endDatetime) {
                     try {
-                      datapemenang = await this.subchallenge.getpemenang(challengeID.toString(), subChallengeID.toString());
+                      datapemenang = await this.subchallenge.getpemenang2(challengeID.toString(), subChallengeID.toString());
                     } catch (e) {
                       datapemenang = null;
                     }
                     if (datapemenang !== null && datapemenang.length > 0) {
 
                       try {
-                        getlastrank = datapemenang[0].getlastrank;
+                        getlastrank = datapemenang;
                       } catch (e) {
                         getlastrank = null;
                       }
