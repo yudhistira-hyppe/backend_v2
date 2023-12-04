@@ -8,7 +8,7 @@ import { SubChallengeReadService } from './subChallenge_read.service';
 @Controller('api/challenge')
 export class ChallengeReadController {
   constructor(
-    private readonly challengeReadService: ChallengeReadService, 
+    private readonly challengeReadService: ChallengeReadService,
     private readonly subChallengeReadService: SubChallengeReadService,
     private utilsService: UtilsService,
     private readonly logapiSS: LogapisService,) { }
@@ -53,7 +53,7 @@ export class ChallengeReadController {
 
 
     try {
-      data = await this.subChallengeReadService.getListUserChallengeNew2(idchallenge, iduser, status, session);
+      data = await this.subChallengeReadService.getListUserChallengeNew3(idchallenge, iduser, status, session);
     } catch (e) {
       data = [];
     }
@@ -123,7 +123,7 @@ export class ChallengeReadController {
 
 
     try {
-      data = await this.subChallengeReadService.getListUserChallengekeduaNew2(idchallenge, iduser, status, session);
+      data = await this.subChallengeReadService.getListUserChallengekeduaNew3(idchallenge, iduser, status, session);
     } catch (e) {
       data = [];
     }
