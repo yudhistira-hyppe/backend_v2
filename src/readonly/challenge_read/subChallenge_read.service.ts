@@ -5347,11 +5347,11 @@ export class SubChallengeReadService {
                                                         {
                                                             isActive: true
                                                         },
-                                                        {
-                                                            score: {
-                                                                $ne: 0
-                                                            }
-                                                        },
+                                                        // {
+                                                        //     score: {
+                                                        //         $ne: 0
+                                                        //     }
+                                                        // },
                                                         {
                                                             score: {
                                                                 $ne: null
@@ -5379,11 +5379,11 @@ export class SubChallengeReadService {
                                                         {
                                                             isActive: true
                                                         },
-                                                        {
-                                                            score: {
-                                                                $ne: 0
-                                                            }
-                                                        },
+                                                        // {
+                                                        //     score: {
+                                                        //         $ne: 0
+                                                        //     }
+                                                        // },
                                                         {
                                                             score: {
                                                                 $ne: null
@@ -7951,11 +7951,11 @@ export class SubChallengeReadService {
                                                         {
                                                             isActive: true
                                                         },
-                                                        {
-                                                            score: {
-                                                                $ne: 0
-                                                            }
-                                                        },
+                                                        // {
+                                                        //     score: {
+                                                        //         $ne: 0
+                                                        //     }
+                                                        // },
                                                         {
                                                             score: {
                                                                 $ne: null
@@ -7983,11 +7983,11 @@ export class SubChallengeReadService {
                                                         {
                                                             isActive: true
                                                         },
-                                                        {
-                                                            score: {
-                                                                $ne: 0
-                                                            }
-                                                        },
+                                                        // {
+                                                        //     score: {
+                                                        //         $ne: 0
+                                                        //     }
+                                                        // },
                                                         {
                                                             score: {
                                                                 $ne: null
