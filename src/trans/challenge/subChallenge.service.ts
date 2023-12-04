@@ -6902,6 +6902,86 @@ export class subChallengeService {
         return query;
     }
 
+    async getpemenang2(idchallenge: string, idSubChallenge: string) {
+        var pipeline = []
+        pipeline.push(
+            {
+                $match: {
+                    idSubChallenge: new Types.ObjectId(idSubChallenge)
+                }
+            },
+            {
+                $setWindowFields: {
+                    //partitionBy: "$state",
+                    sortBy: {
+                        score: - 1
+                    },
+                    output: {
+                        rankNew: {
+                            $documentNumber: {}
+                        }
+                    }
+                }
+            },
+            {
+                $sort: {
+                    rankNew: 1
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: "userbasics",
+                    let:
+                    {
+                        user: "$idUser",
+
+                    },
+                    as: 'email',
+                    pipeline:
+                        [
+                            {
+                                "$match":
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                            [
+                                                "$_id",
+                                                "$$user"
+                                            ]
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    email: 1,
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                $unwind: {
+                    path: "$email"
+                }
+            },
+            {
+                $limit: 10
+            },
+            {
+                $project: {
+                    ranking: "$rankNew",
+                    idUser: "$email._id",
+                    email: "$email.email",
+                }
+            }
+        );
+        var query = await this.subChallengeModel.aggregate(pipeline);
+        return query;
+    }
+
     async getcount(challengeId: string) {
         var query = await this.subChallengeModel.aggregate([
             {
