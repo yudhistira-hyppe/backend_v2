@@ -6968,6 +6968,162 @@ export class subChallengeService {
                 }
             },
             {
+                "$lookup":
+                {
+                    from: "challenge",
+                    let:
+                    {
+                        idChallenge: "$idChallenge"
+                    },
+                    as: 'challenges',
+                    pipeline:
+                        [
+                            {
+                                "$match":
+                                {
+                                    "$and":
+                                        [
+                                            {
+                                                "$expr":
+                                                {
+                                                    "$eq":
+                                                        [
+                                                            "$_id",
+                                                            "$$idChallenge"
+                                                        ]
+                                                },
+
+                                            },
+
+                                        ]
+                                }
+                            },
+                            {
+                                "$lookup":
+                                {
+                                    from: "badge",
+                                    let:
+                                    {
+                                        idBadge: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$ketentuanHadiah.badge.juara1", 0]
+                                            }, 0]
+                                        },
+
+                                    },
+                                    as: 'winner1',
+                                    pipeline:
+                                        [
+                                            {
+                                                "$match":
+                                                {
+                                                    "$and":
+                                                        [
+                                                            {
+                                                                "$expr":
+                                                                {
+                                                                    "$eq":
+                                                                        [
+                                                                            "$_id",
+                                                                            "$$idBadge"
+                                                                        ]
+                                                                },
+
+                                                            },
+
+                                                        ]
+                                                }
+                                            },
+
+                                        ]
+                                }
+                            },
+                            {
+                                "$lookup":
+                                {
+                                    from: "badge",
+                                    let:
+                                    {
+                                        idBadge: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$ketentuanHadiah.badge.juara2", 0]
+                                            }, 0]
+                                        },
+
+                                    },
+                                    as: 'winner2',
+                                    pipeline:
+                                        [
+                                            {
+                                                "$match":
+                                                {
+                                                    "$and":
+                                                        [
+                                                            {
+                                                                "$expr":
+                                                                {
+                                                                    "$eq":
+                                                                        [
+                                                                            "$_id",
+                                                                            "$$idBadge"
+                                                                        ]
+                                                                },
+
+                                                            },
+
+                                                        ]
+                                                }
+                                            },
+
+                                        ]
+                                }
+                            },
+                            {
+                                "$lookup":
+                                {
+                                    from: "badge",
+                                    let:
+                                    {
+                                        idBadge: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$ketentuanHadiah.badge.juara3", 0]
+                                            }, 0]
+                                        },
+
+                                    },
+                                    as: 'winner3',
+                                    pipeline:
+                                        [
+                                            {
+                                                "$match":
+                                                {
+                                                    "$and":
+                                                        [
+                                                            {
+                                                                "$expr":
+                                                                {
+                                                                    "$eq":
+                                                                        [
+                                                                            "$_id",
+                                                                            "$$idBadge"
+                                                                        ]
+                                                                },
+
+                                                            },
+
+                                                        ]
+                                                }
+                                            },
+
+                                        ]
+                                }
+                            },
+
+                        ],
+
+                }
+            },
+            {
                 $limit: 10
             },
             {
@@ -6975,6 +7131,51 @@ export class subChallengeService {
                     ranking: "$rankNew",
                     idUser: "$email._id",
                     email: "$email.email",
+                    winnerBadge:
+                    {
+                        "$switch":
+                        {
+                            branches:
+                                [
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$rankNew", 1]
+                                        },
+                                        then: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$challenges.winner1.badgeProfile", 0]
+                                            }, 0]
+                                        }
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$rankNew", 2]
+                                        },
+                                        then: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$challenges.winner2.badgeProfile", 0]
+                                            }, 0]
+                                        }
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$rankNew", 3]
+                                        },
+                                        then: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$challenges.winner3.badgeProfile", 0]
+                                            }, 0]
+                                        }
+                                    },
+
+                                ],
+                            default: ""
+                        }
+                    },
+
                 }
             }
         );
