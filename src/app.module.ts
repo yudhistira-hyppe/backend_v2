@@ -122,8 +122,14 @@ import { UserbasicnewModule } from './trans/userbasicnew/userbasicnew.module';
 import { AdsRewardsModule } from './trans/adsv2/adsrewards/adsrewards.module';
 import { GetprofilecontenteventModule } from './utils/getprofilecontentevent/getprofilecontentevent.module';
 import { TopupsModule } from './trans/topups/topups.module';
+import { SettingsReadModule } from './readonly/setting_read/setting_read.module';
+import { PostsReadModule } from './readonly/post_read/post_read.module';
+import { ChallengeReadModule } from './readonly/challenge_read/challenge_read.module';
 @Module({
   imports: [
+    ChallengeReadModule,
+    SettingsReadModule,
+    PostsReadModule,
     TopupsModule,
     GetprofilecontenteventModule,
     AdsRewardsModule,
@@ -175,6 +181,9 @@ import { TopupsModule } from './trans/topups/topups.module';
     PostDisqusModule,
     MongooseModule.forRoot(process.env.SERVER_FULL, {
       connectionName: 'SERVER_FULL',
+    }),
+    MongooseModule.forRoot(process.env.SERVER_FULL_READ, {
+      connectionName: 'SERVER_FULL_READ',
     }),
     UserplaylistModule,
     // LogticketsModule,

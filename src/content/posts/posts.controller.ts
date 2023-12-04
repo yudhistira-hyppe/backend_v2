@@ -1921,8 +1921,8 @@ export class PostsController {
       var iduser = null;
       if (databasic !== null) {
         iduser = databasic._id;
-        //this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
-        await this.contenteventsService.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
+        // this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
+        this.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
       }
     }
 
@@ -1981,248 +1981,248 @@ export class PostsController {
     return y;
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('api/posts/getnotification2')
-  @UseInterceptors(FileInterceptor('postContent'))
-  async getNotification2(@Body() body, @Headers('x-auth-user') email: string, @Headers() headers) {
-    var timestamps_start = await this.utilsService.getDateTimeString();
-    this.logger.log("getNotification >>> start: " + JSON.stringify(body));
-    var eventType = null;
-    var pageRow = null;
-    var pageNumber = null;
-    var data = null;
-    var lengpict = null;
-    if (body.eventType !== undefined) {
-      eventType = body.eventType;
-    }
-    if (body.pageNumber !== undefined) {
-      pageNumber = body.pageNumber;
-    }
+  // @UseGuards(JwtAuthGuard)
+  // @Post('api/posts/getnotification2')
+  // @UseInterceptors(FileInterceptor('postContent'))
+  // async getNotification2(@Body() body, @Headers('x-auth-user') email: string, @Headers() headers) {
+  //   var timestamps_start = await this.utilsService.getDateTimeString();
+  //   this.logger.log("getNotification >>> start: " + JSON.stringify(body));
+  //   var eventType = null;
+  //   var pageRow = null;
+  //   var pageNumber = null;
+  //   var data = null;
+  //   var lengpict = null;
+  //   if (body.eventType !== undefined) {
+  //     eventType = body.eventType;
+  //   }
+  //   if (body.pageNumber !== undefined) {
+  //     pageNumber = body.pageNumber;
+  //   }
 
-    if (body.pageRow !== undefined) {
-      pageRow = body.pageRow;
-    }
-    const messages = {
-      "info": ["The process successful"],
-    };
-    try {
+  //   if (body.pageRow !== undefined) {
+  //     pageRow = body.pageRow;
+  //   }
+  //   const messages = {
+  //     "info": ["The process successful"],
+  //   };
+  //   try {
 
-      data = await this.notifService.getNotification2(email, eventType, parseInt(pageNumber), parseInt(pageRow));
-      lengpict = data.length;
+  //     data = await this.notifService.getNotification2(email, eventType, parseInt(pageNumber), parseInt(pageRow));
+  //     lengpict = data.length;
 
-    } catch (e) {
-      data = null;
-      lengpict = 0;
+  //   } catch (e) {
+  //     data = null;
+  //     lengpict = 0;
 
-    }
+  //   }
 
-    var datatemp = [];
-    var tempdatapict = [];
-    var apsaraId = null;
-    var isApsara = null;
-    var apsaraThumbId = null;
-    var uploadSource = null;
-    var postType = null;
-    var mediaTypeStory = null;
-    // console.log(lengpict);
-    if (lengpict > 0) {
+  //   var datatemp = [];
+  //   var tempdatapict = [];
+  //   var apsaraId = null;
+  //   var isApsara = null;
+  //   var apsaraThumbId = null;
+  //   var uploadSource = null;
+  //   var postType = null;
+  //   var mediaTypeStory = null;
+  //   // console.log(lengpict);
+  //   if (lengpict > 0) {
 
-      for (let i = 0; i < lengpict; i++) {
+  //     for (let i = 0; i < lengpict; i++) {
 
-        try {
-          postType = data[i].postType;
-        } catch (e) {
-          postType = "";
-        }
-        try {
-          mediaTypeStory = data[i].mediaTypeStory;
-        } catch (e) {
-          mediaTypeStory = "";
-        }
-        if (postType === "pict") {
-          try {
-            apsaraId = data[i].content.apsaraId;
-          } catch (e) {
-            apsaraId = "";
-          }
-          try {
-            isApsara = data[i].content.isApsara;
-          } catch (e) {
-            isApsara = "";
-          }
-          try {
-            apsaraThumbId = data[i].content.apsaraThumbId;
-          } catch (e) {
-            apsaraThumbId = "";
-          }
-
-
-          try {
-
-            uploadSource = data[i].content.uploadSource;
-          } catch (e) {
-            uploadSource = "";
-          }
-
-          if (apsaraId !== undefined && apsaraThumbId !== undefined) {
-            tempdatapict.push(data[i].content.apsaraThumbId);
-
-          }
-          else if (apsaraId !== undefined && apsaraThumbId === undefined) {
-            tempdatapict.push(data[i].content.apsaraId);
-
-          }
-          else if (apsaraId === undefined && apsaraThumbId !== undefined) {
-            tempdatapict.push(data[i].content.apsaraThumbId);
-
-          }
-          var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
-          var gettempresultpictapsara = resultpictapsara.ImageInfo;
-
-          if (uploadSource == "OSS") {
-            data[i].content.mediaThumbEndpoint = data[i].content.mediaEndpoint;
-
-          } else {
-            for (var j = 0; j < gettempresultpictapsara.length; j++) {
-
-              if (gettempresultpictapsara[j].ImageId == data[i].content.apsaraThumbId) {
-
-                data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-              }
-              else if (gettempresultpictapsara[j].ImageId == data[i].content.apsaraId) {
-
-                data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-              }
-            }
-          }
+  //       try {
+  //         postType = data[i].postType;
+  //       } catch (e) {
+  //         postType = "";
+  //       }
+  //       try {
+  //         mediaTypeStory = data[i].mediaTypeStory;
+  //       } catch (e) {
+  //         mediaTypeStory = "";
+  //       }
+  //       if (postType === "pict") {
+  //         try {
+  //           apsaraId = data[i].content.apsaraId;
+  //         } catch (e) {
+  //           apsaraId = "";
+  //         }
+  //         try {
+  //           isApsara = data[i].content.isApsara;
+  //         } catch (e) {
+  //           isApsara = "";
+  //         }
+  //         try {
+  //           apsaraThumbId = data[i].content.apsaraThumbId;
+  //         } catch (e) {
+  //           apsaraThumbId = "";
+  //         }
 
 
-        }
-        else if (postType === "vid" || postType === "diary") {
-          try {
-            apsaraId = data[i].content.apsaraId;
-          } catch (e) {
-            apsaraId = "";
-          }
-          try {
-            isApsara = data[i].content.isApsara;
-          } catch (e) {
-            isApsara = "";
-          }
+  //         try {
 
-          try {
+  //           uploadSource = data[i].content.uploadSource;
+  //         } catch (e) {
+  //           uploadSource = "";
+  //         }
 
-            uploadSource = data[i].content.uploadSource;
-          } catch (e) {
-            uploadSource = "";
-          }
+  //         if (apsaraId !== undefined && apsaraThumbId !== undefined) {
+  //           tempdatapict.push(data[i].content.apsaraThumbId);
 
+  //         }
+  //         else if (apsaraId !== undefined && apsaraThumbId === undefined) {
+  //           tempdatapict.push(data[i].content.apsaraId);
 
-          if (apsaraId !== undefined && apsaraId !== '') {
-            tempdatapict.push(data[i].content.apsaraId);
+  //         }
+  //         else if (apsaraId === undefined && apsaraThumbId !== undefined) {
+  //           tempdatapict.push(data[i].content.apsaraThumbId);
 
-          }
+  //         }
+  //         var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+  //         var gettempresultpictapsara = resultpictapsara.ImageInfo;
 
-          var resultvidapsara = await this.postContentService.getVideoApsara(tempdatapict);
-          var gettempresultvidapsara = resultvidapsara.VideoList;
+  //         if (uploadSource == "OSS") {
+  //           data[i].content.mediaThumbEndpoint = data[i].content.mediaEndpoint;
 
-          for (var j = 0; j < gettempresultvidapsara.length; j++) {
-            var apsaraID = null;
-            try {
+  //         } else {
+  //           for (var j = 0; j < gettempresultpictapsara.length; j++) {
 
-              apsaraID = data[i].content.apsaraId;
-            } catch (e) {
-              apsaraID = null;
-            }
+  //             if (gettempresultpictapsara[j].ImageId == data[i].content.apsaraThumbId) {
 
-            if (apsaraID !== null && apsaraID !== undefined) {
-              if (gettempresultvidapsara[j].VideoId == apsaraID) {
+  //               data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
 
-                data[i].content.mediaThumbEndpoint = gettempresultvidapsara[j].CoverURL;
+  //             }
+  //             else if (gettempresultpictapsara[j].ImageId == data[i].content.apsaraId) {
 
-              }
-            }
+  //               data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+  //             }
+  //           }
+  //         }
 
 
+  //       }
+  //       else if (postType === "vid" || postType === "diary") {
+  //         try {
+  //           apsaraId = data[i].content.apsaraId;
+  //         } catch (e) {
+  //           apsaraId = "";
+  //         }
+  //         try {
+  //           isApsara = data[i].content.isApsara;
+  //         } catch (e) {
+  //           isApsara = "";
+  //         }
 
-          }
-        }
-        else {
+  //         try {
 
-
-          try {
-            apsaraId = data[i].content.apsaraId;
-          } catch (e) {
-            apsaraId = "";
-          }
-          try {
-            isApsara = data[i].content.isApsara;
-          } catch (e) {
-            isApsara = "";
-          }
-
-          try {
-
-            uploadSource = data[i].content.uploadSource;
-          } catch (e) {
-            uploadSource = "";
-          }
+  //           uploadSource = data[i].content.uploadSource;
+  //         } catch (e) {
+  //           uploadSource = "";
+  //         }
 
 
-          if (apsaraId !== undefined && apsaraId !== '') {
-            tempdatapict.push(data[i].content.apsaraId);
+  //         if (apsaraId !== undefined && apsaraId !== '') {
+  //           tempdatapict.push(data[i].content.apsaraId);
 
-          }
+  //         }
 
-          if (mediaTypeStory !== undefined && mediaTypeStory === "video") {
-            var resultvidapsara = await this.postContentService.getVideoApsara(tempdatapict);
-            var gettempresultvidapsara = resultvidapsara.VideoList;
+  //         var resultvidapsara = await this.postContentService.getVideoApsara(tempdatapict);
+  //         var gettempresultvidapsara = resultvidapsara.VideoList;
 
-            for (var j = 0; j < gettempresultvidapsara.length; j++) {
+  //         for (var j = 0; j < gettempresultvidapsara.length; j++) {
+  //           var apsaraID = null;
+  //           try {
 
-              if (gettempresultvidapsara[j].VideoId == data[i].content.apsaraId) {
+  //             apsaraID = data[i].content.apsaraId;
+  //           } catch (e) {
+  //             apsaraID = null;
+  //           }
 
-                data[i].content.mediaThumbEndpoint = gettempresultvidapsara[j].CoverURL;
+  //           if (apsaraID !== null && apsaraID !== undefined) {
+  //             if (gettempresultvidapsara[j].VideoId == apsaraID) {
 
-              }
+  //               data[i].content.mediaThumbEndpoint = gettempresultvidapsara[j].CoverURL;
 
-            }
-          } else {
-            var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
-            var gettempresultpictapsara = resultpictapsara.ImageInfo;
-
-            for (var j = 0; j < gettempresultpictapsara.length; j++) {
-
-              if (apsaraId !== undefined && apsaraId !== "") {
-                if (gettempresultpictapsara[j].ImageId == apsaraId) {
-
-                  data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-                }
-              }
-
-            }
-          }
-        }
+  //             }
+  //           }
 
 
 
+  //         }
+  //       }
+  //       else {
 
-      }
+
+  //         try {
+  //           apsaraId = data[i].content.apsaraId;
+  //         } catch (e) {
+  //           apsaraId = "";
+  //         }
+  //         try {
+  //           isApsara = data[i].content.isApsara;
+  //         } catch (e) {
+  //           isApsara = "";
+  //         }
+
+  //         try {
+
+  //           uploadSource = data[i].content.uploadSource;
+  //         } catch (e) {
+  //           uploadSource = "";
+  //         }
 
 
-    } else {
-      data = [];
-    }
+  //         if (apsaraId !== undefined && apsaraId !== '') {
+  //           tempdatapict.push(data[i].content.apsaraId);
 
-    var fullurl = headers.host + "/api/posts/getnotification2";
-    var timestamps_end = await this.utilsService.getDateTimeString();
-    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, body);
+  //         }
 
-    return { response_code: 202, data, messages };
-  }
+  //         if (mediaTypeStory !== undefined && mediaTypeStory === "video") {
+  //           var resultvidapsara = await this.postContentService.getVideoApsara(tempdatapict);
+  //           var gettempresultvidapsara = resultvidapsara.VideoList;
+
+  //           for (var j = 0; j < gettempresultvidapsara.length; j++) {
+
+  //             if (gettempresultvidapsara[j].VideoId == data[i].content.apsaraId) {
+
+  //               data[i].content.mediaThumbEndpoint = gettempresultvidapsara[j].CoverURL;
+
+  //             }
+
+  //           }
+  //         } else {
+  //           var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+  //           var gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+  //           for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+  //             if (apsaraId !== undefined && apsaraId !== "") {
+  //               if (gettempresultpictapsara[j].ImageId == apsaraId) {
+
+  //                 data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+  //               }
+  //             }
+
+  //           }
+  //         }
+  //       }
+
+
+
+
+  //     }
+
+
+  //   } else {
+  //     data = [];
+  //   }
+
+  //   var fullurl = headers.host + "/api/posts/getnotification2";
+  //   var timestamps_end = await this.utilsService.getDateTimeString();
+  //   this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, body);
+
+  //   return { response_code: 202, data, messages };
+  // }
 
   @Post('api/posts/getnotificationAll')
   async getNotificationAll() {
@@ -3552,7 +3552,7 @@ export class PostsController {
     var tempdata = null;
 
     try {
-      tempdata = await this.PostsService.getRecentStory(email, page, limit);
+      tempdata = await this.PostsService.getRecentStory2(email, page, limit);
     } catch (e) {
       tempdata = null;
     }
@@ -3900,94 +3900,104 @@ export class PostsController {
                   datauserchall = null;
                 }
 
-                if (datauserchall.length > 0) {
+                if (datauserchall !== null) {
 
-
-                  for (let y = 0; y < datauserchall.length; y++) {
-
-                    let iduserchall = datauserchall[y]._id;
-                    let idsubchallenge = datauserchall[y].idSubChallenge;
-                    let idChallenges = datauserchall[y].idChallenge;
-                    let session = datauserchall[y].session;
-                    let startDatetime = datauserchall[y].startDatetime;
-                    let endDatetime = datauserchall[y].endDatetime;
-                    let start = new Date(datauserchall[y].startDatetime);
-                    let end = new Date(datauserchall[y].endDatetime);
-                    let datenow = new Date(Date.now());
-                    if (new Date(createAt) >= start && new Date(createAt) <= end && saleAmount == 0) {
-                      if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
-
-                        var obj = {};
-
-                        obj = {
-                          "updatedAt": datauserchall[y].updatedAt,
-                          "score": datauserchall[y].score,
-                          "ranking": datauserchall[y].ranking,
-                        }
-
-                        if (postType == "vid") {
-                          poin = poinViewVid;
-                        } else if (postType == "diary") {
-                          poin = poinViewDiary;
-                        } else if (postType == "pict") {
-                          poin = poinPict;
-                        }
-
-                        try {
-                          var Postchallenge_ = new Postchallenge();
-                          Postchallenge_.postID = postID;
-                          Postchallenge_.createdAt = timedate;
-                          Postchallenge_.idChallenge = idChallenge;
-                          Postchallenge_.idSubChallenge = idsubchallenge;
-                          Postchallenge_.session = session;
-                          Postchallenge_.startDatetime = startDatetime;
-                          Postchallenge_.endDatetime = endDatetime;
-                          Postchallenge_.updatedAt = timedate;
-                          Postchallenge_.idUser = mongoose.Types.ObjectId(iduser);
-                          Postchallenge_.score = poin;
-                          Postchallenge_.postType = postTypeparent;
-
-                          await this.postchallengeService.create(Postchallenge_);
-
-
-                        } catch (e) {
-
-                        }
-                        await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                        await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
-
-                        var detail = await this.userchallengesService.findOne(iduserchall.toString());
-                        var activity = detail.activity;
-                        objintr = { "type": nametable, "id": idref, "desc": action }
-                        console.log(objintr)
-                        activity.push(objintr)
-                        await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
-
-                        var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
-
-                        if (datauschall.length > 0) {
-                          for (let x = 0; x < datauschall.length; x++) {
-
-                            let iducall = datauschall[x]._id;
-                            let start = new Date(datauschall[x].startDatetime);
-                            let end = new Date(datauschall[x].endDatetime);
-                            let datenow = new Date(Date.now());
-                            let idChallenges2 = datauschall[x].idChallenge;
-                            let rank = x + 1;
-
-                            //if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                            await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                            // }
-
-                          }
-                        }
-
-
-                      }
-                    }
+                  let leng = null;
+                  try {
+                    leng = datauserchall.length;
+                  } catch (e) {
+                    leng = 0;
                   }
 
 
+                  if (leng > 0) {
+
+
+                    for (let y = 0; y < leng; y++) {
+
+                      let iduserchall = datauserchall[y]._id;
+                      let idsubchallenge = datauserchall[y].idSubChallenge;
+                      let idChallenges = datauserchall[y].idChallenge;
+                      let session = datauserchall[y].session;
+                      let startDatetime = datauserchall[y].startDatetime;
+                      let endDatetime = datauserchall[y].endDatetime;
+                      let start = new Date(datauserchall[y].startDatetime);
+                      let end = new Date(datauserchall[y].endDatetime);
+                      let datenow = new Date(Date.now());
+                      if (new Date(createAt) >= start && new Date(createAt) <= end && saleAmount == 0) {
+                        if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
+
+                          var obj = {};
+
+                          obj = {
+                            "updatedAt": datauserchall[y].updatedAt,
+                            "score": datauserchall[y].score,
+                            "ranking": datauserchall[y].ranking,
+                          }
+
+                          if (postType == "vid") {
+                            poin = poinViewVid;
+                          } else if (postType == "diary") {
+                            poin = poinViewDiary;
+                          } else if (postType == "pict") {
+                            poin = poinPict;
+                          }
+
+                          try {
+                            var Postchallenge_ = new Postchallenge();
+                            Postchallenge_.postID = postID;
+                            Postchallenge_.createdAt = timedate;
+                            Postchallenge_.idChallenge = idChallenge;
+                            Postchallenge_.idSubChallenge = idsubchallenge;
+                            Postchallenge_.session = session;
+                            Postchallenge_.startDatetime = startDatetime;
+                            Postchallenge_.endDatetime = endDatetime;
+                            Postchallenge_.updatedAt = timedate;
+                            Postchallenge_.idUser = mongoose.Types.ObjectId(iduser);
+                            Postchallenge_.score = poin;
+                            Postchallenge_.postType = postTypeparent;
+
+                            await this.postchallengeService.create(Postchallenge_);
+
+
+                          } catch (e) {
+
+                          }
+                          await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+                          await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+
+                          var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                          var activity = detail.activity;
+                          objintr = { "type": nametable, "id": idref, "desc": action }
+                          console.log(objintr)
+                          activity.push(objintr)
+                          await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+
+                          var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
+
+                          if (datauschall.length > 0) {
+                            for (let x = 0; x < datauschall.length; x++) {
+
+                              let iducall = datauschall[x]._id;
+                              let start = new Date(datauschall[x].startDatetime);
+                              let end = new Date(datauschall[x].endDatetime);
+                              let datenow = new Date(Date.now());
+                              let idChallenges2 = datauschall[x].idChallenge;
+                              let rank = x + 1;
+
+                              //if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                              await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                              // }
+
+                            }
+                          }
+
+
+                        }
+                      }
+                    }
+
+                  }
                 }
               }
 
@@ -4005,84 +4015,94 @@ export class PostsController {
             datauserchall = null;
           }
 
-          if (datauserchall.length > 0) {
+          if (datauserchall !== null) {
+
+            let leng = null;
+            try {
+              leng = datauserchall.length;
+            } catch (e) {
+              leng = 0;
+            }
 
 
-            for (let y = 0; y < datauserchall.length; y++) {
+            if (leng > 0) {
 
-              let iduserchall = datauserchall[y]._id;
-              let idsubchallenge = datauserchall[y].idSubChallenge;
-              let idChallenges = datauserchall[y].idChallenge;
-              let session = datauserchall[y].session;
-              let startDatetime = datauserchall[y].startDatetime;
-              let endDatetime = datauserchall[y].endDatetime;
-              let start = new Date(datauserchall[y].startDatetime);
-              let end = new Date(datauserchall[y].endDatetime);
-              let datenow = new Date(Date.now());
-              if (new Date(createAt) >= start && new Date(createAt) <= end && saleAmount == 0) {
-                if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
 
-                  var obj = {};
+              for (let y = 0; y < leng; y++) {
 
-                  obj = {
-                    "updatedAt": datauserchall[y].updatedAt,
-                    "score": datauserchall[y].score,
-                    "ranking": datauserchall[y].ranking,
-                  }
-                  if (postTypeparent == "vid") {
-                    poin = poinViewVid;
-                  } else if (postTypeparent == "diary") {
-                    poin = poinViewDiary;
-                  } else if (postTypeparent == "pict") {
-                    poin = poinPict;
-                  }
-                  await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
-                  await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
-                  try {
-                    var Postchallenge_ = new Postchallenge();
-                    Postchallenge_.postID = postID;
-                    Postchallenge_.createdAt = timedate;
-                    Postchallenge_.idChallenge = idChallenge;
-                    Postchallenge_.idSubChallenge = idsubchallenge;
-                    Postchallenge_.session = session;
-                    Postchallenge_.startDatetime = startDatetime;
-                    Postchallenge_.endDatetime = endDatetime;
-                    Postchallenge_.updatedAt = timedate;
-                    Postchallenge_.idUser = mongoose.Types.ObjectId(iduser);
-                    Postchallenge_.score = poin;
-                    Postchallenge_.postType = postTypeparent;
-                    await this.postchallengeService.create(Postchallenge_);
-                  } catch (e) {
+                let iduserchall = datauserchall[y]._id;
+                let idsubchallenge = datauserchall[y].idSubChallenge;
+                let idChallenges = datauserchall[y].idChallenge;
+                let session = datauserchall[y].session;
+                let startDatetime = datauserchall[y].startDatetime;
+                let endDatetime = datauserchall[y].endDatetime;
+                let start = new Date(datauserchall[y].startDatetime);
+                let end = new Date(datauserchall[y].endDatetime);
+                let datenow = new Date(Date.now());
+                if (new Date(createAt) >= start && new Date(createAt) <= end && saleAmount == 0) {
+                  if (datenow >= start && datenow <= end && idChallenges == idChallenge) {
 
-                  }
-                  var detail = await this.userchallengesService.findOne(iduserchall.toString());
-                  var activity = detail.activity;
-                  objintr = { "type": nametable, "id": idref, "desc": action }
-                  console.log(objintr)
-                  activity.push(objintr)
-                  await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
-                  var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
+                    var obj = {};
 
-                  if (datauschall.length > 0) {
-                    for (let x = 0; x < datauschall.length; x++) {
+                    obj = {
+                      "updatedAt": datauserchall[y].updatedAt,
+                      "score": datauserchall[y].score,
+                      "ranking": datauserchall[y].ranking,
+                    }
+                    if (postTypeparent == "vid") {
+                      poin = poinViewVid;
+                    } else if (postTypeparent == "diary") {
+                      poin = poinViewDiary;
+                    } else if (postTypeparent == "pict") {
+                      poin = poinPict;
+                    }
+                    await this.userchallengesService.updateHistory(iduserchall.toString(), idsubchallenge.toString(), obj);
+                    await this.userchallengesService.updateUserchallenge(iduserchall.toString(), idsubchallenge.toString(), poin);
+                    try {
+                      var Postchallenge_ = new Postchallenge();
+                      Postchallenge_.postID = postID;
+                      Postchallenge_.createdAt = timedate;
+                      Postchallenge_.idChallenge = idChallenge;
+                      Postchallenge_.idSubChallenge = idsubchallenge;
+                      Postchallenge_.session = session;
+                      Postchallenge_.startDatetime = startDatetime;
+                      Postchallenge_.endDatetime = endDatetime;
+                      Postchallenge_.updatedAt = timedate;
+                      Postchallenge_.idUser = mongoose.Types.ObjectId(iduser);
+                      Postchallenge_.score = poin;
+                      Postchallenge_.postType = postTypeparent;
+                      await this.postchallengeService.create(Postchallenge_);
+                    } catch (e) {
 
-                      let iducall = datauschall[x]._id;
-                      let start = new Date(datauschall[x].startDatetime);
-                      let end = new Date(datauschall[x].endDatetime);
-                      let datenow = new Date(Date.now());
-                      let idChallenges2 = datauschall[x].idChallenge;
-                      let rank = x + 1;
+                    }
+                    var detail = await this.userchallengesService.findOne(iduserchall.toString());
+                    var activity = detail.activity;
+                    objintr = { "type": nametable, "id": idref, "desc": action }
+                    console.log(objintr)
+                    activity.push(objintr)
+                    await this.userchallengesService.updateActivity(iduserchall.toString(), activity, timedate);
+                    var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenges, idsubchallenge);
 
-                      //  if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
-                      await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
-                      // }
+                    if (datauschall.length > 0) {
+                      for (let x = 0; x < datauschall.length; x++) {
 
+                        let iducall = datauschall[x]._id;
+                        let start = new Date(datauschall[x].startDatetime);
+                        let end = new Date(datauschall[x].endDatetime);
+                        let datenow = new Date(Date.now());
+                        let idChallenges2 = datauschall[x].idChallenge;
+                        let rank = x + 1;
+
+                        //  if (datenow >= start && datenow <= end && idChallenges == idChallenges2) {
+                        await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+                        // }
+
+                      }
                     }
                   }
                 }
               }
             }
-
           }
         }
 
@@ -4158,5 +4178,9 @@ export class PostsController {
   }
   async updateused(list: any[]) {
     return await this.MediastikerService.updatedata(list, "used");
+  }
+
+  async scorepostrequest(iduser: string, idevent: string, namatabel: string, event: string, postID: string) {
+    await this.contenteventsService.scorepostrequest(iduser, idevent, namatabel, event, postID);
   }
 }

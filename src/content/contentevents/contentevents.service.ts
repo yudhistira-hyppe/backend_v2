@@ -4318,7 +4318,7 @@ export class ContenteventsService {
       "event": event,
       "postID": postID,
       "email_user": email_user,
-      "email_receiverParty ": email_receiverParty
+      "email_receiverParty": email_receiverParty
     };
     console.log(JSON.stringify(call))
     let config = { headers: { "Content-Type": "application/json" } };
@@ -4334,7 +4334,7 @@ export class ContenteventsService {
       "event": event,
       "postID": postID,
       "email_user": email_user,
-      "email_receiverParty ": email_receiverParty
+      "email_receiverParty": email_receiverParty
     };
     console.log(JSON.stringify(call))
     let config = { headers: { "Content-Type": "application/json" } };
@@ -4350,7 +4350,7 @@ export class ContenteventsService {
       "event": event,
       "postID": postID,
       "email_user": email_user,
-      "email_receiverParty ": email_receiverParty
+      "email_receiverParty": email_receiverParty
     };
     console.log(JSON.stringify(call))
     let config = { headers: { "Content-Type": "application/json" } };

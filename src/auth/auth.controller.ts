@@ -5984,8 +5984,8 @@ export class AuthController {
     if (headers['x-auth-token'] == undefined) {
       var fullurl = headers.host + '/api/posts/profilepicture';
       var timestamps_end = await this.utilsService.getDateTimeString();
-      request['profilePict'] = files.profilePict;
-      request['proofPict'] = files.proofPict;
+      // request['profilePict'] = files.profilePict;
+      // request['proofPict'] = files.proofPict;
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request);
 
       await this.errorHandler.generateNotAcceptableException(
@@ -5996,8 +5996,8 @@ export class AuthController {
     if (request.email == undefined) {
       var fullurl = headers.host + '/api/posts/profilepicture';
       var timestamps_end = await this.utilsService.getDateTimeString();
-      request['profilePict'] = files.profilePict;
-      request['proofPict'] = files.proofPict;
+      // request['profilePict'] = files.profilePict;
+      // request['proofPict'] = files.proofPict;
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request);
 
       await this.errorHandler.generateNotAcceptableException(
@@ -6181,8 +6181,8 @@ export class AuthController {
 
                   var fullurl = headers.host + '/api/posts/profilepicture';
                   var timestamps_end = await this.utilsService.getDateTimeString();
-                  request['profilePict'] = files.profilePict;
-                  request['proofPict'] = files.proofPict;
+                  // request['profilePict'] = files.profilePict;
+                  // request['proofPict'] = files.proofPict;
                   this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
 
                   return {
@@ -6196,8 +6196,8 @@ export class AuthController {
                 } catch (e) {
                   var fullurl = headers.host + '/api/posts/profilepicture';
                   var timestamps_end = await this.utilsService.getDateTimeString();
-                  request['profilePict'] = files.profilePict;
-                  request['proofPict'] = files.proofPict;
+                  // request['profilePict'] = files.profilePict;
+                  // request['proofPict'] = files.proofPict;
                   this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
 
                   await this.errorHandler.generateNotAcceptableException(
@@ -6207,8 +6207,8 @@ export class AuthController {
               } else {
                 var fullurl = headers.host + '/api/posts/profilepicture';
                 var timestamps_end = await this.utilsService.getDateTimeString();
-                request['profilePict'] = files.profilePict;
-                request['proofPict'] = files.proofPict;
+                // request['profilePict'] = files.profilePict;
+                // request['proofPict'] = files.proofPict;
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
 
                 await this.errorHandler.generateNotAcceptableException(
@@ -6218,8 +6218,8 @@ export class AuthController {
             } else {
               var fullurl = headers.host + '/api/posts/profilepicture';
               var timestamps_end = await this.utilsService.getDateTimeString();
-              request['profilePict'] = files.profilePict;
-              request['proofPict'] = files.proofPict;
+              // request['profilePict'] = files.profilePict;
+              // request['proofPict'] = files.proofPict;
               this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
 
               await this.errorHandler.generateNotAcceptableException(
@@ -6229,8 +6229,8 @@ export class AuthController {
           } else {
             var fullurl = headers.host + '/api/posts/profilepicture';
             var timestamps_end = await this.utilsService.getDateTimeString();
-            request['profilePict'] = files.profilePict;
-            request['proofPict'] = files.proofPict;
+            // request['profilePict'] = files.profilePict;
+            // request['proofPict'] = files.proofPict;
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
 
             await this.errorHandler.generateNotAcceptableException(
@@ -6240,8 +6240,8 @@ export class AuthController {
         } else {
           var fullurl = headers.host + '/api/posts/profilepicture';
           var timestamps_end = await this.utilsService.getDateTimeString();
-          request['profilePict'] = files.profilePict;
-          request['proofPict'] = files.proofPict;
+          // request['profilePict'] = files.profilePict;
+          // request['proofPict'] = files.proofPict;
           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
 
           await this.errorHandler.generateNotAcceptableException(
@@ -6251,8 +6251,8 @@ export class AuthController {
       } else {
         var fullurl = headers.host + '/api/posts/profilepicture';
         var timestamps_end = await this.utilsService.getDateTimeString();
-        request['profilePict'] = files.profilePict;
-        request['proofPict'] = files.proofPict;
+        // request['profilePict'] = files.profilePict;
+        // request['proofPict'] = files.proofPict;
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
 
         await this.errorHandler.generateNotAcceptableException(
@@ -6262,8 +6262,8 @@ export class AuthController {
     } else {
       var fullurl = headers.host + '/api/posts/profilepicture';
       var timestamps_end = await this.utilsService.getDateTimeString();
-      request['profilePict'] = files.profilePict;
-      request['proofPict'] = files.proofPict;
+      // request['profilePict'] = files.profilePict;
+      // request['proofPict'] = files.proofPict;
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
 
       await this.errorHandler.generateNotAcceptableException(
