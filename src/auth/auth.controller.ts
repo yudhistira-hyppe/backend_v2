@@ -2213,12 +2213,6 @@ export class AuthController {
   @Post('api/user/referral/v2')
   @HttpCode(HttpStatus.ACCEPTED)
   async referral2(@Req() request: any, @Headers() headers) {
-    return await this.authService.referral2(request, headers);
-  }
-
-  @Post('api/user/referral/v3')
-  @HttpCode(HttpStatus.ACCEPTED)
-  async referral3(@Req() request: any, @Headers() headers) {
     return await this.authService.referral3(request, headers);
   }
 
@@ -6264,6 +6258,233 @@ export class AuthController {
       var timestamps_end = await this.utilsService.getDateTimeString();
       // request['profilePict'] = files.profilePict;
       // request['proofPict'] = files.proofPict;
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed user not found',
+      );
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/profilepicture/v2')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'profilePict', maxCount: 1 }, { name: 'proofPict', maxCount: 1, }]))
+  async uploadProfile_v3(
+    @UploadedFiles() files: {
+      profilePict?: Express.Multer.File[],
+      proofPict?: Express.Multer.File[]
+    },
+    @Body() request,
+    @Headers() headers) {
+
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/posts/profilepicture/v2';
+
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed token and email not match',
+      );
+    }
+
+    if (headers['x-auth-token'] == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed header email is required',
+      );
+    }
+
+    if (request.email == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed param mail is required',
+      );
+    }
+
+    //Get User Userbasics
+    const datauserbasicsService = await this.basic2SS.findbyemail(
+      headers['x-auth-user'],
+    );
+
+    var re = /(?:\.([^.]+))?$/;
+
+    //Ceck User Userbasics
+    if (await this.utilsService.ceckData(datauserbasicsService)) {
+      if (files.profilePict != undefined) {
+
+        var originalName = files.profilePict[0].originalname;
+        //var extension = originalName.substring(originalName.lastIndexOf('.'), originalName.length);
+        // var textSplit = originalName.split('.');
+        // var extension = '.jpg';
+        // if (textSplit.length == 2) {
+        //   extension = textSplit[1];
+        // } else {
+        //   extension = textSplit[textSplit.length - 1];
+        // }
+        var extension = '.jpeg';
+        var userId = datauserbasicsService._id.toString();
+        var fileName = userId + extension;
+        var mimetype = files.profilePict[0].mimetype;
+
+        var image_information = await sharp(files.profilePict[0].buffer).metadata();
+        console.log("IMAGE INFORMATION", image_information);
+        var image_format = image_information.format;
+        var image_height = image_information.height;
+        var image_width = image_information.width;
+        var image_orientation = image_information.orientation;
+
+        //Get Image Mode
+        var image_mode = await this.utilsService.getImageMode(image_width, image_height);
+        console.log("IMAGE MODE", image_mode);
+
+        //Get Ceck Mode
+        var New_height = 0;
+        var New_width = 0;
+
+        if (image_mode == "LANDSCAPE") {
+          New_height = image_height;
+          New_width = image_width;
+        } else if (image_mode == "POTRET") {
+          New_height = image_height;
+          New_width = image_width;
+        }
+
+        var file_convert = null;
+        if (image_format == "heif") {
+          const outputBuffer = await convert({
+            buffer: files.profilePict[0].buffer,
+            format: 'JPEG',
+            quality: 1
+          });
+          console.log("outputBuffer", await sharp(outputBuffer).metadata());
+          file_convert = await sharp(outputBuffer).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
+        } else {
+          file_convert = await sharp(files.profilePict[0].buffer, { failOnError: false }).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
+        }
+
+        var image_information2 = await sharp(file_convert).metadata();
+        console.log("image_information2", image_information2);
+
+        var image_orientation2 = image_information2.orientation;
+        console.log("image_orientation2", image_orientation2);
+
+
+        var thumnail = null;
+        var ori = null;
+        try {
+          if (image_orientation2 == 1) {
+            thumnail = await sharp(file_convert).resize(100, 100).toBuffer();
+            ori = await sharp(file_convert).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
+          } else if (image_orientation2 == 6) {
+            thumnail = await sharp(file_convert).rotate(90).resize(100, 100).toBuffer();
+            ori = await sharp(file_convert).rotate(90).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+          } else if (image_orientation2 == 8) {
+            thumnail = await sharp(file_convert).rotate(270).resize(100, 100).toBuffer();
+            ori = await sharp(file_convert).rotate(270).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+          } else {
+            thumnail = await sharp(file_convert).resize(100, 100).toBuffer();
+            ori = file_convert;
+          }
+          console.log(typeof thumnail);
+        } catch (e) {
+          console.log("THUMNAIL", "FAILED TO CREATE THUMNAIL");
+        }
+
+        var result = await this.ossService.uploadFileBuffer(Buffer.from(ori), userId + "/profilePict/" + fileName);
+        var result_thum = await this.ossService.uploadFileBuffer(Buffer.from(thumnail), userId + "/profilePict/" + userId + "_thum" + extension);
+        console.log("THUMNAIL_UPLOAD", result_thum);
+        if (result != undefined) {
+          if (result.res != undefined) {
+            if (result.res.statusCode != undefined) {
+              if (result.res.statusCode == 200) {
+                try {
+                  if(datauserbasicsService.mediaBasePath == null || datauserbasicsService.mediaBasePath == undefined)
+                  {
+                    datauserbasicsService.postType = 'profilepict';
+                    datauserbasicsService.mediaType = 'image';
+                    datauserbasicsService.mediaMime = mimetype;
+                  }
+
+                  datauserbasicsService.originalName = originalName;
+                  datauserbasicsService.mediaUri = fileName;
+                  datauserbasicsService.mediaThumBasePath = fileName;
+                  datauserbasicsService.mediaThumName = userId + "_thum" + extension;
+                  datauserbasicsService.mediaBasePath = userId + "/profilePict/" + fileName;
+                  datauserbasicsService.uploadSource = "OSS";
+
+                  datauserbasicsService.fsSourceUri = result.res.requestUrls[0];
+                  datauserbasicsService.fsSourceName = fileName;
+                  datauserbasicsService.fsTargetUri = result.res.requestUrls[0];
+
+                  await this.basic2SS.updatebyEmail(request.email, datauserbasicsService);
+
+                  var timestamps_end = await this.utilsService.getDateTimeString();
+                  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
+
+                  return {
+                    "response_code": 202,
+                    "messages": {
+                      "info": [
+                        "Update Profile Successful"
+                      ]
+                    }
+                  };
+                } catch (e) {
+                  var timestamps_end = await this.utilsService.getDateTimeString();
+                  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
+
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed update profile picture ' + e,
+                  );
+                }
+              } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
+
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed update profile picture ',
+                );
+              }
+            } else {
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
+
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed update profile picture ',
+              );
+            }
+          } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
+
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed update profile picture ',
+            );
+          }
+        } else {
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
+
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed update profile picture ',
+          );
+        }
+      } else {
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
+
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed profilePict is required',
+        );
+      }
+    } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, request);
 
       await this.errorHandler.generateNotAcceptableException(

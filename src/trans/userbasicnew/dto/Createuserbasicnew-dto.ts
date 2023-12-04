@@ -119,6 +119,12 @@ export class CreateuserbasicnewDto {
   fsSourceName: string;
   fsTargetUri: string;
   mediaEndpoint: string;
+  uploadSource: string;
+  mediaThumBasePath: string;
+  mediaThumName: string;
+  mediaMime: string;
+  mediaThumUri: string;
+  postType: string;
   kyc: any[];
   guestMode: boolean;
 }

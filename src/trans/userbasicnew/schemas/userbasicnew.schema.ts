@@ -229,6 +229,18 @@ export class Userbasicnew {
     kyc: any[]
     @Prop()
     guestMode: boolean;
+    @Prop()
+    uploadSource: string;
+    @Prop()
+    mediaThumBasePath: string;
+    @Prop()
+    mediaThumName: string;
+    @Prop()
+    mediaMime: string;
+    @Prop()
+    mediaThumUri: string;
+    @Prop()
+    postType: string;
 }
 
 export const UserbasicnewSchema = SchemaFactory.createForClass(Userbasicnew);
