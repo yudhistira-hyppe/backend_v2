@@ -71,9 +71,176 @@ export class ActivityeventsController {
     // return this.activityeventsService.LogActivitas(year);
   }
 
+  // @UseGuards(JwtAuthGuard)
+  // @Post('logactivitas/sesi')
+  // async countPostsesi(@Req() request, @Headers() headers): Promise<Object> {
+  //   var token = headers['x-auth-token'];
+  //   var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+  //   var email = auth.email;
+  //   var timestamps_start = await this.utilsService.getDateTimeString();
+  //   var fullurl = headers.host + "/api/activityevents/logactivitas/sesi";
+
+  //   var datasesi = null;
+  //   var countUser = [];
+  //   var awake = null;
+  //   var sleep = null;
+  //   var arrdataview = [];
+  //   var arrdata = [];
+  //   var sumMinute = [];
+  //   var sumUser = [];
+  //   var startdate = null;
+  //   var enddate = null;
+  //   const messages = {
+  //     "info": ["The process successful"],
+  //   };
+  //   var request_json = JSON.parse(JSON.stringify(request.body));
+  //   startdate = request_json["startdate"];
+  //   enddate = request_json["enddate"];
+
+  //   var date1 = new Date(startdate);
+  //   var date2 = new Date(enddate);
+
+  //   //calculate time difference  
+  //   var time_difference = date2.getTime() - date1.getTime();
+
+  //   //calculate days difference by dividing total milliseconds in a day  
+  //   var resultTime = time_difference / (1000 * 60 * 60 * 24);
+  //   console.log(resultTime);
+  //   try {
+  //     datasesi = await this.activityeventsService.sesipengguna(startdate, enddate);
+  //   } catch (e) {
+  //     datasesi = null;
+  //   }
+  //   if (datasesi !== null) {
+  //     countUser = datasesi[0].countUser;
+  //   } else {
+  //     countUser = [];
+  //   }
+
+  //   if (countUser.length > 0) {
+  //     var sumUser = [];
+  //     countUser.reduce(function (res, value) {
+  //       if (!res[value.date]) {
+  //         res[value.date] = { date: value.date, count: 0 };
+  //         sumUser.push(res[value.date])
+  //       }
+  //       res[value.date].count += value.count;
+  //       return res;
+  //     }, {});
+
+  //     console.log(sumUser)
+
+  //   }
+
+
+  //   if (datasesi !== null) {
+  //     awake = datasesi[0].awake;
+  //   } else {
+  //     awake = [];
+  //   }
+
+  //   if (datasesi !== null) {
+  //     sleep = datasesi[0].sleep;
+  //   } else {
+  //     sleep = [];
+  //   }
+
+  //   if (awake.length > 0) {
+
+  //     for (let i = 0; i < awake.length; i++) {
+  //       let createdAwake = new Date(awake[i].createdAt);
+  //       var tgl = awake[i].tgl;
+  //       if (sleep.length > 0) {
+  //         for (var j = 0; j < sleep.length; j++) {
+  //           if (sleep[j].createdAt != null) {
+  //             let createdSleep = new Date(sleep[j].createdAt);
+  //             var difference = Math.abs(createdSleep.getTime() - createdAwake.getTime());
+  //             var count = Math.round(((difference % 86400000) % 3600000) / 60000);
+  //             break;
+  //           }
+  //         }
+  //         arrdataview.push({
+  //           'date': tgl,
+  //           'count': count,
+
+  //         });
+  //       }
+
+  //     }
+
+  //   }
+
+  //   if (arrdataview.length > 0) {
+  //     var sumMinute = [];
+  //     arrdataview.reduce(function (res, value) {
+  //       if (!res[value.date]) {
+  //         res[value.date] = { date: value.date, count: 0 };
+  //         sumMinute.push(res[value.date])
+  //       }
+  //       res[value.date].count += value.count;
+  //       return res;
+  //     }, {});
+
+  //     console.log(sumMinute)
+
+  //   }
+
+  //   if (sumMinute.length > 0) {
+  //     for (let i = 0; i < sumMinute.length; i++) {
+  //       let countminute = sumMinute[i].count;
+  //       let tgl = sumMinute[i].date;
+  //       if (sumUser.length > 0) {
+  //         for (var j = 0; j < sumUser.length; j++) {
+  //           var countuser = sumUser[j].count;
+  //           if (sumUser[j].date == tgl) {
+  //             var counting = Math.round(countminute / countuser);
+  //             break;
+  //           }
+  //         }
+  //         arrdata.push({
+  //           'date': tgl,
+  //           'count': counting,
+
+  //         });
+  //       }
+
+  //     }
+
+  //   }
+
+  //   var data = [];
+  //   if (resultTime > 0) {
+  //     for (var i = 0; i < resultTime + 1; i++) {
+  //       var dt = new Date(startdate);
+  //       dt.setDate(dt.getDate() + i);
+  //       var splitdt = dt.toISOString();
+  //       var dts = splitdt.split('T');
+  //       var stdt = dts[0].toString();
+  //       var count = 0;
+  //       for (var j = 0; j < arrdata.length; j++) {
+  //         if (arrdata[j].date == stdt) {
+  //           count = arrdata[j].count;
+  //           break;
+  //         }
+  //       }
+  //       data.push({
+  //         'date': stdt,
+  //         'count': count
+  //       });
+
+  //     }
+
+  //   }
+
+  //   var timestamps_end = await this.utilsService.getDateTimeString();
+  //   this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+  //   return { response_code: 202, data, messages };
+  // }
+
   @UseGuards(JwtAuthGuard)
   @Post('logactivitas/sesi')
-  async countPostsesi(@Req() request, @Headers() headers): Promise<Object> {
+  async countPostsesi2(@Req() request, @Headers() headers): Promise<Object> {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var email = auth.email;
@@ -81,13 +248,6 @@ export class ActivityeventsController {
     var fullurl = headers.host + "/api/activityevents/logactivitas/sesi";
 
     var datasesi = null;
-    var countUser = [];
-    var awake = null;
-    var sleep = null;
-    var arrdataview = [];
-    var arrdata = [];
-    var sumMinute = [];
-    var sumUser = [];
     var startdate = null;
     var enddate = null;
     const messages = {
@@ -97,145 +257,47 @@ export class ActivityeventsController {
     startdate = request_json["startdate"];
     enddate = request_json["enddate"];
 
-    var date1 = new Date(startdate);
-    var date2 = new Date(enddate);
-
-    //calculate time difference  
-    var time_difference = date2.getTime() - date1.getTime();
-
-    //calculate days difference by dividing total milliseconds in a day  
-    var resultTime = time_difference / (1000 * 60 * 60 * 24);
-    console.log(resultTime);
     try {
       datasesi = await this.activityeventsService.sesipengguna(startdate, enddate);
     } catch (e) {
       datasesi = null;
     }
-    if (datasesi !== null) {
-      countUser = datasesi[0].countUser;
-    } else {
-      countUser = [];
-    }
 
-    if (countUser.length > 0) {
-      var sumUser = [];
-      countUser.reduce(function (res, value) {
-        if (!res[value.date]) {
-          res[value.date] = { date: value.date, count: 0 };
-          sumUser.push(res[value.date])
-        }
-        res[value.date].count += value.count;
-        return res;
-      }, {});
+    var array = [];
+    if(datasesi != null)
+    {
+      var setstartdate = new Date(startdate);
+      var endstartdate = new Date(enddate);
+      endstartdate.setDate(endstartdate.getDate() + 1);
+      setstartdate.setDate(setstartdate.getDate() - 1);
+      var tempdate = setstartdate.toISOString().split("T")[0];
+      var end = new Date().toISOString().split("T")[0];
 
-      console.log(sumUser)
+      //kalo lama, berarti error disini!!
+      while (tempdate != end) {
+        var temp = new Date(tempdate);
+        temp.setDate(temp.getDate() + 1);
+        tempdate = new Date(temp).toISOString().split("T")[0];
+        // console.log(tempdate);
 
-    }
-
-
-    if (datasesi !== null) {
-      awake = datasesi[0].awake;
-    } else {
-      awake = [];
-    }
-
-    if (datasesi !== null) {
-      sleep = datasesi[0].sleep;
-    } else {
-      sleep = [];
-    }
-
-    if (awake.length > 0) {
-
-      for (let i = 0; i < awake.length; i++) {
-        let createdAwake = new Date(awake[i].createdAt);
-        var tgl = awake[i].tgl;
-        if (sleep.length > 0) {
-          for (var j = 0; j < sleep.length; j++) {
-            if (sleep[j].createdAt != null) {
-              let createdSleep = new Date(sleep[j].createdAt);
-              var difference = Math.abs(createdSleep.getTime() - createdAwake.getTime());
-              var count = Math.round(((difference % 86400000) % 3600000) / 60000);
-              break;
-            }
-          }
-          arrdataview.push({
-            'date': tgl,
-            'count': count,
-
-          });
-        }
-
-      }
-
-    }
-
-    if (arrdataview.length > 0) {
-      var sumMinute = [];
-      arrdataview.reduce(function (res, value) {
-        if (!res[value.date]) {
-          res[value.date] = { date: value.date, count: 0 };
-          sumMinute.push(res[value.date])
-        }
-        res[value.date].count += value.count;
-        return res;
-      }, {});
-
-      console.log(sumMinute)
-
-    }
-
-    if (sumMinute.length > 0) {
-      for (let i = 0; i < sumMinute.length; i++) {
-        let countminute = sumMinute[i].count;
-        let tgl = sumMinute[i].date;
-        if (sumUser.length > 0) {
-          for (var j = 0; j < sumUser.length; j++) {
-            var countuser = sumUser[j].count;
-            if (sumUser[j].date == tgl) {
-              var counting = Math.round(countminute / countuser);
-              break;
-            }
-          }
-          arrdata.push({
-            'date': tgl,
-            'count': counting,
-
-          });
-        }
-
-      }
-
-    }
-
-    var data = [];
-    if (resultTime > 0) {
-      for (var i = 0; i < resultTime + 1; i++) {
-        var dt = new Date(startdate);
-        dt.setDate(dt.getDate() + i);
-        var splitdt = dt.toISOString();
-        var dts = splitdt.split('T');
-        var stdt = dts[0].toString();
-        var count = 0;
-        for (var j = 0; j < arrdata.length; j++) {
-          if (arrdata[j].date == stdt) {
-            count = arrdata[j].count;
-            break;
+        let obj = datasesi.find(objs => objs.date.toString() === tempdate);
+        //console.log(obj);
+        if (obj == undefined) {
+          obj =
+          {
+            date: tempdate,
+            count: 0
           }
         }
-        data.push({
-          'date': stdt,
-          'count': count
-        });
 
+        array.push(obj);
       }
-
     }
 
     var timestamps_end = await this.utilsService.getDateTimeString();
     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
-    return { response_code: 202, data, messages };
+    return { response_code: 202, array, messages };
   }
 
 
