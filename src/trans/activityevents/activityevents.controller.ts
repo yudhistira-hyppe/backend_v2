@@ -263,7 +263,7 @@ export class ActivityeventsController {
       datasesi = null;
     }
 
-    var array = [];
+    var data = [];
     if(datasesi != null)
     {
       var setstartdate = new Date(startdate);
@@ -290,14 +290,14 @@ export class ActivityeventsController {
           }
         }
 
-        array.push(obj);
+        data.push(obj);
       }
     }
 
     var timestamps_end = await this.utilsService.getDateTimeString();
     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
-    return { response_code: 202, array, messages };
+    return { response_code: 202, data, messages };
   }
 
 
