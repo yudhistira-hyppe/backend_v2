@@ -91,22 +91,12 @@ export class BanksService {
     }
 
     async update(id:string, CreateBanks: CreateBanksDto){
+        var mongo = require('mongoose');
         return await this.settingsModel.updateOne(
             {
-                _id:id
+                _id:new mongo.Types.ObjectId(id)
             },
-            {
-                "$set":
-                {
-                  "bankcode":CreateBanks.bankcode,
-                  "bankname":CreateBanks.bankname,
-                  "bankIcon":CreateBanks.bankIcon,
-                  "urlEbanking":CreateBanks.urlEbanking,
-                  "atm":CreateBanks.atm,
-                  "internetBanking":CreateBanks.internetBanking,
-                  "mobileBanking":CreateBanks.mobileBanking,
-                }
-            },
+            CreateBanks
         )
 
         // return CreateBanks;
