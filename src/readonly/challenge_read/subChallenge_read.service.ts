@@ -5290,8 +5290,32 @@ export class SubChallengeReadService {
                     pipeline:
                         [
                             {
+                                $match: {
+                                    $and: [
+                                        {
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                    [
+                                                        "$$userchallenge_fk",
+                                                        "$idSubChallenge"
+                                                    ]
+                                            }
+                                        },
+                                        {
+                                            isActive: true
+                                        },
+                                    ]
+                                }
+                            },
+                            {
+                                $sort: {
+                                    score: - 1
+                                }
+                            },
+                            {
                                 $setWindowFields: {
-                                    //partitionBy: "$state",
+                                    partitionBy: "$$userchallenge_fk",
                                     sortBy: {
                                         score: - 1
                                     },
@@ -5324,12 +5348,12 @@ export class SubChallengeReadService {
                                                             isActive: true
                                                         },
                                                         {
-                                                            rankNew: {
+                                                            score: {
                                                                 $ne: 0
                                                             }
                                                         },
                                                         {
-                                                            rankNew: {
+                                                            score: {
                                                                 $ne: null
                                                             }
                                                         },
@@ -5356,12 +5380,12 @@ export class SubChallengeReadService {
                                                             isActive: true
                                                         },
                                                         {
-                                                            rankNew: {
+                                                            score: {
                                                                 $ne: 0
                                                             }
                                                         },
                                                         {
-                                                            rankNew: {
+                                                            score: {
                                                                 $ne: null
                                                             }
                                                         },
@@ -5371,6 +5395,7 @@ export class SubChallengeReadService {
                                         ]
                                 }
                             },
+
                             {
                                 $project: {
                                     "_id": 1,
@@ -5394,7 +5419,7 @@ export class SubChallengeReadService {
                             },
                             {
                                 $set: {
-                                    userID: new mongoose.Types.ObjectId(idchallenge)
+                                    userID: new mongoose.Types.ObjectId(iduser)
                                 }
                             },
                             {
@@ -6074,6 +6099,9 @@ export class SubChallengeReadService {
                                                                                         ]
                                                                                 },
 
+                                                                            },
+                                                                            {
+                                                                                "active": true,
                                                                             },
                                                                             {
                                                                                 "$expr":
@@ -7866,8 +7894,32 @@ export class SubChallengeReadService {
                     pipeline:
                         [
                             {
+                                $match: {
+                                    $and: [
+                                        {
+                                            "$expr":
+                                            {
+                                                "$eq":
+                                                    [
+                                                        "$$userchallenge_fk",
+                                                        "$idSubChallenge"
+                                                    ]
+                                            }
+                                        },
+                                        {
+                                            isActive: true
+                                        },
+                                    ]
+                                }
+                            },
+                            {
+                                $sort: {
+                                    score: - 1
+                                }
+                            },
+                            {
                                 $setWindowFields: {
-                                    //partitionBy: "$state",
+                                    partitionBy: "$$userchallenge_fk",
                                     sortBy: {
                                         score: - 1
                                     },
@@ -7900,12 +7952,12 @@ export class SubChallengeReadService {
                                                             isActive: true
                                                         },
                                                         {
-                                                            rankNew: {
+                                                            score: {
                                                                 $ne: 0
                                                             }
                                                         },
                                                         {
-                                                            rankNew: {
+                                                            score: {
                                                                 $ne: null
                                                             }
                                                         },
@@ -7932,12 +7984,12 @@ export class SubChallengeReadService {
                                                             isActive: true
                                                         },
                                                         {
-                                                            rankNew: {
+                                                            score: {
                                                                 $ne: 0
                                                             }
                                                         },
                                                         {
-                                                            rankNew: {
+                                                            score: {
                                                                 $ne: null
                                                             }
                                                         },
@@ -7947,6 +7999,7 @@ export class SubChallengeReadService {
                                         ]
                                 }
                             },
+
                             {
                                 $project: {
                                     "_id": 1,
@@ -7970,7 +8023,7 @@ export class SubChallengeReadService {
                             },
                             {
                                 $set: {
-                                    userID: new mongoose.Types.ObjectId(idchallenge)
+                                    userID: new mongoose.Types.ObjectId(iduser)
                                 }
                             },
                             {
@@ -8650,6 +8703,9 @@ export class SubChallengeReadService {
                                                                                         ]
                                                                                 },
 
+                                                                            },
+                                                                            {
+                                                                                "active": true,
                                                                             },
                                                                             {
                                                                                 "$expr":
