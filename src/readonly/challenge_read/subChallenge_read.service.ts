@@ -5290,6 +5290,19 @@ export class SubChallengeReadService {
                     pipeline:
                         [
                             {
+                                $setWindowFields: {
+                                    //partitionBy: "$state",
+                                    sortBy: {
+                                        score: - 1
+                                    },
+                                    output: {
+                                        rankNew: {
+                                            $documentNumber: {}
+                                        }
+                                    }
+                                }
+                            },
+                            {
                                 "$match":
                                 {
                                     $or:
@@ -5311,12 +5324,12 @@ export class SubChallengeReadService {
                                                             isActive: true
                                                         },
                                                         {
-                                                            ranking: {
+                                                            rankNew: {
                                                                 $ne: 0
                                                             }
                                                         },
                                                         {
-                                                            score: {
+                                                            rankNew: {
                                                                 $ne: null
                                                             }
                                                         },
@@ -5343,12 +5356,12 @@ export class SubChallengeReadService {
                                                             isActive: true
                                                         },
                                                         {
-                                                            ranking: {
+                                                            rankNew: {
                                                                 $ne: 0
                                                             }
                                                         },
                                                         {
-                                                            score: {
+                                                            rankNew: {
                                                                 $ne: null
                                                             }
                                                         },
@@ -5363,9 +5376,9 @@ export class SubChallengeReadService {
                                     "_id": 1,
                                     "idSubChallenge": 1,
                                     "idUser": 1,
-                                    "ranking": 1,
+                                    "ranking": "$rankNew",
                                     "score": 1,
-                                    "history": 1,
+                                    //"history": 1,
                                     "isUserLogin": 1,
                                     "celeng": 1,
                                     "postChallengess": 1,
@@ -5381,7 +5394,7 @@ export class SubChallengeReadService {
                             },
                             {
                                 $set: {
-                                    userID: new mongoose.Types.ObjectId(iduser)
+                                    userID: new mongoose.Types.ObjectId(idchallenge)
                                 }
                             },
                             {
@@ -5406,7 +5419,7 @@ export class SubChallengeReadService {
                                 "$sort":
                                 {
                                     isUserLogin: - 1,
-                                    score: -1
+                                    ranking: 1
                                 }
                             },
                             {
@@ -6358,7 +6371,51 @@ export class SubChallengeReadService {
                                 }
                             }
                         },
-
+                        //{
+                        //		$set:{
+                        //				kelaminya:[
+                        //						{
+                        //                $cond: {
+                        //                    if :{
+                        //                        $eq: [{
+                        //                            $arrayElemAt: [{
+                        //                                $arrayElemAt: ["$peserta.peserta.jenisKelamin.Laki-Laki", 0]
+                        //                            }, 0]
+                        //                        }, "YES"]
+                        //                    },
+                        //                    then: "Laki-Laki",
+                        //                    else : "kusnurudin"
+                        //									}
+                        //							},
+                        //						{
+                        //                $cond: {
+                        //                    if :{
+                        //                        $eq: [{
+                        //                            $arrayElemAt: [{
+                        //                                $arrayElemAt: ["$peserta.peserta.jenisKelamin.PEREMPUAN", 0]
+                        //                            }, 0]
+                        //                        }, "YES"]
+                        //                    },
+                        //                    then: "PEREMPUAN",
+                        //                    else : "kusnurudin"
+                        //									}
+                        //							},
+                        //						{
+                        //                $cond: {
+                        //                    if :{
+                        //                        $eq: [{
+                        //                            $arrayElemAt: [{
+                        //                                $arrayElemAt: ["$peserta.peserta.jenisKelamin.OTHER", 0]
+                        //                            }, 0]
+                        //                        }, "YES"]
+                        //                    },
+                        //                    then: "OTHER",
+                        //                    else : "kusnurudin"
+                        //									}
+                        //							},
+                        //				]
+                        //		}
+                        //},
                     ],
 
                 }
@@ -7809,6 +7866,19 @@ export class SubChallengeReadService {
                     pipeline:
                         [
                             {
+                                $setWindowFields: {
+                                    //partitionBy: "$state",
+                                    sortBy: {
+                                        score: - 1
+                                    },
+                                    output: {
+                                        rankNew: {
+                                            $documentNumber: {}
+                                        }
+                                    }
+                                }
+                            },
+                            {
                                 "$match":
                                 {
                                     $or:
@@ -7830,12 +7900,12 @@ export class SubChallengeReadService {
                                                             isActive: true
                                                         },
                                                         {
-                                                            ranking: {
+                                                            rankNew: {
                                                                 $ne: 0
                                                             }
                                                         },
                                                         {
-                                                            score: {
+                                                            rankNew: {
                                                                 $ne: null
                                                             }
                                                         },
@@ -7862,12 +7932,12 @@ export class SubChallengeReadService {
                                                             isActive: true
                                                         },
                                                         {
-                                                            ranking: {
+                                                            rankNew: {
                                                                 $ne: 0
                                                             }
                                                         },
                                                         {
-                                                            score: {
+                                                            rankNew: {
                                                                 $ne: null
                                                             }
                                                         },
@@ -7882,9 +7952,9 @@ export class SubChallengeReadService {
                                     "_id": 1,
                                     "idSubChallenge": 1,
                                     "idUser": 1,
-                                    "ranking": 1,
+                                    "ranking": "$rankNew",
                                     "score": 1,
-                                    "history": 1,
+                                    //"history": 1,
                                     "isUserLogin": 1,
                                     "celeng": 1,
                                     "postChallengess": 1,
@@ -7900,7 +7970,7 @@ export class SubChallengeReadService {
                             },
                             {
                                 $set: {
-                                    userID: new mongoose.Types.ObjectId(iduser)
+                                    userID: new mongoose.Types.ObjectId(idchallenge)
                                 }
                             },
                             {
@@ -7925,7 +7995,7 @@ export class SubChallengeReadService {
                                 "$sort":
                                 {
                                     isUserLogin: - 1,
-                                    score: -1
+                                    ranking: 1
                                 }
                             },
                             {
@@ -8877,7 +8947,51 @@ export class SubChallengeReadService {
                                 }
                             }
                         },
-
+                        //{
+                        //		$set:{
+                        //				kelaminya:[
+                        //						{
+                        //                $cond: {
+                        //                    if :{
+                        //                        $eq: [{
+                        //                            $arrayElemAt: [{
+                        //                                $arrayElemAt: ["$peserta.peserta.jenisKelamin.Laki-Laki", 0]
+                        //                            }, 0]
+                        //                        }, "YES"]
+                        //                    },
+                        //                    then: "Laki-Laki",
+                        //                    else : "kusnurudin"
+                        //									}
+                        //							},
+                        //						{
+                        //                $cond: {
+                        //                    if :{
+                        //                        $eq: [{
+                        //                            $arrayElemAt: [{
+                        //                                $arrayElemAt: ["$peserta.peserta.jenisKelamin.PEREMPUAN", 0]
+                        //                            }, 0]
+                        //                        }, "YES"]
+                        //                    },
+                        //                    then: "PEREMPUAN",
+                        //                    else : "kusnurudin"
+                        //									}
+                        //							},
+                        //						{
+                        //                $cond: {
+                        //                    if :{
+                        //                        $eq: [{
+                        //                            $arrayElemAt: [{
+                        //                                $arrayElemAt: ["$peserta.peserta.jenisKelamin.OTHER", 0]
+                        //                            }, 0]
+                        //                        }, "YES"]
+                        //                    },
+                        //                    then: "OTHER",
+                        //                    else : "kusnurudin"
+                        //									}
+                        //							},
+                        //				]
+                        //		}
+                        //},
                     ],
 
                 }
@@ -10260,6 +10374,7 @@ export class SubChallengeReadService {
                     session: 1
                 }
             },
+
             // {
             //     $limit: 1
             // }

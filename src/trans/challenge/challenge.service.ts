@@ -4455,7 +4455,7 @@ export class ChallengeService {
                 let badge = null;
                 let nameBadges = null;
                 try {
-                  datauserchall = await this.UserchallengesService.findByChallengeandUser2(challengeID.toString(), idUser.toString(), subChallengeID.toString());
+                  datauserchall = await this.UserchallengesService.findByChallengeandUser3(challengeID.toString(), idUser.toString(), subChallengeID.toString());
                 } catch (e) {
                   datauserchall = null;
                 }

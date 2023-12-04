@@ -73,6 +73,49 @@ export class UserchallengesService {
         return data[0];
     }
 
+    async findByChallengeandUser3(challenge: string, user: string, idSubChallenge: string) {
+
+        var data = await this.UserchallengesModel.aggregate([
+            // {
+            //     $match: {
+            //         "idChallenge": new Types.ObjectId(challenge),
+            //         "idSubChallenge": new Types.ObjectId(idSubChallenge),
+            //         "idUser": new Types.ObjectId(user),
+            //     }
+            // }
+            {
+                $match: {
+                    idSubChallenge: new Types.ObjectId(idSubChallenge),
+                }
+            },
+            {
+                $setWindowFields: {
+                    //partitionBy: "$state",
+                    sortBy: {
+                        score: - 1
+                    },
+                    output: {
+                        rankNew: {
+                            $documentNumber: {}
+                        }
+                    }
+                }
+            },
+            {
+                $match: {
+                    idUser: new Types.ObjectId(user),
+                }
+            },
+            {
+                $project: {
+                    ranking: "$rankNew"
+                }
+            }
+        ]);
+
+        return data[0];
+    }
+
     async find(): Promise<Userchallenges[]> {
         return this.UserchallengesModel.find().exec();
     }

@@ -6832,10 +6832,6 @@ export class subChallengeService {
                 },
 
             },
-
-
-
-
             {
                 $project:
                 {
