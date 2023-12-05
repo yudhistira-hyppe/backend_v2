@@ -935,4 +935,66 @@ export class UserchallengesService {
         var query = await this.UserchallengesModel.aggregate(pipeline);
         return query;
     }
+
+    async cekUserChalactivity(iduser: string, idevent: string) {
+        var pipeline = [];
+        pipeline.push({
+            $set: {
+                "timenow":
+                {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d %H:%M:%S",
+                        "date": {
+                            $add: [
+                                new Date(),
+                                25200000
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+            {
+                $match: {
+                    "idUser": new Types.ObjectId(iduser),
+                    'activity.id': idevent
+
+                }
+            },
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+
+                            {
+                                $expr:
+                                {
+                                    $gte:
+                                        [
+                                            "$timenow",
+                                            "$startDatetime",
+
+                                        ]
+                                },
+
+                            },
+                            {
+                                $expr:
+                                {
+                                    $lte:
+                                        [
+                                            "$timenow",
+                                            "$endDatetime",
+
+                                        ]
+                                },
+
+                            },
+                        ]
+                }
+            },);
+        var query = await this.UserchallengesModel.aggregate(pipeline);
+        return query;
+    }
 }

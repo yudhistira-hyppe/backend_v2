@@ -1248,6 +1248,7 @@ export class ContenteventsController {
     else if (eventType == "VIEW") {
       if (email_user !== email_receiverParty) {
         var idevent1 = null;
+        var idevent2 = null;
         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW Email Not Same >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify({ postID: request.body.postID, email_user: email_user, email_receiverParty: email_receiverParty }));
         var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEW", "DONE", email_receiverParty, "", request.body.postID);
         var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "VIEW", "ACCEPT", "", email_user, request.body.postID);
@@ -1320,12 +1321,12 @@ export class ContenteventsController {
             await this.postsService.updateView(email_receiverParty, request.body.postID);
             await this.insightsService.updateViews(email_receiverParty);
 
-            let dataview = await this.contenteventsService.listviewasli(email_user, request.body.postID);
+            if (idevent1 != null) {
+              let dataview = await this.userchallengesService.cekUserChalactivity(iduser, idevent1);
 
-            if (dataview.length > 1) {
+              if (dataview.length > 0) {
 
-            } else {
-              if (idevent1 != null) {
+              } else {
                 try {
                   // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
                   this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty)
@@ -1335,7 +1336,6 @@ export class ContenteventsController {
                 }
               }
             }
-
 
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
@@ -1398,22 +1398,29 @@ export class ContenteventsController {
                 let resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
                 idevent1 = resultdata1._id;
                 let dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
+                let dataview = await this.contenteventsService.listviewasli(email_user, request.body.postID);
 
-                let dataview = await this.contenteventsService.listview(email_user, request.body.postID);
+                if (dataview.length > 0) {
+                  idevent2 = dataview[0]._id;
+                  if (idevent2 !== null) {
 
-                if (dataview.length > 1) {
+                    let dataview2 = await this.userchallengesService.cekUserChalactivity(iduser, idevent2);
 
-                } else {
-                  try {
-                    // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
-                    this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty)
-                    console.log("sukses hitung score")
-                  } catch (e) {
-                    console.log("gagal ngitung skor" + e)
+                    if (dataview2.length > 0) {
+
+                    } else {
+                      try {
+                        // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+                        this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty)
+                        console.log("sukses hitung score")
+                      } catch (e) {
+                        console.log("gagal ngitung skor" + e)
+                      }
+                    }
+
                   }
+
                 }
-
-
 
               } catch (error) {
                 var fullurl = request.get("Host") + request.originalUrl;
