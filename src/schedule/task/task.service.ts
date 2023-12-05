@@ -32,8 +32,8 @@ export class TaskService {
     this.transactionsService.ceckStatusDisbursement();
   }
 
-  //@Cron('0 0 0 * * *')
-  @Cron('0 */1 * * * *')
+  @Cron('0 0 0 * * *')
+  //@Cron('0 */1 * * * *')
   ceckADS() {
     this.logger.debug('----------ADS JOB START----------', new Date());
     this.adsService.ceckAdsActive();
