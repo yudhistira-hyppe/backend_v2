@@ -172,7 +172,7 @@ export class UserticketsController {
         var iduser = ubasic._id;
         try {
           auth = await this.userauthsService.findOneByEmail(email);
-          os = auth.regSrc;
+          os = auth.loginSrc;
         } catch (e) {
           os = "";
         }
