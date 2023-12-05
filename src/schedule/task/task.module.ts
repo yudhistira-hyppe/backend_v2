@@ -9,9 +9,11 @@ import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
 import { PostsModule } from '../../content/posts/posts.module';
 import { ChallengeModule } from 'src/trans/challenge/challenge.module';
 import { TransactionsModule } from 'src/trans/transactions/transactions.module';
+import { AdsModule } from 'src/trans/adsv2/ads/ads.module';
 
 @Module({
   imports: [
+      AdsModule,
       TransactionsModule,
       ChallengeModule,
       ScheduleModule.forRoot(),

@@ -25,7 +25,7 @@ export class AdsService {
         private readonly AccountbalancesService: AccountbalancesService,
         private readonly userAdsService: UserAdsService,
         private readonly utilsService: UtilsService,
-        private readonly ossContentPictService: OssContentPictService,
+        private readonly ossContentPictService: OssContentPictService, 
     ) { }
 
     async create(AdsDto_: AdsDto): Promise<Ads> {
@@ -7319,5 +7319,44 @@ export class AdsService {
     async uploadOss(buffer: Buffer, path: string) {
         var result = await this.ossContentPictService.uploadFileBuffer(buffer, path);
         return result;
+    }
+
+    async ceckAdsActive(){
+        const CurrentDate = await this.utilsService.getDateString();
+        const ads = await this.adsModel.find({ liveEnd: { $lte: CurrentDate }, status:"ACTIVE" });
+        if (await this.utilsService.ceckData(ads)){
+            if (ads.length>0){
+                for (let t = 0; t < ads.length; t++) {
+                    let totalCredit = ads[t].totalCredit;
+                    let totalUseCredit = ads[t].usedCredit;
+                    let sisaCredit = totalCredit - totalUseCredit;
+                    const status = "IN_ACTIVE";
+                    let AdsDto_ = new AdsDto();
+                    AdsDto_.status = status;
+                    AdsDto_.isActive = false;
+                    await this.update(ads[t]._id, AdsDto_);
+                    let AdsBalaceCreditDto_ = new AdsBalaceCreditDto();
+                    AdsBalaceCreditDto_.idtrans = ads[t]._id;
+                    AdsBalaceCreditDto_.iduser = ads[t].userID;
+                    AdsBalaceCreditDto_.type = "REFUND";
+                    AdsBalaceCreditDto_.description = "ADS REFUND REMAINING CREDIT"
+                    AdsBalaceCreditDto_.idAdspricecredits = ads[t].idAdspricecredits;
+                    const cecBalanceCredit = await this.adsBalaceCreditService.find(AdsBalaceCreditDto_);
+                    if (!(await this.utilsService.ceckData(cecBalanceCredit))){
+                        let _AdsBalaceCreditDto_ = new AdsBalaceCreditDto();
+                        _AdsBalaceCreditDto_._id = new mongoose.Types.ObjectId();
+                        _AdsBalaceCreditDto_.iduser = ads[t].userID;
+                        _AdsBalaceCreditDto_.debet = 0;
+                        _AdsBalaceCreditDto_.kredit = sisaCredit;
+                        _AdsBalaceCreditDto_.type = "REFUND";
+                        _AdsBalaceCreditDto_.timestamp = await this.utilsService.getDateTimeString();
+                        _AdsBalaceCreditDto_.description = "ADS REFUND REMAINING CREDIT";
+                        _AdsBalaceCreditDto_.idtrans = ads[t]._id;
+                        _AdsBalaceCreditDto_.idAdspricecredits = ads[t].idAdspricecredits;
+                        await this.insertBalaceDebit(_AdsBalaceCreditDto_);
+                    }
+                }
+            }
+        }
     }
 }
