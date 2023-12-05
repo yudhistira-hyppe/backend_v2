@@ -927,9 +927,10 @@ export class ContenteventsController {
     var Insight_sender = await this.insightsService.findemail(email_user);
     var Insight_receiver = await this.insightsService.findemail(email_receiverParty);
 
-    let userbasic1 = await this.userbasicsService.findOne(email_user);
-
+    var userbasic1 = await this.userbasicsService.findOne(email_user);
+    var iduser = null;
     if (userbasic1 == null || userbasic1 == undefined) {
+      iduser = userbasic1._id;
       var fullurl = request.get("Host") + request.originalUrl;
       var timestamps_end = await this.utilsService.getDateTimeString();
       var reqbody = JSON.parse(JSON.stringify(request.body));
@@ -1247,6 +1248,7 @@ export class ContenteventsController {
     else if (eventType == "VIEW") {
       if (email_user !== email_receiverParty) {
         var idevent1 = null;
+        var idevent2 = null;
         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW Email Not Same >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify({ postID: request.body.postID, email_user: email_user, email_receiverParty: email_receiverParty }));
         var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEW", "DONE", email_receiverParty, "", request.body.postID);
         var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "VIEW", "ACCEPT", "", email_user, request.body.postID);
@@ -1318,19 +1320,6 @@ export class ContenteventsController {
 
             await this.postsService.updateView(email_receiverParty, request.body.postID);
             await this.insightsService.updateViews(email_receiverParty);
-
-            if (idevent1 != null) {
-              try {
-                // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
-
-                this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty)
-                console.log("sukses hitung score")
-              } catch (e) {
-                console.log("gagal ngitung skor" + e)
-              }
-
-            }
-
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
             var timestamps_end = await this.utilsService.getDateTimeString();
@@ -1342,7 +1331,18 @@ export class ContenteventsController {
               error,
             );
           }
-        } else {
+        }
+
+
+        var datacek = null;
+
+        try {
+          datacek = await this.userchallengesService.cekUserjoin(iduser);
+        } catch (e) {
+          datacek = null;
+        }
+
+        if (datacek !== null) {
           let ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEWCHALLENGE", "DONE", email_receiverParty, "", request.body.postID);
           let ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "VIEWCHALLENGE", "ACCEPT", "", email_user, request.body.postID);
           if (!(await this.utilsService.ceckData(ceck_data_DONE)) && !(await this.utilsService.ceckData(ceck_data_ACCEPT))) {
@@ -1383,13 +1383,7 @@ export class ContenteventsController {
               idevent1 = resultdata1._id;
               let dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
 
-              let dataview = await this.contenteventsService.listview(email_user, request.body.postID);
-
-
-
-              if (dataview.length > 0) {
-
-              } else {
+              if (idevent1 !== null) {
                 try {
                   // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
                   this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty)
@@ -1397,8 +1391,9 @@ export class ContenteventsController {
                 } catch (e) {
                   console.log("gagal ngitung skor" + e)
                 }
-              }
 
+
+              }
 
 
             } catch (error) {
@@ -1415,6 +1410,8 @@ export class ContenteventsController {
 
           }
         }
+
+
       }
       var datapost = await this.NewpostsService.updatePostviewer(request.body.postID, email_user);
     }

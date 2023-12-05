@@ -23,7 +23,7 @@ export class AssetsFilterService {
     }
 
     async findGet(): Promise<AssetsFilter[]> {
-        return this.sourceFilterModel.find();
+        return this.sourceFilterModel.find({ "status":true });
     }
 
     async findOne(id: string): Promise<AssetsFilter> {
