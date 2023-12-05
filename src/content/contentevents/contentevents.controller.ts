@@ -1320,23 +1320,6 @@ export class ContenteventsController {
 
             await this.postsService.updateView(email_receiverParty, request.body.postID);
             await this.insightsService.updateViews(email_receiverParty);
-
-            // if (idevent1 != null) {
-            //   let dataview = await this.userchallengesService.cekUserChalactivity(iduser, idevent1);
-
-            //   if (dataview.length > 0) {
-
-            //   } else {
-            //     try {
-            //       // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
-            //       this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty)
-            //       console.log("sukses hitung score")
-            //     } catch (e) {
-            //       console.log("gagal ngitung skor" + e)
-            //     }
-            //   }
-            // }
-
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
             var timestamps_end = await this.utilsService.getDateTimeString();
@@ -1399,17 +1382,8 @@ export class ContenteventsController {
               let resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
               idevent1 = resultdata1._id;
               let dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
-              //  let dataview = await this.contenteventsService.listviewasli(email_user, request.body.postID);
 
-              //if (dataview.length > 0) {
-              // idevent2 = dataview[0]._id;
               if (idevent1 !== null) {
-
-                //  let dataview2 = await this.userchallengesService.cekUserChalactivity(iduser, idevent1);
-
-                // if (dataview2.length > 0) {
-
-                // } else {
                 try {
                   // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
                   this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty)
@@ -1417,11 +1391,10 @@ export class ContenteventsController {
                 } catch (e) {
                   console.log("gagal ngitung skor" + e)
                 }
-                // }
+
 
               }
 
-              // }
 
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
