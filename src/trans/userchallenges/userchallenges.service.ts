@@ -874,4 +874,65 @@ export class UserchallengesService {
 
         return data
     }
+
+    async cekUserjoin(iduser: string) {
+        var pipeline = [];
+        pipeline.push({
+            $set: {
+                "timenow":
+                {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d %H:%M:%S",
+                        "date": {
+                            $add: [
+                                new Date(),
+                                25200000
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+            {
+                $match: {
+                    "idUser": new Types.ObjectId(iduser),
+
+                }
+            },
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+
+                            {
+                                $expr:
+                                {
+                                    $gte:
+                                        [
+                                            "$timenow",
+                                            "$startDatetime",
+
+                                        ]
+                                },
+
+                            },
+                            {
+                                $expr:
+                                {
+                                    $lte:
+                                        [
+                                            "$timenow",
+                                            "$endDatetime",
+
+                                        ]
+                                },
+
+                            },
+                        ]
+                }
+            },);
+        var query = await this.UserchallengesModel.aggregate(pipeline);
+        return query;
+    }
 }

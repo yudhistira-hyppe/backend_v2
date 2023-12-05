@@ -4303,7 +4303,7 @@ export class ContenteventsService {
           "email": email,
           "postID": postid,
           "event": "DONE",
-          "eventType": { $in: ["VIEW", "VIEWCHALLENGE"] }
+          "eventType": "VIEWCHALLENGE"
         }
       }
 
