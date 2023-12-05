@@ -1320,17 +1320,17 @@ export class ContenteventsController {
             await this.postsService.updateView(email_receiverParty, request.body.postID);
             await this.insightsService.updateViews(email_receiverParty);
 
-            if (idevent1 != null) {
-              try {
-                // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+            // if (idevent1 != null) {
+            //   try {
+            //     // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
 
-                this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty)
-                console.log("sukses hitung score")
-              } catch (e) {
-                console.log("gagal ngitung skor" + e)
-              }
+            //     this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty)
+            //     console.log("sukses hitung score")
+            //   } catch (e) {
+            //     console.log("gagal ngitung skor" + e)
+            //   }
 
-            }
+            // }
 
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
