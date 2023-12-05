@@ -250,10 +250,11 @@ export class BanksController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('api/banks/delete/:id')
+    @Post('api/banks/delete/:id')
     async softdelete(
         @Param('id') id: string,
         @Headers() headers,
+        @Body() CreateBanks: CreateBanksDto,
         @Req() request
     ) {
       var fullurl = request.get("Host") + request.originalUrl;
@@ -264,10 +265,13 @@ export class BanksController {
       var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
       var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
 
-      var updatedata = new CreateBanksDto();
-      updatedata.isActive = false;
+      // var updatedata = new CreateBanksDto();
+      // updatedata['isActive'] = CreateBanksDto.isActive;
 
-      await this.banksService.deletedata(id);
+      var updatedata = new CreateBanksDto();
+      updatedata.isActive = CreateBanks.isActive;
+
+      await this.banksService.update(id, updatedata);
 
       const messages = {
           "info": ["The process successful"],
