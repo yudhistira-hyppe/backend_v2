@@ -4311,6 +4311,21 @@ export class ContenteventsService {
     return query;
   }
 
+  async listviewasli(email: string, postid: string) {
+    const query = await this.ContenteventsModel.aggregate([
+      {
+        $match: {
+          "email": email,
+          "postID": postid,
+          "event": "DONE",
+          "eventType": "VIEW"
+        }
+      }
+
+    ]);
+    return query;
+  }
+
   async scoreviewrequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string) {
     var call = {
       "idevent": idevent,
