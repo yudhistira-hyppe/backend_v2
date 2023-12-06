@@ -894,7 +894,10 @@ export class UserchallengesService {
                             },
                         ]
                 }
-            },);
+            },
+            {
+                $project: { idUser: 1 }
+            });
         var query = await this.UserchallengesModel.aggregate(pipeline);
         return query;
     }
