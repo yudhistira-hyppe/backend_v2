@@ -109,6 +109,10 @@ export class newPosts {
   rotate: number
   @Prop()
   reactions: number;
+  @Prop()
+  mediaSource: any[];
+  @Prop()
+  isBoost: number;
 }
 
 export const NewpostsSchema = SchemaFactory.createForClass(newPosts);

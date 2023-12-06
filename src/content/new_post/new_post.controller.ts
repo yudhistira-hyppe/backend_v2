@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req, HttpCode, HttpStatus, Post, Body, Headers, BadRequestException, Param } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, HttpCode, HttpStatus, Post, Body, Headers, BadRequestException, Param, Query } from '@nestjs/common';
 import { NewPostService } from './new_post.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { CreateNewPostDTO, CreatenewPost2Dto } from './dto/create-newPost.dto';
@@ -1429,5 +1429,18 @@ export class NewPostController {
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('posts/getboost/v2')
+    async getPostBoost(
+        @Query('pageNumber') pageNumber: number,
+        @Query('pageRow') pageRow: number,
+        @Headers() headers) {
+        const pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
+        const pageRow_ = (pageRow != undefined) ? (pageRow != 0) ? pageRow : 10 : 10;
+        console.log(pageNumber_);
+        console.log(pageRow_);
+        return this.newPostService.getUserPostBoost(pageNumber_, pageRow_, headers);
     }
 }

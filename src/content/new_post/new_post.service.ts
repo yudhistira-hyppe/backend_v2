@@ -1,15 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { newPosts, NewpostsDocument } from './schemas/newPost.schema';
 import { PostContentService } from '../posts/postcontent.service';
+import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema';
+import { UtilsService } from 'src/utils/utils.service';
+import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
+import { CreateNewPostDTO, PostResponseApps, PostData, Avatar, Metadata, TagPeople, Cat, Privacy } from './dto/create-newPost.dto'; 
+import { ContenteventsService } from '../contentevents/contentevents.service';
+import { ErrorHandler } from 'src/utils/error.handler';
 
 @Injectable()
 export class NewPostService {
+  private readonly logger = new Logger(NewPostService.name);
+
     constructor(
         @InjectModel(newPosts.name, 'SERVER_FULL')
         private readonly loaddata: Model<NewpostsDocument>,
-    private readonly postContentService: PostContentService
+        private readonly postContentService: PostContentService,
+        private readonly utilService: UtilsService,
+        private readonly logapiSS: LogapisService,
+        private readonly errorHandler: ErrorHandler,
+        private readonly basic2SS: UserbasicnewService,
+        private readonly contentEventService: ContenteventsService,
     ) { }
 
   async findOne(id: string) {
@@ -10108,5 +10122,602 @@ export class NewPostService {
           }
         },
       );
+    }
+
+    async getUserPostBoost(pageNumber: number, pageRow: number, headers: any) {
+      var timestamps_start = await this.utilService.getDateTimeString();
+      var fullurl = headers.host + "/api/posts/getboost/v2";
+      var setdata = {
+        "pageNumber": pageNumber,
+        "pageRow": pageRow,
+      };
+      var reqbody = JSON.parse(JSON.stringify(setdata));
+  
+      var token = headers['x-auth-token'];
+      var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+          await this.errorHandler.generateNotAcceptableException(
+              'Unauthorized',
+          );
+      }
+      if (!(await this.utilService.validasiTokenEmail(headers))) {
+          await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed email header dan token not match',
+          );
+      }
+      
+      let res = new PostResponseApps();
+      res.response_code = 202;
+      let pd = await this.doGetUserPostBoost2(pageNumber, pageRow, auth.email);
+      res.data = pd;
+  
+      var timestamps_end = await this.utilService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+  
+      return res;
+    }
+
+    private async doGetUserPostBoost2(pageNumber: number, pageRow: number, whoami: string): Promise<PostData[]>{
+      // var currentDateString = await this.utilService.getDateTimeISOString();
+      // var currentDate = new Date(currentDateString);
+      // var currentDateFormat = currentDate.toISOString().split('T')[0] + " " + currentDate.toISOString().split('T')[1].split('.')[0];
+      var perPage = Math.max(0, pageRow), page = Math.max(0, pageNumber);
+
+      const query = await this.loaddata.aggregate([
+        {
+            "$match":
+            {
+                "$and":
+                [
+                    {
+                        email: whoami
+                    },
+                    {
+                        active: true
+                    },
+                    {
+                        boosted:
+                        {
+                            "$exists":true
+                        }
+                    },
+                    {
+                        "$expr":
+                        {
+                            "$gt":
+                            [
+                                {
+                                    "$size":"$boosted"
+                                },
+                                0
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $lookup: 
+            {
+                from: 'newUserBasics',
+                localField: 'email',
+                foreignField: 'email',
+                as: 'basic_data',
+            },
+        },
+        {
+            $set: 
+            {
+                nowDate:
+                {
+                    "$dateToString": 
+                    {
+                        "format": "%Y-%m-%d %H:%M:%S",
+                        "date": 
+                        {
+                            $add: 
+                            [
+                                new Date(), 25200000
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "$addFields":
+            {
+                "tempmediasource":
+                {
+                    "$arrayElemAt":
+                    [
+                        "$mediaSource", 0
+                    ]
+                },
+                "tempinterest":"$category.$id",
+                "tempboost":
+                {
+                    "$arrayElemAt":
+                    [
+                        "$boosted", 0
+                    ]
+                },
+                "tempuser":
+                {
+                    "$arrayElemAt":
+                    [
+                        "$basic_data", 0
+                    ]
+                }
+            }
+        },
+        {
+            $lookup: 
+            {
+                from: 'interests',
+                as: 'cats',
+                let:
+                {
+                    catid:"$tempinterest"
+                },
+                pipeline:
+                [
+                    {
+                        "$match":
+                        {
+                            "$expr":
+                            {
+                                "$in":
+                                [
+                                    "$_id", "$$catid"
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+        },
+        {
+            $lookup:
+            {
+                from:'contentevents',
+                as:"isLike",
+                let:
+                {
+                    email:"$email",
+                    post:"$postID"
+                },
+                pipeline:
+                [
+                    {
+                        "$match":
+                        {
+                            "$and":
+                            [
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                        [
+                                            "$email", "$$email"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                        [
+                                            "$postID", "$$post"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "active":true
+                                },
+                                {
+                                    "eventType":"LIKE"
+                                },
+                                {
+                                    "event":"DONE"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $lookup:
+            {
+                from:'contentevents',
+                as:"isView",
+                let:
+                {
+                    email:"$email",
+                    post:"$postID"
+                },
+                pipeline:
+                [
+                    {
+                        "$match":
+                        {
+                            "$and":
+                            [
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                        [
+                                            "$email", "$$email"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                        [
+                                            "$postID", "$$post"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "active":true
+                                },
+                                {
+                                    "eventType":"VIEW"
+                                },
+                                {
+                                    "event":"DONE"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $lookup:
+            {
+                from:'contentevents',
+                as:"isLike",
+                let:
+                {
+                    email:"$email",
+                    post:"$postID"
+                },
+                pipeline:
+                [
+                    {
+                        "$match":
+                        {
+                            "$and":
+                            [
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                        [
+                                            "$email", "$$email"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                        [
+                                            "$postID", "$$post"
+                                        ]
+                                    }
+                                },
+                                {
+                                    "active":true
+                                },
+                                {
+                                    "eventType":"LIKE"
+                                },
+                                {
+                                    "event":"DONE"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "$project":
+            {
+                "active": 1,
+                "allowComments": 1,
+                "certified": 1,
+                "createdAt": 1,
+                "updatedAt": 1,
+                "description": 1,
+                "email": 1,
+                "boosted": 1,
+                "boostDate": "$tempboost.boostDate",
+                "isBoost": 1,
+                "boostJangkauan": 
+                {
+                    "$size":"$tempboost.boostViewer"
+                },
+                "statusBoost": 
+                {
+                    $switch: 
+                    {
+                        branches: 
+                        [
+                            { 
+                                case: 
+                                { 
+                                    $and: 
+                                    [
+                                        { 
+                                            $lte: 
+                                            [
+                                                "$tempboost.boostSession.start", "$nowDate"
+                                            ] 
+                                        }, 
+                                        { 
+                                            $gte: 
+                                            [
+                                                "$tempboost.boostSession.end", "$nowDate"
+                                            ] 
+                                        }
+                                    ] 
+                                }, 
+                                then: "BERLANGSUNG" 
+                            },
+                            { 
+                                case: 
+                                { 
+                                    $and: 
+                                    [
+                                        { 
+                                            $gte: 
+                                            [
+                                                "$tempboost.boostSession.start", "$nowDate"
+                                            ] 
+                                        }, 
+                                        { 
+                                            $gte: 
+                                            [
+                                                "$tempboost.boostSession.end", "$nowDate"
+                                            ] 
+                                        }
+                                    ] 
+                                }, 
+                                then: "AKAN DATANG" 
+                            },
+                        ],
+                        "default": "SELESAI"
+                    }
+                },
+                "reportedStatus": 1,
+                "username": "$tempuser.username",
+                "avatar": 
+                {
+                    "mediaBasePath": 
+                    {
+                        "$ifNull":
+                        [
+                            "$tempuser.mediaBasePath",
+                            null,
+                        ]
+                    },
+                    "mediaType":
+                    {
+                        "$ifNull":
+                        [
+                            "$tempuser.mediaType",
+                            null,
+                        ]
+                    },
+                    "mediaUri":
+                    {
+                        "$ifNull":
+                        [
+                            "$tempuser.mediaUri",
+                            null,
+                        ]
+                    },
+                    "mediaEndpoint":
+                    {
+                        "$ifNull":
+                        [
+                            "$tempuser.mediaEndpoint",
+                            null,
+                        ]
+                    },
+                },
+                "location": 1,
+                "visibility": 1,
+                "postID": 1,
+                "postType": 1,
+                "saleAmount": 1,
+                "saleLike": 1,
+                "saleView": 1,
+                "cats": "$cats",
+                "privacy": 
+                {
+                    "isPostPrivate": "$tempuser.isPostPrivate",
+                    "isPrivate": "$tempuser.isPrivate",
+                    "isCelebrity": "$tempuser.isCelebrity"
+                },
+                "isApsara": 
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediasource.apsara",
+                        false
+                    ]
+                },
+                "apsaraId": 
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediasource.apsaraId",
+                        ""
+                    ]
+                },
+                "mediaEndpoint":
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediasource.mediaEndpoint",
+                        null
+                    ]
+                },
+                "mediaUri":
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediasource.mediaUri",
+                        null
+                    ]
+                },
+                "mediaType":
+                {
+                    "$ifNull":
+                    [
+                        "$tempmediasource.mediaType",
+                        null
+                    ]
+                },
+                "isViewed": 
+                {
+                    "$cond":
+                    {
+                        if:
+                        {
+                            "$eq":
+                            [
+                                "$isView",
+                                []
+                            ]
+                        },
+                        then:false,
+                        else:true
+                    }
+                },
+                "isLiked": 
+                {
+                    "$cond":
+                    {
+                        if:
+                        {
+                            "$eq":
+                            [
+                                "$isLike",
+                                []
+                            ]
+                        },
+                        then:false,
+                        else:true
+                    }
+                },
+            }
+        },
+        { 
+            $sort: 
+            { 
+                status: -1, 
+                boostDate: -1 
+            } 
+        },
+        { 
+            $skip: (perPage * page) 
+        },
+        { 
+            $limit: perPage 
+        },
+        {
+            "$project":
+            {
+              "active": 1,
+              "allowComments": 1,
+              "certified": 1,
+              "createdAt": 1,
+              "updatedAt": 1,
+              "description": 1,
+              "email": 1,
+              "boosted": 1,
+              "boostDate": 1,
+              "isBoost": 1,
+              "boostJangkauan": 1,
+              "statusBoost": 1,
+              "reportedStatus": 1,
+              "username": 1,
+              "avatar": 1,
+              "location": 1,
+              "visibility": 1,
+              "postID": 1,
+              "postType": 1,
+              "saleAmount": 1,
+              "saleLike": 1,
+              "saleView": 1,
+              "cats": 1,
+              "privacy": 1,
+              "isApsara": 1,
+              "apsaraId": 1,
+              "mediaEndpoint": 1,
+              "mediaUri": 1,
+              "mediaType": 1,
+              "isViewed": 1,
+              "isLiked": 1
+            }
+        }
+      ]);
+
+      // console.log(query);
+
+      var listdata = [];
+      var tempresult = null;
+      var tempdata = null;
+      for (var i = 0; i < query.length; i++) {
+        tempdata = query[i];
+        if (tempdata.isApsara == true) {
+          listdata.push(tempdata.apsaraId);
+        }
+        else {
+          listdata.push(undefined);
+        }
+      }
+
+      //console.log(listdata);
+      var apsaraimagedata = await this.postContentService.getImageApsara(listdata);
+      // console.log(apsaraimagedata);
+      // console.log(resultdata.ImageInfo[0]);
+      tempresult = apsaraimagedata.ImageInfo;
+      for (var i = 0; i < query.length; i++) {
+        for (var j = 0; j < tempresult.length; j++) {
+          if (tempresult[j].ImageId == query[i].apsaraId) {
+            query[i].apsaraThumbId = tempresult[j].apsaraThumbId;
+          }
+        }
+        if (query[i].apsara == false && (query[i].mediaType == "image" || query[i].mediaType == "images")) {
+          query[i].apsaraThumbId = '/thumb/' + query[i].postID;
+        }
+      }
+
+      var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
+      // console.log(apsaravideodata);
+      // console.log(resultdata.ImageInfo[0]);
+      tempresult = apsaravideodata.VideoList;
+      for (var i = 0; i < query.length; i++) {
+        for (var j = 0; j < tempresult.length; j++) {
+          if (tempresult[j].VideoId == query[i].apsaraId) {
+            query[i].mediaThumbEndpoint = tempresult[j].CoverURL;
+          }
+          else if (query[i].apsara == false && query[i].mediaType == "video") {
+            query[i].mediaThumbEndpoint = '/thumb/' + query[i].postID;
+          }
+        }
+      }
+
+      return query;
     }
 }
