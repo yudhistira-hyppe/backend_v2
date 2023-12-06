@@ -264,8 +264,6 @@ export class UserchallengesService {
                     "createdAt": 1,
                     "updatedAt": 1,
                     "isActive": 1,
-                    "activity": 1,
-                    "history": 1,
                     "ranking": 1,
                     "score": 1,
                     "session": {
