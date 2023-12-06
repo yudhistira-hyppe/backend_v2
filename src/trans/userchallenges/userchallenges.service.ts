@@ -308,11 +308,7 @@ export class UserchallengesService {
 
                 }
             },
-            {
-                $set: {
-                    "size": { $subtract: [{ $size: "$history" }, 1] },
-                }
-            },
+
             {
                 $project: {
                     "idChallenge": 1,
@@ -326,42 +322,11 @@ export class UserchallengesService {
                     "isActive": 1,
                     "ranking": 1,
                     "score": 1,
-                    "activity": 1,
-                    "history": 1,
                     "rejectRemark": 1,
-                    "size": "$size",
 
                 }
             },
-            {
-                $project: {
-                    "idChallenge": 1,
-                    "idSubChallenge": 1,
-                    "idUser": 1,
-                    "objectChallenge": 1,
-                    "startDatetime": 1,
-                    "endDatetime": 1,
-                    "createdAt": 1,
-                    "updatedAt": 1,
-                    "isActive": 1,
-                    "ranking": 1,
-                    "score": 1,
-                    "activity": 1,
-                    "history": 1,
-                    "rejectRemark": 1,
-                    "size": 1,
-                    "jam": {
-                        $arrayElemAt: ["$history.updatedAt", "$size"]
-                    },
-                }
-            },
-            {
 
-                $sort: {
-                    score: - 1,
-                    jam: 1
-                }
-            }
         ]);
         return query;
     }
