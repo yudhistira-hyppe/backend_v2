@@ -14948,37 +14948,21 @@ export class PostsReadService {
 
             ]
           }
-        },
-        {
-          $sort: {
-            viewerCounts: 1,
-            selfContents: - 1,
-            isBoost: - 1,
-            createdAt: - 1,
-
+        }, {
+        $set: {
+          lastTime: {
+            "$concat": [
+              {
+                "$dateToString": {
+                  "format": "%Y-%m-%d",
+                  "date": new Date()
+                }
+              },
+              " 08:00:00"
+            ]
           }
-        },
-        {
-          $skip: skip
-        },
-        {
-          $limit: valuelimit
-        },
-        {
-          $set: {
-            lastTime: {
-              "$concat": [
-                {
-                  "$dateToString": {
-                    "format": "%Y-%m-%d",
-                    "date": new Date()
-                  }
-                },
-                " 08:00:00"
-              ]
-            }
-          }
-        },
+        }
+      },
         {
           $set: {
 
@@ -15078,19 +15062,26 @@ export class PostsReadService {
                 {
                   $size: "$dodolCount"
                 },
-                //{
-                //		$subtract: [
-                //				{
-                //						$size: "$dodolCount"
-                //				},
-                //				1
-                //		]
-                //},
                 else: 1
               }
             },
 
           }
+        },
+        {
+          $sort: {
+            viewerCounts: 1,
+            selfContents: - 1,
+            isBoost: - 1,
+            createdAt: - 1,
+
+          }
+        },
+        {
+          $skip: skip
+        },
+        {
+          $limit: valuelimit
         },
         {
           $group: {
@@ -16931,37 +16922,21 @@ export class PostsReadService {
 
             ]
           }
-        },
-        {
-          $sort: {
-            viewerCounts: 1,
-            selfContents: - 1,
-            isBoost: - 1,
-            createdAt: - 1,
-
+        }, {
+        $set: {
+          lastTime: {
+            "$concat": [
+              {
+                "$dateToString": {
+                  "format": "%Y-%m-%d",
+                  "date": new Date()
+                }
+              },
+              " 08:00:00"
+            ]
           }
-        },
-        {
-          $skip: skip
-        },
-        {
-          $limit: valuelimit
-        },
-        {
-          $set: {
-            lastTime: {
-              "$concat": [
-                {
-                  "$dateToString": {
-                    "format": "%Y-%m-%d",
-                    "date": new Date()
-                  }
-                },
-                " 08:00:00"
-              ]
-            }
-          }
-        },
+        }
+      },
         {
           $set: {
 
@@ -17061,20 +17036,28 @@ export class PostsReadService {
                 {
                   $size: "$dodolCount"
                 },
-                //{
-                //		$subtract: [
-                //				{
-                //						$size: "$dodolCount"
-                //				},
-                //				1
-                //		]
-                //},
                 else: 1
               }
             },
 
           }
         },
+        {
+          $sort: {
+            viewerCounts: 1,
+            selfContents: - 1,
+            isBoost: - 1,
+            createdAt: - 1,
+
+          }
+        },
+        {
+          $skip: skip
+        },
+        {
+          $limit: valuelimit
+        },
+
         {
           $group: {
             _id: "$postType",
