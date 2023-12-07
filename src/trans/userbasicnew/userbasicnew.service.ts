@@ -22,7 +22,9 @@ export class UserbasicnewService {
     async find(): Promise<Userbasicnew[]> {
         return this.UserbasicnewModel.find().exec();
     }
-
+    async findByUsername(Username: String): Promise<Userbasicnew> {
+        return await this.UserbasicnewModel.findOne({ username: Username }).exec();
+    }
     async findbyemail(email: string): Promise<Userbasicnew> {
         return this.UserbasicnewModel.findOne({ email: email }).exec();
     }
@@ -33,16 +35,16 @@ export class UserbasicnewService {
 
     async findbyboth(email: string): Promise<Userbasicnew> {
         return this.UserbasicnewModel.findOne(
-            { 
-                "$or": 
-                [
-                    {
-                        "email":email
-                    },
-                    {
-                        "emailLogin":email
-                    }
-                ] 
+            {
+                "$or":
+                    [
+                        {
+                            "email": email
+                        },
+                        {
+                            "emailLogin": email
+                        }
+                    ]
             }
         ).exec();
     }
@@ -718,10 +720,10 @@ export class UserbasicnewService {
                                     "proofPict2":
                                     {
                                         "$ifNull":
-                                        [
-                                            "$proofPict.$id",
-                                            "$_id"
-                                        ]
+                                            [
+                                                "$proofPict.$id",
+                                                ""
+                                            ]
                                     }
                                 }
                             },
@@ -749,7 +751,7 @@ export class UserbasicnewService {
                                                     mediaBasePath: "$kyc.mediaBasePath",
                                                     mediaUri: "$kyc.mediaUri",
                                                     postType: "$kyc.mediaType",
-                                                    mediaEndpoint:  
+                                                    mediaEndpoint:
                                                     {
                                                         "$concat":
                                                             [
@@ -4853,25 +4855,25 @@ export class UserbasicnewService {
 
     async updateIdVerifiedUser(id: ObjectId, isIdVerified: boolean, statusKyc: string): Promise<Object> {
         let data = await this.UserbasicnewModel.updateOne({ "_id": id },
-          {
-            $set: {
-              "isIdVerified": isIdVerified,
-              "statusKyc": statusKyc
-            }
-          });
-    
+            {
+                $set: {
+                    "isIdVerified": isIdVerified,
+                    "statusKyc": statusKyc
+                }
+            });
+
         return data;
     }
 
-    async updateNoneActive(email: string, emaillogin:string): Promise<Object> {
+    async updateNoneActive(email: string, emaillogin: string): Promise<Object> {
         let data = await this.UserbasicnewModel.updateOne({ "email": email },
-          {
-            $set: {
-              "email": email + "_noneactive",
-              "emailLogin": emaillogin + "_noneactive",
-            }
-          });
-    
+            {
+                $set: {
+                    "email": email + "_noneactive",
+                    "emailLogin": emaillogin + "_noneactive",
+                }
+            });
+
         return data;
     }
 }

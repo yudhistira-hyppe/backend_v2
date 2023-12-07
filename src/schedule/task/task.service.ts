@@ -22,11 +22,11 @@ export class TaskService {
     this.challengeService.updateBadgeex();
     this.challengeService.updateSubchallengeex();
 
-  }
+    // }
 
-  @Cron('0 */10 * * * *')
-  ceckStatus() {
-    this.logger.debug('----------DISBURSEMENT JOB START----------', new Date());
-    this.transactionsService.ceckStatusDisbursement();
+    // @Cron('* */10 * * * *')
+    // ceckStatus() {
+    //   this.logger.debug('DISBURSEMENT JOB START');
+    //   this.transactionsService.ceckStatusDisbursement();
+    // }
   }
-}

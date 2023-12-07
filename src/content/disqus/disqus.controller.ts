@@ -27,6 +27,7 @@ import { Disquslogs } from '../disquslogs/schemas/disquslogs.schema';
 import { DBRef, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
+import { UserbasicnewService } from '../../trans/userbasicnew/userbasicnew.service';
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 
@@ -45,6 +46,7 @@ export class DisqusController {
     private readonly contenteventsService: ContenteventsService,
     private readonly userauthsService: UserauthsService,
     private readonly errorHandler: ErrorHandler,
+    private readonly UserbasicnewService: UserbasicnewService,
     private readonly logapiSS: LogapisService) { }
 
   @Post('disqus')
@@ -626,7 +628,7 @@ export class DisqusController {
             if (ContentDto_.tagComment_.length > 0) {
               for (var n = 0; n < ContentDto_.tagComment_.length; n++) {
                 console.log("TAG COMMAND " + n + "=============================================> ", ContentDto_.tagComment_[n]);
-                var userAuth = await this.userauthsService.findByUsername(ContentDto_.tagComment_[n]);
+                var userAuth = await this.UserbasicnewService.findByUsername(ContentDto_.tagComment_[n]);
                 if (await this.utilsService.ceckData(userAuth)) {
                   var UserEmail = userAuth.email.toString();
                   this.sendCommentFCM(UserEmail, "COMMENT_TAG", ContentDto_.postID.toString(), ContentDto_.email.toString())
