@@ -3552,7 +3552,7 @@ export class PostsController {
     var tempdata = null;
 
     try {
-      tempdata = await this.PostsService.getRecentStory2(email, page, limit);
+      tempdata = await this.PostsService.getRecentStory3(email, page, limit);
     } catch (e) {
       tempdata = null;
     }

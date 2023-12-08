@@ -1210,158 +1210,85 @@ export class ActivityeventsService {
       dt = "";
     }
     var query = await this.activityeventsModel.aggregate([
-      {
-        $unwind: {
-          path: "$payload",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $project: {
-          event: 1,
-          createdAt: 1,
-          email: "$payload.email"
-        }
-      },
-      {
-        $facet: {
-          "countUser": [
-            {
-              $match: {
-                $or: [
-
-                  {
-                    event: "AWAKE",
-
-                  }
-                ],
-                createdAt: {
-                  $gte: startdate,
-                  $lte: dt
-                }
-              }
-            },
-            {
-              $group: {
-                _id: {
-                  tgl: { $substrCP: ['$createdAt', 0, 10] },
-                  dt: '$email',
-
-                },
-                count: {
-                  $sum: 1
-                },
-
-              },
-
-            },
-            {
-              $project: {
-                _id: 0,
-                date: '$_id.tgl',
-                count: 1
-
-              }
-            },
-            {
-              $sort: {
-                date: 1
-              }
+        {
+            $project: {
+                event: 1,
+                createdAt: 1,
+                email: "$payload.email"
             }
-          ],
-          "awake": [
-            {
-              $match: {
+        },
+        {
+            $match: {
                 $or: [
-
-                  {
-                    event: "AWAKE",
-
-                  }
-                ],
-                createdAt: {
-                  $gte: startdate,
-                  $lte: dt
-                }
-              }
-            },
-            {
-              $group: {
-
-                _id: {
-                  tgl: { $substrCP: ['$createdAt', 0, 10] },
-                  dt: '$createdAt',
-                  event: '$event',
-                  email: '$email'
-                },
-
-              },
-
-            },
-            {
-              $project: {
-                _id: 0,
-                tgl: '$_id.tgl',
-                event: '$_id.event',
-                createdAt: '$_id.dt',
-                email: '$_id.email',
-
-              }
-            },
-            {
-              $sort: {
-                createdAt: 1
-              }
+                    {
+                        $and: [
+                            {
+                                event: "AWAKE",
+                                
+                            },
+                            {
+                                createdAt: 
+                                {
+                                    $gte: startdate,
+                                    $lte: dt
+                                }
+                            }
+                        ]
+                    },
+                ]
             }
-          ],
-          "sleep": [
-            {
-              $match: {
-                $or: [
-                  {
-                    event: "SLEEP",
-
-                  },
-
-                ],
-                createdAt: {
-                  $gte: startdate,
-                  $lte: dt
-                }
-              }
-            },
-            {
-              $group: {
-
+        },
+        {
+            $group: {
                 _id: {
-                  tgl: { $substrCP: ['$createdAt', 0, 10] },
-                  dt: '$createdAt',
-                  event: '$event',
-                  email: '$email'
+                    tgl: {
+                        $substrCP: ['$createdAt', 0, 10]
+                    },
+                    dt: '$email',
+                    
                 },
-
-              },
-
+                
             },
+            
+        },
+        {
+            $project:
             {
-              $project: {
-                _id: 0,
-                tgl: '$_id.tgl',
-                event: '$_id.event',
-                createdAt: '$_id.dt',
-                email: '$_id.email',
-
-              }
-            },
-
-            {
-              $sort: {
-                createdAt: 1
-              }
+                    _id:"$kusnur",
+                    tgl:"$_id.tgl",
+                    email:"$_id.dt",
+                    
             }
-          ]
-        }
-      },
+        },
+        {
+                $sort:{
+                        tgl:1
+                }
+        },
+        {
+            $group:
+            {
+                _id:"$tgl",
+                count: 
+                {
+                    $sum: 1
+                },
+            }
+        },
+        {
+            "$project":
+            {
+                "_id":0,
+                "date":"$_id",
+                "count":1
+            }
+        },
+        {
+            "$sort":
+            {
+                "date":1
+            }
+        }	
     ]);
     return query;
   }

@@ -18,7 +18,7 @@ export class PostsReadController {
         private readonly logapiSS: LogapisService,
         private readonly postContentService: PostContentService,
         private readonly postsService: PostsService,
-        private readonly contenteventsService: ContenteventsService, 
+        private readonly contenteventsService: ContenteventsService,
         private readonly notificationReadService: NotificationReadService,
     ) { }
 
@@ -818,7 +818,7 @@ export class PostsReadController {
 
         try {
             // data = await this.postsService.landingpage(email, type, skip, limit);
-            data = await this.postsReadService.landingpage5(email, type, skip, limit);
+            data = await this.postsReadService.landingpage6(email, type, skip, limit);
             lengpict = data.length;
 
         } catch (e) {

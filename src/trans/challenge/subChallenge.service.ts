@@ -2640,7 +2640,7 @@ export class subChallengeService {
                     username:
                     {
                         "$regex": setusername,
-                        "$option": "i"
+                        "$options": "i"
                     }
                 }
             );
@@ -2752,6 +2752,8 @@ export class subChallengeService {
             },
         );
 
+        var setutil = require('util');
+        console.log(setutil.inspect(pipeline, { depth:null, showHidden:false }));
         // console.log(JSON.stringify(pipeline));
 
         var query = await this.subChallengeModel.aggregate(pipeline);
@@ -7243,10 +7245,6 @@ export class subChallengeService {
                 },
 
             },
-
-
-
-
             {
                 $project:
                 {
@@ -7312,6 +7310,332 @@ export class subChallengeService {
                 }
             },
             { $sort: { endDatetime: -1 } }
+        );
+        var query = await this.subChallengeModel.aggregate(pipeline);
+        return query;
+    }
+
+    async getpemenang2(idchallenge: string, idSubChallenge: string) {
+        var pipeline = []
+        pipeline.push(
+            {
+                $match: {
+                    idSubChallenge: new Types.ObjectId(idSubChallenge)
+                }
+            },
+            {
+                $setWindowFields: {
+                    //partitionBy: "$state",
+                    sortBy: {
+                        score: - 1
+                    },
+                    output: {
+                        rankNew: {
+                            $documentNumber: {}
+                        }
+                    }
+                }
+            },
+            {
+                $sort: {
+                    rankNew: 1
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: "userbasics",
+                    let:
+                    {
+                        user: "$idUser",
+
+                    },
+                    as: 'email',
+                    pipeline:
+                        [
+                            {
+                                "$match":
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                            [
+                                                "$_id",
+                                                "$$user"
+                                            ]
+                                    }
+                                }
+                            },
+                            {
+                                $project: {
+                                    _id: 1,
+                                    email: 1,
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                $unwind: {
+                    path: "$email"
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: "challenge",
+                    let:
+                    {
+                        idChallenge: "$idChallenge"
+                    },
+                    as: 'challenges',
+                    pipeline:
+                        [
+                            {
+                                "$match":
+                                {
+                                    "$and":
+                                        [
+                                            {
+                                                "$expr":
+                                                {
+                                                    "$eq":
+                                                        [
+                                                            "$_id",
+                                                            "$$idChallenge"
+                                                        ]
+                                                },
+
+                                            },
+
+                                        ]
+                                }
+                            },
+                            {
+                                "$lookup":
+                                {
+                                    from: "badge",
+                                    let:
+                                    {
+                                        idBadge: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$ketentuanHadiah.badge.juara1", 0]
+                                            }, 0]
+                                        },
+
+                                    },
+                                    as: 'winner1',
+                                    pipeline:
+                                        [
+                                            {
+                                                "$match":
+                                                {
+                                                    "$and":
+                                                        [
+                                                            {
+                                                                "$expr":
+                                                                {
+                                                                    "$eq":
+                                                                        [
+                                                                            "$_id",
+                                                                            "$$idBadge"
+                                                                        ]
+                                                                },
+
+                                                            },
+
+                                                        ]
+                                                }
+                                            },
+
+                                        ]
+                                }
+                            },
+                            {
+                                "$lookup":
+                                {
+                                    from: "badge",
+                                    let:
+                                    {
+                                        idBadge: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$ketentuanHadiah.badge.juara2", 0]
+                                            }, 0]
+                                        },
+
+                                    },
+                                    as: 'winner2',
+                                    pipeline:
+                                        [
+                                            {
+                                                "$match":
+                                                {
+                                                    "$and":
+                                                        [
+                                                            {
+                                                                "$expr":
+                                                                {
+                                                                    "$eq":
+                                                                        [
+                                                                            "$_id",
+                                                                            "$$idBadge"
+                                                                        ]
+                                                                },
+
+                                                            },
+
+                                                        ]
+                                                }
+                                            },
+
+                                        ]
+                                }
+                            },
+                            {
+                                "$lookup":
+                                {
+                                    from: "badge",
+                                    let:
+                                    {
+                                        idBadge: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$ketentuanHadiah.badge.juara3", 0]
+                                            }, 0]
+                                        },
+
+                                    },
+                                    as: 'winner3',
+                                    pipeline:
+                                        [
+                                            {
+                                                "$match":
+                                                {
+                                                    "$and":
+                                                        [
+                                                            {
+                                                                "$expr":
+                                                                {
+                                                                    "$eq":
+                                                                        [
+                                                                            "$_id",
+                                                                            "$$idBadge"
+                                                                        ]
+                                                                },
+
+                                                            },
+
+                                                        ]
+                                                }
+                                            },
+
+                                        ]
+                                }
+                            },
+
+                        ],
+
+                }
+            },
+            {
+                $limit: 10
+            },
+            {
+                $project: {
+                    ranking: "$rankNew",
+                    idUser: "$email._id",
+                    email: "$email.email",
+                    winnerBadge:
+                    {
+                        "$switch":
+                        {
+                            branches:
+                                [
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$rankNew", 1]
+                                        },
+                                        then: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$challenges.winner1.name", 0]
+                                            }, 0]
+                                        }
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$rankNew", 2]
+                                        },
+                                        then: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$challenges.winner2.name", 0]
+                                            }, 0]
+                                        }
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$rankNew", 3]
+                                        },
+                                        then: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$challenges.winner3.name", 0]
+                                            }, 0]
+                                        }
+                                    },
+
+                                ],
+                            default: ""
+                        }
+                    },
+                    idBadge:
+                    {
+                        "$switch":
+                        {
+                            branches:
+                                [
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$rankNew", 1]
+                                        },
+                                        then: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$challenges.winner1._id", 0]
+                                            }, 0]
+                                        }
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$rankNew", 2]
+                                        },
+                                        then: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$challenges.winner2._id", 0]
+                                            }, 0]
+                                        }
+                                    },
+                                    {
+                                        case:
+                                        {
+                                            $eq: ["$rankNew", 3]
+                                        },
+                                        then: {
+                                            $arrayElemAt: [{
+                                                $arrayElemAt: ["$challenges.winner3._id", 0]
+                                            }, 0]
+                                        }
+                                    },
+
+                                ],
+                            default: ""
+                        }
+                    },
+
+                },
+
+            }
         );
         var query = await this.subChallengeModel.aggregate(pipeline);
         return query;

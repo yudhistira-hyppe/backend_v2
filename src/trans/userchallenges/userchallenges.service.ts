@@ -73,6 +73,49 @@ export class UserchallengesService {
         return data[0];
     }
 
+    async findByChallengeandUser3(challenge: string, user: string, idSubChallenge: string) {
+
+        var data = await this.UserchallengesModel.aggregate([
+            // {
+            //     $match: {
+            //         "idChallenge": new Types.ObjectId(challenge),
+            //         "idSubChallenge": new Types.ObjectId(idSubChallenge),
+            //         "idUser": new Types.ObjectId(user),
+            //     }
+            // }
+            {
+                $match: {
+                    idSubChallenge: new Types.ObjectId(idSubChallenge),
+                }
+            },
+            {
+                $setWindowFields: {
+                    //partitionBy: "$state",
+                    sortBy: {
+                        score: - 1
+                    },
+                    output: {
+                        rankNew: {
+                            $documentNumber: {}
+                        }
+                    }
+                }
+            },
+            {
+                $match: {
+                    idUser: new Types.ObjectId(user),
+                }
+            },
+            {
+                $project: {
+                    ranking: "$rankNew"
+                }
+            }
+        ]);
+
+        return data[0];
+    }
+
     async find(): Promise<Userchallenges[]> {
         return this.UserchallengesModel.find().exec();
     }
@@ -221,8 +264,6 @@ export class UserchallengesService {
                     "createdAt": 1,
                     "updatedAt": 1,
                     "isActive": 1,
-                    "activity": 1,
-                    "history": 1,
                     "ranking": 1,
                     "score": 1,
                     "session": {
@@ -265,11 +306,7 @@ export class UserchallengesService {
 
                 }
             },
-            {
-                $set: {
-                    "size": { $subtract: [{ $size: "$history" }, 1] },
-                }
-            },
+
             {
                 $project: {
                     "idChallenge": 1,
@@ -283,42 +320,11 @@ export class UserchallengesService {
                     "isActive": 1,
                     "ranking": 1,
                     "score": 1,
-                    "activity": 1,
-                    "history": 1,
                     "rejectRemark": 1,
-                    "size": "$size",
 
                 }
             },
-            {
-                $project: {
-                    "idChallenge": 1,
-                    "idSubChallenge": 1,
-                    "idUser": 1,
-                    "objectChallenge": 1,
-                    "startDatetime": 1,
-                    "endDatetime": 1,
-                    "createdAt": 1,
-                    "updatedAt": 1,
-                    "isActive": 1,
-                    "ranking": 1,
-                    "score": 1,
-                    "activity": 1,
-                    "history": 1,
-                    "rejectRemark": 1,
-                    "size": 1,
-                    "jam": {
-                        $arrayElemAt: ["$history.updatedAt", "$size"]
-                    },
-                }
-            },
-            {
 
-                $sort: {
-                    score: - 1,
-                    jam: 1
-                }
-            }
         ]);
         return query;
     }
@@ -830,5 +836,131 @@ export class UserchallengesService {
         ]);
 
         return data
+    }
+
+    async cekUserjoin(iduser: string) {
+        var pipeline = [];
+        pipeline.push({
+            $set: {
+                "timenow":
+                {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d %H:%M:%S",
+                        "date": {
+                            $add: [
+                                new Date(),
+                                25200000
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+            {
+                $match: {
+                    "idUser": new Types.ObjectId(iduser),
+
+                }
+            },
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+
+                            {
+                                $expr:
+                                {
+                                    $gte:
+                                        [
+                                            "$timenow",
+                                            "$startDatetime",
+
+                                        ]
+                                },
+
+                            },
+                            {
+                                $expr:
+                                {
+                                    $lte:
+                                        [
+                                            "$timenow",
+                                            "$endDatetime",
+
+                                        ]
+                                },
+
+                            },
+                        ]
+                }
+            },
+            {
+                $project: { idUser: 1 }
+            });
+        var query = await this.UserchallengesModel.aggregate(pipeline);
+        return query;
+    }
+
+    async cekUserChalactivity(iduser: string, idevent: string) {
+        var pipeline = [];
+        pipeline.push({
+            $set: {
+                "timenow":
+                {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d %H:%M:%S",
+                        "date": {
+                            $add: [
+                                new Date(),
+                                25200000
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+            {
+                $match: {
+                    "idUser": new Types.ObjectId(iduser),
+                    'activity.id': idevent
+
+                }
+            },
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+
+                            {
+                                $expr:
+                                {
+                                    $gte:
+                                        [
+                                            "$timenow",
+                                            "$startDatetime",
+
+                                        ]
+                                },
+
+                            },
+                            {
+                                $expr:
+                                {
+                                    $lte:
+                                        [
+                                            "$timenow",
+                                            "$endDatetime",
+
+                                        ]
+                                },
+
+                            },
+                        ]
+                }
+            },);
+        var query = await this.UserchallengesModel.aggregate(pipeline);
+        return query;
     }
 }
