@@ -2771,6 +2771,7 @@ export class subChallengeService {
         // var setutil = require('util');
         // console.log(setutil.inspect(pipeline, { depth:null, showHidden:false }));
         // console.log(JSON.stringify(pipeline));
+        //
 
         var query = await this.subChallengeModel.aggregate(pipeline);
         return query;
