@@ -2004,7 +2004,7 @@ export class ChallengeController {
     }
 
     var data = await this.subchallenge.listinguserchallenge(challengeid, pilihansession, jenisakun, username, startage, endage, jeniskelamin, sorting, limit, page);
-    var totaldata = await this.subchallenge.listinguserchallenge(challengeid, pilihansession, jenisakun, username, startage, endage, jeniskelamin, sorting, null, null);
+    // var totaldata = await this.subchallenge.listinguserchallenge(challengeid, pilihansession, jenisakun, username, startage, endage, jeniskelamin, sorting, null, null);
 
     const messages = {
       "info": ["The create successful"],
@@ -2016,7 +2016,6 @@ export class ChallengeController {
     return {
       response_code: 202,
       "data": data,
-      "totaldata": totaldata.length,
       "message": messages
     }
   }

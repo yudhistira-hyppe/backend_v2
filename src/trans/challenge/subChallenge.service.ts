@@ -2299,6 +2299,29 @@ export class subChallengeService {
                 }
             },
             {
+                "$sort":
+                {
+                    score: -1
+                }
+            },
+            {
+                "$setWindowFields":
+                {
+                    partitionBy:"$$userChallenge_fk",
+                    sortBy:
+                    {
+                        score: -1
+                    },
+                    output:
+                    {
+                        setRank:
+                        {
+                            $documentNumber:{}
+                        }
+                    }
+                }
+            },
+            {
                 "$lookup":
                 {
                     "from": "userbasics",
@@ -2341,18 +2364,7 @@ export class subChallengeService {
                                 0
                             ]
                     },
-                    ranking:
-                    {
-                        "$ifNull":
-                            [
-                                {
-                                    "$toInt": "$ranking"
-                                },
-                                {
-                                    "$toInt": 0
-                                }
-                            ]
-                    },
+                    ranking: "$setRank",
                     username:
                     {
                         "$arrayElemAt":
@@ -2708,19 +2720,23 @@ export class subChallengeService {
             );
         }
 
-        var setsorting = null;
+        var setsranking = null;
+        var setscore = null;
         if (sortingranking == true) {
-            setsorting = 1;
+            setsranking = 1;
+            setscore = -1;
         }
         else {
-            setsorting = -1;
+            setsranking = -1;
+            setscore = 1;
         }
 
         userchallengepipeline.push(
             {
                 "$sort":
                 {
-                    ranking: setsorting
+                    score: setscore,
+                    ranking: setsranking
                 }
             }
         );
@@ -2752,8 +2768,8 @@ export class subChallengeService {
             },
         );
 
-        var setutil = require('util');
-        console.log(setutil.inspect(pipeline, { depth:null, showHidden:false }));
+        // var setutil = require('util');
+        // console.log(setutil.inspect(pipeline, { depth:null, showHidden:false }));
         // console.log(JSON.stringify(pipeline));
 
         var query = await this.subChallengeModel.aggregate(pipeline);
