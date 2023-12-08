@@ -27,7 +27,7 @@ export class TaskService {
   //   // }
   // }
 
-  // // @Cron('* */10 * * * *')
+  // // @Cron('* */10 * * * *')z
   // // ceckStatus() {
   // //   this.logger.debug('DISBURSEMENT JOB START');
   // //   this.transactionsService.ceckStatusDisbursement();
