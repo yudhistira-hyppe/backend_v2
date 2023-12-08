@@ -33,6 +33,10 @@ export class UserbasicnewService {
         return this.UserbasicnewModel.findOne({ emailLogin: email }).exec();
     }
 
+    async findOneUsername(username: string): Promise<Userbasicnew> {
+        return this.UserbasicnewModel.findOne({ username: username }).exec();
+    }
+
     async findbyboth(email: string): Promise<Userbasicnew> {
         return this.UserbasicnewModel.findOne(
             {
@@ -47,6 +51,10 @@ export class UserbasicnewService {
                     ]
             }
         ).exec();
+    }
+
+    async findGuestUser(): Promise<Userbasicnew[]> {
+        return this.UserbasicnewModel.find({ guestMode: true }).exec();
     }
 
     async findbyusername(username: string): Promise<Userbasicnew> {

@@ -1550,6 +1550,11 @@ export class UtilsService {
     return getRandomId();
   }
 
+  async generateGuestUsername(): Promise<string> {
+    const getUserGuest = await this.basic2SS.findGuestUser();
+    return "GuestHyppe" + ((getUserGuest.length) + 1).toString();
+  }
+
   async generatePassword(password: string): Promise<string> {
     return await bcrypt.hashSync(password, 5);
   }

@@ -29,7 +29,7 @@ import { AuthService } from './auth.service';
 import { UtilsService } from '../utils/utils.service';
 import { SettingsService } from '../trans/settings/settings.service';
 import { JwtRefreshAuthGuard } from './refresh-auth.guard';
-import { DeviceActivityRequest, LoginRequest, LogoutRequest, RefreshTokenRequest } from '../utils/data/request/globalRequest';
+import { DeviceActivityRequest, GuestRequest, LoginRequest, LogoutRequest, RefreshTokenRequest } from '../utils/data/request/globalRequest';
 import { CreateActivityeventsDto } from '../trans/activityevents/dto/create-activityevents.dto';
 import { CreateUserdeviceDto } from '../trans/userdevices/dto/create-userdevice.dto';
 import { ActivityeventsService } from '../trans/activityevents/activityevents.service';
@@ -71,6 +71,7 @@ import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema';
 import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 import { CreateuserbasicnewDto, SearchUserbasicDto } from '../trans/userbasicnew/dto/Createuserbasicnew-dto';
+import { CreateInsightsDto } from 'src/content/insights/dto/create-insights.dto';
 const sharp = require('sharp');
 const convert = require('heic-convert');
 
@@ -5995,7 +5996,7 @@ export class AuthController {
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request);
 
       await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed param mail is required',
+        'Unabled to proceed param email is required',
       );
     }
 
@@ -6303,7 +6304,7 @@ export class AuthController {
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request);
 
       await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed param mail is required',
+        'Unabled to proceed param email is required',
       );
     }
 
@@ -6518,7 +6519,7 @@ export class AuthController {
 
     if (request.email == undefined) {
       await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed param mail is required',
+        'Unabled to proceed param email is required',
       );
     }
 
@@ -6778,6 +6779,348 @@ export class AuthController {
     return await this.errorHandler.generateAcceptResponseCode(
       "Update tutor succesfully",
     );
+  }
+
+  @Post('api/user/guest')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async guest(@Body() GuestRequest_: GuestRequest) {
+    if (GuestRequest_.email == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email is required',
+      );
+    }
+
+    const currentDate = await this.utilsService.getDateTimeString();
+    const getUserBasic = await this.basic2SS.findbyemail(GuestRequest_.email.toLowerCase());
+    const datasetting = await this.settingsService.findAll();
+    if (await this.utilsService.ceckData(getUserBasic)) {
+      //GEN TOKEN AND REFRESH TOKEN
+      const refresh_token = await this.authService.updateRefreshToken2(GuestRequest_.email.toLowerCase());
+      const token = (await this.utilsService.generateToken(GuestRequest_.email.toLowerCase(), GuestRequest_.deviceId)).toString();
+
+      //GENERATE PROFILE
+      let ProfileDTO_ = new ProfileDTO();
+      ProfileDTO_ = await this.utilsService.generateProfile2(GuestRequest_.email.toLowerCase(), 'LOGIN');
+      ProfileDTO_.token = 'Bearer ' + token;
+      ProfileDTO_.refreshToken = refresh_token;
+      ProfileDTO_.listSetting = datasetting;
+
+      //GENERATE RESPONSE
+      let GlobalResponse_ = new GlobalResponse();
+      let GlobalMessages_ = new GlobalMessages();
+      GlobalMessages_.info = ['Login successful'];
+      GlobalResponse_.response_code = 202;
+      GlobalResponse_.data = ProfileDTO_;
+      GlobalResponse_.messages = GlobalMessages_;
+      GlobalResponse_.version = (await this.utilsService.getSetting_("62bbdb4ba7520000050077a7")).toString();
+      GlobalResponse_.version_ios = (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString();
+      return GlobalResponse_;
+    } else {
+      //SET VARIABLE
+      let ID_insights = (await this.utilsService.generateId()).toLowerCase();
+      let ID_user = null;
+      let ID_device = null;
+      let ID_langIso = null;
+      let Name_langIso = null;
+      const gen_id_Activityevents_parent = new mongoose.Types.ObjectId();
+      const gen_id_Activityevents_child = new mongoose.Types.ObjectId();
+      const gen_ID_parent_ActivityEvent = (await this.utilsService.generateId()).toLowerCase();
+      const gen_ID_child_ActivityEvent = (await this.utilsService.generateId()).toLowerCase();
+      const status = "LOGIN_GUEST";
+      const event = "LOGIN_GUEST";
+
+      //Get Id Language
+      try {
+        if (GuestRequest_.langIso != undefined) {
+          if (GuestRequest_.langIso != null) {
+            const data_language = await this.languagesService.findOneLangiso(GuestRequest_.langIso);
+            if (await this.utilsService.ceckData(data_language)) {
+              ID_langIso = data_language._id;
+              Name_langIso = data_language.lang;
+            }
+          } else {
+            const data_language = await this.languagesService.findOneLangiso("en");
+            if (await this.utilsService.ceckData(data_language)) {
+              ID_langIso = data_language._id;
+              Name_langIso = data_language.lang;
+            }
+          }
+        }
+      } catch (error) {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed Get Id Language. Error: ' + error,
+        );
+      }
+
+      //CREATE USERBASIC
+      try {
+        ID_user = new mongoose.Types.ObjectId();
+        const generateUsername = await this.utilsService.generateGuestUsername();
+        let CreateuserbasicnewDto_ = new CreateuserbasicnewDto();
+        CreateuserbasicnewDto_._id = ID_user;
+        CreateuserbasicnewDto_.profileID = (await this.utilsService.generateId()).toLowerCase();
+        CreateuserbasicnewDto_.email = GuestRequest_.email.toLocaleLowerCase();
+        CreateuserbasicnewDto_.regSrc = GuestRequest_.regSrc;
+        CreateuserbasicnewDto_.fullName = generateUsername;
+        CreateuserbasicnewDto_.username = generateUsername;
+        CreateuserbasicnewDto_.isExpiryPass = false;
+        CreateuserbasicnewDto_.isEmailVerified = false;
+        CreateuserbasicnewDto_.isComplete = false;
+        CreateuserbasicnewDto_.isCelebrity = false;
+        CreateuserbasicnewDto_.isIdVerified = false;
+        CreateuserbasicnewDto_.status = status;
+        CreateuserbasicnewDto_.event = event;
+        CreateuserbasicnewDto_.isPrivate = false;
+        CreateuserbasicnewDto_.isFollowPrivate = false;
+        CreateuserbasicnewDto_.isPostPrivate = false;
+        CreateuserbasicnewDto_.languages = {
+          $ref: 'languages',
+          $id: ID_langIso,
+          $db: 'hyppe_infra_db',
+        };
+        CreateuserbasicnewDto_.languagesLang = Name_langIso;
+        CreateuserbasicnewDto_.languagesLangIso = GuestRequest_.langIso;
+        CreateuserbasicnewDto_.guestMode = true;
+        CreateuserbasicnewDto_.otpAttempt = Long.fromString('0');
+        CreateuserbasicnewDto_.otpRequestTime = Long.fromString('0');
+        CreateuserbasicnewDto_.isEnabled = true;
+        CreateuserbasicnewDto_.otpNextAttemptAllow = Long.fromString('0');
+        CreateuserbasicnewDto_.isAccountNonExpired = true;
+        CreateuserbasicnewDto_.isAccountNonLocked = true;
+        CreateuserbasicnewDto_.isCredentialsNonExpired = true;
+        CreateuserbasicnewDto_.roles = ['ROLE_USER'];
+        CreateuserbasicnewDto_.statusKyc = 'unverified';
+        if (GuestRequest_.location != undefined) {
+          CreateuserbasicnewDto_.location = GuestRequest_.location;
+        }
+        CreateuserbasicnewDto_.tutor = [
+          {
+            key: "protection",
+            status: false
+          },
+          {
+            key: "sell",
+            status: false
+          },
+          {
+            key: "interest",
+            status: false
+          },
+          {
+            key: "ownership",
+            status: false
+          },
+          {
+            key: "boost",
+            status: false
+          },
+          {
+            key: "transaction",
+            status: false
+          },
+          {
+            key: "idRefferal",
+            status: false
+          },
+          {
+            key: "shareRefferal",
+            status: false
+          },
+          {
+            key: "codeRefferal",
+            status: false
+          }
+        ];
+        CreateuserbasicnewDto_.insight = {
+          $ref: 'insights',
+          $id: Object(ID_insights),
+          $db: 'hyppe_content_db',
+        };
+        CreateuserbasicnewDto_.createdAt = currentDate;
+        CreateuserbasicnewDto_.updatedAt = currentDate;
+        CreateuserbasicnewDto_._class = 'io.melody.core.domain.UserProfile';
+        CreateuserbasicnewDto_.authUsers = {
+          "devices": [
+            {
+              $ref: 'userdevices',
+              $id: ID_device,
+              $db: 'hyppe_trans_db',
+            },
+          ]
+        }
+
+        await this.basic2SS.create(CreateuserbasicnewDto_);
+      } catch (error) {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed Create Userbasic. Error: ' + error,
+        );
+      }
+
+      //CREATE INSIGHTS
+      try {
+        let CreateInsightsDto_ = new CreateInsightsDto();
+        CreateInsightsDto_._id = ID_insights;
+        CreateInsightsDto_.insightID = ID_insights;
+        CreateInsightsDto_.active = true;
+        CreateInsightsDto_.createdAt = currentDate;
+        CreateInsightsDto_.updatedAt = currentDate;
+        CreateInsightsDto_.email = GuestRequest_.email.toLocaleLowerCase();
+        CreateInsightsDto_.followers = Long.fromString('0');
+        CreateInsightsDto_.followings = Long.fromString('0');
+        CreateInsightsDto_.unfollows = Long.fromString('0');
+        CreateInsightsDto_.likes = Long.fromString('0');
+        CreateInsightsDto_.views = Long.fromString('0');
+        CreateInsightsDto_.comments = Long.fromString('0');
+        CreateInsightsDto_.posts = Long.fromString('0');
+        CreateInsightsDto_.shares = Long.fromString('0');
+        CreateInsightsDto_.reactions = Long.fromString('0');
+        CreateInsightsDto_._class =
+          'io.melody.hyppe.content.domain.Insight';
+        await this.insightsService.create(CreateInsightsDto_);
+      } catch (error) {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed Create Insights. Error: ' + error,
+        );
+      }
+
+      //CREATE DEVICES
+      const datauserdevicesService = await this.userdevicesService.findOneEmail(GuestRequest_.email.toLowerCase(), GuestRequest_.deviceId);
+      if (await this.utilsService.ceckData(datauserdevicesService)) {
+        try {
+          await this.userdevicesService.updatebyEmail(
+            GuestRequest_.email.toLocaleLowerCase(),
+            GuestRequest_.deviceId,
+            {
+              active: true,
+            },
+          );
+          ID_device = datauserdevicesService._id;
+        } catch (error) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Get Userdevices. Error:' + error,
+          );
+        }
+      } else {
+        try {
+          var data_CreateUserdeviceDto = new CreateUserdeviceDto();
+          ID_device = (await this.utilsService.generateId()).toLowerCase();
+          data_CreateUserdeviceDto._id = ID_device;
+          data_CreateUserdeviceDto.deviceID = GuestRequest_.deviceId;
+          data_CreateUserdeviceDto.email = GuestRequest_.email.toLowerCase();
+          data_CreateUserdeviceDto.active = true;
+          data_CreateUserdeviceDto._class = 'io.melody.core.domain.UserDevices';
+          data_CreateUserdeviceDto.createdAt = currentDate;
+          data_CreateUserdeviceDto.updatedAt = currentDate;
+
+          await this.userdevicesService.create(data_CreateUserdeviceDto);
+        } catch (error) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Create Userdevices. Error:' + error,
+          );
+        }
+      }
+
+      //CREATE ACTIVITY EVENT PARENT
+      let CreateActivityeventsDto_parent = new CreateActivityeventsDto();
+      try {
+        CreateActivityeventsDto_parent._id = gen_id_Activityevents_parent;
+        CreateActivityeventsDto_parent.activityEventID = gen_ID_parent_ActivityEvent;
+        CreateActivityeventsDto_parent.activityType = 'ENROL_GUEST';
+        CreateActivityeventsDto_parent.active = true;
+        CreateActivityeventsDto_parent.status = 'SIGN_UP_GUEST';
+        CreateActivityeventsDto_parent.target = 'LOGIN_GUEST';
+        CreateActivityeventsDto_parent.event = 'SIGN_UP_GUEST';
+        CreateActivityeventsDto_parent._class = 'io.melody.hyppe.trans.domain.ActivityEvent';
+        CreateActivityeventsDto_parent.payload = {
+          login_location: {
+            latitude: undefined,
+            longitude: undefined,
+          },
+          logout_date: undefined,
+          login_date: undefined,
+          login_device: GuestRequest_.deviceId,
+          email: GuestRequest_.email.toLocaleLowerCase(),
+        };
+        CreateActivityeventsDto_parent.createdAt = currentDate;
+        CreateActivityeventsDto_parent.updatedAt = currentDate;
+        CreateActivityeventsDto_parent.sequenceNumber = new Int32(0);
+        CreateActivityeventsDto_parent.flowIsDone = true;
+        CreateActivityeventsDto_parent.userbasic = ID_user;
+        CreateActivityeventsDto_parent.transitions = [
+          {
+            $ref: 'activityevents',
+            $id: Object(gen_ID_child_ActivityEvent),
+            $db: 'hyppe_trans_db',
+          },
+        ];
+
+        await this.activityeventsService.create(CreateActivityeventsDto_parent);
+      } catch (error) {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed Create Activity events Child. Error:' +
+          error,
+        );
+      }
+
+      //CREATE ACTIVITY EVENT CHILD
+      try {
+        let CreateActivityeventsDto_child = new CreateActivityeventsDto();
+        CreateActivityeventsDto_child._id = gen_id_Activityevents_child;
+        CreateActivityeventsDto_child.activityEventID = gen_ID_child_ActivityEvent;
+        CreateActivityeventsDto_child.activityType = 'ENROL_GUEST';
+        CreateActivityeventsDto_child.active = true;
+        CreateActivityeventsDto_child.status = status;
+        CreateActivityeventsDto_child.target = 'REGISTER_USER';
+        CreateActivityeventsDto_child.event = event;
+        CreateActivityeventsDto_child._class = 'io.melody.hyppe.trans.domain.ActivityEvent';
+        CreateActivityeventsDto_child.payload = {
+          login_location: {
+            latitude: undefined,
+            longitude: undefined,
+          },
+          logout_date: undefined,
+          login_date: undefined,
+          login_device: GuestRequest_.deviceId,
+          email: GuestRequest_.email.toLocaleLowerCase(),
+        };
+        CreateActivityeventsDto_child.createdAt = currentDate;
+        CreateActivityeventsDto_child.updatedAt = currentDate;
+        CreateActivityeventsDto_child.sequenceNumber = new Int32(1);
+        CreateActivityeventsDto_child.flowIsDone = false;
+        CreateActivityeventsDto_child.__v = undefined;
+        CreateActivityeventsDto_child.parentActivityEventID = gen_ID_parent_ActivityEvent;
+        CreateActivityeventsDto_child.userbasic = ID_user;
+
+        await this.activityeventsService.create(CreateActivityeventsDto_child);
+      } catch (error) {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed Create Activity events Child. Error: ' +
+          error,
+        );
+      }
+
+      //GEN TOKEN AND REFRESH TOKEN
+      const refresh_token = await this.authService.updateRefreshToken2(GuestRequest_.email.toLowerCase());
+      const token = (await this.utilsService.generateToken(GuestRequest_.email.toLowerCase(), GuestRequest_.deviceId)).toString();
+
+      //GENERATE PROFILE
+      let ProfileDTO_ = new ProfileDTO();
+      ProfileDTO_ = await this.utilsService.generateProfile2(GuestRequest_.email.toLowerCase(), 'LOGIN');
+      ProfileDTO_.token = 'Bearer ' + token;
+      ProfileDTO_.refreshToken = refresh_token;
+      ProfileDTO_.listSetting = datasetting;
+
+      //GENERATE RESPONSE
+      let GlobalResponse_ = new GlobalResponse();
+      let GlobalMessages_ = new GlobalMessages();
+      GlobalMessages_.info = ['Login successful'];
+      GlobalResponse_.response_code = 202;
+      GlobalResponse_.data = ProfileDTO_;
+      GlobalResponse_.messages = GlobalMessages_;
+      GlobalResponse_.version = (await this.utilsService.getSetting_("62bbdb4ba7520000050077a7")).toString();
+      GlobalResponse_.version_ios = (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString();
+      return GlobalResponse_;
+    }
   }
 
 
