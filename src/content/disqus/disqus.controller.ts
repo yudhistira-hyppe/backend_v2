@@ -673,9 +673,9 @@ export class DisqusController {
 
           let dm = [];
           if (ContentDto_.disqusID != undefined) {
-            dm = await this.disqusService.queryDiscussV2ByDisqusIs(String(ContentDto_.disqusID), String(ContentDto_.email));
+            dm = await this.disqusService.queryDiscussV2ByDisqusIsNew(String(ContentDto_.disqusID), String(ContentDto_.email));
           } else {
-            dm = await this.disqusService.queryDiscussV2(String(ContentDto_.email));
+            dm = await this.disqusService.queryDiscussV2New(String(ContentDto_.email));
           }
           //console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DM ', JSON.stringify(dm));
 
@@ -946,7 +946,7 @@ export class DisqusController {
           var reqbody = JSON.parse(JSON.stringify(ContentDto_));
           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);
 
-          var data = await this.disqusService.getDiscus(String(ContentDto_.postID), type, Number(ContentDto_.pageNumber), Number(ContentDto_.pageRow));
+          var data = await this.disqusService.getDiscus2(String(ContentDto_.postID), type, Number(ContentDto_.pageNumber), Number(ContentDto_.pageRow));
           return {
             data: data
           }
