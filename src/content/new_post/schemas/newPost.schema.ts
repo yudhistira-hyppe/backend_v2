@@ -1,11 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-// import { Long } from "mongodb";
+import { Long } from "mongodb";
 
 export type NewpostsDocument = newPosts & Document;
 
 @Schema({ collection: 'newPosts' })
 export class newPosts {
+  //POST
   @Prop()
   _id: String;
   @Prop()
@@ -22,11 +23,8 @@ export class newPosts {
   createdAt: String;
   @Prop()
   updatedAt: String;
-  @Prop({ type: Object })
-  expiration:
-    {
-      numberLong: String
-    };
+  @Prop()
+  expiration: Long;
   @Prop()
   visibility: String;
   @Prop()
@@ -39,80 +37,96 @@ export class newPosts {
   isSafe: Boolean;
   @Prop()
   isOwned: Boolean;
+  @Prop()
+  likes: Long;
+  @Prop()
+  views: Long;
+  @Prop()
+  shares: Long;
+  @Prop()
+  comments: Long;
+  @Prop()
+  reactions: Long;
   @Prop({ type: Object })
-  likes: {
-    numberLong: String
-  }
+  userProfile: any;
+  @Prop()
+  contentMedias: any[];
+  @Prop()
+  viewer: any[];
   @Prop({ type: Object })
-  views: {
-    numberLong: String
+  metadata: {
+    duration: Number
+    postRoll: Number
+    postType: String
+    preRoll: Number
+    midRoll: Number
+    postID: String
+    email: String
+    width: Number
+    height: Number
   }
-  @Prop({ type: Object })
-  shares: {
-    numberLong: String
-  }
+  @Prop()
+  isCertified: Boolean;
+  @Prop()
+  boosted: any[];
+  @Prop()
+  isShared: boolean
+  @Prop()
+  category: any[];
+  @Prop()
+  certified: boolean
+  @Prop()
+  saleAmount: number;
   @Prop()
   saleLike: Boolean;
   @Prop()
   saleView: Boolean;
   @Prop()
-  saleAmount: number;
-  @Prop({ type: Object })
-  userProfile: any;
-  @Prop()
-  category: any[];
+  tagDescription: any[];
   @Prop()
   tagPeople: any[];
   @Prop()
-  tagDescription: any[];
+  contentModerationDate: string
   @Prop()
-  contentMedias: any[];
+  moderationReason: string;
   @Prop()
-  boosted: any[];
+  statusCB: string;
   @Prop()
-  viewer: any[];
+  isBoost: number;
+  @Prop()
+  contentModeration: boolean
+  @Prop()
+  contentModerationResponse: string
+  @Prop()
+  reportedStatus: string
+  @Prop()
+  reportedUserHandle: any[];
+  @Prop({ type: Object })
+  musicId: mongoose.Types.ObjectId;
+  @Prop()
+  reportedUser: any[];
+  @Prop()
+  reportedUserCount: number
+  @Prop()
+  stiker: any[];
+  @Prop()
+  text: any[];
+  @Prop()
+  lat: number;
+  @Prop()
+  lon: number;
+  @Prop()
+  _class: String
+
+  //CONTENT EVENT
   @Prop()
   userView: any[];
   @Prop()
   userLike: any[];
-  @Prop()
-  _class: any[];
-  @Prop()
-  mediaBasePath: any[];
-  @Prop()
-  mediaUri: any[];
-  @Prop()
-  originalName: any[];
-  @Prop()
-  fsSourceUri: any[];
-  @Prop()
-  fsTargetUri: any[];
-  @Prop()
-  mediaMime: any[];
-  @Prop()
-  descMigration: any[];
-  @Prop()
-  statusMigration: any[];
-  @Prop()
-  apsara: any[];
-  @Prop()
-  mediaThumBasePath: any[];
-  @Prop()
-  mediaThumUri: any[];
-  @Prop()
-  uploadSource: any[];
-  @Prop()
-  mediaType: string;
-  @Prop()
-  apsaraId: string;
-  @Prop()
-  rotate: number
-  @Prop()
-  reactions: number;
+
+  //MEDIA
   @Prop()
   mediaSource: any[];
-  @Prop()
-  isBoost: number;
 }
 
 export const NewpostsSchema = SchemaFactory.createForClass(newPosts);
