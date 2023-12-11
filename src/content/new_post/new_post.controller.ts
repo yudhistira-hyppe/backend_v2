@@ -1,4 +1,5 @@
-import { Controller, Get, UseGuards, Req, HttpCode, HttpStatus, Post, Body, Headers, BadRequestException, Param, Query } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, HttpCode, HttpStatus, Post, Body, Headers, BadRequestException, Param, Query, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { NewPostService } from './new_post.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { CreateNewPostDTO, CreatenewPost2Dto } from './dto/create-newPost.dto';
@@ -1442,5 +1443,139 @@ export class NewPostController {
         console.log(pageNumber_);
         console.log(pageRow_);
         return this.newPostService.getUserPostBoost(pageNumber_, pageRow_, headers);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('posts/getuserposts/v2')
+    @UseInterceptors(FileInterceptor('postContent'))
+    async getUserPost(@Body() body, @Headers() headers): Promise<any> 
+    {
+        var fullurl = headers.host + "/api/posts/getuserposts/v2";
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var strdate = dt.toISOString();
+        var repdate = strdate.replace('T', ' ');
+        var splitdate = repdate.split('.');
+        var timestamps_start = splitdate[0];
+
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        console.log(auth);
+        var profile = await this.basic2SS.findbyemail(auth.email);
+        if (profile == null) {
+        
+            var dt = new Date(Date.now());
+            dt.setHours(dt.getHours() + 7); // timestamp
+            dt = new Date(dt);
+            var strdate = dt.toISOString();
+            var repdate = strdate.replace('T', ' ');
+            var splitdate = repdate.split('.');
+            var timestamps_end = splitdate[0];
+
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, body.body);
+
+            return {
+                response_code : 204,
+                message : {
+                    "info":[
+                        "User tidak terdaftar"
+                    ]
+                }
+            }
+        }
+
+        // var data = await this.UserbasicnewService.getpostquery(email:string, visibility:string, postids: string, tipepost:string, activestatus:string, exptime:string, skip:number, page:number, insight:string, sorttime:string);
+        var data = await this.basic2SS.getpostquery(auth.email, body.visibility, body.postID, body.postType, body.withActive, body.withExp, parseInt(body.pageRow), parseInt(body.pageNumber), body.withInsight, 'true');
+
+        var listdata = [];
+        var listmusic = [];
+        var tempresult = null;
+        var tempdata = null;
+        for (var i = 0; i < data.length; i++) {
+            tempdata = data[i];
+            if (tempdata.isApsara == true) {
+            listdata.push(tempdata.apsaraId);
+            }
+            else {
+            listdata.push(undefined);
+            }
+
+            var getmusicapsara = null;
+            try
+            {
+                getmusicapsara = tempdata.music.apsaraThumnail;
+            }
+            catch(e)
+            {
+                getmusicapsara = undefined;
+            }
+            listmusic.push(getmusicapsara);
+        }
+
+        //console.log(listdata);
+        var apsaraimagedata = await this.postContentService.getImageApsara(listdata);
+        // console.log(apsaraimagedata);
+        // console.log(resultdata.ImageInfo[0]);
+        tempresult = apsaraimagedata.ImageInfo;
+        for (var i = 0; i < data.length; i++) {
+            for (var j = 0; j < tempresult.length; j++) {
+                if (tempresult[j].ImageId == data[i].apsaraId) {
+                    data[i].apsaraThumbId = tempresult[j].apsaraThumbId;
+                }
+            }
+            // if (resultquery[i].apsara == false && (resultquery[i].mediaType == "image" || resultquery[i].mediaType == "images")) {
+            //     resultquery[i].apsaraThumbId = '/thumb/' + resultquery[i].postID;
+            // }
+        }
+
+        var apsaravideodata = await this.postContentService.getVideoApsara(listdata);
+        // console.log(apsaravideodata);
+        // console.log(resultdata.ImageInfo[0]);
+        tempresult = apsaravideodata.VideoList;
+        for (var i = 0; i < data.length; i++) {
+            for (var j = 0; j < tempresult.length; j++) {
+                if (tempresult[j].VideoId == data[i].apsaraId) {
+                    data[i].mediaThumbEndpoint = tempresult[j].CoverURL;
+                }
+            }
+            // if (resultquery[i].apsara == false && resultquery[i].mediaType == "video") {
+            //     resultquery[i].mediaThumbEndpoint = '/thumb/' + resultquery[i].postID;
+            // }
+        }
+
+        // console.log(listmusic);
+        // var apsaramusic = await this.musicSS.getImageApsara(listmusic);
+        // var setutil = require('util');
+        // console.log(setutil.inspect(apsaramusic, { depth:null, showHidden:false }));
+        // tempresult = apsaramusic.ImageInfo;
+        // for (var i = 0; i < query.length; i++) {
+        //     try
+        //     {
+        //         for (var j = 0; j < tempresult.length; j++) {
+        //         if (tempresult[j].ImageId == query[i].music.apsaraThumnail) {
+        //             query[i].music.apsaraThumnailUrl = tempresult[j].URL;
+        //         }
+        //         }
+        //         if (query[i].apsara == false && query[i].mediaType == "video") {
+        //         query[i].music.apsaraThumnailUrl = null;
+        //         }
+        //     }
+        //     catch(e)
+        //     {
+        //         query[i].music.apsaraThumnailUrl = null;
+        //     }
+        // }
+
+        // return this.postContentService.getUserPost(body, headers);
+        var ver = await this.settingsService.findOneByJenis('AppsVersion');
+        ver.value;
+        var version = String(ver.value);
+
+        return {
+            response_code:202,
+            data:data,
+            version:version
+        }
     }
 }

@@ -10,6 +10,7 @@ import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service
 import { CreateNewPostDTO, PostResponseApps, PostData, Avatar, Metadata, TagPeople, Cat, Privacy } from './dto/create-newPost.dto'; 
 import { ContenteventsService } from '../contentevents/contentevents.service';
 import { ErrorHandler } from 'src/utils/error.handler';
+import { MediamusicService } from '../mediamusic/mediamusic.service';
 
 @Injectable()
 export class NewPostService {
@@ -24,6 +25,7 @@ export class NewPostService {
         private readonly errorHandler: ErrorHandler,
         private readonly basic2SS: UserbasicnewService,
         private readonly contentEventService: ContenteventsService,
+        private readonly musicSS : MediamusicService
     ) { }
 
   async findOne(id: string) {
@@ -10206,6 +10208,15 @@ export class NewPostService {
             },
         },
         {
+            $lookup: 
+            {
+                from: 'mediamusic',
+                localField: 'musicId',
+                foreignField: '_id',
+                as: 'music_data',
+            },
+        },
+        {
             $set: 
             {
                 nowDate:
@@ -10247,6 +10258,19 @@ export class NewPostService {
                     "$arrayElemAt":
                     [
                         "$basic_data", 0
+                    ]
+                },
+                "tempmusic":
+                {
+                    "$ifNull":
+                    [
+                        {
+                            "$arrayElemAt":
+                            [
+                              "$music_data", 0
+                            ]
+                        },
+                        {}
                     ]
                 }
             }
@@ -10547,6 +10571,29 @@ export class NewPostService {
                     "isPrivate": "$tempuser.isPrivate",
                     "isCelebrity": "$tempuser.isCelebrity"
                 },
+                "music":
+                {
+                    "$cond":
+                    {
+                        if:
+                        {
+                            "$eq":
+                            [
+                                "$tempmusic", {}
+                            ]
+                        },
+                        then:{},
+                        else:
+                        {
+                            _id:"$tempmusic._id",
+                            musicTitle:"$tempmusic.musicTitle",
+                            artistName:"$tempmusic.artistName",
+                            albumName:"$tempmusic.albumName",
+                            apsaraMusic:"$tempmusic.apsaraMusic",
+                            apsaraThumnail:"$tempmusic.apsaraThumnail"
+                        }
+                    }
+                },
                 "isApsara": 
                 {
                     "$ifNull":
@@ -10661,6 +10708,7 @@ export class NewPostService {
               "saleView": 1,
               "cats": 1,
               "privacy": 1,
+              "music": 1,
               "isApsara": 1,
               "apsaraId": 1,
               "mediaEndpoint": 1,
@@ -10675,6 +10723,7 @@ export class NewPostService {
       // console.log(query);
 
       var listdata = [];
+      var listmusic = [];
       var tempresult = null;
       var tempdata = null;
       for (var i = 0; i < query.length; i++) {
@@ -10685,6 +10734,17 @@ export class NewPostService {
         else {
           listdata.push(undefined);
         }
+
+        var getmusicapsara = null;
+        try
+        {
+            getmusicapsara = tempdata.music.apsaraThumnail;
+        }
+        catch(e)
+        {
+            getmusicapsara = undefined;
+        }
+        listmusic.push(getmusicapsara);
       }
 
       //console.log(listdata);
@@ -10712,9 +10772,32 @@ export class NewPostService {
           if (tempresult[j].VideoId == query[i].apsaraId) {
             query[i].mediaThumbEndpoint = tempresult[j].CoverURL;
           }
-          else if (query[i].apsara == false && query[i].mediaType == "video") {
-            query[i].mediaThumbEndpoint = '/thumb/' + query[i].postID;
-          }
+        }
+        if (query[i].apsara == false && query[i].mediaType == "video") {
+          query[i].mediaThumbEndpoint = '/thumb/' + query[i].postID;
+        }
+      }
+
+      // console.log(listmusic);
+      var apsaramusic = await this.musicSS.getImageApsara(listmusic);
+      // var setutil = require('util');
+      // console.log(setutil.inspect(apsaramusic, { depth:null, showHidden:false }));
+      tempresult = apsaramusic.ImageInfo;
+      for (var i = 0; i < query.length; i++) {
+        try
+        {
+            for (var j = 0; j < tempresult.length; j++) {
+              if (tempresult[j].ImageId == query[i].music.apsaraThumnail) {
+                query[i].music.apsaraThumnailUrl = tempresult[j].URL;
+              }
+            }
+            if (query[i].apsara == false && query[i].mediaType == "video") {
+              query[i].music.apsaraThumnailUrl = null;
+            }
+        }
+        catch(e)
+        {
+            query[i].music.apsaraThumnailUrl = null;
         }
       }
 
