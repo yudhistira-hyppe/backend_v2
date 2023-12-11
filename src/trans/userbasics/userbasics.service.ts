@@ -7656,14 +7656,6 @@ export class UserbasicsService {
 
   //async listkyc(keys: string, status: any[], startdate: string, enddate: string, descending: boolean, page: number, limit: number)
   async listkycsummary2(startdate: string, enddate: string, jenisquery: string, keys: string, status: any[], descending: boolean, page: number, limit: number) {
-    try {
-      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-
-      var dateend = currentdate.toISOString();
-    } catch (e) {
-      dateend = "";
-    }
-
     var pipeline = [];
     var firstmatch = [];
     var order = null;
@@ -7692,22 +7684,32 @@ export class UserbasicsService {
     );
 
     if (startdate != null && startdate !== undefined) {
+      var convertstart = startdate.split(" ")[0];
+      
       firstmatch.push(
         {
           createdAt:
           {
-            "$gte": startdate
+            "$gte": convertstart
           }
         }
       );
     }
 
     if (enddate != null && enddate !== undefined) {
+      try {
+        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+  
+        var dateend = currentdate.toISOString().split("T")[0];
+      } catch (e) {
+        dateend = "";
+      }
+      
       firstmatch.push(
         {
           createdAt:
           {
-            "$lte": dateend
+            "$lt": dateend
           }
         }
       );
