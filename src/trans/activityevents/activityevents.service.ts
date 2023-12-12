@@ -554,46 +554,46 @@ export class ActivityeventsService {
           lastlogin: "$createdAt",
           urluserBadge:
           {
-              "$ifNull":
+            "$ifNull":
               [
                 {
                   "$filter":
                   {
                     input:
-                    { 
-                      $arrayElemAt: 
-                      [
-                        "$user.userBadge", 0
-                      ] 
+                    {
+                      $arrayElemAt:
+                        [
+                          "$user.userBadge", 0
+                        ]
                     },
-                    as:"listbadge",
+                    as: "listbadge",
                     cond:
                     {
                       "$and":
-                      [
-                        {
-                          "$eq":
-                          [
-                            "$$listbadge.isActive", true
-                          ]
-                        },
-                        {
-                          "$lte": [
-                            {
-                              "$dateToString": {
-                                "format": "%Y-%m-%d %H:%M:%S",
-                                "date": {
-                                  "$add": [
-                                    new Date(),
-                                    25200000
-                                  ]
+                        [
+                          {
+                            "$eq":
+                              [
+                                "$$listbadge.isActive", true
+                              ]
+                          },
+                          {
+                            "$lte": [
+                              {
+                                "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                    "$add": [
+                                      new Date(),
+                                      25200000
+                                    ]
+                                  }
                                 }
-                              }
-                            },
-                            "$$listbadge.endDatetime"
-                          ]
-                        }
-                      ]
+                              },
+                              "$$listbadge.endDatetime"
+                            ]
+                          }
+                        ]
                     }
                   }
                 },
@@ -622,15 +622,15 @@ export class ActivityeventsService {
           urluserBadge:
           {
             "$ifNull":
-            [
-              {
-                "$arrayElemAt":
-                [
-                  "$urluserBadge",0
-                ]
-              },
-              null
-            ]
+              [
+                {
+                  "$arrayElemAt":
+                    [
+                      "$urluserBadge", 0
+                    ]
+                },
+                null
+              ]
           },
         }
       },
@@ -645,13 +645,24 @@ export class ActivityeventsService {
 
       pipeline.push({
         $match: {
-          username: {
-            $regex: username,
-            $options: 'i'
-          },
+          $or: [
+            {
+              username: {
+                $regex: username,
+                $options: 'i'
+              },
 
+            },
+            {
+              email: {
+                $regex: username,
+                $options: 'i'
+              },
+
+            },
+          ]
         }
-      },);
+      });
 
     }
 
@@ -750,85 +761,85 @@ export class ActivityeventsService {
       dt = "";
     }
     var query = await this.activityeventsModel.aggregate([
-        {
-            $project: {
-                event: 1,
-                createdAt: 1,
-                email: "$payload.email"
-            }
-        },
-        {
-            $match: {
-                $or: [
-                    {
-                        $and: [
-                            {
-                                event: "AWAKE",
-                                
-                            },
-                            {
-                                createdAt: 
-                                {
-                                    $gte: startdate,
-                                    $lte: dt
-                                }
-                            }
-                        ]
-                    },
-                ]
-            }
-        },
-        {
-            $group: {
-                _id: {
-                    tgl: {
-                        $substrCP: ['$createdAt', 0, 10]
-                    },
-                    dt: '$email',
-                    
-                },
-                
-            },
-            
-        },
-        {
-            $project:
+      {
+        $project: {
+          event: 1,
+          createdAt: 1,
+          email: "$payload.email"
+        }
+      },
+      {
+        $match: {
+          $or: [
             {
-                    _id:"$kusnur",
-                    tgl:"$_id.tgl",
-                    email:"$_id.dt",
-                    
-            }
-        },
-        {
-                $sort:{
-                        tgl:1
-                }
-        },
-        {
-            $group:
-            {
-                _id:"$tgl",
-                count: 
+              $and: [
                 {
-                    $sum: 1
+                  event: "AWAKE",
+
                 },
-            }
+                {
+                  createdAt:
+                  {
+                    $gte: startdate,
+                    $lte: dt
+                  }
+                }
+              ]
+            },
+          ]
+        }
+      },
+      {
+        $group: {
+          _id: {
+            tgl: {
+              $substrCP: ['$createdAt', 0, 10]
+            },
+            dt: '$email',
+
+          },
+
         },
+
+      },
+      {
+        $project:
         {
-            "$project":
-            {
-                "_id":0,
-                "date":"$_id",
-                "count":1
-            }
-        },
+          _id: "$kusnur",
+          tgl: "$_id.tgl",
+          email: "$_id.dt",
+
+        }
+      },
+      {
+        $sort: {
+          tgl: 1
+        }
+      },
+      {
+        $group:
         {
-            "$sort":
-            {
-                "date":1
-            }
-        }	
+          _id: "$tgl",
+          count:
+          {
+            $sum: 1
+          },
+        }
+      },
+      {
+        "$project":
+        {
+          "_id": 0,
+          "date": "$_id",
+          "count": 1
+        }
+      },
+      {
+        "$sort":
+        {
+          "date": 1
+        }
+      }
     ]);
     return query;
   }
