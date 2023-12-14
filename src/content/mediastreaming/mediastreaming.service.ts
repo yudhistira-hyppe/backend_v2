@@ -313,14 +313,16 @@ export class MediastreamingService {
     return data;
   }
 
-  async updateView(_id: string, userId: string, status: boolean, updateAt: string) {
+  async updateView(_id: string, userId: string, statusSearch: boolean, statusUpdate: boolean, updateAt: string) {
     const data = await this.MediastreamingModel.updateOne({
       _id: new mongoose.Types.ObjectId(_id),
-      "view.userId": new mongoose.Types.ObjectId(userId)
+      "view.userId": new mongoose.Types.ObjectId(userId),
+      "view.status": statusSearch
     }, 
     {
-      $set: { "view.$.status": status, "view.$.updateAt": updateAt }
+      $set: { "view.$.status": statusUpdate, "view.$.updateAt": updateAt }
     });
+    console.log(data)
     return data;
   }
 

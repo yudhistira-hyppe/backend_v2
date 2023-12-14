@@ -24,9 +24,9 @@ export class MediastreamingController {
     private readonly appGateway: AppGateway,) { } 
 
   @UseGuards(JwtAuthGuard)
-  @Post('/create')
+  @Get('/create')
   @HttpCode(HttpStatus.ACCEPTED)
-  async createStreaming(@Body() MediastreamingDto_: MediastreamingDto, @Headers() headers) {
+  async createStreaming(@Headers() headers) {
     const currentDate = await this.utilsService.getDate();
     if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
@@ -44,13 +44,6 @@ export class MediastreamingController {
         'Unabled to proceed user not found',
       );
     }
-    //VALIDASI PARAM title
-    var ceck_title = await this.utilsService.validateParam("title", MediastreamingDto_.title.toString(), "string")
-    if (ceck_title != "") {
-      await this.errorHandler.generateBadRequestException(
-        ceck_title,
-      );
-    }
 
     //Get EXPIRATION_TIME_LIVE
     const GET_EXPIRATION_TIME_LIVE = this.configService.get("EXPIRATION_TIME_LIVE");
@@ -62,7 +55,6 @@ export class MediastreamingController {
     _MediastreamingDto_._id = new mongoose.Types.ObjectId();
     _MediastreamingDto_.userId = new mongoose.Types.ObjectId(profile._id.toString());
     _MediastreamingDto_.expireTime = Long.fromBigInt(expireTime);
-    _MediastreamingDto_.title = MediastreamingDto_.title.toString();
     _MediastreamingDto_.status = false;
     _MediastreamingDto_.view = [];
     _MediastreamingDto_.comment = [];
@@ -130,6 +122,9 @@ export class MediastreamingController {
       if (MediastreamingDto_.type == "START"){
         const getDateTime = new Date().getTime();
         if (ceckId.expireTime > Long.fromInt(getDateTime)) {
+          if (MediastreamingDto_.title != undefined) {
+            _MediastreamingDto_.title = MediastreamingDto_.title;
+          }
           _MediastreamingDto_.status = true;
           _MediastreamingDto_.startLive = currentDate;
           await this.mediastreamingService.updateStreaming(MediastreamingDto_._id.toString(), _MediastreamingDto_);
@@ -156,10 +151,10 @@ export class MediastreamingController {
             updateAt: currentDate
           }
           await this.mediastreamingService.insertView(MediastreamingDto_._id.toString(), dataView);
-          const getDataView = await this.mediastreamingService.getDataView(MediastreamingDto_._id.toString());
+          const dataStream = await this.mediastreamingService.findOneStreaming(MediastreamingDto_._id.toString());
           const dataStreamSend = {
             _id: MediastreamingDto_._id,
-            view: getDataView,
+            viewCount: dataStream.view.length,
           }
           this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
         } 
@@ -168,11 +163,11 @@ export class MediastreamingController {
       if (MediastreamingDto_.type == "CLOSE_VIEW") {
         const ceckView = await this.mediastreamingService.findView(profile._id.toString());
         if (await this.utilsService.ceckData(ceckView)) {
-          await this.mediastreamingService.updateView(MediastreamingDto_._id.toString(), profile._id.toString(), false, currentDate);
-          const getDataView = await this.mediastreamingService.getDataView(MediastreamingDto_._id.toString());
+          await this.mediastreamingService.updateView(MediastreamingDto_._id.toString(), profile._id.toString(), true, false, currentDate);
+          const dataStream = await this.mediastreamingService.findOneStreaming(MediastreamingDto_._id.toString());
           const dataStreamSend = {
             _id: MediastreamingDto_._id,
-            view: getDataView,
+            viewCount: dataStream.view.length,
           }
           this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
         }
@@ -186,7 +181,6 @@ export class MediastreamingController {
           const dataStream = await this.mediastreamingService.findOneStreaming(MediastreamingDto_._id.toString());
           const dataStreamSend = {
             _id: dataStream._id,
-            like: dataStream.like,
             likeCount: dataStream.like.length
           }
           this.appGateway.eventStream("LIKE_STREAM", JSON.stringify(dataStreamSend));
