@@ -5,7 +5,7 @@ export class MediastreamingDto {
   _id: mongoose.Types.ObjectId;
   title: String;
   userId: mongoose.Types.ObjectId;
-  expireTime: BigInt;
+  expireTime: Long;
   startLive: String;
   endLive: String;
   status: boolean;

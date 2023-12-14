@@ -49,12 +49,12 @@ export class MediastreamingController {
     const GET_EXPIRATION_TIME_LIVE = this.configService.get("EXPIRATION_TIME_LIVE");
     const EXPIRATION_TIME_LIVE = await this.utilsService.getSetting_Mixed(GET_EXPIRATION_TIME_LIVE);
   
-    const expireTime = currentDate.date.getTime() + Number(EXPIRATION_TIME_LIVE.toString());
+    const expireTime = ((currentDate.date.getTime())/1000) + Number(EXPIRATION_TIME_LIVE.toString());
     const getUrl = await this.mediastreamingService.generateUrl(profile._id.toString(), expireTime);
     let _MediastreamingDto_ = new MediastreamingDto();
     _MediastreamingDto_._id = new mongoose.Types.ObjectId();
     _MediastreamingDto_.userId = new mongoose.Types.ObjectId(profile._id.toString());
-    _MediastreamingDto_.expireTime = expireTime;
+    _MediastreamingDto_.expireTime = Long.fromInt(expireTime);
     _MediastreamingDto_.view = [];
     _MediastreamingDto_.comment = [];
     _MediastreamingDto_.like = [];
@@ -69,10 +69,25 @@ export class MediastreamingController {
     _MediastreamingDto_.status = true;
     _MediastreamingDto_.startLive = currentDate.dateString; 
 
-    var data = await this.mediastreamingService.createStreaming(_MediastreamingDto_);
-    var Response = {
+    const data = await this.mediastreamingService.createStreaming(_MediastreamingDto_);
+    const dataResponse = {};
+    dataResponse['_id'] = data._id;
+    dataResponse['title'] = data.title;
+    dataResponse['userId'] = data.userId;
+    dataResponse['expireTime'] = Number(data.expireTime);
+    dataResponse['startLive'] = data.startLive;
+    dataResponse['status'] = data.status;
+    dataResponse['view'] = data.view;
+    dataResponse['comment'] = data.comment;
+    dataResponse['like'] = data.like;
+    dataResponse['share'] = data.share;
+    dataResponse['follower'] = data.follower;
+    dataResponse['urlStream'] = data.urlStream;
+    dataResponse['urlIngest'] = data.urlIngest;
+    dataResponse['createAt'] = data.createAt;
+    const Response = {
       response_code: 202,
-      data: data,
+      data: dataResponse,
       messages: {
         info: [
           "Create stream succesfully"
@@ -86,7 +101,6 @@ export class MediastreamingController {
   @Post('/update')
   @HttpCode(HttpStatus.ACCEPTED)
   async updateStreaming(@Body() MediastreamingDto_: MediastreamingDto, @Headers() headers, @Request() req) {
-    console.log(MediastreamingDto_);
     const currentDate = await this.utilsService.getDateTimeString();
     if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
@@ -198,6 +212,35 @@ export class MediastreamingController {
         'Unabled to proceed, _id Stream not exist',
       );
     }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/view/:id')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async getViewStreaming(@Param('id') id: string, @Headers() headers) {
+    const currentDate = await this.utilsService.getDateTimeString();
+    if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
+    //VALIDASI PARAM _id
+    var ceckId = await this.utilsService.validateParam("id", id.toString(), "string")
+    if (ceckId != "") {
+      await this.errorHandler.generateBadRequestException(
+        ceckId,
+      );
+    }
+
+    const data = await this.mediastreamingService.getDataView(id.toString());
+    return await this.errorHandler.generateAcceptResponseCodeWithData(
+      "Get view succesfully", data,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
