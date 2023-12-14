@@ -24,9 +24,9 @@ export class MediastreamingController {
     private readonly appGateway: AppGateway,) { } 
 
   @UseGuards(JwtAuthGuard)
-  @Get('/create')
+  @Post('/create')
   @HttpCode(HttpStatus.ACCEPTED)
-  async createStreaming(@Headers() headers) {
+  async createStreaming(@Body() MediastreamingDto_: MediastreamingDto, @Headers() headers) {
     const currentDate = await this.utilsService.getDate();
     if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
@@ -54,8 +54,7 @@ export class MediastreamingController {
     let _MediastreamingDto_ = new MediastreamingDto();
     _MediastreamingDto_._id = new mongoose.Types.ObjectId();
     _MediastreamingDto_.userId = new mongoose.Types.ObjectId(profile._id.toString());
-    _MediastreamingDto_.expireTime = Long.fromBigInt(expireTime);
-    _MediastreamingDto_.status = false;
+    _MediastreamingDto_.expireTime = expireTime;
     _MediastreamingDto_.view = [];
     _MediastreamingDto_.comment = [];
     _MediastreamingDto_.like = [];
@@ -63,21 +62,17 @@ export class MediastreamingController {
     _MediastreamingDto_.follower = [];
     _MediastreamingDto_.urlStream = getUrl.urlStream;
     _MediastreamingDto_.urlIngest = getUrl.urlIngest;
-    _MediastreamingDto_.createAt = currentDate.dateString;
-
-    const data = await this.mediastreamingService.createStreaming(_MediastreamingDto_);
-    const dataResponse = {
-      status: data.status,
-      userId: data.userId,
-      expireTime: Number(data.expireTime.toString()),
-      urlStream: data.urlStream,
-      urlIngest: data.urlIngest,
-      createAt: data.createAt,
-      _id: data._id.toString(),
+    _MediastreamingDto_.createAt = currentDate.dateString; 
+    if (MediastreamingDto_.title != undefined) {
+      _MediastreamingDto_.title = MediastreamingDto_.title;
     }
+    _MediastreamingDto_.status = true;
+    _MediastreamingDto_.startLive = currentDate.dateString; 
+
+    var data = await this.mediastreamingService.createStreaming(_MediastreamingDto_);
     var Response = {
       response_code: 202,
-      data: dataResponse,
+      data: data,
       messages: {
         info: [
           "Create stream succesfully"
@@ -130,7 +125,7 @@ export class MediastreamingController {
       //CECK TYPE START
       if (MediastreamingDto_.type == "START"){
         const getDateTime = new Date().getTime();
-        if (ceckId.expireTime > Long.fromInt(getDateTime)) {
+        if (Number(ceckId.expireTime) > Number(getDateTime)) {
           if (MediastreamingDto_.title != undefined) {
             _MediastreamingDto_.title = MediastreamingDto_.title;
           }
