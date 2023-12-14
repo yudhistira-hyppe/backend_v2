@@ -66,9 +66,18 @@ export class MediastreamingController {
     _MediastreamingDto_.createAt = currentDate.dateString;
 
     const data = await this.mediastreamingService.createStreaming(_MediastreamingDto_);
+    const dataResponse = {
+      status: data.status,
+      userId: data.userId,
+      expireTime: Number(data.expireTime.toString()),
+      urlStream: data.urlStream,
+      urlIngest: data.urlIngest,
+      createAt: data.createAt,
+      _id: data._id.toString(),
+    }
     var Response = {
       response_code: 202,
-      data: data,
+      data: dataResponse,
       messages: {
         info: [
           "Create stream succesfully"
