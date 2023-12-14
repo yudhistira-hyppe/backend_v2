@@ -124,6 +124,7 @@ import { TopupsModule } from './trans/topups/topups.module';
 import { SettingsReadModule } from './readonly/setting_read/setting_read.module';
 import { PostsReadModule } from './readonly/post_read/post_read.module';
 import { ChallengeReadModule } from './readonly/challenge_read/challenge_read.module';
+import { MediastreamingModule } from './content/mediastreaming/mediastreaming.module';
 @Module({
   imports: [
     ChallengeReadModule,
@@ -215,6 +216,7 @@ import { ChallengeReadModule } from './readonly/challenge_read/challenge_read.mo
     // UserbankaccountsModule,
     FaqdetailsModule,
     AdsLandingModule,
+    MediastreamingModule,
     UserticketdetailsModule,
     //UtilsModule,
     // GetcontenteventsModule,

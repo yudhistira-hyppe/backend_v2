@@ -142,6 +142,8 @@ export class Userbasic {
   userBadge: any[];
   @Prop()
   tutor: any[];
+  @Prop()
+  creator: boolean;
 }
 
 export const UserbasicSchema = SchemaFactory.createForClass(Userbasic);
