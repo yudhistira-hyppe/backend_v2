@@ -689,10 +689,17 @@ export class ActivityeventsService {
     }
 
     if (startdate && startdate !== undefined) {
-      pipeline.push({ $match: { createdAt: { $gte: startdate } } });
+      var convertstart = startdate.split(" ")[0];
+      pipeline.push({ $match: { createdAt: { $gte: convertstart } } });
     }
     if (enddate && enddate !== undefined) {
-      pipeline.push({ $match: { createdAt: { $lte: dt } } });
+      try {
+        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+        var dateend = currentdate.toISOString().split("T")[0];
+      } catch (e) {
+        dateend = enddate.substring(0,10);
+      }
+      pipeline.push({ $match: { createdAt: { $lt: dateend } } });
     }
 
     if (jenis && jenis !== undefined) {
