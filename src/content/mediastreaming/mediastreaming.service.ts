@@ -350,7 +350,7 @@ export class MediastreamingService {
     return data;
   }
 
-  async generateUrl(usertId: string, expireTime: number): Promise<any>{
+  async generateUrl(streamId: string, expireTime: number): Promise<any>{
     //Get URL_STREAM_LIVE
     const GET_URL_STREAM_LIVE = this.configService.get("URL_STREAM_LIVE");
     const URL_STREAM_LIVE = await this.utilsService.getSetting_Mixed(GET_URL_STREAM_LIVE);
@@ -371,8 +371,8 @@ export class MediastreamingService {
     const GET_APP_NAME_LIVE = this.configService.get("APP_NAME_LIVE");
     const APP_NAME_LIVE = await this.utilsService.getSetting_Mixed(GET_APP_NAME_LIVE);
 
-    const urlStream = await this.generateStream(URL_STREAM_LIVE.toString(), KEY_STREAM_LIVE.toString(), APP_NAME_LIVE.toString(), usertId, expireTime);
-    const urlIngest = await this.generateIngest(URL_INGEST_LIVE.toString(), KEY_INGEST_LIVE.toString(), APP_NAME_LIVE.toString(), usertId, expireTime);
+    const urlStream = await this.generateStream(URL_STREAM_LIVE.toString(), KEY_STREAM_LIVE.toString(), APP_NAME_LIVE.toString(), streamId, expireTime);
+    const urlIngest = await this.generateIngest(URL_INGEST_LIVE.toString(), KEY_INGEST_LIVE.toString(), APP_NAME_LIVE.toString(), streamId, expireTime);
     return {
       urlStream: urlStream,
       urlIngest: urlIngest
