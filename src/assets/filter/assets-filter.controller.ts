@@ -193,7 +193,7 @@ export class AssetsFilterController {
                 'Unabled to proceed failed upload Image Asset',
             );
         }
-        CreateAssetsFilterDto_.status = true;
+        // CreateAssetsFilterDto_.status = true;
         CreateAssetsFilterDto_.createdAt = await this.utilsService.getDateTimeString();
         CreateAssetsFilterDto_.updatedAt = await this.utilsService.getDateTimeString();
         this.assetsFilterService.create(CreateAssetsFilterDto_);
