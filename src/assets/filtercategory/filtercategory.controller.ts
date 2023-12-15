@@ -90,7 +90,7 @@ export class FiltercategoryController {
             skip = parseInt(request_json['limit']);
         }
 
-        if(request_json['name'] != null && request_json['name'] != undefined)
+        if(request_json['search'] != null && request_json['search'] != undefined)
         {
             name = request_json['search'];
         }
