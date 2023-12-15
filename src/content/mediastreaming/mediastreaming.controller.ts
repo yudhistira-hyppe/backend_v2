@@ -49,7 +49,7 @@ export class MediastreamingController {
     const GET_EXPIRATION_TIME_LIVE = this.configService.get("EXPIRATION_TIME_LIVE");
     const EXPIRATION_TIME_LIVE = await this.utilsService.getSetting_Mixed(GET_EXPIRATION_TIME_LIVE);
   
-    const expireTime = ((currentDate.date.getTime())/1000) + Number(EXPIRATION_TIME_LIVE.toString());
+    const expireTime = Math.round(((currentDate.date.getTime())/1000)) + Number(EXPIRATION_TIME_LIVE.toString());
     const getUrl = await this.mediastreamingService.generateUrl(profile._id.toString(), expireTime);
     let _MediastreamingDto_ = new MediastreamingDto();
     _MediastreamingDto_._id = new mongoose.Types.ObjectId();
