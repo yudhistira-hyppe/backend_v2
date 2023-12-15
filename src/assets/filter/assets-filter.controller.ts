@@ -12,6 +12,7 @@ import * as https from "https";
 import * as http from "http";
 const sharp = require('sharp');
 import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { CreateFilterDto } from '../filtercategory/dto/create-filter.dto';
 
 
 @Controller('api/assets/filter')
@@ -193,6 +194,8 @@ export class AssetsFilterController {
             );
         }
         CreateAssetsFilterDto_.status = true;
+        CreateAssetsFilterDto_.createdAt = await this.utilsService.getDateTimeString();
+        CreateAssetsFilterDto_.updatedAt = await this.utilsService.getDateTimeString();
         this.assetsFilterService.create(CreateAssetsFilterDto_);
         return await this.errorHandler.generateAcceptResponseCodeWithData(
             "Create Assets File succesfully", CreateAssetsFilterDto_
@@ -258,6 +261,7 @@ export class AssetsFilterController {
                 mediaThumBasePath: item.mediaThumUri,
                 mediaThumUri: mediaThumUri,
                 status: item.status,
+                category_id: item.category_id
             }
         }));
 
@@ -320,6 +324,87 @@ export class AssetsFilterController {
             data: data_,
             messages: {
                 info: ['Get assets successfully'],
+            },
+        };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Post('/listconsole')
+    async listConsole(@Headers() headers, @Req() request) {
+        var nama = null;
+        var startdate = null;
+        var enddate = null;
+        var kategori = null;
+        var status = null;
+        var page = null;
+        var limit = null;
+        var sorting = null;
+        
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var timestamp_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if(request_json['keyword'] != null && request_json['keyword'] != undefined)
+        {
+            nama = request_json['keyword'];
+        }
+
+        if(request_json['startdate'] != null && request_json['startdate'] != undefined && request_json['enddate'] != null && request_json['enddate'] != undefined)
+        {
+            startdate = request_json['startdate'];
+            enddate = request_json['enddate'];
+        }
+
+        if(request_json['kategori'] != null && request_json['kategori'] != undefined)
+        {
+            kategori = request_json['kategori'];
+        }
+
+        if(request_json['status'] != null && request_json['status'] != undefined)
+        {
+            status = request_json['status'];
+        }
+
+        if(request_json['page'] == null || request_json['page'] == undefined)
+        {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, page field is required',
+            );
+        }
+
+        if(request_json['limit'] == null || request_json['limit'] == undefined)
+        {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, limit field is required',
+            );
+        }
+
+        if(request_json['ascending'] == null || request_json['ascending'] == undefined)
+        {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, ascending field is required',
+            );
+        }
+
+        var page = request_json['page'];
+        var limit = request_json['limit'];
+        var sorting = request_json['ascending'];
+
+        var data = await this.assetsFilterService.indexConsole(nama, startdate, enddate, kategori, status, page, limit, sorting);
+
+        var timestamp_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamp_start, timestamp_end, email, null, null, request_json);
+
+        return {
+            response_code: 202,
+            data:data,
+            messages: {
+                info: ['Process successfully'],
             },
         };
     }
@@ -587,4 +672,87 @@ export class AssetsFilterController {
     //         response.download(null);
     //     }
     // }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/updatelist')
+    async updatejamaah(@Req() req, @Headers() headers)
+    {
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var timestamp_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+
+        var request_json = JSON.parse(JSON.stringify(req.body));
+        if(request_json['list'] == null || request_json['list'] == undefined || request_json['list'].length == 0)
+        {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, list field is required',
+            );
+        }
+
+        
+        if(request_json['status'] == null || request_json['status'] == undefined)
+        {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, status field is required',
+            );
+        }
+
+        var loopdata = request_json['list'];
+
+        var updatedata = new CreateAssetsFilterDto();
+
+        if (request_json['status'] == "active") {
+            updatedata.status = true;
+        }
+        else if (request_json['status'] == "nonactive") {
+            updatedata.status = false;
+        }
+        updatedata.updatedAt = await this.utilsService.getDateTimeString();
+
+        var mongo = require('mongoose');
+        for(var i = 0; i < loopdata.length; i++)
+        {
+            var konvertid = new mongo.Types.ObjectId(loopdata[i]);
+            await this.assetsFilterService.update(konvertid, updatedata);
+        }
+
+        var timestamp_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamp_start, timestamp_end, email, null, null, request_json);
+
+        return {
+            response_code:202,
+            messages: {
+                info: ['Update successfully'],
+            },
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/updatedata/:id')
+    async updateOne(@Param() id:string, @Body() req:CreateAssetsFilterDto, @Headers() header)
+    {
+        var token = header['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var timestamp_start = await this.utilsService.getDateTimeString();
+        var fullurl = header.host + '/api/updatedata/'+id;
+
+        req.updatedAt = await this.utilsService.getDateTimeString();
+        var mongo = require('mongoose');
+        var konvertid = new mongo.Types.ObjectId(id);
+        await this.assetsFilterService.update(konvertid, req);
+
+        var timestamp_end = await this.utilsService.getDateTimeString();
+        var requestbody = JSON.parse(JSON.stringify(req));
+        this.logapiSS.create2(fullurl, timestamp_start, timestamp_end, email, null, null, requestbody);
+
+        return {
+            response_code:202,
+            messages: {
+                info: ['Update successfully'],
+            },
+        }
+    }
 }
