@@ -5,8 +5,8 @@ import { ConfigService } from '@nestjs/config';
 import { Mediastreaming, MediastreamingDocument } from './schema/mediastreaming.schema';
 import { MediastreamingDto } from './dto/mediastreaming.dto';
 import { UtilsService } from 'src/utils/utils.service';
-//var md5 = require('md5');
-const crypto = require('crypto');
+var md5 = require('md5');
+//const crypto = require('crypto');
 @Injectable()
 export class MediastreamingService {
   private readonly logger = new Logger(MediastreamingService.name);
@@ -386,7 +386,7 @@ export class MediastreamingService {
       rtmpUrl = "rtmp://" + pullDomain + "/" + appName + "/" + streamName;
     } else {
       let rtmpToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pullKey;
-      let rtmpAuthKey: String = await this.md5(rtmpToMd5);
+      let rtmpAuthKey: String = md5(rtmpToMd5);
       rtmpUrl = "rtmp://" + pullDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + rtmpAuthKey;
     }
     return rtmpUrl;
@@ -398,26 +398,26 @@ export class MediastreamingService {
       pushUrl = "rtmp://" + pushDomain + "/" + appName + "/" + streamName;
     } else {
       let stringToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pushKey;
-      let authKey: String = await this.md5(stringToMd5);
+      let authKey: String = md5(stringToMd5);
       pushUrl = "rtmp://" + pushDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + authKey;
     }
     return pushUrl;
   }
 
-  async md5(param: String){
-    var parambytes = [];
-    for (var i = 0; i < param.length; i++) {
-      parambytes.push(param.charCodeAt(i));
-    }
-    const hash = crypto.createHash('md5');
-    hash.update(parambytes).digest();
-    let byteArray = hash.digest();
+  // async md5(param: String){
+  //   let parambytes = Buffer.from(param, 'utf-8').toString();
+  //   console.log(parambytes);
+  //   const hash = crypto.createHash('md5');
+  //   hash.update(parambytes);
+  //   console.log(hash);
+  //   let byteArray = hash.digest();
+  //   console.log(byteArray);
 
-    let bigInt: BigInt = BigInt(byteArray);
-    let result = bigInt.toString(16);
-    while (result.length < 32) {
-      result = "0" + result;
-    }
-    return result;
-  }
+  //   let bigInt: BigInt = BigInt(byteArray);
+  //   let result = bigInt.toString(16);
+  //   while (result.length < 32) {
+  //     result = "0" + result;
+  //   }
+  //   return result;
+  // }
 }
