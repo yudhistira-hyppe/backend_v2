@@ -10275,6 +10275,456 @@ export class GetusercontentsService {
     ]);
     return query;
   }
+  async findcontenbuy2(postID: string) {
+
+    const query = await this.getusercontentsModel.aggregate([
+      { $match: { postID: postID } },
+      {
+        $addFields: {
+          ubasic_id: '$userProfile.$id',
+          salePrice: {
+            $cmp: ["$saleAmount", 0]
+          }
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'newUserBasics',
+          localField: 'ubasic_id',
+          foreignField: '_id',
+          as: 'userbasics_data',
+
+        },
+
+      },
+      {
+        $project: {
+          //            refs: {
+          //                $arrayElemAt: ['$contentMedias', 0]
+          //            },
+          user: {
+            $arrayElemAt: ['$userbasics_data', 0]
+          },
+          // profilpictid: '$user.profilePict.$id',
+          insight_id: '$user.insight.$id',
+          userAuth_id: '$user.userAuth.$id',
+          fullName: '$user.fullName',
+          username: '$user.username',
+          createdAt: '$createdAt',
+          updatedAt: '$updatedAt',
+          postID: '$postID',
+          email: '$email',
+          postType: '$postType',
+          description: '$description',
+          title: '$description',
+          active: '$active',
+          metadata: '$metadata',
+          location: '$location',
+          tags: '$tags',
+          likes: '$likes',
+          shares: '$shares',
+          comments: '$comments',
+          isOwned: '$isOwned',
+          views: '$views',
+          mediaSource: 1,
+          isPostPrivate: '$user.isPostPrivate',
+          privacy: {
+            isPostPrivate: '$user.isPostPrivate',
+            isCelebrity: '$user.isCelebrity',
+            isPrivate: '$user.isPrivate',
+
+          },
+          isViewed:
+          {
+            $cond: {
+              if: {
+                $eq: ["$views", 0]
+              },
+              then: false,
+              else: true
+            }
+          },
+          allowComments: '$allowComments',
+          certified: '$certified',
+          saleLike: {
+            $cond: {
+              if: {
+                $eq: ["$saleLike", - 1]
+              },
+              then: false,
+              else: "$saleLike"
+            }
+          },
+          saleView: {
+            $cond: {
+              if: {
+                $eq: ["$saleView", - 1]
+              },
+              then: false,
+              else: "$saleView"
+            }
+          },
+          saleAmount: {
+            $cond: {
+              if: {
+                $eq: ["$salePrice", - 1]
+              },
+              then: 0,
+              else: "$saleAmount"
+            }
+          },
+          monetize: {
+            $cond: {
+              if: {
+                $eq: ["$salePrice", - 1]
+              },
+              then: false,
+              else: true
+            }
+          },
+
+        }
+      },
+      {
+        $project: {
+          // refs: '$refs.$ref',
+          // idmedia: '$refs.$id',
+          //profilpictid: '$user.profilePict.$id',
+          insight_id: '$user.insight.$id',
+          userAuth_id: '$user.userAuth.$id',
+          fullName: '$user.fullName',
+          username: '$user.username',
+          createdAt: '$createdAt',
+          updatedAt: '$updatedAt',
+          postID: '$postID',
+          email: '$email',
+          postType: '$postType',
+          description: '$description',
+          title: '$description',
+          active: '$active',
+          metadata: '$metadata',
+          location: '$location',
+          tags: '$tags',
+          likes: '$likes',
+          shares: '$shares',
+          comments: '$comments',
+          isOwned: '$isOwned',
+          views: '$views',
+          isPostPrivate: '$user.isPostPrivate',
+          privacy: {
+            isPostPrivate: '$user.isPostPrivate',
+            isCelebrity: '$user.isCelebrity',
+            isPrivate: '$user.isPrivate',
+
+          },
+          isViewed: '$isViewed',
+          allowComments: '$allowComments',
+          certified: '$certified',
+          saleLike: '$saleLike',
+          saleView: '$saleView',
+          saleAmount: '$saleAmount',
+          monetize: '$monetize',
+          mediaSource: 1,
+
+        }
+      },
+      //    {
+      //        $lookup: {
+      //            from: 'mediaprofilepicts',
+      //            localField: 'profilpictid',
+      //            foreignField: '_id',
+      //            as: 'profilePict_data',
+      //            
+      //        },
+      //        
+      //    },
+      // {
+      //   $lookup: {
+      //     from: 'insights2',
+      //     localField: 'insight_id',
+      //     foreignField: '_id',
+      //     as: 'insight_data',
+      //   },
+      // },
+      //    {
+      //        $lookup: {
+      //            from: 'userauths',
+      //            localField: 'userAuth_id',
+      //            foreignField: '_id',
+      //            as: 'userAuth_data',
+      //            
+      //        },
+      //        
+      //    },
+      //    {
+      //        $lookup: {
+      //            from: 'mediapicts',
+      //            localField: 'idmedia',
+      //            foreignField: '_id',
+      //            as: 'mediaPict_data',
+      //            
+      //        },
+      //        
+      //    },
+      //    {
+      //        $lookup: {
+      //            from: 'mediadiaries',
+      //            localField: 'idmedia',
+      //            foreignField: '_id',
+      //            as: 'mediadiaries_data',
+      //            
+      //        },
+      //        
+      //    },
+      //    {
+      //        $lookup: {
+      //            from: 'mediavideos',
+      //            localField: 'idmedia',
+      //            foreignField: '_id',
+      //            as: 'mediavideos_data',
+      //            
+      //        },
+      //        
+      //    },
+      {
+        $project: {
+          //            mediapict: {
+          //                $arrayElemAt: ['$mediaPict_data', 0]
+          //            },
+          //            mediadiaries: {
+          //                $arrayElemAt: ['$mediadiaries_data', 0]
+          //            },
+          //            mediavideos: {
+          //                $arrayElemAt: ['$mediavideos_data', 0]
+          //            },
+          //            profilpict: {
+          //                $arrayElemAt: ['$profilePict_data', 0]
+          //            },
+          // insights: { $arrayElemAt: ['$insight_data', 0] },
+          //            auth: {
+          //                $arrayElemAt: ['$userAuth_data', 0]
+          //            },
+          //            mediapictPath: {
+          //               $arrayElemAt: ['$mediaSource.mediaBasePath', 0]
+          //            },
+          //            mediadiariPath: '$mediadiaries.mediaBasePath',
+          //            mediavideoPath: '$mediavideos.mediaBasePath',
+          //            refs: '$refs',
+          //            idmedia: '$idmedia',
+          // rotate: '$mediadiaries.rotate',
+          fullName: '$fullName',
+          username: '$username',
+          createdAt: '$createdAt',
+          updatedAt: '$updatedAt',
+          postID: '$postID',
+          email: '$email',
+          postType: '$postType',
+          description: '$description',
+          title: '$description',
+          active: '$active',
+          metadata: '$metadata',
+          location: '$location',
+          tags: '$tags',
+          likes: '$likes',
+          shares: '$shares',
+          comments: '$comments',
+          isOwned: '$isOwned',
+          views: '$views',
+          privacy: '$privacy',
+          isViewed: '$isViewed',
+          allowComments: '$allowComments',
+          certified: '$certified',
+          saleLike: '$saleLike',
+          saleView: '$saleView',
+          saleAmount: '$saleAmount',
+          monetize: '$monetize',
+          mediaSource: 1,
+          // insight: {
+          //   shares: '$insights.shares',
+          //   followers: '$insights.followers',
+          //   comments: '$insights.comments',
+          //   followings: '$insights.followings',
+          //   reactions: '$insights.reactions',
+          //   posts: '$insights.posts',
+          //   views: '$insights.views',
+          //   likes: '$insights.likes'
+          // },
+          // avatar: {
+          //   mediaBasePath: '$profilpict.mediaBasePath',
+          //   mediaUri: '$profilpict.mediaUri',
+          //   mediaType: '$profilpict.mediaType',
+          //   mediaEndpoint: '$profilpict.fsTargetUri',
+          //   medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+          // },
+        }
+      },
+      //    {
+      //        $addFields: {
+      //            
+      //            //            concats: '/profilepict',
+      //            //            pict: {
+      //            //                $replaceOne: {
+      //            //                    input: "$profilpict.mediaUri",
+      //            //                    find: "_0001.jpeg",
+      //            //                    replacement: ""
+      //            //                }
+      //            //            },
+      //            concatmediapict: '/pict',
+      //            media_pict: {
+      //                $replaceOne: {
+      //                    input: "$mediapict.mediaUri",
+      //                    find: "_0001.jpeg",
+      //                    replacement: ""
+      //                }
+      //            },
+      //            concatmediadiari: '/stream',
+      //            concatthumbdiari: '/thumb',
+      //            media_diari: '$mediadiaries.mediaUri',
+      //            concatmediavideo: '/stream',
+      //            concatthumbvideo: '/thumb',
+      //            media_video: '$mediavideos.mediaUri'
+      //        },
+      //        
+      //    },
+      {
+        $project: {
+          // rotate: '$mediadiaries.rotate',
+          mediaBasePath: {
+            $arrayElemAt: ['$mediaSource.mediaBasePath', 0]
+          },
+          mediaUri: {
+            $arrayElemAt: ['$mediaSource.mediaUri', 0]
+          },
+          mediaType: {
+            $arrayElemAt: ['$mediaSource.mediaType', 0]
+          },
+          mediaThumbEndpoint: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$postType', 'pict']
+                  },
+                  'then': {
+                    $concat: ["/thumb", "/", "$postID"]
+                  },
+
+                },
+                {
+                  'case': {
+                    '$eq': ['$postType', 'diary']
+                  },
+                  'then': {
+                    $concat: ["/thumb", "/", "$postID"]
+                  },
+
+                },
+                {
+                  'case': {
+                    '$eq': ['$postType', 'vid']
+                  },
+                  'then': {
+                    $concat: ["/thumb", "/", "$postID"]
+                  },
+
+                },
+              ],
+              default: ''
+            }
+          },
+          mediaEndpoint: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$postType', 'pict']
+                  },
+                  'then': {
+                    $concat: ["/pict", "/", "$postID"]
+                  },
+
+                },
+                {
+                  'case': {
+                    '$eq': ['$postType', 'diary']
+                  },
+                  'then': {
+                    $concat: ["/stream", "/", "$postID"]
+                  },
+
+                },
+                {
+                  'case': {
+                    '$eq': ['$postType', 'vid']
+                  },
+                  'then': {
+                    $concat: ["/stream", "/", "$postID"]
+                  },
+
+                },
+              ],
+              default: ''
+            }
+          },
+          //            mediaThumbUri: {
+          //                $switch: {
+          //                    branches: [
+          //                        {
+          //                            'case': {
+          //                                '$eq': ['$refs', 'mediapicts']
+          //                            },
+          //                            'then': '$mediadiaries.mediaThumb'
+          //                        },
+          //                        {
+          //                            'case': {
+          //                                '$eq': ['$refs', 'mediadiaries']
+          //                            },
+          //                            'then': '$mediadiaries.mediaThumb'
+          //                        },
+          //                        {
+          //                            'case': {
+          //                                '$eq': ['$refs', 'mediavideos']
+          //                            },
+          //                            'then': '$mediavideos.mediaThumb'
+          //                        }
+          //                    ],
+          //                    default: ''
+          //                }
+          //            },
+          fullName: '$fullName',
+          username: '$username',
+          createdAt: '$createdAt',
+          updatedAt: '$updatedAt',
+          postID: '$postID',
+          email: '$email',
+          postType: '$postType',
+          description: '$description',
+          title: '$description',
+          active: '$active',
+          metadata: '$metadata',
+          location: '$location',
+          tags: '$tags',
+          likes: '$likes',
+          shares: '$shares',
+          comments: '$comments',
+          isOwned: '$isOwned',
+          views: '$views',
+          privacy: '$privacy',
+          isViewed: '$isViewed',
+          allowComments: '$allowComments',
+          certified: '$certified',
+          saleLike: '$saleLike',
+          saleView: '$saleView',
+          saleAmount: '$saleAmount',
+          monetize: '$monetize',
+
+        }
+      }
+    ]);
+    return query;
+  }
 
 
   async findcontentfilter(keys: string, postType: string, skip: number, limit: number) {
@@ -15787,2217 +16237,2217 @@ export class GetusercontentsService {
     return query;
 
   }
-  
+
   async detailcontent2(postID: string, page: number, limit: number) {
     let query = await this.getusercontentsModel.aggregate([
+      {
+        $match:
         {
-          $match: 
-          {
-              postID: postID
+          postID: postID
+        },
+      },
+      {
+        $addFields: {
+
+          salePrice: {
+            $cmp: ["$saleAmount", 0]
           },
-      },
-      {
-          $addFields: {
-
-              salePrice: {
-              $cmp: ["$saleAmount", 0]
-              },
-              sLike: {
-              $cmp: ["$saleLike", 0]
-              },
-              sView: {
-              $cmp: ["$saleView", 0]
-              },
-              certi: {
-              $cmp: ["$certified", 0]
-              },
-
-          }
-      },
-      {
-          $lookup: {
-              from: 'userauths',
-              localField: 'email',
-              foreignField: 'email',
-              as: 'authdata',
-
-          }
-      },
-      {
-          "$lookup": {
-              "from": "mediamusic",
-              "as": "music",
-              "let": {
-              "local_id": "$musicId",
-
-              },
-              "pipeline": [
-              {
-                  $match:
-                  {
-                      _id:"$$local_id"
-                  }
-              },
-              {
-                  $project: {
-                  musicTitle: 1,
-                  albumName: 1
-                  }
-              },
-
-              ],
-
+          sLike: {
+            $cmp: ["$saleLike", 0]
+          },
+          sView: {
+            $cmp: ["$saleView", 0]
+          },
+          certi: {
+            $cmp: ["$certified", 0]
           },
 
+        }
       },
       {
-          $addFields: {
+        $lookup: {
+          from: 'userauths',
+          localField: 'email',
+          foreignField: 'email',
+          as: 'authdata',
 
-
-              'auth': {
-              $arrayElemAt: ['$authdata', 0]
-              },
-              'basic': {
-              $arrayElemAt: ['$basicdata', 0]
-              },
-
-          }
+        }
       },
       {
-          "$lookup": {
-              "from": "interests_repo",
-              "as": "kategori",
-              "let": {
-              "local_id": "$category.$id",
-
-              },
-              "pipeline": [
-              {
-                  $match:
-                  {
-                  $and: [
-                      {
-                      $expr: {
-
-                          $in: ['$_id', {
-                          $ifNull: ['$$local_id', []]
-                          }]
-                      }
-                      },
-
-                  ]
-                  }
-              },
-              {
-                  $project: {
-                  interestName: 1,
-
-                  }
-              },
-
-              ],
+        "$lookup": {
+          "from": "mediamusic",
+          "as": "music",
+          "let": {
+            "local_id": "$musicId",
 
           },
-
-      },
-      {
-          $project: {
-              refs: {
-              $arrayElemAt: ['$contentMedias', 0]
-              },
-              music: {
-              $arrayElemAt: ['$music', 0]
-              },
-              username: "$auth.username",
-              createdAt: 1,
-              updatedAt: 1,
-              postID: 1,
-              musicId: 1,
-              email: 1,
-              postType: 1,
-              description: 1,
-              title: 1,
-              active: 1,
-              likes: 1,
-              views: 1,
-              shares: 1,
-              comments: 1,
-              kategori: 1,
-              tagPeople: 1,
-              tagDescription: 1,
-              visibility: 1,
-              location: 1,
-              tags: 1,
-              allowComments: 1,
-              certified:
+          "pipeline": [
+            {
+              $match:
               {
-              $cond: {
-                  if: {
-                  $or: [{
-                      $eq: ["$certi", - 1]
-                  }, {
-                      $eq: ["$certi", 0]
-                  }]
-                  },
-                  then: false,
-                  else: "$certified"
+                _id: "$$local_id"
               }
-              },
-              saleAmount: {
-              $cond: {
-                  if: {
-                  $or: [{
-                      $eq: ["$salePrice", - 1]
-                  }, {
-                      $eq: ["$salePrice", 0]
-                  }]
-                  },
-                  then: 0,
-                  else: "$saleAmount"
-              }
-              },
-              saleView: {
-              $cond: {
-                  if: {
-                  $or: [{
-                      $eq: ["$sView", - 1]
-                  }, {
-                      $eq: ["$sView", 0]
-                  }]
-                  },
-                  then: false,
-                  else: "$saleView"
-              }
-              },
-              saleLike: {
-              $cond: {
-                  if: {
-                  $or: [{
-                      $eq: ["$sLike", - 1]
-                  }, {
-                      $eq: ["$sLike", 0]
-                  }]
-                  },
-                  then: false,
-                  else: "$saleLike"
-              }
-              },
-              monetize: {
-              $cond: {
-                  if: {
-                  $or: [{
-                      $eq: ["$salePrice", - 1]
-                  }, {
-                      $eq: ["$salePrice", 0]
-                  }]
-                  },
-                  then: false,
-                  else: true
-              }
-              },
-
-          }
-      },
-      {
-          $project: {
-              refs: '$refs.$ref',
-              idmedia: '$refs.$id',
-              musicTitle: '$music.musicTitle',
-              albumName: '$music.albumName',
-              username: 1,
-              createdAt: 1,
-              updatedAt: 1,
-              postID: 1,
-              musicId: 1,
-              postType: 1,
-              likes: 1,
-              views: 1,
-              shares: 1,
-              saleView: 1,
-              saleLike: 1,
-              comments: 1,
-              email: 1,
-              tagPeople: 1,
-              tagDescription: 1,
-              visibility: 1,
-              location: 1,
-              tags: 1,
-              allowComments: 1,
-              type: {
-
-              $switch: {
-                  branches: [
-                  {
-                      'case': {
-                      '$eq': ['$postType', 'pict']
-                      },
-                      'then': "HyppePic"
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$postType', 'vid']
-                      },
-                      'then': "HyppeVid"
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$postType', 'diary']
-                      },
-                      'then': "HyppeDiary"
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$postType', 'story']
-                      },
-                      'then': "HyppeStory"
-                  },
-
-                  ],
-                  default: ''
-              }
-              },
-              description: 1,
-              title: 1,
-              active: 1,
-              kategori: 1,
-              kepemilikan:
-              {
-              $cond: {
-                  if: {
-                  $or: [{
-                      $eq: ["$certified", false]
-                  }, {
-                      $eq: ["$certified", ""]
-                  }]
-                  },
-                  then: "TIDAK",
-                  else: "YA"
-              }
-              },
-              saleAmount: 1,
-              statusJual:
-              {
-              $cond: {
-                  if: {
-
-                  $eq: ["$monetize", false]
-                  },
-                  then: "TIDAK",
-                  else: "YA"
-              }
-              },
-
-          }
-      },
-      {
-          $lookup: {
-              from: 'mediapicts',
-              localField: 'idmedia',
-              foreignField: '_id',
-              as: 'mediaPict_data',
-
-          },
-
-      },
-      {
-          $lookup: {
-              from: 'mediadiaries',
-              localField: 'idmedia',
-              foreignField: '_id',
-              as: 'mediadiaries_data',
-
-          },
-
-      },
-      {
-          $lookup: {
-              from: 'mediavideos',
-              localField: 'idmedia',
-              foreignField: '_id',
-              as: 'mediavideos_data',
-
-          },
-
-      },
-      {
-          $lookup: {
-              from: 'mediastories',
-              localField: 'idmedia',
-              foreignField: '_id',
-              as: 'mediastories_data',
-
-          },
-
-      },
-      {
-          $project: {
-              mediapict: {
-              $arrayElemAt: ['$mediaPict_data', 0]
-              },
-              mediadiaries: {
-              $arrayElemAt: ['$mediadiaries_data', 0]
-              },
-              mediavideos: {
-              $arrayElemAt: ['$mediavideos_data', 0]
-              },
-              mediastories: {
-              $arrayElemAt: ['$mediastories_data', 0]
-              },
-              refs: 1,
-              idmedia: 1,
-              username: 1,
-              createdAt: 1,
-              updatedAt: 1,
-              postID: 1,
-              musicId: 1,
-              postType: 1,
-              email: 1,
-              type: 1,
-              description: 1,
-              title: 1,
-              active: 1,
-              likes: 1,
-              views: 1,
-              shares: 1,
-              comments: 1,
-              kategori: 1,
-              kepemilikan: 1,
-              visibility: 1,
-              saleAmount: 1,
-              statusJual: 1,
-              saleView: 1,
-              saleLike: 1,
-              tagPeople: 1,
-              tagDescription: 1,
-              location: 1,
-              tags: 1,
-              allowComments: 1,
-              musicTitle: 1,
-              albumName: 1,
-
-          }
-      },
-      {
-          $addFields: {
-
-
-              pict: {
-              $replaceOne: {
-                  input: "$profilpict.mediaUri",
-                  find: "_0001.jpeg",
-                  replacement: ""
-              }
-              },
-              concatmediapict: '/pict',
-              media_pict: {
-              $replaceOne: {
-                  input: "$mediapict.mediaUri",
-                  find: "_0001.jpeg",
-                  replacement: ""
-              }
-              },
-              concatmediadiari: '/stream',
-              concatthumbdiari: '/thumb',
-              media_diari: '$mediadiaries.mediaUri',
-              concatmediavideo: '/stream',
-              concatthumbvideo: '/thumb',
-              media_video: '$mediavideos.mediaUri',
-              concatmediastory:
-              {
-              $cond: {
-                  if: {
-
-                  $eq: ["$mediastories.mediaType", "image"]
-                  },
-                  then: '/pict',
-                  else: '/stream',
-
-              }
-              },
-              concatthumbstory: '/thumb',
-              media_story: '$mediastories.mediaUri'
-          },
-
-      },
-      {
-          $project: {
-
-              username: 1,
-              createdAt: 1,
-              updatedAt: 1,
-              postID: 1,
-              musicId: 1,
-              postType: 1,
-              email: 1,
-              type: 1,
-              description: 1,
-              title: 1,
-              active: 1,
-              kategori: 1,
-              kepemilikan: 1,
-              visibility: 1,
-              likes: 1,
-              views: 1,
-              shares: 1,
-              comments: 1,
-              saleAmount: 1,
-              statusJual: 1,
-              saleView: 1,
-              saleLike: 1,
-              tagPeople: 1,
-              tagDescription: 1,
-              location: 1,
-              tags: 1,
-              allowComments: 1,
-              musicTitle: 1,
-              albumName: 1,
-              mediaBasePath: {
-              $switch: {
-                  branches: [
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                      },
-                      'then': '$mediapict.mediaBasePath'
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                      },
-                      'then': '$mediadiaries.mediaBasePath'
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                      },
-                      'then': '$mediavideos.mediaBasePath'
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediastories']
-                      },
-                      'then': '$mediastories.mediaBasePath'
-                  }
-                  ],
-                  default: ''
-              }
-              },
-              mediaUri: {
-              $switch: {
-                  branches: [
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                      },
-                      'then': '$mediapict.mediaUri'
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                      },
-                      'then': '$mediadiaries.mediaUri'
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                      },
-                      'then': '$mediavideos.mediaUri'
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediastories']
-                      },
-                      'then': '$mediastories.mediaUri'
-                  }
-                  ],
-                  default: ''
-              }
-              },
-              mediaType: {
-              $switch: {
-                  branches: [
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                      },
-                      'then': '$mediapict.mediaType'
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                      },
-                      'then': '$mediadiaries.mediaType'
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                      },
-                      'then': '$mediavideos.mediaType'
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediastories']
-                      },
-                      'then': '$mediastories.mediaType'
-                  }
-                  ],
-                  default: ''
-              }
-              },
-              mediaThumbEndpoint: {
-              $switch: {
-                  branches: [
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                      },
-                      'then': '$mediadiaries.mediaThumb'
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                      },
-                      'then': {
-                      $concat: ["$concatthumbdiari", "/", "$postID"]
-                      },
-
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                      },
-                      'then': {
-                      $concat: ["$concatthumbvideo", "/", "$postID"]
-                      },
-
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediastories']
-                      },
-                      'then': {
-                      $concat: ["$concatthumbstory", "/", "$postID"]
-                      },
-
-                  },
-
-                  ],
-                  default: ''
-              }
-              },
-              mediaEndpoint: {
-              $switch: {
-                  branches: [
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                      },
-                      'then': {
-                      $concat: ["$concatmediapict", "/", "$postID"]
-                      },
-
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                      },
-                      'then': {
-                      $concat: ["$concatmediadiari", "/", "$postID"]
-                      },
-
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                      },
-                      'then': {
-                      $concat: ["$concatmediavideo", "/", "$postID"]
-                      },
-
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediastories']
-                      },
-                      'then': {
-                      $concat: ["$concatmediastory", "/", "$postID"]
-                      },
-
-                  }
-                  ],
-                  default: ''
-              }
-              },
-              mediaThumbUri: {
-              $switch: {
-                  branches: [
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                      },
-                      'then': '$mediadiaries.mediaThumb'
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                      },
-                      'then': '$mediadiaries.mediaThumb'
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                      },
-                      'then': '$mediavideos.mediaThumb'
-                  },
-                  {
-                      'case': {
-                      '$eq': ['$refs', 'mediastories']
-                      },
-                      'then': '$mediastories.mediaThumb'
-                  }
-                  ],
-                  default: ''
-              }
-              },
-              apsaraId: {
-              $switch: {
-                  branches: [
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediapicts"
-                      ]
-                      },
-                      then: "$mediapict.apsaraId"
-                  },
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediadiaries"
-                      ]
-                      },
-                      then: "$mediadiaries.apsaraId"
-                  },
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediavideos"
-                      ]
-                      },
-                      then: "$mediavideos.apsaraId"
-                  },
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediastories"
-                      ]
-                      },
-                      then: "$mediastories.apsaraId"
-                  }
-                  ],
-                  default: false
-              }
-              },
-              apsara: {
-              $switch: {
-                  branches: [
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediapicts"
-                      ]
-                      },
-                      then: "$mediapict.apsara"
-                  },
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediadiaries"
-                      ]
-                      },
-                      then: "$mediadiaries.apsara"
-                  },
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediavideos"
-                      ]
-                      },
-                      then: "$mediavideos.apsara"
-                  },
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediastories"
-                      ]
-                      },
-                      then: "$mediastories.apsara"
-                  }
-                  ],
-                  default: false
-              }
-              },
-              originalName: {
-              $switch: {
-                  branches: [
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediapicts"
-                      ]
-                      },
-                      then: "$mediapict.originalName"
-                  },
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediadiaries"
-                      ]
-                      },
-                      then: "$mediadiaries.originalName"
-                  },
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediavideos"
-                      ]
-                      },
-                      then: "$mediavideos.originalName"
-                  },
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediastories"
-                      ]
-                      },
-                      then: "$mediastories.originalName"
-                  }
-                  ],
-                  default: ""
-              }
-              },
-              rotate: {
-              $switch: {
-                  branches: [
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediapicts"
-                      ]
-                      },
-                      then: "$mediapict.rotate"
-                  },
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediadiaries"
-                      ]
-                      },
-                      then: "$mediadiaries.rotate"
-                  },
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediavideos"
-                      ]
-                      },
-                      then: "$mediavideos.rotate"
-                  },
-                  {
-                      case: {
-                      $eq: [
-                          "$refs",
-                          "mediastories"
-                      ]
-                      },
-                      then: "$mediastories.rotate"
-                  }
-                  ],
-                  default: 0
-              }
-              },
-
-          }
-      },
-      {
-          "$lookup": {
-              "from": "disquslogs",
-              "as": "comment",
-              "let": {
-              "local_id": "$postID"
-              },
-              "pipeline": [
-              {
-                  "$match": {
-                  "$expr": {
-                      "$eq": [
-                      "$postID",
-                      "$$local_id"
-                      ]
-                  }
-                  }
-              },
-              {
-                  $project: {
-                  postID: 1,
-                  txtMessages: 1,
-                  sender: 1,
-                  receiver: 1,
-                  createdAt: 1,
-                  active: 1
-                  }
-              },
-              {
-                  $match: {
-                  active: true
-                  }
-              },
-              { $sort: { createdAt: -1 } },
-              {
-                  $skip: (page * limit)
-              },
-              {
-                  $limit: limit
-              },
-              {
-                  "$lookup": {
-                  "from": "userauths",
-                  "as": "authsender",
-                  "let": {
-                      "local_id": "$sender"
-                  },
-                  "pipeline": [
-                      {
-                      "$match": {
-                          "$expr": {
-                          "$eq": [
-                              "$email",
-                              "$$local_id"
-                          ]
-                          }
-                      }
-                      },
-
-                  ],
-
-                  }
-              },
-              {
-                  $project: {
-                  authsender: {
-                      $arrayElemAt: ['$authsender', 0]
-                  },
-                  receiver: 1,
-                  postID: 1,
-                  txtMessages: 1,
-                  createdAt: 1,
-                  active: 1
-                  }
-              },
-              {
-                  "$lookup": {
-                  "from": "userauths",
-                  "as": "authreceiver",
-                  "let": {
-                      "local_id": "$receiver"
-                  },
-                  "pipeline": [
-                      {
-                      "$match": {
-                          "$expr": {
-                          "$eq": [
-                              "$email",
-                              "$$local_id"
-                          ]
-                          }
-                      }
-                      },
-
-                  ],
-
-                  }
-              },
-              {
-                  $project: {
-                  emailsender: '$authsender.email',
-                  sender: '$authsender.username',
-                  authreceive: {
-                      $arrayElemAt: ['$authreceiver', 0]
-                  },
-                  postID: 1,
-                  txtMessages: 1,
-                  receiver: 1,
-                  createdAt: 1,
-                  active: 1
-                  }
-              },
-              {
-                  $project: {
-                  emailsender: 1,
-                  sender: 1,
-                  receiver: '$authreceive.username',
-                  postID: 1,
-                  txtMessages: 1,
-                  createdAt: 1,
-                  active: 1
-                  }
-              },
-              {
-                  "$lookup": {
-                  "from": "userbasics",
-                  "as": "ubasic",
-                  "let": {
-                      "local_id": "$emailsender"
-                  },
-                  "pipeline": [
-                      {
-                      "$match": {
-                          "$expr": {
-                          "$eq": [
-                              "$email",
-                              "$$local_id"
-                          ]
-                          }
-                      }
-                      },
-
-                  ],
-
-                  }
-              },
-              {
-                  $project: {
-                  ubasic: {
-                      $arrayElemAt: ['$ubasic', 0]
-                  },
-                  sender: 1,
-                  receiver: 1,
-                  postID: 1,
-                  txtMessages: 1,
-                  createdAt: 1,
-                  active: 1,
-                  emailsender: 1
-
-                  }
-              },
-              {
-                  $project: {
-
-                  sender: 1,
-                  receiver: 1,
-                  postID: 1,
-                  txtMessages: 1,
-                  createdAt: 1,
-                  active: 1,
-                  emailsender: 1,
-                  ubasic: 1
-
-                  }
-              },
-              {
-                  $project: {
-
-                  sender: 1,
-                  receiver: 1,
-                  postID: 1,
-                  txtMessages: 1,
-                  createdAt: 1,
-                  active: 1,
-                  emailsender: 1,
-
-                  profilePict: '$ubasic.profilePict.$id'
-                  }
-              },
-              // {
-              //   "$lookup": {
-              //     from: "mediaprofilepicts",
-              //     as: "avatar",
-              //     let: {
-              //       localID: '$profilePict'
-              //     },
-              //     pipeline: [
-              //       {
-              //         $match:
-              //         {
-
-              //           $expr: {
-              //             $eq: ['$mediaID', '$$localID']
-              //           }
-              //         }
-              //       },
-              //       {
-              //         $project: {
-              //           "mediaBasePath": 1,
-              //           "mediaUri": 1,
-              //           "originalName": 1,
-              //           "fsSourceUri": 1,
-              //           "fsSourceName": 1,
-              //           "fsTargetUri": 1,
-              //           "mediaType": 1,
-              //           "mediaEndpoint": {
-              //             "$concat": ["/profilepict/", "$mediaID"]
-              //           }
-              //         }
-              //       }
-              //     ],
-
-              //   }
-              // },
-
-              {
-                  $project: {
-
-                  sender: 1,
-                  receiver: 1,
-                  postID: 1,
-                  txtMessages: 1,
-                  createdAt: 1,
-                  active: 1,
-                  emailsender: 1,
-
-                  avatar: [{
-                      mediaEndpoint: { "$concat": ["/profilepict/", "$profilePict"] }
-                  }]
-                  }
-              },
-
-              ],
-
-          }
-      },
-      {
-          "$lookup": {
-            "from": "transactions",
-            "as": "riwayat",
-            "let": {
-              "local_id": "$postID",
-
             },
-            "pipeline": [
+            {
+              $project: {
+                musicTitle: 1,
+                albumName: 1
+              }
+            },
+
+          ],
+
+        },
+
+      },
+      {
+        $addFields: {
+
+
+          'auth': {
+            $arrayElemAt: ['$authdata', 0]
+          },
+          'basic': {
+            $arrayElemAt: ['$basicdata', 0]
+          },
+
+        }
+      },
+      {
+        "$lookup": {
+          "from": "interests_repo",
+          "as": "kategori",
+          "let": {
+            "local_id": "$category.$id",
+
+          },
+          "pipeline": [
+            {
+              $match:
               {
-                $match:
+                $and: [
+                  {
+                    $expr: {
+
+                      $in: ['$_id', {
+                        $ifNull: ['$$local_id', []]
+                      }]
+                    }
+                  },
+
+                ]
+              }
+            },
+            {
+              $project: {
+                interestName: 1,
+
+              }
+            },
+
+          ],
+
+        },
+
+      },
+      {
+        $project: {
+          refs: {
+            $arrayElemAt: ['$contentMedias', 0]
+          },
+          music: {
+            $arrayElemAt: ['$music', 0]
+          },
+          username: "$auth.username",
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          musicId: 1,
+          email: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          likes: 1,
+          views: 1,
+          shares: 1,
+          comments: 1,
+          kategori: 1,
+          tagPeople: 1,
+          tagDescription: 1,
+          visibility: 1,
+          location: 1,
+          tags: 1,
+          allowComments: 1,
+          certified:
+          {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$certi", - 1]
+                }, {
+                  $eq: ["$certi", 0]
+                }]
+              },
+              then: false,
+              else: "$certified"
+            }
+          },
+          saleAmount: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$salePrice", - 1]
+                }, {
+                  $eq: ["$salePrice", 0]
+                }]
+              },
+              then: 0,
+              else: "$saleAmount"
+            }
+          },
+          saleView: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$sView", - 1]
+                }, {
+                  $eq: ["$sView", 0]
+                }]
+              },
+              then: false,
+              else: "$saleView"
+            }
+          },
+          saleLike: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$sLike", - 1]
+                }, {
+                  $eq: ["$sLike", 0]
+                }]
+              },
+              then: false,
+              else: "$saleLike"
+            }
+          },
+          monetize: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$salePrice", - 1]
+                }, {
+                  $eq: ["$salePrice", 0]
+                }]
+              },
+              then: false,
+              else: true
+            }
+          },
+
+        }
+      },
+      {
+        $project: {
+          refs: '$refs.$ref',
+          idmedia: '$refs.$id',
+          musicTitle: '$music.musicTitle',
+          albumName: '$music.albumName',
+          username: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          musicId: 1,
+          postType: 1,
+          likes: 1,
+          views: 1,
+          shares: 1,
+          saleView: 1,
+          saleLike: 1,
+          comments: 1,
+          email: 1,
+          tagPeople: 1,
+          tagDescription: 1,
+          visibility: 1,
+          location: 1,
+          tags: 1,
+          allowComments: 1,
+          type: {
+
+            $switch: {
+              branches: [
                 {
-
-                  $expr: {
-
-                    $eq: ['$postid', '$$local_id']
-                  }
-                }
-              },
-              {
-                $project: {
-                  idusersell: 1,
-                  iduserbuyer: 1,
-                  postID: '$postid',
-                  amount: 1,
-                  status: 1,
-                  noinvoice: 1,
-                  timestamp: 1
-                }
-              },
-              {
-                $match: {
-                  status: "Success"
-                }
-              },
-              { $sort: { timestamp: -1 } },
-              {
-                $skip: (page * limit)
-              },
-              {
-                $limit: limit
-              },
-              {
-                "$lookup": {
-                  "from": "userbasics",
-                  "as": "penjual",
-                  "let": {
-                    "local_id": "$idusersell"
+                  'case': {
+                    '$eq': ['$postType', 'pict']
                   },
-                  "pipeline": [
-                    {
-                      "$match": {
-                        "$expr": {
-                          "$eq": [
-                            "$_id",
-                            "$$local_id"
-                          ]
-                        }
-                      }
-                    },
-
-                  ],
-
-                }
-              },
-              {
-                "$lookup": {
-                  "from": "userbasics",
-                  "as": "pembeli",
-                  "let": {
-                    "local_id": "$iduserbuyer"
+                  'then': "HyppePic"
+                },
+                {
+                  'case': {
+                    '$eq': ['$postType', 'vid']
                   },
-                  "pipeline": [
-                    {
-                      "$match": {
-                        "$expr": {
-                          "$eq": [
-                            "$_id",
-                            "$$local_id"
-                          ]
-                        }
-                      }
-                    },
-
-                  ],
-
-                }
-              },
-              {
-                $project: {
-                  penjual: {
-                    $arrayElemAt: ['$penjual', 0]
+                  'then': "HyppeVid"
+                },
+                {
+                  'case': {
+                    '$eq': ['$postType', 'diary']
                   },
-                  pembeli: {
-                    $arrayElemAt: ['$pembeli', 0]
+                  'then': "HyppeDiary"
+                },
+                {
+                  'case': {
+                    '$eq': ['$postType', 'story']
                   },
-                  postID: 1,
-                  amount: 1,
-                  status: 1,
-                  noinvoice: 1,
-                  timestamp: 1
-                }
-              },
-              {
-                $project: {
-                  postID: 1,
-                  emailpenjual: '$penjual.email',
-                  emailpembeli: '$pembeli.email',
-                  amount: 1,
-                  status: 1,
-                  noinvoice: 1,
-                  timestamp: 1
-                }
-              },
-              {
-                "$lookup": {
-                  "from": "userauths",
-                  "as": "authpembeli",
-                  "let": {
-                    "local_id": "$emailpembeli"
-                  },
-                  "pipeline": [
-                    {
-                      "$match": {
-                        "$expr": {
-                          "$eq": [
-                            "$email",
-                            "$$local_id"
-                          ]
-                        }
-                      }
-                    },
+                  'then': "HyppeStory"
+                },
 
-                  ],
-
-                }
-              },
-              {
-                "$lookup": {
-                  "from": "userauths",
-                  "as": "authpenjual",
-                  "let": {
-                    "local_id": "$emailpenjual"
-                  },
-                  "pipeline": [
-                    {
-                      "$match": {
-                        "$expr": {
-                          "$eq": [
-                            "$email",
-                            "$$local_id"
-                          ]
-                        }
-                      }
-                    },
-
-                  ],
-
-                }
-              },
-              {
-                $project: {
-                  authpembeli: {
-                    $arrayElemAt: ['$authpembeli', 0]
-                  },
-                  authpenjual: {
-                    $arrayElemAt: ['$authpenjual', 0]
-                  },
-                  postID: 1,
-                  amount: 1,
-                  status: 1,
-                  noinvoice: 1,
-                  timestamp: 1
-                }
-              },
-              {
-                $project: {
-                  pembeli: '$authpembeli.username',
-                  penjual: '$authpenjual.username',
-                  postID: 1,
-                  amount: 1,
-                  status: 1,
-                  noinvoice: 1,
-                  timestamp: 1
-                }
-              },
-
-            ],
-
+              ],
+              default: ''
+            }
           },
+          description: 1,
+          title: 1,
+          active: 1,
+          kategori: 1,
+          kepemilikan:
+          {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$certified", false]
+                }, {
+                  $eq: ["$certified", ""]
+                }]
+              },
+              then: "TIDAK",
+              else: "YA"
+            }
+          },
+          saleAmount: 1,
+          statusJual:
+          {
+            $cond: {
+              if: {
+
+                $eq: ["$monetize", false]
+              },
+              then: "TIDAK",
+              else: "YA"
+            }
+          },
+
+        }
+      },
+      {
+        $lookup: {
+          from: 'mediapicts',
+          localField: 'idmedia',
+          foreignField: '_id',
+          as: 'mediaPict_data',
+
+        },
 
       },
       {
-          $lookup: 
-          {
-              from: 'contentevents',
-              localField: 'postID',
-              foreignField: 'postID',
-              as: 'content_data',
-          },
+        $lookup: {
+          from: 'mediadiaries',
+          localField: 'idmedia',
+          foreignField: '_id',
+          as: 'mediadiaries_data',
+
+        },
+
       },
       {
-          "$project":
+        $lookup: {
+          from: 'mediavideos',
+          localField: 'idmedia',
+          foreignField: '_id',
+          as: 'mediavideos_data',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'mediastories',
+          localField: 'idmedia',
+          foreignField: '_id',
+          as: 'mediastories_data',
+
+        },
+
+      },
+      {
+        $project: {
+          mediapict: {
+            $arrayElemAt: ['$mediaPict_data', 0]
+          },
+          mediadiaries: {
+            $arrayElemAt: ['$mediadiaries_data', 0]
+          },
+          mediavideos: {
+            $arrayElemAt: ['$mediavideos_data', 0]
+          },
+          mediastories: {
+            $arrayElemAt: ['$mediastories_data', 0]
+          },
+          refs: 1,
+          idmedia: 1,
+          username: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          musicId: 1,
+          postType: 1,
+          email: 1,
+          type: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          likes: 1,
+          views: 1,
+          shares: 1,
+          comments: 1,
+          kategori: 1,
+          kepemilikan: 1,
+          visibility: 1,
+          saleAmount: 1,
+          statusJual: 1,
+          saleView: 1,
+          saleLike: 1,
+          tagPeople: 1,
+          tagDescription: 1,
+          location: 1,
+          tags: 1,
+          allowComments: 1,
+          musicTitle: 1,
+          albumName: 1,
+
+        }
+      },
+      {
+        $addFields: {
+
+
+          pict: {
+            $replaceOne: {
+              input: "$profilpict.mediaUri",
+              find: "_0001.jpeg",
+              replacement: ""
+            }
+          },
+          concatmediapict: '/pict',
+          media_pict: {
+            $replaceOne: {
+              input: "$mediapict.mediaUri",
+              find: "_0001.jpeg",
+              replacement: ""
+            }
+          },
+          concatmediadiari: '/stream',
+          concatthumbdiari: '/thumb',
+          media_diari: '$mediadiaries.mediaUri',
+          concatmediavideo: '/stream',
+          concatthumbvideo: '/thumb',
+          media_video: '$mediavideos.mediaUri',
+          concatmediastory:
           {
-              _id: 1,
-              postID: 1,
-              email: 1,
-              postType: 1,
-              description: 1,
-              active: 1,
-              createdAt: 1,
-              updatedAt: 1,
-              visibility: 1,
-              location: 1,
-              tags: 1,
-              allowComments: 1,
-              likes: 1,
-              views: 1,
-              shares: 1,
-              tagPeople: 1,
-              tagDescription: 1,
-              comments: 1,
-              kategori: 1,
-              username: 1,
-              saleAmount: 1,
-              saleView: 1,
-              saleLike: 1,
-              type: 1,
-              kepemilikan: 1,
-              statusJual: 1,
-              mediaType: 1,
-              mediaThumbEndpoint: 1,
-              mediaEndpoint: 1,
-              apsaraId: 1,
-              apsara: 1,
-              originalName: 1,
-              comment: 1,
-              riwayat:1,
-              CE_data:
-              {
-                  "$filter":
-                  {
-                      input:"$content_data",
-                      as:"ces_data",
-                      cond:
-                      {
-                          "$and":
-                          [
-                              {
-                                  "$eq":
-                                  [
-                                      "$$ces_data.event", "ACCEPT"
-                                  ]
-                              },
-                              {
-                                  "$eq":
-                                  [
-                                      "$$ces_data.active", true
-                                  ]
-                              },
-                              {
-                                  "$eq":
-                                  [
-                                      "$$ces_data.eventType", "VIEW"
-                                  ]
-                              },
-                              {
-                                  "$ne":
-                                  [
-                                      "$$ces_data.senderParty", null
-                                  ]
-                              },
-                              {
-                                  "$ne":
-                                  [
-                                      "$$ces_data.senderParty", ""
-                                  ]
-                              },
-                          ]
-                      }
-                  }
+            $cond: {
+              if: {
+
+                $eq: ["$mediastories.mediaType", "image"]
+              },
+              then: '/pict',
+              else: '/stream',
+
+            }
+          },
+          concatthumbstory: '/thumb',
+          media_story: '$mediastories.mediaUri'
+        },
+
+      },
+      {
+        $project: {
+
+          username: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          musicId: 1,
+          postType: 1,
+          email: 1,
+          type: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          kategori: 1,
+          kepemilikan: 1,
+          visibility: 1,
+          likes: 1,
+          views: 1,
+          shares: 1,
+          comments: 1,
+          saleAmount: 1,
+          statusJual: 1,
+          saleView: 1,
+          saleLike: 1,
+          tagPeople: 1,
+          tagDescription: 1,
+          location: 1,
+          tags: 1,
+          allowComments: 1,
+          musicTitle: 1,
+          albumName: 1,
+          mediaBasePath: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediapict.mediaBasePath'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': '$mediadiaries.mediaBasePath'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': '$mediavideos.mediaBasePath'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediastories']
+                  },
+                  'then': '$mediastories.mediaBasePath'
+                }
+              ],
+              default: ''
+            }
+          },
+          mediaUri: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediapict.mediaUri'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': '$mediadiaries.mediaUri'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': '$mediavideos.mediaUri'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediastories']
+                  },
+                  'then': '$mediastories.mediaUri'
+                }
+              ],
+              default: ''
+            }
+          },
+          mediaType: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediapict.mediaType'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': '$mediadiaries.mediaType'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': '$mediavideos.mediaType'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediastories']
+                  },
+                  'then': '$mediastories.mediaType'
+                }
+              ],
+              default: ''
+            }
+          },
+          mediaThumbEndpoint: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediadiaries.mediaThumb'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': {
+                    $concat: ["$concatthumbdiari", "/", "$postID"]
+                  },
+
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': {
+                    $concat: ["$concatthumbvideo", "/", "$postID"]
+                  },
+
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediastories']
+                  },
+                  'then': {
+                    $concat: ["$concatthumbstory", "/", "$postID"]
+                  },
+
+                },
+
+              ],
+              default: ''
+            }
+          },
+          mediaEndpoint: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': {
+                    $concat: ["$concatmediapict", "/", "$postID"]
+                  },
+
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': {
+                    $concat: ["$concatmediadiari", "/", "$postID"]
+                  },
+
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': {
+                    $concat: ["$concatmediavideo", "/", "$postID"]
+                  },
+
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediastories']
+                  },
+                  'then': {
+                    $concat: ["$concatmediastory", "/", "$postID"]
+                  },
+
+                }
+              ],
+              default: ''
+            }
+          },
+          mediaThumbUri: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediadiaries.mediaThumb'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': '$mediadiaries.mediaThumb'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': '$mediavideos.mediaThumb'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediastories']
+                  },
+                  'then': '$mediastories.mediaThumb'
+                }
+              ],
+              default: ''
+            }
+          },
+          apsaraId: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediapicts"
+                    ]
+                  },
+                  then: "$mediapict.apsaraId"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediadiaries"
+                    ]
+                  },
+                  then: "$mediadiaries.apsaraId"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediavideos"
+                    ]
+                  },
+                  then: "$mediavideos.apsaraId"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediastories"
+                    ]
+                  },
+                  then: "$mediastories.apsaraId"
+                }
+              ],
+              default: false
+            }
+          },
+          apsara: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediapicts"
+                    ]
+                  },
+                  then: "$mediapict.apsara"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediadiaries"
+                    ]
+                  },
+                  then: "$mediadiaries.apsara"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediavideos"
+                    ]
+                  },
+                  then: "$mediavideos.apsara"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediastories"
+                    ]
+                  },
+                  then: "$mediastories.apsara"
+                }
+              ],
+              default: false
+            }
+          },
+          originalName: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediapicts"
+                    ]
+                  },
+                  then: "$mediapict.originalName"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediadiaries"
+                    ]
+                  },
+                  then: "$mediadiaries.originalName"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediavideos"
+                    ]
+                  },
+                  then: "$mediavideos.originalName"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediastories"
+                    ]
+                  },
+                  then: "$mediastories.originalName"
+                }
+              ],
+              default: ""
+            }
+          },
+          rotate: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediapicts"
+                    ]
+                  },
+                  then: "$mediapict.rotate"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediadiaries"
+                    ]
+                  },
+                  then: "$mediadiaries.rotate"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediavideos"
+                    ]
+                  },
+                  then: "$mediavideos.rotate"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediastories"
+                    ]
+                  },
+                  then: "$mediastories.rotate"
+                }
+              ],
+              default: 0
+            }
+          },
+
+        }
+      },
+      {
+        "$lookup": {
+          "from": "disquslogs",
+          "as": "comment",
+          "let": {
+            "local_id": "$postID"
+          },
+          "pipeline": [
+            {
+              "$match": {
+                "$expr": {
+                  "$eq": [
+                    "$postID",
+                    "$$local_id"
+                  ]
+                }
               }
-          }
+            },
+            {
+              $project: {
+                postID: 1,
+                txtMessages: 1,
+                sender: 1,
+                receiver: 1,
+                createdAt: 1,
+                active: 1
+              }
+            },
+            {
+              $match: {
+                active: true
+              }
+            },
+            { $sort: { createdAt: -1 } },
+            {
+              $skip: (page * limit)
+            },
+            {
+              $limit: limit
+            },
+            {
+              "$lookup": {
+                "from": "userauths",
+                "as": "authsender",
+                "let": {
+                  "local_id": "$sender"
+                },
+                "pipeline": [
+                  {
+                    "$match": {
+                      "$expr": {
+                        "$eq": [
+                          "$email",
+                          "$$local_id"
+                        ]
+                      }
+                    }
+                  },
+
+                ],
+
+              }
+            },
+            {
+              $project: {
+                authsender: {
+                  $arrayElemAt: ['$authsender', 0]
+                },
+                receiver: 1,
+                postID: 1,
+                txtMessages: 1,
+                createdAt: 1,
+                active: 1
+              }
+            },
+            {
+              "$lookup": {
+                "from": "userauths",
+                "as": "authreceiver",
+                "let": {
+                  "local_id": "$receiver"
+                },
+                "pipeline": [
+                  {
+                    "$match": {
+                      "$expr": {
+                        "$eq": [
+                          "$email",
+                          "$$local_id"
+                        ]
+                      }
+                    }
+                  },
+
+                ],
+
+              }
+            },
+            {
+              $project: {
+                emailsender: '$authsender.email',
+                sender: '$authsender.username',
+                authreceive: {
+                  $arrayElemAt: ['$authreceiver', 0]
+                },
+                postID: 1,
+                txtMessages: 1,
+                receiver: 1,
+                createdAt: 1,
+                active: 1
+              }
+            },
+            {
+              $project: {
+                emailsender: 1,
+                sender: 1,
+                receiver: '$authreceive.username',
+                postID: 1,
+                txtMessages: 1,
+                createdAt: 1,
+                active: 1
+              }
+            },
+            {
+              "$lookup": {
+                "from": "userbasics",
+                "as": "ubasic",
+                "let": {
+                  "local_id": "$emailsender"
+                },
+                "pipeline": [
+                  {
+                    "$match": {
+                      "$expr": {
+                        "$eq": [
+                          "$email",
+                          "$$local_id"
+                        ]
+                      }
+                    }
+                  },
+
+                ],
+
+              }
+            },
+            {
+              $project: {
+                ubasic: {
+                  $arrayElemAt: ['$ubasic', 0]
+                },
+                sender: 1,
+                receiver: 1,
+                postID: 1,
+                txtMessages: 1,
+                createdAt: 1,
+                active: 1,
+                emailsender: 1
+
+              }
+            },
+            {
+              $project: {
+
+                sender: 1,
+                receiver: 1,
+                postID: 1,
+                txtMessages: 1,
+                createdAt: 1,
+                active: 1,
+                emailsender: 1,
+                ubasic: 1
+
+              }
+            },
+            {
+              $project: {
+
+                sender: 1,
+                receiver: 1,
+                postID: 1,
+                txtMessages: 1,
+                createdAt: 1,
+                active: 1,
+                emailsender: 1,
+
+                profilePict: '$ubasic.profilePict.$id'
+              }
+            },
+            // {
+            //   "$lookup": {
+            //     from: "mediaprofilepicts",
+            //     as: "avatar",
+            //     let: {
+            //       localID: '$profilePict'
+            //     },
+            //     pipeline: [
+            //       {
+            //         $match:
+            //         {
+
+            //           $expr: {
+            //             $eq: ['$mediaID', '$$localID']
+            //           }
+            //         }
+            //       },
+            //       {
+            //         $project: {
+            //           "mediaBasePath": 1,
+            //           "mediaUri": 1,
+            //           "originalName": 1,
+            //           "fsSourceUri": 1,
+            //           "fsSourceName": 1,
+            //           "fsTargetUri": 1,
+            //           "mediaType": 1,
+            //           "mediaEndpoint": {
+            //             "$concat": ["/profilepict/", "$mediaID"]
+            //           }
+            //         }
+            //       }
+            //     ],
+
+            //   }
+            // },
+
+            {
+              $project: {
+
+                sender: 1,
+                receiver: 1,
+                postID: 1,
+                txtMessages: 1,
+                createdAt: 1,
+                active: 1,
+                emailsender: 1,
+
+                avatar: [{
+                  mediaEndpoint: { "$concat": ["/profilepict/", "$profilePict"] }
+                }]
+              }
+            },
+
+          ],
+
+        }
       },
       {
-          "$facet":
+        "$lookup": {
+          "from": "transactions",
+          "as": "riwayat",
+          "let": {
+            "local_id": "$postID",
+
+          },
+          "pipeline": [
+            {
+              $match:
+              {
+
+                $expr: {
+
+                  $eq: ['$postid', '$$local_id']
+                }
+              }
+            },
+            {
+              $project: {
+                idusersell: 1,
+                iduserbuyer: 1,
+                postID: '$postid',
+                amount: 1,
+                status: 1,
+                noinvoice: 1,
+                timestamp: 1
+              }
+            },
+            {
+              $match: {
+                status: "Success"
+              }
+            },
+            { $sort: { timestamp: -1 } },
+            {
+              $skip: (page * limit)
+            },
+            {
+              $limit: limit
+            },
+            {
+              "$lookup": {
+                "from": "userbasics",
+                "as": "penjual",
+                "let": {
+                  "local_id": "$idusersell"
+                },
+                "pipeline": [
+                  {
+                    "$match": {
+                      "$expr": {
+                        "$eq": [
+                          "$_id",
+                          "$$local_id"
+                        ]
+                      }
+                    }
+                  },
+
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                "from": "userbasics",
+                "as": "pembeli",
+                "let": {
+                  "local_id": "$iduserbuyer"
+                },
+                "pipeline": [
+                  {
+                    "$match": {
+                      "$expr": {
+                        "$eq": [
+                          "$_id",
+                          "$$local_id"
+                        ]
+                      }
+                    }
+                  },
+
+                ],
+
+              }
+            },
+            {
+              $project: {
+                penjual: {
+                  $arrayElemAt: ['$penjual', 0]
+                },
+                pembeli: {
+                  $arrayElemAt: ['$pembeli', 0]
+                },
+                postID: 1,
+                amount: 1,
+                status: 1,
+                noinvoice: 1,
+                timestamp: 1
+              }
+            },
+            {
+              $project: {
+                postID: 1,
+                emailpenjual: '$penjual.email',
+                emailpembeli: '$pembeli.email',
+                amount: 1,
+                status: 1,
+                noinvoice: 1,
+                timestamp: 1
+              }
+            },
+            {
+              "$lookup": {
+                "from": "userauths",
+                "as": "authpembeli",
+                "let": {
+                  "local_id": "$emailpembeli"
+                },
+                "pipeline": [
+                  {
+                    "$match": {
+                      "$expr": {
+                        "$eq": [
+                          "$email",
+                          "$$local_id"
+                        ]
+                      }
+                    }
+                  },
+
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                "from": "userauths",
+                "as": "authpenjual",
+                "let": {
+                  "local_id": "$emailpenjual"
+                },
+                "pipeline": [
+                  {
+                    "$match": {
+                      "$expr": {
+                        "$eq": [
+                          "$email",
+                          "$$local_id"
+                        ]
+                      }
+                    }
+                  },
+
+                ],
+
+              }
+            },
+            {
+              $project: {
+                authpembeli: {
+                  $arrayElemAt: ['$authpembeli', 0]
+                },
+                authpenjual: {
+                  $arrayElemAt: ['$authpenjual', 0]
+                },
+                postID: 1,
+                amount: 1,
+                status: 1,
+                noinvoice: 1,
+                timestamp: 1
+              }
+            },
+            {
+              $project: {
+                pembeli: '$authpembeli.username',
+                penjual: '$authpenjual.username',
+                postID: 1,
+                amount: 1,
+                status: 1,
+                noinvoice: 1,
+                timestamp: 1
+              }
+            },
+
+          ],
+
+        },
+
+      },
+      {
+        $lookup:
+        {
+          from: 'contentevents',
+          localField: 'postID',
+          foreignField: 'postID',
+          as: 'content_data',
+        },
+      },
+      {
+        "$project":
+        {
+          _id: 1,
+          postID: 1,
+          email: 1,
+          postType: 1,
+          description: 1,
+          active: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          visibility: 1,
+          location: 1,
+          tags: 1,
+          allowComments: 1,
+          likes: 1,
+          views: 1,
+          shares: 1,
+          tagPeople: 1,
+          tagDescription: 1,
+          comments: 1,
+          kategori: 1,
+          username: 1,
+          saleAmount: 1,
+          saleView: 1,
+          saleLike: 1,
+          type: 1,
+          kepemilikan: 1,
+          statusJual: 1,
+          mediaType: 1,
+          mediaThumbEndpoint: 1,
+          mediaEndpoint: 1,
+          apsaraId: 1,
+          apsara: 1,
+          originalName: 1,
+          comment: 1,
+          riwayat: 1,
+          CE_data:
           {
-              "detail":
-              [
-                  {
+            "$filter":
+            {
+              input: "$content_data",
+              as: "ces_data",
+              cond:
+              {
+                "$and":
+                  [
+                    {
+                      "$eq":
+                        [
+                          "$$ces_data.event", "ACCEPT"
+                        ]
+                    },
+                    {
+                      "$eq":
+                        [
+                          "$$ces_data.active", true
+                        ]
+                    },
+                    {
+                      "$eq":
+                        [
+                          "$$ces_data.eventType", "VIEW"
+                        ]
+                    },
+                    {
+                      "$ne":
+                        [
+                          "$$ces_data.senderParty", null
+                        ]
+                    },
+                    {
+                      "$ne":
+                        [
+                          "$$ces_data.senderParty", ""
+                        ]
+                    },
+                  ]
+              }
+            }
+          }
+        }
+      },
+      {
+        "$facet":
+        {
+          "detail":
+            [
+              {
+                "$project":
+                {
+                  _id: 1,
+                  postID: 1,
+                  email: 1,
+                  postType: 1,
+                  description: 1,
+                  active: 1,
+                  createdAt: 1,
+                  updatedAt: 1,
+                  visibility: 1,
+                  location: 1,
+                  tags: 1,
+                  allowComments: 1,
+                  likes: 1,
+                  views: 1,
+                  shares: 1,
+                  tagPeople: 1,
+                  tagDescription: 1,
+                  comments: 1,
+                  kategori: 1,
+                  username: 1,
+                  saleAmount: 1,
+                  saleView: 1,
+                  saleLike: 1,
+                  type: 1,
+                  kepemilikan: 1,
+                  statusJual: 1,
+                  mediaType: 1,
+                  mediaThumbEndpoint: 1,
+                  mediaEndpoint: 1,
+                  apsaraId: 1,
+                  apsara: 1,
+                  originalName: 1,
+                  comment: 1,
+                  riwayat: 1,
+                }
+              }
+            ],
+          "age":
+            [
+              {
+                "$unwind":
+                {
+                  path: "$CE_data",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                "$lookup": {
+                  "from": "userbasics",
+                  "as": "basic_data",
+                  "let": {
+                    "local_id": "$CE_data.senderParty"
+                  },
+                  "pipeline": [
+                    {
+                      "$match":
+                      {
+                        "$expr":
+                        {
+                          "$eq":
+                            [
+                              "$email", "$$local_id"
+                            ]
+                        }
+                      }
+                    },
+                    {
                       "$project":
                       {
-                          _id: 1,
-                          postID: 1,
-                          email: 1,
-                          postType: 1,
-                          description: 1,
-                          active: 1,
-                          createdAt: 1,
-                          updatedAt: 1,
-                          visibility: 1,
-                          location: 1,
-                          tags: 1,
-                          allowComments: 1,
-                          likes: 1,
-                          views: 1,
-                          shares: 1,
-                          tagPeople: 1,
-                          tagDescription: 1,
-                          comments: 1,
-                          kategori: 1,
-                          username: 1,
-                          saleAmount: 1,
-                          saleView: 1,
-                          saleLike: 1,
-                          type: 1,
-                          kepemilikan: 1,
-                          statusJual: 1,
-                          mediaType: 1,
-                          mediaThumbEndpoint: 1,
-                          mediaEndpoint: 1,
-                          apsaraId: 1,
-                          apsara: 1,
-                          originalName: 1,
-                          comment: 1,
-                          riwayat:1,
-                      }
-                  }
-              ],
-              "age":
-              [
-                  {
-                      "$unwind":
-                      {
-                          path:"$CE_data",
-                          preserveNullAndEmptyArrays:true
-                      }
-                  },
-                  {
-                      "$lookup": {
-                          "from": "userbasics",
-                          "as": "basic_data",
-                          "let": {
-                              "local_id": "$CE_data.senderParty"
-                          },
-                          "pipeline": [
-                              {
-                                  "$match":
-                                  {
-                                      "$expr":
-                                      {
-                                          "$eq":
-                                          [
-                                              "$email", "$$local_id"
-                                          ]
-                                      }
-                                  }
-                              },
-                              {
-                                  "$project":
-                                  {
-                                      _id:1,
-                                      ageQualication: {
-                                          "$switch": {
-                                            "branches": [{
-                                              "case": {
-                                                "$and": [{
-                                                  "$gte": [{
-                                                    "$cond": {
-                                                      "if": {
-                                                        "$and": ["$dob", {
-                                                          "$ne": ["$dob", ""]
-                                                        }]
-                                                      },
-                                                      "then": {
-                                                        "$toInt": {
-                                                          "$divide": [{
-                                                            "$subtract": [new Date(), {
-                                                              "$toDate": "$dob"
-                                                            }]
-                                                          }, 31536000000]
-                                                        }
-                                                      },
-                                                      "else": 0
-                                                    }
-                                                  }, 1]
-                                                }, {
-                                                  "$lte": [{
-                                                    "$cond": {
-                                                      "if": {
-                                                        "$and": ["$dob", {
-                                                          "$ne": ["$dob", ""]
-                                                        }]
-                                                      },
-                                                      "then": {
-                                                        "$toInt": {
-                                                          "$divide": [{
-                                                            "$subtract": [new Date(), {
-                                                              "$toDate": "$dob"
-                                                            }]
-                                                          }, 31536000000]
-                                                        }
-                                                      },
-                                                      "else": 0
-                                                    }
-                                                  }, 14]
-                                                }]
-                                              },
-                                              "then": "< 14 Tahun"
-                                            }, {
-                                              "case": {
-                                                "$and": [{
-                                                  "$gte": [{
-                                                    "$cond": {
-                                                      "if": {
-                                                        "$and": ["$dob", {
-                                                          "$ne": ["$dob", ""]
-                                                        }]
-                                                      },
-                                                      "then": {
-                                                        "$toInt": {
-                                                          "$divide": [{
-                                                            "$subtract": [new Date(), {
-                                                              "$toDate": "$dob"
-                                                            }]
-                                                          }, 31536000000]
-                                                        }
-                                                      },
-                                                      "else": 0
-                                                    }
-                                                  }, 14]
-                                                }, {
-                                                  "$lte": [{
-                                                    "$cond": {
-                                                      "if": {
-                                                        "$and": ["$dob", {
-                                                          "$ne": ["$dob", ""]
-                                                        }]
-                                                      },
-                                                      "then": {
-                                                        "$toInt": {
-                                                          "$divide": [{
-                                                            "$subtract": [new Date(), {
-                                                              "$toDate": "$dob"
-                                                            }]
-                                                          }, 31536000000]
-                                                        }
-                                                      },
-                                                      "else": 0
-                                                    }
-                                                  }, 24]
-                                                }]
-                                              },
-                                              "then": "14 - 24 Tahun"
-                                            }, {
-                                              "case": {
-                                                "$and": [{
-                                                  "$gte": [{
-                                                    "$cond": {
-                                                      "if": {
-                                                        "$and": ["$dob", {
-                                                          "$ne": ["$dob", ""]
-                                                        }]
-                                                      },
-                                                      "then": {
-                                                        "$toInt": {
-                                                          "$divide": [{
-                                                            "$subtract": [new Date(), {
-                                                              "$toDate": "$dob"
-                                                            }]
-                                                          }, 31536000000]
-                                                        }
-                                                      },
-                                                      "else": 0
-                                                    }
-                                                  }, 25]
-                                                }, {
-                                                  "$lte": [{
-                                                    "$cond": {
-                                                      "if": {
-                                                        "$and": ["$dob", {
-                                                          "$ne": ["$dob", ""]
-                                                        }]
-                                                      },
-                                                      "then": {
-                                                        "$toInt": {
-                                                          "$divide": [{
-                                                            "$subtract": [new Date(), {
-                                                              "$toDate": "$dob"
-                                                            }]
-                                                          }, 31536000000]
-                                                        }
-                                                      },
-                                                      "else": 0
-                                                    }
-                                                  }, 35]
-                                                }]
-                                              },
-                                              "then": "24 - 35 Tahun"
-                                            }, {
-                                              "case": {
-                                                "$and": [{
-                                                  "$gte": [{
-                                                    "$cond": {
-                                                      "if": {
-                                                        "$and": ["$dob", {
-                                                          "$ne": ["$dob", ""]
-                                                        }]
-                                                      },
-                                                      "then": {
-                                                        "$toInt": {
-                                                          "$divide": [{
-                                                            "$subtract": [new Date(), {
-                                                              "$toDate": "$dob"
-                                                            }]
-                                                          }, 31536000000]
-                                                        }
-                                                      },
-                                                      "else": 0
-                                                    }
-                                                  }, 35]
-                                                }, {
-                                                  "$lte": [{
-                                                    "$cond": {
-                                                      "if": {
-                                                        "$and": ["$dob", {
-                                                          "$ne": ["$dob", ""]
-                                                        }]
-                                                      },
-                                                      "then": {
-                                                        "$toInt": {
-                                                          "$divide": [{
-                                                            "$subtract": [new Date(), {
-                                                              "$toDate": "$dob"
-                                                            }]
-                                                          }, 31536000000]
-                                                        }
-                                                      },
-                                                      "else": 0
-                                                    }
-                                                  }, 44]
-                                                }]
-                                              },
-                                              "then": "35 - 44 Tahun"
-                                            }, {
-                                              "case": {
-                                                "$gt": [{
-                                                  "$cond": {
-                                                    "if": {
-                                                      "$and": ["$dob", {
-                                                        "$ne": ["$dob", ""]
-                                                      }]
-                                                    },
-                                                    "then": {
-                                                      "$toInt": {
-                                                        "$divide": [{
-                                                          "$subtract": [new Date(), {
-                                                            "$toDate": "$dob"
-                                                          }]
-                                                        }, 31536000000]
-                                                      }
-                                                    },
-                                                    "else": 0
-                                                  }
-                                                }, 43]
-                                              },
-                                              "then": "> 44 Tahun"
-                                            }],
-                                            "default": "OTHER"
-                                          }
+                        _id: 1,
+                        ageQualication: {
+                          "$switch": {
+                            "branches": [{
+                              "case": {
+                                "$and": [{
+                                  "$gte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
+                                        }]
                                       },
-                                  }
-                              },
-                              {
-                                  "$project":
-                                  {
-                                      _id:1,
-                                      ageQualication:1
-                                  }
-                              },
-                          ]
-                      }
-                  },
-                  {
-                      "$project":
-                      {
-                          age:
-                          {
-                              "$ifNull":
-                              [
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$basic_data.ageQualication",0
-                                    ]
-                                },
-                                "OTHER"
-                              ]
-                          }
-                      }
-                  },
-                  {
-                      "$group":
-                      {
-                          _id:"$age",
-                          count:
-                          {
-                              "$sum":1
-                          }
-                      }
-                  },
-                  {
-                      "$sort":
-                      {
-                          _id:-1
-                      }
-                  }
-              ],
-              "wilayah":
-              [
-                  {
-                      "$unwind":
-                      {
-                          path:"$CE_data",
-                          preserveNullAndEmptyArrays:true
-                      }
-                  },
-                  {
-                      "$lookup": {
-                          "from": "userbasics",
-                          "as": "basic_data",
-                          "let": {
-                              "local_id": "$CE_data.senderParty"
-                          },
-                          "pipeline": [
-                              {
-                                  "$match":
-                                  {
-                                      "$expr":
-                                      {
-                                          "$eq":
-                                          [
-                                              "$email", "$$local_id"
-                                          ]
-                                      }
-                                  }
-                              },
-                              {
-                                  "$project":
-                                  {
-                                      _id:1,
-                                      states: 1,
-                                  }
-                              },
-                              {
-                                  $lookup: 
-                                  {
-                                      from: 'areas',
-                                      localField: 'states.$id',
-                                      foreignField: '_id',
-                                      as: 'areas_data',
-                                  },
-                              },
-                              {
-                                  "$project":
-                                  {
-                                      _id:1,
-                                      stateName:
-                                      {
-                                          "$ifNull":
-                                          [
-                                              {
-                                                  "$arrayElemAt":
-                                                  [
-                                                      '$areas_data.stateName', 0
-                                                  ]
-                                              },
-                                              "LAINNYA"
-                                          ]
-                                      }
-                                  }
-                              }
-                          ]
-                      }
-                  },
-                  {
-                      "$project":
-                      {
-                          wilayah:
-                          {
-                              "$ifNull":
-                              [
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$basic_data.stateName",0
-                                    ]
-                                },
-                                "LAINNYA"
-                              ]
-                          }
-                      }
-                  },
-                  {
-                      "$group":
-                      {
-                          _id:"$wilayah",
-                          count:
-                          {
-                              "$sum":1
-                          }
-                      }
-                  },
-                  {
-                      "$sort":
-                      {
-                          _id:-1
-                      }
-                  }
-              ],
-              "gender":
-              [
-                  {
-                      "$unwind":
-                      {
-                          path:"$CE_data",
-                          preserveNullAndEmptyArrays:true
-                      }
-                  },
-                  {
-                      "$lookup": {
-                          "from": "userbasics",
-                          "as": "basic_data",
-                          "let": {
-                              "local_id": "$CE_data.senderParty"
-                          },
-                          "pipeline": [
-                              {
-                                  "$match":
-                                  {
-                                      "$expr":
-                                      {
-                                          "$eq":
-                                          [
-                                              "$email", "$$local_id"
-                                          ]
-                                      }
-                                  }
-                              },
-                              {
-                                  "$project":
-                                  {
-                                      _id:1,
-                                      gender: {
-                                          $switch: {
-                                              branches: [
-                                                  {
-                                                      case: {
-                                                          $eq: ['$gender', 'FEMALE']
-                                                      },
-                                                      then: 'FEMALE',
-                              
-                                                  },
-                                                  {
-                                                      case: {
-                                                          $eq: ['$gender', ' FEMALE']
-                                                      },
-                                                      then: 'FEMALE',
-                              
-                                                  },
-                                                  {
-                                                      case: {
-                                                          $eq: ['$gender', 'Perempuan']
-                                                      },
-                                                      then: 'FEMALE',
-                              
-                                                  },
-                                                  {
-                                                      case: {
-                                                          $eq: ['$gender', 'Wanita']
-                                                      },
-                                                      then: 'FEMALE',
-                              
-                                                  },
-                                                  {
-                                                      case: {
-                                                          $eq: ['$gender', 'MALE']
-                                                      },
-                                                      then: 'MALE',
-                              
-                                                  },
-                                                  {
-                                                      case: {
-                                                          $eq: ['$gender', ' MALE']
-                                                      },
-                                                      then: 'MALE',
-                              
-                                                  },
-                                                  {
-                                                      case: {
-                                                          $eq: ['$gender', 'Laki-laki']
-                                                      },
-                                                      then: 'MALE',
-                              
-                                                  },
-                                                  {
-                                                      case: {
-                                                          $eq: ['$gender', 'Pria']
-                                                      },
-                                                      then: 'MALE',
-                              
-                                                  },
-                              
-                                              ],
-                                              default: "OTHER",
-                                          },
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
+                                            }]
+                                          }, 31536000000]
+                                        }
                                       },
-                                  }
+                                      "else": 0
+                                    }
+                                  }, 1]
+                                }, {
+                                  "$lte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
+                                        }]
+                                      },
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
+                                            }]
+                                          }, 31536000000]
+                                        }
+                                      },
+                                      "else": 0
+                                    }
+                                  }, 14]
+                                }]
                               },
-                              {
-                                  "$project":
-                                  {
-                                      _id:1,
-                                      gender:1,
-                                  }
+                              "then": "< 14 Tahun"
+                            }, {
+                              "case": {
+                                "$and": [{
+                                  "$gte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
+                                        }]
+                                      },
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
+                                            }]
+                                          }, 31536000000]
+                                        }
+                                      },
+                                      "else": 0
+                                    }
+                                  }, 14]
+                                }, {
+                                  "$lte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
+                                        }]
+                                      },
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
+                                            }]
+                                          }, 31536000000]
+                                        }
+                                      },
+                                      "else": 0
+                                    }
+                                  }, 24]
+                                }]
                               },
-                          ]
+                              "then": "14 - 24 Tahun"
+                            }, {
+                              "case": {
+                                "$and": [{
+                                  "$gte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
+                                        }]
+                                      },
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
+                                            }]
+                                          }, 31536000000]
+                                        }
+                                      },
+                                      "else": 0
+                                    }
+                                  }, 25]
+                                }, {
+                                  "$lte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
+                                        }]
+                                      },
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
+                                            }]
+                                          }, 31536000000]
+                                        }
+                                      },
+                                      "else": 0
+                                    }
+                                  }, 35]
+                                }]
+                              },
+                              "then": "24 - 35 Tahun"
+                            }, {
+                              "case": {
+                                "$and": [{
+                                  "$gte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
+                                        }]
+                                      },
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
+                                            }]
+                                          }, 31536000000]
+                                        }
+                                      },
+                                      "else": 0
+                                    }
+                                  }, 35]
+                                }, {
+                                  "$lte": [{
+                                    "$cond": {
+                                      "if": {
+                                        "$and": ["$dob", {
+                                          "$ne": ["$dob", ""]
+                                        }]
+                                      },
+                                      "then": {
+                                        "$toInt": {
+                                          "$divide": [{
+                                            "$subtract": [new Date(), {
+                                              "$toDate": "$dob"
+                                            }]
+                                          }, 31536000000]
+                                        }
+                                      },
+                                      "else": 0
+                                    }
+                                  }, 44]
+                                }]
+                              },
+                              "then": "35 - 44 Tahun"
+                            }, {
+                              "case": {
+                                "$gt": [{
+                                  "$cond": {
+                                    "if": {
+                                      "$and": ["$dob", {
+                                        "$ne": ["$dob", ""]
+                                      }]
+                                    },
+                                    "then": {
+                                      "$toInt": {
+                                        "$divide": [{
+                                          "$subtract": [new Date(), {
+                                            "$toDate": "$dob"
+                                          }]
+                                        }, 31536000000]
+                                      }
+                                    },
+                                    "else": 0
+                                  }
+                                }, 43]
+                              },
+                              "then": "> 44 Tahun"
+                            }],
+                            "default": "OTHER"
+                          }
+                        },
                       }
-                  },
-                  {
+                    },
+                    {
                       "$project":
                       {
-                          gender:
-                          {
-                              "$ifNull":
-                              [
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$basic_data.gender",0
-                                    ]
-                                },
-                                "OTHER"
-                              ]
-                          }
+                        _id: 1,
+                        ageQualication: 1
                       }
-                  },
+                    },
+                  ]
+                }
+              },
+              {
+                "$project":
+                {
+                  age:
                   {
-                      "$group":
-                      {
-                          _id:"$gender",
-                          count:
-                          {
-                              "$sum":1
-                          }
-                      }
-                  },
-                  {
-                      "$sort":
-                      {
-                          _id:-1
-                      }
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$basic_data.ageQualication", 0
+                            ]
+                        },
+                        "OTHER"
+                      ]
                   }
+                }
+              },
+              {
+                "$group":
+                {
+                  _id: "$age",
+                  count:
+                  {
+                    "$sum": 1
+                  }
+                }
+              },
+              {
+                "$sort":
+                {
+                  _id: -1
+                }
+              }
+            ],
+          "wilayah":
+            [
+              {
+                "$unwind":
+                {
+                  path: "$CE_data",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                "$lookup": {
+                  "from": "userbasics",
+                  "as": "basic_data",
+                  "let": {
+                    "local_id": "$CE_data.senderParty"
+                  },
+                  "pipeline": [
+                    {
+                      "$match":
+                      {
+                        "$expr":
+                        {
+                          "$eq":
+                            [
+                              "$email", "$$local_id"
+                            ]
+                        }
+                      }
+                    },
+                    {
+                      "$project":
+                      {
+                        _id: 1,
+                        states: 1,
+                      }
+                    },
+                    {
+                      $lookup:
+                      {
+                        from: 'areas',
+                        localField: 'states.$id',
+                        foreignField: '_id',
+                        as: 'areas_data',
+                      },
+                    },
+                    {
+                      "$project":
+                      {
+                        _id: 1,
+                        stateName:
+                        {
+                          "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                  [
+                                    '$areas_data.stateName', 0
+                                  ]
+                              },
+                              "LAINNYA"
+                            ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "$project":
+                {
+                  wilayah:
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$basic_data.stateName", 0
+                            ]
+                        },
+                        "LAINNYA"
+                      ]
+                  }
+                }
+              },
+              {
+                "$group":
+                {
+                  _id: "$wilayah",
+                  count:
+                  {
+                    "$sum": 1
+                  }
+                }
+              },
+              {
+                "$sort":
+                {
+                  _id: -1
+                }
+              }
+            ],
+          "gender":
+            [
+              {
+                "$unwind":
+                {
+                  path: "$CE_data",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                "$lookup": {
+                  "from": "userbasics",
+                  "as": "basic_data",
+                  "let": {
+                    "local_id": "$CE_data.senderParty"
+                  },
+                  "pipeline": [
+                    {
+                      "$match":
+                      {
+                        "$expr":
+                        {
+                          "$eq":
+                            [
+                              "$email", "$$local_id"
+                            ]
+                        }
+                      }
+                    },
+                    {
+                      "$project":
+                      {
+                        _id: 1,
+                        gender: {
+                          $switch: {
+                            branches: [
+                              {
+                                case: {
+                                  $eq: ['$gender', 'FEMALE']
+                                },
+                                then: 'FEMALE',
+
+                              },
+                              {
+                                case: {
+                                  $eq: ['$gender', ' FEMALE']
+                                },
+                                then: 'FEMALE',
+
+                              },
+                              {
+                                case: {
+                                  $eq: ['$gender', 'Perempuan']
+                                },
+                                then: 'FEMALE',
+
+                              },
+                              {
+                                case: {
+                                  $eq: ['$gender', 'Wanita']
+                                },
+                                then: 'FEMALE',
+
+                              },
+                              {
+                                case: {
+                                  $eq: ['$gender', 'MALE']
+                                },
+                                then: 'MALE',
+
+                              },
+                              {
+                                case: {
+                                  $eq: ['$gender', ' MALE']
+                                },
+                                then: 'MALE',
+
+                              },
+                              {
+                                case: {
+                                  $eq: ['$gender', 'Laki-laki']
+                                },
+                                then: 'MALE',
+
+                              },
+                              {
+                                case: {
+                                  $eq: ['$gender', 'Pria']
+                                },
+                                then: 'MALE',
+
+                              },
+
+                            ],
+                            default: "OTHER",
+                          },
+                        },
+                      }
+                    },
+                    {
+                      "$project":
+                      {
+                        _id: 1,
+                        gender: 1,
+                      }
+                    },
+                  ]
+                }
+              },
+              {
+                "$project":
+                {
+                  gender:
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$basic_data.gender", 0
+                            ]
+                        },
+                        "OTHER"
+                      ]
+                  }
+                }
+              },
+              {
+                "$group":
+                {
+                  _id: "$gender",
+                  count:
+                  {
+                    "$sum": 1
+                  }
+                }
+              },
+              {
+                "$sort":
+                {
+                  _id: -1
+                }
+              }
+            ]
+        }
+      },
+      {
+        "$project":
+        {
+          _id:
+          {
+            "$arrayElemAt":
+              [
+                "$detail._id", 0
               ]
-          }
-      },
-      {
-          "$project":
+          },
+          postID:
           {
-            _id:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail._id",0
-                ]
-            },
-            postID:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.postID",0
-                ]
-            },
-            email:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.email",0
-                ]
-            },
-            postType:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.postType",0
-                ]
-            },
-            description:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.description",0
-                ]
-            },
-            active:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.active",0
-                ]
-            },
-            createdAt:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.createdAt",0
-                ]
-            },
-            updatedAt:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.updatedAt",0
-                ]
-            },
-            visibility:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.visibility",0
-                ]
-            },
-            location:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.location",0
-                ]
-            },
-            tags:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.tags",0
-                ]
-            },
-            allowComments:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.allowComments",0
-                ]
-            },
-            likes:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.likes",0
-                ]
-            },
-            views:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.views",0
-                ]
-            },
-            shares:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.shares",0
-                ]
-            },
-            tagPeople:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.tagPeople",0
-                ]
-            },
-            tagDescription:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.tagDescription",0
-                ]
-            },
-            kategori:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.kategori",0
-                ]
-            },
-            username:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.username",0
-                ]
-            },
-            saleAmount:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.saleAmount",0
-                ]
-            },
-            saleView:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.saleView",0
-                ]
-            },
-            saleLike:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.saleLike",0
-                ]
-            },
-            type:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.type",0
-                ]
-            },
-            kepemilikan:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.kepemilikan",0
-                ]
-            },
-            statusJual:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.statusJual",0
-                ]
-            },
-            mediaBasePath:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.mediaBasePath",0
-                ]
-            },
-            mediaUri:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.mediaUri",0
-                ]
-            },
-            mediaType:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.mediaType",0
-                ]
-            },
-            mediaThumbEndpoint:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.mediaThumbEndpoint",0
-                ]
-            },
-            mediaEndpoint:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.mediaEndpoint",0
-                ]
-            },
-            apsaraId:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.apsaraId",0
-                ]
-            },
-            apsara:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.apsara",0
-                ]
-            },
-            originalName:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.originalName",0
-                ]
-            },
-            comment:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.comment",0
-                ]
-            },
-            riwayat:
-            {
-                "$arrayElemAt":
-                [
-                    "$detail.riwayat",0
-                ]
-            },
-            age:"$age",
-            wilayah:"$wilayah",
-            gender:"$gender"
-          }
+            "$arrayElemAt":
+              [
+                "$detail.postID", 0
+              ]
+          },
+          email:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.email", 0
+              ]
+          },
+          postType:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.postType", 0
+              ]
+          },
+          description:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.description", 0
+              ]
+          },
+          active:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.active", 0
+              ]
+          },
+          createdAt:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.createdAt", 0
+              ]
+          },
+          updatedAt:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.updatedAt", 0
+              ]
+          },
+          visibility:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.visibility", 0
+              ]
+          },
+          location:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.location", 0
+              ]
+          },
+          tags:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.tags", 0
+              ]
+          },
+          allowComments:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.allowComments", 0
+              ]
+          },
+          likes:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.likes", 0
+              ]
+          },
+          views:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.views", 0
+              ]
+          },
+          shares:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.shares", 0
+              ]
+          },
+          tagPeople:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.tagPeople", 0
+              ]
+          },
+          tagDescription:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.tagDescription", 0
+              ]
+          },
+          kategori:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.kategori", 0
+              ]
+          },
+          username:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.username", 0
+              ]
+          },
+          saleAmount:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.saleAmount", 0
+              ]
+          },
+          saleView:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.saleView", 0
+              ]
+          },
+          saleLike:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.saleLike", 0
+              ]
+          },
+          type:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.type", 0
+              ]
+          },
+          kepemilikan:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.kepemilikan", 0
+              ]
+          },
+          statusJual:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.statusJual", 0
+              ]
+          },
+          mediaBasePath:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.mediaBasePath", 0
+              ]
+          },
+          mediaUri:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.mediaUri", 0
+              ]
+          },
+          mediaType:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.mediaType", 0
+              ]
+          },
+          mediaThumbEndpoint:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.mediaThumbEndpoint", 0
+              ]
+          },
+          mediaEndpoint:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.mediaEndpoint", 0
+              ]
+          },
+          apsaraId:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.apsaraId", 0
+              ]
+          },
+          apsara:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.apsara", 0
+              ]
+          },
+          originalName:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.originalName", 0
+              ]
+          },
+          comment:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.comment", 0
+              ]
+          },
+          riwayat:
+          {
+            "$arrayElemAt":
+              [
+                "$detail.riwayat", 0
+              ]
+          },
+          age: "$age",
+          wilayah: "$wilayah",
+          gender: "$gender"
+        }
       }
     ]);
 
@@ -53078,264 +53528,263 @@ export class GetusercontentsService {
     return query;
   }
 
-  async getmusicCard()
-  {
+  async getmusicCard() {
     var query = await this.getusercontentsModel.aggregate(
       [
         {
-            "$match":
+          "$match":
+          {
+            musicId:
             {
-                musicId:
-                {	
-                    "$exists":true
-                }
+              "$exists": true
             }
+          }
         },
         {
-            "$group":
+          "$group":
+          {
+            _id: "$musicId",
+            total:
             {
-                _id:"$musicId",
-                total:
+              "$sum": 1
+            }
+          }
+        },
+        {
+          $lookup:
+          {
+            from: 'mediamusic',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'music_data',
+          },
+        },
+        {
+          "$unwind":
+          {
+            path: "$music_data"
+          }
+        },
+        {
+          $lookup:
+          {
+            from: 'theme',
+            localField: 'music_data.theme',
+            foreignField: '_id',
+            as: 'theme_data',
+          },
+        },
+        {
+          $lookup:
+          {
+            from: 'genre',
+            localField: 'music_data.genre',
+            foreignField: '_id',
+            as: 'genre_data',
+          },
+        },
+        {
+          $lookup:
+          {
+            from: 'mood',
+            localField: 'music_data.mood',
+            foreignField: '_id',
+            as: 'mood_data',
+          },
+        },
+        {
+          $project:
+          {
+            musicTitle: '$music_data.musicTitle',
+            artistName: '$music_data.artistName',
+            albumName: '$music_data.albumName',
+            genre:
+            {
+              "$arrayElemAt":
+                [
+                  '$genre_data', 0
+                ]
+            },
+            theme:
+            {
+              "$arrayElemAt":
+                [
+                  '$theme_data', 0
+                ]
+            },
+            mood:
+            {
+              "$arrayElemAt":
+                [
+                  '$mood_data', 0
+                ]
+            },
+            releaseDate: '$music_data.releaseDate',
+            apsaraMusic: '$music_data.apsaraMusic',
+            apsaraThumnail: '$music_data.apsaraThumnail',
+            _id: 1,
+            total: 1
+          }
+        },
+        {
+          "$facet":
+          {
+            "artistPopuler":
+              [
                 {
-                    "$sum":1
-                }
-            }
-        },
-        {
-            $lookup: 
-            {
-                from: 'mediamusic',
-                localField: '_id',
-                foreignField: '_id',
-                as: 'music_data',
-            },
-        },
-        {
-            "$unwind":
-            {
-                path:"$music_data"
-            }
-        },
-        {
-            $lookup: 
-            {
-                from: 'theme',
-                localField: 'music_data.theme',
-                foreignField: '_id',
-                as: 'theme_data',
-            },
-        },
-        {
-            $lookup: 
-            {
-                from: 'genre',
-                localField: 'music_data.genre',
-                foreignField: '_id',
-                as: 'genre_data',
-            },
-        },
-        {
-            $lookup: 
-            {
-                from: 'mood',
-                localField: 'music_data.mood',
-                foreignField: '_id',
-                as: 'mood_data',
-            },
-        },
-        {
-            $project: 
-            {
-                musicTitle: '$music_data.musicTitle',
-                artistName: '$music_data.artistName',
-                albumName: '$music_data.albumName',
-                genre: 
-                { 
-                    "$arrayElemAt": 
-                    [
-                        '$genre_data', 0
-                    ] 
-                },
-                theme: 
-                { 
-                    "$arrayElemAt": 
-                    [
-                        '$theme_data', 0
-                    ] 
-                },
-                mood: 
-                { 
-                    "$arrayElemAt": 
-                    [
-                        '$mood_data', 0
-                    ] 
-                },
-                releaseDate: '$music_data.releaseDate',
-                apsaraMusic: '$music_data.apsaraMusic',
-                apsaraThumnail: '$music_data.apsaraThumnail',
-                _id:1,
-                total:1
-            }
-        },
-        {
-            "$facet":
-            {
-                "artistPopuler": 
-                [
+                  "$group":
+                  {
+                    _id: "$artistName",
+                    apsaraMusic:
                     {
-                        "$group": 
-                        {
-                            _id:"$artistName",
-                            apsaraMusic: 
-                            {
-                                "$first":"$apsaraMusic"
-                            },
-                            apsaraThumnail: 
-                            {
-                                "$first":"$apsaraThumnail"
-                            },
-                            count: 
-                            { 
-                                "$sum": "$total"
-                            }
-                        }
+                      "$first": "$apsaraMusic"
                     },
-                    { 
-                        $sort: 
-                        { 
-                            count: -1,
-                            _id:1
-                        } 
-                    },
-                    { 
-                        $skip: 0 
-                    },
-                    { 
-                        $limit: 5 
-                    },
+                    apsaraThumnail:
                     {
-                        "$project":
-                        {
-                            _id:
-                            {
-                                artistName:"$_id",
-                                apsaraMusic:"$apsaraMusic",
-                                apsaraThumnail:"$apsaraThumnail"
-                            },
-                            count:1
-                        }
+                      "$first": "$apsaraThumnail"
+                    },
+                    count:
+                    {
+                      "$sum": "$total"
                     }
-                ],
-                "musicPopuler": 
-                [
+                  }
+                },
+                {
+                  $sort:
+                  {
+                    count: -1,
+                    _id: 1
+                  }
+                },
+                {
+                  $skip: 0
+                },
+                {
+                  $limit: 5
+                },
+                {
+                  "$project":
+                  {
+                    _id:
                     {
-                        "$group": 
-                        {
-                            _id: 
-                            {
-                                "musicTitle": "$musicTitle",
-                                "apsaraMusic": "$apsaraMusic",
-                                "apsaraThumnail": "$apsaraThumnail"
-                            },
-                            count: 
-                            { 
-                                "$sum": "$total"
-                            }
-                        }
+                      artistName: "$_id",
+                      apsaraMusic: "$apsaraMusic",
+                      apsaraThumnail: "$apsaraThumnail"
                     },
-                    { 
-                        $sort: 
-                        { 
-                            count: -1,
-                            _id:1
-                        } 
-                    },
-                    { 
-                        $skip: 0 
-                    },
-                    { 
-                        $limit: 5 
-                    },
-                ],
-                "genrePopuler": 
-                [
+                    count: 1
+                  }
+                }
+              ],
+            "musicPopuler":
+              [
+                {
+                  "$group":
+                  {
+                    _id:
                     {
-                        "$group": 
-                        {
-                            _id:"$genre",
-                            count: 
-                            { 
-                                "$sum": "$total"
-                            }
-                        }
+                      "musicTitle": "$musicTitle",
+                      "apsaraMusic": "$apsaraMusic",
+                      "apsaraThumnail": "$apsaraThumnail"
                     },
-                    { 
-                        $sort: 
-                        { 
-                            count: -1,
-                            _id:1
-                        } 
-                    },
-                    { 
-                        $skip: 0 
-                    },
-                    { 
-                        $limit: 5 
-                    },
-                ],
-                "themePopuler": 
-                [
+                    count:
                     {
-                        "$group": 
-                        {
-                            _id:"$theme",
-                            count: 
-                            { 
-                                "$sum": "$total"
-                            }
-                        }
-                    },
-                    { 
-                        $sort: 
-                        { 
-                            count: -1,
-                            _id:1
-                        } 
-                    },
-                    { 
-                        $skip: 0 
-                    },
-                    { 
-                        $limit: 5 
-                    },
-                ],
-                "moodPopuler": 
-                [
+                      "$sum": "$total"
+                    }
+                  }
+                },
+                {
+                  $sort:
+                  {
+                    count: -1,
+                    _id: 1
+                  }
+                },
+                {
+                  $skip: 0
+                },
+                {
+                  $limit: 5
+                },
+              ],
+            "genrePopuler":
+              [
+                {
+                  "$group":
+                  {
+                    _id: "$genre",
+                    count:
                     {
-                        "$group": 
-                        {
-                            _id:"$mood",
-                            count: 
-                            { 
-                                "$sum": "$total"
-                            }
-                        }
-                    },
-                    { 
-                        $sort: 
-                        { 
-                            count: -1,
-                            _id:1
-                        } 
-                    },
-                    { 
-                        $skip: 0 
-                    },
-                    { 
-                        $limit: 5 
-                    },
-                ],
-            }
+                      "$sum": "$total"
+                    }
+                  }
+                },
+                {
+                  $sort:
+                  {
+                    count: -1,
+                    _id: 1
+                  }
+                },
+                {
+                  $skip: 0
+                },
+                {
+                  $limit: 5
+                },
+              ],
+            "themePopuler":
+              [
+                {
+                  "$group":
+                  {
+                    _id: "$theme",
+                    count:
+                    {
+                      "$sum": "$total"
+                    }
+                  }
+                },
+                {
+                  $sort:
+                  {
+                    count: -1,
+                    _id: 1
+                  }
+                },
+                {
+                  $skip: 0
+                },
+                {
+                  $limit: 5
+                },
+              ],
+            "moodPopuler":
+              [
+                {
+                  "$group":
+                  {
+                    _id: "$mood",
+                    count:
+                    {
+                      "$sum": "$total"
+                    }
+                  }
+                },
+                {
+                  $sort:
+                  {
+                    count: -1,
+                    _id: 1
+                  }
+                },
+                {
+                  $skip: 0
+                },
+                {
+                  $limit: 5
+                },
+              ],
+          }
         }
       ]
     );

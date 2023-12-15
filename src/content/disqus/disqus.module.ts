@@ -17,9 +17,12 @@ import { SocketModule } from '../socket/socket.module';
 import { ReactionsRepoModule } from '../../infra/reactions_repo/reactions_repo.module';
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { UserbasicnewModule } from '../../trans/userbasicnew/userbasicnew.module';
+// import { NewpostService } from './newpost/newpost.service';
+import { NewpostModule } from './newpost/newpost.module';
 @Module({
 
     imports: [
+        NewpostModule,
         UserbasicnewModule,
         ReactionsRepoModule,
         ContenteventsModule,
@@ -34,7 +37,8 @@ import { UserbasicnewModule } from '../../trans/userbasicnew/userbasicnew.module
         SocketModule,
         LogapisModule,
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Disqus.name, schema: DisqusSchema }], 'SERVER_FULL')
+        MongooseModule.forFeature([{ name: Disqus.name, schema: DisqusSchema }], 'SERVER_FULL'),
+
     ],
     controllers: [DisqusController],
     providers: [DisqusService],

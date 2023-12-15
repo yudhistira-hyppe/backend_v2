@@ -1,3 +1,38 @@
+import { ObjectId } from "mongodb";
+import mongoose, { Document } from 'mongoose';
+import { Long } from "mongodb";
+export class CreateTransactionsNewDto {
+
+    noinvoice: string;
+    postid: string;
+    idusersell: mongoose.Types.ObjectId;
+    iduserbuyer: mongoose.Types.ObjectId;
+    amount: number;
+    paymentmethod: { oid: String; };
+    status: string;
+    description: string;
+    nova: string;
+    salelike: boolean;
+    saleview: boolean;
+    bank: { oid: String; };
+    ppn: { oid: String; };
+    mdradmin: { oid: String; };
+    bankvacharge: { oid: String; };
+    totalamount: number;
+    accountbalance: { oid: String; };
+    timestamp: string;
+    expiredtimeva: string;
+    payload: VaCallback;
+    idva: string;
+    type: string;
+    detail: any[];
+    response: {};
+    updatedAt: string;
+    voucherpromo: any[];
+    datavoucherpromo: any[];
+
+}
+
 export class CreateTransactionsDto {
 
     noinvoice: string;

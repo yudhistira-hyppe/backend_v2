@@ -123,7 +123,6 @@ export class newPosts {
   userView: any[];
   @Prop()
   userLike: any[];
-
   //MEDIA
   @Prop()
   mediaSource: any[];

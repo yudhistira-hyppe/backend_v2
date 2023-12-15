@@ -30,6 +30,8 @@ import { UserauthsService } from '../../trans/userauths/userauths.service';
 import { UserbasicnewService } from '../../trans/userbasicnew/userbasicnew.service';
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { NewpostService } from './newpost/newpost.service';
+import { Newpost } from './newpost/schemas/newpost.schema';
 
 const Long = require('mongodb').Long;
 @Controller('api/')
@@ -47,7 +49,8 @@ export class DisqusController {
     private readonly userauthsService: UserauthsService,
     private readonly errorHandler: ErrorHandler,
     private readonly UserbasicnewService: UserbasicnewService,
-    private readonly logapiSS: LogapisService) { }
+    private readonly logapiSS: LogapisService,
+    private readonly NewpostService: NewpostService) { }
 
   @Post('disqus')
   async create(@Body() CreateDisqusDto: CreateDisqusDto) {
@@ -611,8 +614,8 @@ export class DisqusController {
             ContentDto_.email = email_header;
           }
           if (ContentDto_.postID != undefined) {
-            var Posts_ = new Posts();
-            Posts_ = await this.postDisqusService.findid(ContentDto_.postID.toString());
+            var Posts_ = new Newpost();
+            Posts_ = await this.NewpostService.findid(ContentDto_.postID.toString());
             ContentDto_.receiverParty = Posts_.email;
             ContentDto_.postType = Posts_.postType;
           }
@@ -652,7 +655,7 @@ export class DisqusController {
             this.sendCommentFCM(ContentDto_.receiverParty.toString(), "COMMENT", ContentDto_.postID.toString(), ContentDto_.email.toString())
           }
           this.insightsService.updateComment(ContentDto_.receiverParty.toString());
-          this.postDisqusService.updateCommentPlus(ContentDto_.postID.toString());
+          this.NewpostService.updateCommentPlus(ContentDto_.postID.toString());
 
           var timestamps_end = await this.utilsService.getDateTimeString();
           var reqbody = JSON.parse(JSON.stringify(ContentDto_));

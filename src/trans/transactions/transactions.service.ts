@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { HttpService } from '@nestjs/axios';
 import { ObjectId } from 'mongodb';
 import mongoose, { Model, Types } from 'mongoose';
-import { CreateTransactionsDto, VaCallback } from './dto/create-transactions.dto';
+import { CreateTransactionsDto, CreateTransactionsNewDto, VaCallback } from './dto/create-transactions.dto';
 import { Transactions, TransactionsDocument } from './schemas/transactions.schema';
 import { PostsService } from '../../content/posts/posts.service';
 import { MediavideosService } from '../../content/mediavideos/mediavideos.service';
@@ -31,7 +31,7 @@ export class TransactionsService {
         private readonly mediapictsService: MediapictsService,
         private readonly mediadiariesService: MediadiariesService,
         private readonly postContentService: PostContentService,
-        private readonly httpService: HttpService, 
+        private readonly httpService: HttpService,
         private readonly configService: ConfigService,
         private readonly withdrawsService: WithdrawsService,
         private readonly utilsService: UtilsService,
@@ -103,11 +103,19 @@ export class TransactionsService {
     }
 
     async findCodePromoUsedPending(voucherPromoId: string): Promise<Transactions[]> {
-        return this.transactionsModel.find({ status:"WAITING_PAYMENT",datavoucherpromo: { $elemMatch: { _id: new mongoose.Types.ObjectId(voucherPromoId) } } }).exec();
+        return this.transactionsModel.find({ status: "WAITING_PAYMENT", datavoucherpromo: { $elemMatch: { _id: new mongoose.Types.ObjectId(voucherPromoId) } } }).exec();
     }
 
     async create(CreateTransactionsDto: CreateTransactionsDto): Promise<Transactions> {
         let data = await this.transactionsModel.create(CreateTransactionsDto);
+
+        if (!data) {
+            throw new Error('Todo is not found!');
+        }
+        return data;
+    }
+    async createNew(CreateTransactionsNewDto: CreateTransactionsNewDto): Promise<Transactions> {
+        let data = await this.transactionsModel.create(CreateTransactionsNewDto);
 
         if (!data) {
             throw new Error('Todo is not found!');
@@ -3800,7 +3808,7 @@ export class TransactionsService {
                 $addFields: {
                     type: 'Sell',
                     jenis: "$type",
-        
+
                 },
             },
             {
@@ -3810,7 +3818,7 @@ export class TransactionsService {
                     foreignField: "_id",
                     as: "userbasics_data"
                 }
-            }, 
+            },
             {
                 $lookup: {
                     from: "newPosts",
@@ -3818,7 +3826,7 @@ export class TransactionsService {
                     foreignField: "postID",
                     as: "post_data"
                 }
-            }, 
+            },
             {
                 $project: {
                     idusersell: "$idusersell",
@@ -3859,7 +3867,7 @@ export class TransactionsService {
                             else: '$description'
                         }
                     },
-        
+
                     "status":
                     {
                         $cond: {
@@ -3899,7 +3907,7 @@ export class TransactionsService {
                         ]
                     },
                 }
-            }, 
+            },
             {
                 $project: {
                     contentMedias: "$postdata.contentMedias",
@@ -3931,12 +3939,12 @@ export class TransactionsService {
                     mediaSource:
                     {
                         "$arrayElemAt":
-                        [
-                            "$postdata.mediaSource", 0
-                        ]
+                            [
+                                "$postdata.mediaSource", 0
+                            ]
                     }
                 }
-            }, 
+            },
             {
                 $project: {
                     idusersell: "$idusersell",
@@ -3966,7 +3974,7 @@ export class TransactionsService {
                     title: '$title',
                     mediaSource: '$mediaSource'
                 }
-            }, 
+            },
             {
                 $project: {
                     idusersell: "$idusersell",
@@ -3996,7 +4004,7 @@ export class TransactionsService {
                     title: '$title',
                     mediaSource: '$mediaSource'
                 }
-            }, 
+            },
             {
                 $project: {
                     idusersell: "$idusersell",
@@ -4026,10 +4034,10 @@ export class TransactionsService {
                     title: '$title',
                     mediaSource: '$mediaSource'
                 }
-            }, 
+            },
             {
                 $project: {
-        
+
                     idusersell: "$idusersell",
                     iduserbuyer: "$iduserbuyer",
                     type: "$type",
@@ -4058,99 +4066,99 @@ export class TransactionsService {
                     mediaBasePath:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.mediaBasePath",
-                            null
-                        ]
+                            [
+                                "$mediaSource.mediaBasePath",
+                                null
+                            ]
                     },
                     mediaUri:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.mediaUri",
-                            null
-                        ]
+                            [
+                                "$mediaSource.mediaUri",
+                                null
+                            ]
                     },
                     mediaType:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.mediaType",
-                            null
-                        ]
+                            [
+                                "$mediaSource.mediaType",
+                                null
+                            ]
                     },
                     mediaThumbEndpoint:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.mediaThumbEndpoint",
-                            {
-                                "$concat":
-                                [
-                                    "/thumb/",
-                                    "$postID"
-                                ]
-                            }
-                        ]
+                            [
+                                "$mediaSource.mediaThumbEndpoint",
+                                {
+                                    "$concat":
+                                        [
+                                            "/thumb/",
+                                            "$postID"
+                                        ]
+                                }
+                            ]
                     },
                     mediaEndpoint:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.mediaEndpoint",
-                            {
-                                "$cond":
+                            [
+                                "$mediaSource.mediaEndpoint",
                                 {
-                                    if:
+                                    "$cond":
                                     {
-                                        "$eq":
-                                        [
-                                            "$postType", "pict"
-                                        ]
-                                    },
-                                    then:
-                                    {
-                                        "$concat":
-                                        [
-                                            "/pict/",
-                                            "$postID"
-                                        ]
-                                    },
-                                    else:
-                                    {
-                                        "$concat":
-                                        [
-                                            "/stream/",
-                                            "$postID"
-                                        ]
+                                        if:
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$postType", "pict"
+                                                ]
+                                        },
+                                        then:
+                                        {
+                                            "$concat":
+                                                [
+                                                    "/pict/",
+                                                    "$postID"
+                                                ]
+                                        },
+                                        else:
+                                        {
+                                            "$concat":
+                                                [
+                                                    "/stream/",
+                                                    "$postID"
+                                                ]
+                                        }
                                     }
                                 }
-                            }
-                        ]
+                            ]
                     },
                     mediaThumbUri:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.mediaThumbUri",
-                            "$mediaSource.mediaUri"
-                        ]
+                            [
+                                "$mediaSource.mediaThumbUri",
+                                "$mediaSource.mediaUri"
+                            ]
                     },
                     apsaraId:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.apsaraId",
-                            null
-                        ]
+                            [
+                                "$mediaSource.apsaraId",
+                                null
+                            ]
                     },
                     apsara:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.apsara",
-                            false
-                        ]
+                            [
+                                "$mediaSource.apsara",
+                                false
+                            ]
                     },
                 }
             },
@@ -4828,7 +4836,7 @@ export class TransactionsService {
                 $addFields: {
                     type: 'Buy',
                     jenis: "$type",
-        
+
                 },
             },
             {
@@ -4838,7 +4846,7 @@ export class TransactionsService {
                     foreignField: "_id",
                     as: "userbasics_data"
                 }
-            }, 
+            },
             {
                 $lookup: {
                     from: "newPosts",
@@ -4846,7 +4854,7 @@ export class TransactionsService {
                     foreignField: "postID",
                     as: "post_data"
                 }
-            }, 
+            },
             {
                 $project: {
                     idusersell: "$idusersell",
@@ -4887,7 +4895,7 @@ export class TransactionsService {
                             else: '$description'
                         }
                     },
-        
+
                     "status":
                     {
                         $cond: {
@@ -4927,7 +4935,7 @@ export class TransactionsService {
                         ]
                     },
                 }
-            }, 
+            },
             {
                 $project: {
                     contentMedias: "$postdata.contentMedias",
@@ -4959,12 +4967,12 @@ export class TransactionsService {
                     mediaSource:
                     {
                         "$arrayElemAt":
-                        [
-                            "$postdata.mediaSource", 0
-                        ]
+                            [
+                                "$postdata.mediaSource", 0
+                            ]
                     }
                 }
-            }, 
+            },
             {
                 $project: {
                     idusersell: "$idusersell",
@@ -4994,7 +5002,7 @@ export class TransactionsService {
                     title: '$title',
                     mediaSource: '$mediaSource'
                 }
-            }, 
+            },
             {
                 $project: {
                     idusersell: "$idusersell",
@@ -5024,7 +5032,7 @@ export class TransactionsService {
                     title: '$title',
                     mediaSource: '$mediaSource'
                 }
-            }, 
+            },
             {
                 $project: {
                     idusersell: "$idusersell",
@@ -5054,10 +5062,10 @@ export class TransactionsService {
                     title: '$title',
                     mediaSource: '$mediaSource'
                 }
-            }, 
+            },
             {
                 $project: {
-        
+
                     idusersell: "$idusersell",
                     iduserbuyer: "$iduserbuyer",
                     type: "$type",
@@ -5086,99 +5094,99 @@ export class TransactionsService {
                     mediaBasePath:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.mediaBasePath",
-                            null
-                        ]
+                            [
+                                "$mediaSource.mediaBasePath",
+                                null
+                            ]
                     },
                     mediaUri:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.mediaUri",
-                            null
-                        ]
+                            [
+                                "$mediaSource.mediaUri",
+                                null
+                            ]
                     },
                     mediaType:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.mediaType",
-                            null
-                        ]
+                            [
+                                "$mediaSource.mediaType",
+                                null
+                            ]
                     },
                     mediaThumbEndpoint:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.mediaThumbEndpoint",
-                            {
-                                "$concat":
-                                [
-                                    "/thumb/",
-                                    "$postID"
-                                ]
-                            }
-                        ]
+                            [
+                                "$mediaSource.mediaThumbEndpoint",
+                                {
+                                    "$concat":
+                                        [
+                                            "/thumb/",
+                                            "$postID"
+                                        ]
+                                }
+                            ]
                     },
                     mediaEndpoint:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.mediaEndpoint",
-                            {
-                                "$cond":
+                            [
+                                "$mediaSource.mediaEndpoint",
                                 {
-                                    if:
+                                    "$cond":
                                     {
-                                        "$eq":
-                                        [
-                                            "$postType", "pict"
-                                        ]
-                                    },
-                                    then:
-                                    {
-                                        "$concat":
-                                        [
-                                            "/pict/",
-                                            "$postID"
-                                        ]
-                                    },
-                                    else:
-                                    {
-                                        "$concat":
-                                        [
-                                            "/stream/",
-                                            "$postID"
-                                        ]
+                                        if:
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$postType", "pict"
+                                                ]
+                                        },
+                                        then:
+                                        {
+                                            "$concat":
+                                                [
+                                                    "/pict/",
+                                                    "$postID"
+                                                ]
+                                        },
+                                        else:
+                                        {
+                                            "$concat":
+                                                [
+                                                    "/stream/",
+                                                    "$postID"
+                                                ]
+                                        }
                                     }
                                 }
-                            }
-                        ]
+                            ]
                     },
                     mediaThumbUri:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.mediaThumbUri",
-                            "$mediaSource.mediaUri"
-                        ]
+                            [
+                                "$mediaSource.mediaThumbUri",
+                                "$mediaSource.mediaUri"
+                            ]
                     },
                     apsaraId:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.apsaraId",
-                            null
-                        ]
+                            [
+                                "$mediaSource.apsaraId",
+                                null
+                            ]
                     },
                     apsara:
                     {
                         "$ifNull":
-                        [
-                            "$mediaSource.apsara",
-                            false
-                        ]
+                            [
+                                "$mediaSource.apsara",
+                                false
+                            ]
                     },
                 }
             },
@@ -10389,7 +10397,7 @@ export class TransactionsService {
         if (limit > 0) {
             pipeline.push({ $limit: limit });
         }
-        
+
         var query = await this.transactionsModel.aggregate(pipeline);
         return query;
 
@@ -10531,18 +10539,18 @@ export class TransactionsService {
         return query;
     }
 
-    async ceckStatusDisbursement(){
+    async ceckStatusDisbursement() {
         let getwithdraws: Withdraws[] = await this.withdrawsService.findWitoutSucces();
-        if (await this.utilsService.ceckData(getwithdraws)){
-            for (let i = 0;i< getwithdraws.length;i++){
-                console.log("==================================== START CECK STATUS " + getwithdraws[i].partnerTrxid +"====================================");
+        if (await this.utilsService.ceckData(getwithdraws)) {
+            for (let i = 0; i < getwithdraws.length; i++) {
+                console.log("==================================== START CECK STATUS " + getwithdraws[i].partnerTrxid + "====================================");
                 let OyDisbursementStatus_ = new OyDisbursementStatus();
                 OyDisbursementStatus_.partner_trx_id = getwithdraws[i].partnerTrxid;
-                console.log("PARTNER_TRX_ID "+getwithdraws[i].partnerTrxid);
+                console.log("PARTNER_TRX_ID " + getwithdraws[i].partnerTrxid);
 
                 let OyDisbursementStatusResponse_: OyDisbursementStatusResponse = await this.oyPgService.disbursementStatus(OyDisbursementStatus_);
                 console.log("RESPONSE " + JSON.stringify(OyDisbursementStatusResponse_));
-                
+
                 let currentStatusCode = getwithdraws[i].statusCode;
                 let responseStatusCode = OyDisbursementStatusResponse_.status.code.toString();
                 console.log("CURRENT STATUS CODE ", currentStatusCode);
