@@ -304,9 +304,9 @@ export class MediastreamingController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/view/:id')
+  @Post('/view')
   @HttpCode(HttpStatus.ACCEPTED)
-  async getViewStreaming(@Param('id') id: string, @Headers() headers) {
+  async getViewStreaming(@Body() MediastreamingDto_: MediastreamingDto, @Headers() headers, @Request() req) {
     const currentDate = await this.utilsService.getDateTimeString();
     if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
@@ -319,14 +319,14 @@ export class MediastreamingController {
       );
     }
     //VALIDASI PARAM _id
-    var ceckId = await this.utilsService.validateParam("id", id.toString(), "string")
+    var ceckId = await this.utilsService.validateParam("_id", MediastreamingDto_._id.toString(), "string")
     if (ceckId != "") {
       await this.errorHandler.generateBadRequestException(
         ceckId,
       );
     }
 
-    const data = await this.mediastreamingService.getDataView(id.toString());
+    const data = await this.mediastreamingService.getDataView(MediastreamingDto_._id.toString());
     return await this.errorHandler.generateAcceptResponseCodeWithData(
       "Get view succesfully", data,
     );
