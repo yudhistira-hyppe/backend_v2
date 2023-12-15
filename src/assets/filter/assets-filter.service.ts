@@ -30,4 +30,193 @@ export class AssetsFilterService {
         return await this.sourceFilterModel.findOne({ _id: Object(id) }).exec();
     }
 
+    async indexConsole(keyword:string, startdate:string, enddate:string, kategori:any[], status:[], page:number, limit:number, sorting:boolean)
+    {
+        var pipeline = [];
+        var firstmatch = [];
+
+        if(keyword != null && keyword != undefined)
+        {
+            firstmatch.push(
+                {
+                    "namafile":
+                    {
+                        "$regex":keyword,
+                        "$options":"i"
+                    }
+                }
+            );
+        }
+
+        if(startdate != null)
+        {
+            var convertstart = startdate.split(" ")[0];
+            
+            try {
+                var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+                var dateend = currentdate.toISOString().split("T")[0];
+            } catch (e) {
+                dateend = enddate.substring(0,10);
+            }
+
+            firstmatch.push(
+                {
+                    "$and":
+                    [
+                        {
+                            "createdAt":
+                            {
+                                "$gte":convertstart
+                            }
+                        },
+                        {
+                            "createdAt":
+                            {
+                                "$lt":dateend
+                            }
+                        }
+                    ]
+                }
+            );
+        }
+
+        if(kategori != null)
+        {
+            var mongo = require('mongoose');
+            var setkategori = [];
+            for(var i = 0; i < kategori.length; i++)
+            {
+                setkategori.push(new mongo.Types.ObjectId(kategori[i]));
+            }
+
+            firstmatch.push(
+                {
+                    "category_id":
+                    {
+                        "$in":setkategori
+                    }
+                }
+            );
+        }
+
+        if(status != null)
+        {
+            firstmatch.push(
+                {
+                    "status":
+                    {
+                        "$in":status
+                    }
+                }
+            );
+        }
+
+        if(firstmatch.length != 0)
+        {
+            pipeline.push(
+                {
+                    "$match":
+                    {
+                        "$and":firstmatch
+                    }
+                }
+            );
+        }
+
+        var setsorting = null;
+        if(sorting == true)
+        {
+            setsorting = 1;
+        }
+        else
+        {
+            setsorting = -1;
+        }
+
+        pipeline.push(
+            {
+                "$sort":
+                {
+                    createdAt:setsorting
+                }
+            }
+        );
+
+        if(page != null && page != null)
+        {
+            pipeline.push(
+                {
+                    "$skip":(page * limit)
+                }
+            );
+        }
+
+        if(limit != null && limit != null)
+        {
+            pipeline.push(
+                {
+                    "$limit":limit
+                }
+            );
+        }
+
+        pipeline.push(
+            {
+                $lookup:
+                    {
+                        from: "filterCategory",
+                        localField: "category_id",
+                        foreignField: "_id",
+                        as: "category_data"
+                    }
+            },
+            {
+                "$project":
+                {
+                    _id:1,
+                    namafile:1,
+                    descFile:1,
+                    fileAssetName:1,
+                    fileAssetBasePath:1,
+                    fileAssetUri:1,
+                    mediaName:1,
+                    mediaBasePath:1,
+                    mediaUri:1,
+                    mediaThumName:1,
+                    mediaThumBasePath:1,
+                    mediaThumUri:1,
+                    status:1,
+                    namaCategory:
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$category_data.name", 0
+                                ]
+                            },
+                            null
+                        ]
+                    }
+                }
+            }
+        );
+
+        var setutil = require('util');
+        console.log(setutil.inspect(pipeline, { depth:null, showHidden:false }));
+
+        var result = await this.sourceFilterModel.aggregate(pipeline);
+        return result;
+
+    }
+
+    async update(id: string, assetData: CreateAssetsFilterDto): Promise<AssetsFilter> {
+        let data = await this.sourceFilterModel.findByIdAndUpdate(id, assetData, { new: true });
+        if (!data) {
+            throw new Error('Data is not found!');
+        }
+        return data;
+    }
+
 }

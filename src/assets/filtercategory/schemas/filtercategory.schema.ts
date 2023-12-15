@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 
-export type stickerCategoryDocument = Filtercategory & Document;
+export type filterCategoryDocument = Filtercategory & Document;
 
 @Schema({ collection: 'filterCategory' })
 export class Filtercategory {
@@ -20,4 +20,4 @@ export class Filtercategory {
     updatedAt: String
 }
 
-export const stickerCategorySchema = SchemaFactory.createForClass(Filtercategory);
+export const filterCategorySchema = SchemaFactory.createForClass(Filtercategory);

@@ -34,5 +34,13 @@ export class AssetsFilter {
 
     @Prop()
     status: boolean;
+
+    @Prop()
+    createdAt: string;
+    @Prop()
+    updatedAt: string;
+
+    @Prop()
+    category_id: mongoose.Types.ObjectId;
 }
 export const AssetsFilterSchema = SchemaFactory.createForClass(AssetsFilter);
