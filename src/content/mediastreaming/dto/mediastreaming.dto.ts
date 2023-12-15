@@ -19,4 +19,6 @@ export class MediastreamingDto {
   feedBack: String;
   createAt: String;
   type: String;
+  messages: String;
+  commentDisabled: boolean;
 }

@@ -8,10 +8,12 @@ import { MediastreamingService } from './mediastreaming.service';
 import { MediastreamingController } from './mediastreaming.controller';
 import { MediastreamingalicloudService } from './mediastreamingalicloud.service';
 import { SocketModule } from '../socket/socket.module';
+import { UserauthsModule } from 'src/trans/userauths/userauths.module';
 
 @Module({
     imports: [
         SocketModule,
+        UserauthsModule,
         UserbasicsModule,
         UtilsModule,
         ConfigModule.forRoot(),

@@ -1,3 +1,4 @@
+import { Userauth } from './../../trans/userauths/schemas/userauth.schema';
 import { Body, Controller, HttpCode, Headers, Get, Param, HttpStatus, Post, UseGuards, Logger, Query, UseInterceptors, UploadedFile, Res, Request } from '@nestjs/common';
 import { MediastreamingService } from './mediastreaming.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
@@ -11,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { MediastreamingalicloudService } from './mediastreamingalicloud.service';
 import { AppGateway } from '../socket/socket.gateway';
 import { Mediastreaming } from './schema/mediastreaming.schema';
+import { UserauthsService } from 'src/trans/userauths/userauths.service';
 
 @Controller("api/live") 
 export class MediastreamingController {
@@ -20,7 +22,8 @@ export class MediastreamingController {
     private readonly configService: ConfigService,
     private readonly mediastreamingService: MediastreamingService,
     private readonly mediastreamingalicloudService: MediastreamingalicloudService,
-    private readonly userbasicsService: UserbasicsService,
+    private readonly userbasicsService: UserbasicsService, 
+    private readonly userauthService: UserauthsService,
     private readonly appGateway: AppGateway,) { } 
 
   @UseGuards(JwtAuthGuard)
@@ -114,6 +117,7 @@ export class MediastreamingController {
       );
     }
     var profile = await this.userbasicsService.findOne(headers['x-auth-user']);
+    var profile_auth = await this.userauthService.findOne(headers['x-auth-user']);
     if (!(await this.utilsService.ceckData(profile))) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed user not found',
@@ -163,6 +167,7 @@ export class MediastreamingController {
       if (MediastreamingDto_.type == "OPEN_VIEW") {
         const ceckView = await this.mediastreamingService.findView(profile._id.toString());
         if (!(await this.utilsService.ceckData(ceckView))) {
+          //UPDATE VIEW
           const dataView = {
             userId: new mongoose.Types.ObjectId(profile._id.toString()),
             status: true,
@@ -170,25 +175,66 @@ export class MediastreamingController {
             updateAt: currentDate
           }
           await this.mediastreamingService.insertView(MediastreamingDto_._id.toString(), dataView);
+          //UPDATE COMMENT
+          const dataComment = {
+            userId: new mongoose.Types.ObjectId(profile._id.toString()),
+            status: true,
+            messages: profile_auth.username+" Leave in room",
+            createAt: currentDate,
+            updateAt: currentDate
+          }
+          await this.mediastreamingService.insertComment(MediastreamingDto_._id.toString(), dataComment);
+          //SEND VIEW COUNT
           const dataStream = await this.mediastreamingService.findOneStreaming(MediastreamingDto_._id.toString());
           const dataStreamSend = {
-            _id: MediastreamingDto_._id,
-            viewCount: dataStream.view.length,
+            data: {
+              idStream: dataStream._id,
+              viewCount: dataStream.like.length
+            }
           }
           this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
+          //SEND COMMENT SINGLE
+          const getUser = await this.userbasicsService.getUser(profile._id.toString());
+          getUser[0]["idStream"] = MediastreamingDto_._id.toString();
+          getUser[0]["messages"] = profile_auth.username + " Leave in room";
+          const singleSend = {
+            data: getUser[0]
+          }
+          this.appGateway.eventStream("COMMENT_STREAM_SINGLE", JSON.stringify(singleSend));
         } 
       }
       //CECK TYPE CLOSE_VIEW
       if (MediastreamingDto_.type == "CLOSE_VIEW") {
         const ceckView = await this.mediastreamingService.findView(profile._id.toString());
         if (await this.utilsService.ceckData(ceckView)) {
+          //UPDATE VIEW
           await this.mediastreamingService.updateView(MediastreamingDto_._id.toString(), profile._id.toString(), true, false, currentDate);
+          //UPDATE COMMENT
+          const dataComment = {
+            userId: new mongoose.Types.ObjectId(profile._id.toString()),
+            status: true,
+            messages: profile_auth.username + " Join in room",
+            createAt: currentDate,
+            updateAt: currentDate
+          }
+          await this.mediastreamingService.insertComment(MediastreamingDto_._id.toString(), dataComment);
+          //SEND VIEW COUNT
           const dataStream = await this.mediastreamingService.findOneStreaming(MediastreamingDto_._id.toString());
           const dataStreamSend = {
-            _id: MediastreamingDto_._id,
-            viewCount: dataStream.view.length,
+            data: {
+              idStream: dataStream._id,
+              viewCount: dataStream.like.length
+            }
           }
           this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
+          //SEND COMMENT SINGLE
+          const getUser = await this.userbasicsService.getUser(profile._id.toString());
+          getUser[0]["idStream"] = MediastreamingDto_._id.toString();
+          getUser[0]["messages"] = profile_auth.username + " Join in room";
+          const singleSend = {
+            data: getUser[0]
+          }
+          this.appGateway.eventStream("COMMENT_STREAM_SINGLE", JSON.stringify(singleSend));
         }
       }
       //CECK TYPE LIKE
@@ -199,10 +245,52 @@ export class MediastreamingController {
           await this.mediastreamingService.insertLike(MediastreamingDto_._id.toString(), likesave);
           const dataStream = await this.mediastreamingService.findOneStreaming(MediastreamingDto_._id.toString());
           const dataStreamSend = {
-            _id: dataStream._id,
-            likeCount: dataStream.like.length
+            data:{
+              idStream: dataStream._id,
+              likeCount: dataStream.like.length
+            }
           }
           this.appGateway.eventStream("LIKE_STREAM", JSON.stringify(dataStreamSend));
+        }
+      }
+      //CECK TYPE COMMENT
+      if (MediastreamingDto_.type == "COMMENT") {
+        if (MediastreamingDto_.messages !=undefined) {
+          //UPDATE COMMENT
+          const dataComment = {
+            userId: new mongoose.Types.ObjectId(profile._id.toString()),
+            status: true,
+            messages: MediastreamingDto_.messages,
+            createAt: currentDate,
+            updateAt: currentDate
+          };
+          await this.mediastreamingService.insertComment(MediastreamingDto_._id.toString(), dataComment);
+          //SEND COMMENT SINGLE
+          const getUser = await this.userbasicsService.getUser(profile._id.toString());
+          getUser[0]["idStream"] = MediastreamingDto_._id.toString();
+          getUser[0]["messages"] = MediastreamingDto_.messages;
+          const singleSend = {
+            data: getUser[0]
+          }
+          this.appGateway.eventStream("COMMENT_STREAM_SINGLE", JSON.stringify(singleSend));
+          //SEND COMMENT ALL
+          const getData = await this.mediastreamingService.getDataComment(MediastreamingDto_._id.toString())
+          const allSend = {
+            data: getData
+          }
+          this.appGateway.eventStream("COMMENT_STREAM_ALL", JSON.stringify(allSend));
+        }
+      }
+      //CECK TYPE COMMENT
+      if (MediastreamingDto_.type == "COMMENT_DISABLED") {
+        if (MediastreamingDto_.commentDisabled != undefined) {
+          const allSend = {
+            data: {
+              idStream: MediastreamingDto_._id,
+              comment: MediastreamingDto_.commentDisabled
+            }
+          }
+          this.appGateway.eventStream("COMMENT_STREAM_DISABLED", JSON.stringify(allSend));
         }
       }
       return await this.errorHandler.generateAcceptResponseCode(

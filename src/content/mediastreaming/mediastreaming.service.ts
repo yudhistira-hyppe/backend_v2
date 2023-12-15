@@ -6,7 +6,6 @@ import { Mediastreaming, MediastreamingDocument } from './schema/mediastreaming.
 import { MediastreamingDto } from './dto/mediastreaming.dto';
 import { UtilsService } from 'src/utils/utils.service';
 var md5 = require('md5');
-//const crypto = require('crypto');
 @Injectable()
 export class MediastreamingService {
   private readonly logger = new Logger(MediastreamingService.name);
@@ -45,6 +44,250 @@ export class MediastreamingService {
     return data;
   }
 
+  async getDataComment(_id: string) {
+    let paramaggregate = [
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(_id),
+
+        }
+      },
+      {
+        $unwind:
+        {
+          path: "$comment",
+          includeArrayIndex: "updateAt_index",
+
+        }
+      },
+      {
+        "$lookup": {
+          from: "userbasics",
+          as: "data_userbasics",
+          let: {
+            localID: "$comment.userId"
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", "$$localID"]
+                },
+
+              }
+            },
+            {
+              $project: {
+                fullName: 1,
+                email: 1,
+                userAuth: "$userAuth.$id",
+                profilePict: "$profilePict.$id",
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "userauths",
+                as: "data_userauths",
+                let: {
+                  localID: '$userAuth'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $expr: {
+                        $eq: ['$_id', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      email: 1,
+                      username: 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "mediaprofilepicts",
+                as: "data_mediaprofilepicts",
+                let: {
+                  localID: '$profilePict'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $expr: {
+                        $eq: ['$_id', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "mediaBasePath": 1,
+                      "mediaUri": 1,
+                      "originalName": 1,
+                      "fsSourceUri": 1,
+                      "fsSourceName": 1,
+                      "fsTargetUri": 1,
+                      "mediaType": 1,
+                      "mediaEndpoint": {
+                        "$concat": ["/profilepict/", "$mediaID"]
+                      }
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              $project: {
+                fullName: 1,
+                email: 1,
+                userAuth: {
+                  "$let": {
+                    "vars": {
+                      "tmp": {
+                        "$arrayElemAt": ["$data_userauths", 0]
+                      }
+                    },
+                    "in": "$$tmp._id"
+                  }
+                },
+                username: {
+                  "$let": {
+                    "vars": {
+                      "tmp": {
+                        "$arrayElemAt": ["$data_userauths", 0]
+                      }
+                    },
+                    "in": "$$tmp.username"
+                  }
+                },
+                avatar: {
+                  "mediaBasePath": {
+                    "$let": {
+                      "vars": {
+                        "tmp": {
+                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                        }
+                      },
+                      "in": "$$tmp.mediaBasePath"
+                    }
+                  },
+                  "mediaUri": {
+                    "$let": {
+                      "vars": {
+                        "tmp": {
+                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                        }
+                      },
+                      "in": "$$tmp.mediaUri"
+                    }
+                  },
+                  "mediaType": {
+                    "$let": {
+                      "vars": {
+                        "tmp": {
+                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                        }
+                      },
+                      "in": "$$tmp.mediaType"
+                    }
+                  },
+                  "mediaEndpoint": {
+                    "$let": {
+                      "vars": {
+                        "tmp": {
+                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                        }
+                      },
+                      "in": "$$tmp.mediaEndpoint"
+                    }
+                  }
+                }
+              }
+            },
+
+          ],
+        }
+      },
+      {
+        "$project": {
+          "_id": {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics", 0]
+                }
+              },
+              "in": "$$tmp._id"
+            }
+          },
+          "email": {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics", 0]
+                }
+              },
+              "in": "$$tmp.email"
+            }
+          },
+          "fullName": {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics", 0]
+                }
+              },
+              "in": "$$tmp.fullName"
+            }
+          },
+          "userAuth": {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics", 0]
+                }
+              },
+              "in": "$$tmp.userAuth"
+            }
+          },
+          "username": {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics", 0]
+                }
+              },
+              "in": "$$tmp.username"
+            }
+          },
+          "avatar": {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics", 0]
+                }
+              },
+              "in": "$$tmp.avatar"
+            }
+          },
+          "messages": "$comment.messages",
+          "idStream": "$_id",
+        }
+      },
+    ];
+    const data = await this.MediastreamingModel.aggregate(paramaggregate);
+    return data;
+  }
+
   async getDataView(_id: string){
     let paramaggregate = [
       {
@@ -76,14 +319,6 @@ export class MediastreamingService {
           path: "$view",
           includeArrayIndex: "updateAt_index",
 
-        }
-      },
-      {
-        "$lookup": {
-          "from": "userbasics",
-          "localField": "adsObjectivitasId",
-          "foreignField": "_id",
-          "as": "adsobjectivitas_data"
         }
       },
       {
@@ -338,6 +573,18 @@ export class MediastreamingService {
     return data;
   }
 
+  async insertComment(_id: string, comment: any) {
+    const data = await this.MediastreamingModel.updateOne({
+      _id: new mongoose.Types.ObjectId(_id)
+    },
+      {
+        $push: {
+          "comment": comment
+        }
+      });
+    return data;
+  }
+
   async insertLike(_id: string, like: any) {
     const data = await this.MediastreamingModel.updateOne({
       _id: new mongoose.Types.ObjectId(_id)
@@ -405,15 +652,32 @@ export class MediastreamingService {
   }
 
   // async md5(param: String){
-  //   let parambytes = Buffer.from(param, 'utf-8').toString();
-  //   console.log(parambytes);
-  //   const hash = crypto.createHash('md5');
-  //   hash.update(parambytes);
-  //   console.log(hash);
-  //   let byteArray = hash.digest();
-  //   console.log(byteArray);
+  //   const crypto = require('crypto');
+  //   const BigInteger = require("big-integer");
+  //   // const utf8EncodeText = new TextEncoder();
+  //   // const byteArray = utf8EncodeText.encode(param.toString());
+  //   // console.log(byteArray.toString())
+  //   var utf8 = unescape(encodeURIComponent(param.toString()));
+  //   var arr = [];
 
-  //   let bigInt: BigInt = BigInt(byteArray);
+  //   for (var i = 0; i < utf8.length; i++) {
+  //     arr.push(utf8.charCodeAt(i));
+  //   }
+
+  //   // let parambytes = Buffer.from(param, 'utf-8').toString();
+  //   // // console.log(parambytes);
+  //   // const hash = crypto.createHash('md5');
+  //   // hash.update(parambytes);
+  //   // console.log(hash);
+  //   // let byteArray = hash.digest();
+  //   // console.log(byteArray);
+  //   var hash = crypto.createHash('md5').update(arr)
+  //   console.log(hash)
+  //   const byteArray2 = hash.digest();
+  //   console.log(byteArray2)
+
+  //   let bigInt = BigInteger(byteArray2);
+  //   console.log(bigInt)
   //   let result = bigInt.toString(16);
   //   while (result.length < 32) {
   //     result = "0" + result;

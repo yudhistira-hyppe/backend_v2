@@ -667,6 +667,147 @@ export class UserbasicsService {
     return result;
   }
 
+  async getUser(userid: string){
+    let paramaggregate = [
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(userid),
+
+        }
+      },
+      {
+        "$lookup": {
+          from: "userauths",
+          as: "data_userauths",
+          let: {
+            localID: '$userAuth.$id'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $eq: ['$_id', '$$localID']
+                }
+              }
+            },
+            {
+              $project: {
+                email: 1,
+                username: 1
+              }
+            }
+          ],
+
+        }
+      },
+      {
+        "$lookup": {
+          from: "mediaprofilepicts",
+          as: "data_mediaprofilepicts",
+          let: {
+            localID: '$profilePict.$id'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $eq: ['$_id', '$$localID']
+                }
+              }
+            },
+            {
+              $project: {
+                "mediaBasePath": 1,
+                "mediaUri": 1,
+                "originalName": 1,
+                "fsSourceUri": 1,
+                "fsSourceName": 1,
+                "fsTargetUri": 1,
+                "mediaType": 1,
+                "mediaEndpoint": {
+                  "$concat": ["/profilepict/", "$mediaID"]
+                }
+              }
+            }
+          ],
+
+        }
+      },
+      {
+        $project: {
+          fullName: 1,
+          email: 1,
+          userAuth: {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userauths", 0]
+                }
+              },
+              "in": "$$tmp._id"
+            }
+          },
+          username: {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userauths", 0]
+                }
+              },
+              "in": "$$tmp.username"
+            }
+          },
+          avatar: {
+            "mediaBasePath": {
+              "$let": {
+                "vars": {
+                  "tmp": {
+                    "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                  }
+                },
+                "in": "$$tmp.mediaBasePath"
+              }
+            },
+            "mediaUri": {
+              "$let": {
+                "vars": {
+                  "tmp": {
+                    "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                  }
+                },
+                "in": "$$tmp.mediaUri"
+              }
+            },
+            "mediaType": {
+              "$let": {
+                "vars": {
+                  "tmp": {
+                    "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                  }
+                },
+                "in": "$$tmp.mediaType"
+              }
+            },
+            "mediaEndpoint": {
+              "$let": {
+                "vars": {
+                  "tmp": {
+                    "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                  }
+                },
+                "in": "$$tmp.mediaEndpoint"
+              }
+            }
+          }
+        }
+      },
+    ];
+    const data = await this.userbasicModel.aggregate(paramaggregate);
+    return data;
+  }
+
   async findByProfileId(mediaprofilepicts: any): Promise<Userbasic> {
     return this.userbasicModel.findOne({ "profilePict": mediaprofilepicts }).exec();
   }
