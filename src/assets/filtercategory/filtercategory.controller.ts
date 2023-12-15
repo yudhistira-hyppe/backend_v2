@@ -17,7 +17,7 @@ export class FiltercategoryController {
     ) { }
 
     @UseGuards(JwtAuthGuard)
-    @Post('')
+    @Post()
     async create(@Headers() headers, @Req() request)
     {
         var token = headers['x-auth-token'];
@@ -85,12 +85,12 @@ export class FiltercategoryController {
             page = parseInt(request_json['page']);
         }
 
-        if(request_json['page'] != null && request_json['page'] != undefined)
+        if(request_json['limit'] != null && request_json['limit'] != undefined)
         {
             skip = parseInt(request_json['limit']);
         }
 
-        if(request_json['name'] != null && request_json['name'] != undefined)
+        if(request_json['search'] != null && request_json['search'] != undefined)
         {
             name = request_json['search'];
         }
