@@ -792,10 +792,6 @@ export class AssetsFilterController {
                     'Unabled to proceed failed upload Asset',
                 );
             }
-        } else {
-            await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed failed upload Asset',
-            );
         }
 
         //Image Upload
@@ -896,10 +892,6 @@ export class AssetsFilterController {
                     'Unabled to proceed failed upload Image Asset',
                 );
             }
-        } else {
-            await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed failed upload Image Asset',
-            );
         }
 
         
