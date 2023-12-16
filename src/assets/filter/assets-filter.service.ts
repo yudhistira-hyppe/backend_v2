@@ -186,6 +186,8 @@ export class AssetsFilterService {
                     mediaThumBasePath:1,
                     mediaThumUri:1,
                     status:1,
+                    createdAt:1,
+                    updatedAt:1,
                     namaCategory:
                     {
                         "$ifNull":
