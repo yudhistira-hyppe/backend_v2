@@ -755,4 +755,17 @@ export class AssetsFilterController {
             },
         }
     }
+
+    @Get('detail/:id')
+    async getdata(@Param() id:string, @Headers() headers)
+    {
+        var result = await this.assetsFilterService.detail(id);
+        return {
+            response_code:202,
+            data:result,
+            messages: {
+                info: ['Process successfully'],
+            },
+        }
+    }
 }
