@@ -34,10 +34,11 @@ export class MediastreamingService {
     return data;
   }
 
-  async findView(_id: string){
+  async findView(_id: string, userID: string){
     const data = await this.MediastreamingModel.find({
+      _id: new mongoose.Types.ObjectId(_id),
       view: {
-        $elemMatch: { userId: new mongoose.Types.ObjectId(_id), status: true }
+        $elemMatch: { userId: new mongoose.Types.ObjectId(userID), status: true }
       }
     });
     return data;

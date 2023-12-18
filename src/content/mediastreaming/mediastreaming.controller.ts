@@ -165,7 +165,8 @@ export class MediastreamingController {
       }
       //CECK TYPE OPEN_VIEW
       if (MediastreamingDto_.type == "OPEN_VIEW") {
-        const ceckView = await this.mediastreamingService.findView(profile._id.toString());
+        const ceckView = await this.mediastreamingService.findView(MediastreamingDto_._id.toString(), profile._id.toString());
+        console.log("ceckView",ceckView);
         if (!(await this.utilsService.ceckData(ceckView))) {
           //UPDATE VIEW
           const dataView = {
@@ -207,7 +208,7 @@ export class MediastreamingController {
       }
       //CECK TYPE CLOSE_VIEW
       if (MediastreamingDto_.type == "CLOSE_VIEW") {
-        const ceckView = await this.mediastreamingService.findView(profile._id.toString());
+        const ceckView = await this.mediastreamingService.findView(MediastreamingDto_._id.toString(), profile._id.toString());
         if (await this.utilsService.ceckData(ceckView)) {
           //UPDATE VIEW
           await this.mediastreamingService.updateView(MediastreamingDto_._id.toString(), profile._id.toString(), true, false, currentDate);
