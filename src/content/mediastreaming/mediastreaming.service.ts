@@ -288,14 +288,13 @@ export class MediastreamingService {
     return data;
   }
 
-  async getDataView(_id: string, skip: number, limit: number){
-    let skip_ = (skip * limit);
-    let page_ = limit;
+  async getDataView(_id: string, page: number, limit: number){
+    let page_ = (page * limit);
+    let limit_ = limit;
     let paramaggregate = [
       {
         $match: {
-          _id: new mongoose.Types.ObjectId(_id),
-          view: { $slice: [skip_, page_] }
+          _id: new mongoose.Types.ObjectId(_id)
         }
       },
       {
@@ -323,6 +322,8 @@ export class MediastreamingService {
 
         }
       },
+      { "$limit": limit_ },
+      { "$skip": page_ },
       {
         "$lookup": {
           from: "userbasics",
@@ -546,6 +547,7 @@ export class MediastreamingService {
         }
       },
     ];
+    console.log(JSON.stringify(paramaggregate));
     const data = await this.MediastreamingModel.aggregate(paramaggregate);
     return data;
   }

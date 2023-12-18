@@ -328,6 +328,7 @@ export class MediastreamingController {
         ceckId,
       );
     }
+    console.log(MediastreamingDto_)
 
     const data = await this.mediastreamingService.getDataView(MediastreamingDto_._id.toString(), MediastreamingDto_.page, MediastreamingDto_.limit);
     return await this.errorHandler.generateAcceptResponseCodeWithData(
