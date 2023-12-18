@@ -21,4 +21,6 @@ export class MediastreamingDto {
   type: String;
   messages: String;
   commentDisabled: boolean;
+  page: number;
+  limit: number;
 }

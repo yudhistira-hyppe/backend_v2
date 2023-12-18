@@ -329,7 +329,7 @@ export class MediastreamingController {
       );
     }
 
-    const data = await this.mediastreamingService.getDataView(MediastreamingDto_._id.toString());
+    const data = await this.mediastreamingService.getDataView(MediastreamingDto_._id.toString(), MediastreamingDto_.page, MediastreamingDto_.limit);
     return await this.errorHandler.generateAcceptResponseCodeWithData(
       "Get view succesfully", data,
     );

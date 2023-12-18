@@ -288,12 +288,14 @@ export class MediastreamingService {
     return data;
   }
 
-  async getDataView(_id: string){
+  async getDataView(_id: string, skip: number, limit: number){
+    let skip_ = (skip * limit);
+    let page_ = limit;
     let paramaggregate = [
       {
         $match: {
           _id: new mongoose.Types.ObjectId(_id),
-
+          view: { $slice: [skip_, page_] }
         }
       },
       {
