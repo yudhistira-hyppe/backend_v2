@@ -1252,7 +1252,24 @@ export class AccountbalancesService {
         return data;
     }
 
+    async createdatav2(datas: {
+        iduser: ObjectId,
+        debet: number,
+        kredit: number,
+        type: string,
+        timestamp: string,
+        description: string
 
+    }): Promise<Accountbalances> {
+
+
+        let data = await this.accountbalancesModel.create(datas);
+
+        if (!data) {
+            throw new Error('Todo is not found!');
+        }
+        return data;
+    }
     async findhistorySell(iduser: ObjectId, skip: number, limit: number) {
         const query = await this.accountbalancesModel.aggregate([
             {

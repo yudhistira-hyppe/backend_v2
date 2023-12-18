@@ -1456,7 +1456,7 @@ export class TransactionsController {
 
                     emailseller = datapost._doc.email;
 
-                    ubasicseller = await this.userbasicsService.findOne(emailseller);
+                    ubasicseller = await this.basic2SS.findBymail(emailseller);
                     iduserseller = ubasicseller._id;
                     namapenjual = ubasicseller.fullName;
 
@@ -1846,7 +1846,7 @@ export class TransactionsController {
 
 
                     emailseller = "tjikaljedy@hyppe.id";
-                    ubasicseller = await this.userbasicsService.findOne(emailseller);
+                    ubasicseller = await this.basic2SS.findBymail(emailseller);
                     iduserseller = ubasicseller._id;
                     namapenjual = ubasicseller.fullName;
 
@@ -2461,9 +2461,9 @@ export class TransactionsController {
                     }
 
                     if (status == "WAITING_PAYMENT") {
-                        var ubasic = await this.userbasicsService.findid(iduserbuy);
+                        var ubasic = await this.basic2SS.findOne(iduserbuy);
                         var emailbuyer = ubasic.email;
-                        var ubasicsell = await this.userbasicsService.findid(idusersell);
+                        var ubasicsell = await this.basic2SS.findOne(idusersell);
                         var emailseller = ubasicsell.email;
 
                         try {
@@ -2671,9 +2671,9 @@ export class TransactionsController {
 
 
                     if (status == "WAITING_PAYMENT") {
-                        var ubasic = await this.userbasicsService.findid(iduserbuy);
+                        var ubasic = await this.basic2SS.findOne(iduserbuy);
                         var emailbuyer = ubasic.email;
-                        var ubasicsell = await this.userbasicsService.findid(idusersell);
+                        var ubasicsell = await this.basic2SS.findOne(idusersell);
                         var emailseller = ubasicsell.email;
 
                         var createbalance = await this.accontbalanceVoucher(postid, idusersell, saleAmountVoucher);
@@ -2754,7 +2754,7 @@ export class TransactionsController {
                 }
                 else if ((type === "BOOST_CONTENT") || (type === "BOOST_CONTENT+OWNERSHIP")) {
                     //GET USER BUY
-                    var ubasic = await this.userbasicsService.findid(iduserbuy);
+                    var ubasic = await this.basic2SS.findOne(iduserbuy);
                     var emailbuyer = ubasic.email;
                     //GET TOTAL AMOUNT
                     var totalAmount = tamount;
@@ -3385,6 +3385,483 @@ export class TransactionsController {
                     datawithdraw.bankDisbursmentCharge = mongoose.Types.ObjectId(idBankDisbursmentCharge);
                     datawithdraw.description = OyDisbursements.note;
                     datawithdraw.idUser = iduser;
+                    datawithdraw.status = statusmessagedis;
+                    datawithdraw.timestamp = dtnow.toISOString();
+                    datawithdraw.verified = false;
+                    datawithdraw.partnerTrxid = partnertrxid;
+                    datawithdraw.statusOtp = null;
+                    datawithdraw.totalamount = totalamount;
+                    datawithdraw.idAccountBank = idbankaccount;
+                    datawithdraw.responOy = datadisbursemen;
+                    datawithdraw.statusCode = statusdisb;
+                    var datatr = await this.withdrawsService.create(datawithdraw);
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+                    return res.status(HttpStatus.BAD_REQUEST).json({
+                        response_code: statusdisb,
+                        message: statusmessagedis
+                    });
+                }
+
+
+            }
+            else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+                throw new BadRequestException("Account Bank is not found...!");
+            }
+        }
+
+
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('api/transactions/withdraw/v2')
+    async createwithdrawv2(@Res() res, @Headers('x-auth-token') auth: string, @Body() OyDisbursements: OyDisbursements, @Request() request) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var setauth = JSON.parse(Buffer.from(auth.split('.')[1], 'base64').toString());
+        var setemail = setauth.email;
+        var reqbody = JSON.parse(JSON.stringify(OyDisbursements));
+
+
+        if (OyDisbursements.pin != undefined) {
+            if (OyDisbursements.email != undefined) {
+                var ubasic = await this.basic2SS.findBymail(OyDisbursements.email);
+                if (await this.utilsService.ceckData(ubasic)) {
+                    if (ubasic.pin != undefined) {
+                        var pin_descript = await this.utilsService.decrypt(ubasic.pin.toString());
+                        if (pin_descript != OyDisbursements.pin) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+                            await this.errorHandler.generateNotAcceptableException(
+                                "Unabled to proceed, Pin not Match",
+                            );
+                        }
+                    } else {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+                        await this.errorHandler.generateNotAcceptableException(
+                            "Unabled to proceed, Create a pin first",
+                        );
+                    }
+                } else {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+                    await this.errorHandler.generateNotAcceptableException(
+                        "Unabled to proceed, User not found",
+                    );
+                }
+            } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+                await this.errorHandler.generateNotAcceptableException(
+                    "Unabled to proceed, Param Email is required",
+                );
+            }
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+                "Unabled to proceed, Param pin is required",
+            );
+        }
+
+        const messages = {
+            "info": ["The create successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var email = null;
+        var recipient_bank = null;
+        var recipient_account = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["recipient_bank"] !== undefined) {
+            recipient_bank = request_json["recipient_bank"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["recipient_account"] !== undefined) {
+            recipient_account = request_json["recipient_account"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var ubasic = await this.basic2SS.findBymail(email);
+
+        var iduser = ubasic._id;
+        var amounreq = OyDisbursements.amount;
+        var totalsaldo = 0;
+        var databalance = null;
+        var datarek = null;
+        var databank = null;
+        var namabank = "";
+        var idbank = null;
+        var statusInquiry = null;
+        var datasettingbankvercharge = null;
+        var datasettingdisbvercharge = null;
+        var valuebankcharge = 0;
+        var valuedisbcharge = 0;
+        var namarek = null;
+        var nama = null;
+        var kodebank = null;
+        var norekdb = null;
+        var totalamount = null;
+        var idbankverificationcharge = "62bd4104f37a00001a004367";
+        var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
+        var iduseradmin = "62144381602c354635ed786a";
+        var datainquiry = null;
+        var data = null;
+        var dtnow = new Date(Date.now());
+        dtnow.setHours(dtnow.getHours() + 7); // timestamp
+        dtnow = new Date(dtnow);
+        // var valueinquiry = null;
+        var idinquirycharge = "63217ae5ec46000002007405";
+        var totalinquiry = null;
+        // try {
+
+        //     datainquiry = await this.settingsService.findOne(idinquirycharge);
+        //     valueinquiry = datainquiry._doc.value;
+
+
+        // } catch (e) {
+        //     valueinquiry = 0;
+        // }
+        var idadmin = mongoose.Types.ObjectId(iduseradmin);
+        try {
+            databalance = await this.accountbalancesService.findwallettotalsaldo(iduser);
+            totalsaldo = databalance[0].totalsaldo;
+
+        } catch (e) {
+            databalance = null;
+            totalsaldo = 0;
+        }
+
+        try {
+            datasettingbankvercharge = await this.settingsService.findOne(idbankverificationcharge);
+            valuebankcharge = datasettingbankvercharge._doc.value;
+            // totalinquiry = valuebankcharge - valueinquiry;
+            // totalinquiry = valuebankcharge;
+            datasettingdisbvercharge = await this.settingsService.findOne(idBankDisbursmentCharge);
+            valuedisbcharge = datasettingdisbvercharge._doc.value;
+
+        } catch (e) {
+            throw new BadRequestException("Setting value not found..!");
+        }
+
+        try {
+            databank = await this.banksService.findbankcode(recipient_bank);
+            idbank = databank._doc._id;
+
+        } catch (e) {
+            throw new BadRequestException("Banks not found...!");
+        }
+
+        try {
+            datarek = await this.userbankaccountsService.findnorekWithdrawuser2(recipient_account, idbank, iduser.toString());
+            var idbankaccount = datarek._doc._id;
+            norekdb = datarek._doc.noRek;
+            namarek = datarek._doc.nama;
+            statusInquiry = datarek._doc.statusInquiry;
+
+        } catch (e) {
+            norekdb = null;
+        }
+
+        if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
+            totalamount = amounreq - valuedisbcharge - valuebankcharge;
+        } else {
+            totalamount = amounreq - valuedisbcharge;
+        }
+
+        if (amounreq > totalsaldo) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+            throw new BadRequestException("The balance is not sufficient...!");
+        }
+        else {
+            if (norekdb !== null && statusInquiry === true) {
+
+                // let datareqinquiry = new OyAccountInquirys();
+                // datareqinquiry.bank_code = recipient_bank;
+                // datareqinquiry.account_number = recipient_account;
+                // nama = namarek.toLowerCase();
+                // let datareqinq = await this.oyPgService.inquiryAccount(datareqinquiry);
+                // var statuscode = datareqinq.status.code;
+                // var account_name = datareqinq.account_name;
+                // var namaakun = account_name.toLowerCase();
+
+
+                // if (statuscode === "000") {
+
+                //     if (nama === namaakun) {
+                var stringId = (await this.generateNumber()).toString();
+                var partnertrxid = "OYO" + stringId;
+
+                // await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
+                // await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                //  await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, totalinquiry);
+                //await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, valuebankcharge);
+                OyDisbursements.partner_trx_id = partnertrxid;
+                OyDisbursements.amount = totalamount;
+                let datadisbursemen = await this.oyPgService.disbursement(OyDisbursements);
+
+                var statusdisb = datadisbursemen.status.code;
+                var statusmessagedis = datadisbursemen.status.message;
+                var timeoy = datadisbursemen.timestamp;
+                var splittimeoy = timeoy.split(" ");
+
+                var substrtahun = splittimeoy[0].substring(10, 6);
+
+                var substrbulan = splittimeoy[0].substring(5, 3);
+
+                var substrtanggal = splittimeoy[0].substring(0, 2);
+
+                var strdate = substrtahun + "-" + substrbulan + "-" + substrtanggal + " " + splittimeoy[1];
+
+
+                if (statusdisb === "101") {
+
+                    var partnerTrxid = datadisbursemen.partner_trx_id;
+
+                    let reqinfo = new OyDisbursementStatus2();
+                    reqinfo.partner_trx_id = partnerTrxid;
+                    let infodisbursemen = await this.oyPgService.disbursementStatus(reqinfo);
+                    var statuscode = infodisbursemen.status.code;
+                    var statusmessage = infodisbursemen.status.message;
+
+                    if (statuscode === "000") {
+                        let dtburs = new Date(strdate);
+                        dtburs.setHours(dtburs.getHours() + 7); // timestamp
+                        dtburs = new Date(dtburs);
+                        let dtb = dtburs.toISOString();
+                        await this.accontbalanceWithdrawv2(iduser.toString(), valuedisbcharge, "disbursement");
+                        await this.accontbalanceAdminWitdraw("disbursement", idadmin, { oid: iduser.toString() }, valuedisbcharge);
+                        let datawithdraw = new CreateWithdraws();
+                        datawithdraw.amount = amounreq;
+                        datawithdraw.bankVerificationCharge = mongoose.Types.ObjectId(idbankverificationcharge);
+                        datawithdraw.bankDisbursmentCharge = mongoose.Types.ObjectId(idBankDisbursmentCharge);
+                        datawithdraw.description = OyDisbursements.note;
+                        datawithdraw.idUser = { oid: iduser.toString() };
+                        datawithdraw.status = statusmessage;
+                        datawithdraw.timestamp = dtnow.toISOString();
+                        datawithdraw.verified = false;
+                        datawithdraw.partnerTrxid = partnertrxid;
+                        datawithdraw.statusOtp = null;
+                        datawithdraw.totalamount = totalamount;
+                        datawithdraw.idAccountBank = idbankaccount;
+                        datawithdraw.responOy = datadisbursemen;
+                        datawithdraw.statusCode = statusdisb;
+                        var datatr = await this.withdrawsService.create(datawithdraw);
+                        await this.accontbalanceWithdraw({ oid: iduser.toString() }, totalamount, "withdraw");
+
+                        try {
+                            if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
+                                data = {
+                                    "idUser": datatr.idUser,
+                                    "amount": datatr.amount,
+                                    "status": datatr.status,
+                                    "bankVerificationCharge": valuebankcharge,
+                                    "bankDisbursmentCharge": valuedisbcharge,
+                                    "timestamp": datatr.timestamp,
+                                    "verified": datatr.verified,
+                                    "description": datatr.description,
+                                    "partnerTrxid": datatr.partnerTrxid,
+                                    "statusOtp": datatr.statusOtp,
+                                    "totalamount": totalamount,
+                                    "_id": datatr._id,
+                                    "responOy": datadisbursemen
+                                };
+                            } else {
+                                data = {
+                                    "idUser": datatr.idUser,
+                                    "amount": datatr.amount,
+                                    "status": datatr.status,
+                                    "bankVerificationCharge": 0,
+                                    "bankDisbursmentCharge": valuedisbcharge,
+                                    "timestamp": datatr.timestamp,
+                                    "verified": datatr.verified,
+                                    "description": datatr.description,
+                                    "partnerTrxid": datatr.partnerTrxid,
+                                    "statusOtp": datatr.statusOtp,
+                                    "totalamount": totalamount,
+                                    "_id": datatr._id,
+                                    "responOy": datadisbursemen
+                                };
+                            }
+
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+                            return res.status(HttpStatus.OK).json({
+                                response_code: 202,
+                                "data": data,
+                                "message": messages
+                            });
+                        } catch (e) {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+                            return res.status(HttpStatus.BAD_REQUEST).json({
+
+                                "message": messagesEror
+                            });
+                        }
+
+
+                    }
+                    else if (statuscode === "101" || statuscode === "102" || statuscode === "301") {
+                        let dtburs = new Date(strdate);
+                        dtburs.setHours(dtburs.getHours() + 7); // timestamp
+                        dtburs = new Date(dtburs);
+                        let dtb = dtburs.toISOString();
+                        await this.accontbalanceWithdrawv2(iduser.toString(), valuedisbcharge, "disbursement");
+                        await this.accontbalanceAdminWitdrawv2("disbursement", idadmin, iduser.toString(), valuedisbcharge);
+                        let datawithdraw = new CreateWithdraws();
+                        datawithdraw.amount = amounreq;
+                        datawithdraw.bankVerificationCharge = mongoose.Types.ObjectId(idbankverificationcharge);
+                        datawithdraw.bankDisbursmentCharge = mongoose.Types.ObjectId(idBankDisbursmentCharge);
+                        datawithdraw.description = OyDisbursements.note;
+                        datawithdraw.idUser = { oid: iduser.toString() };
+                        datawithdraw.status = statusmessage;
+                        datawithdraw.timestamp = dtnow.toISOString();
+                        datawithdraw.verified = false;
+                        datawithdraw.partnerTrxid = partnertrxid;
+                        datawithdraw.statusOtp = null;
+                        datawithdraw.totalamount = totalamount;
+                        datawithdraw.idAccountBank = idbankaccount;
+                        datawithdraw.responOy = datadisbursemen;
+                        datawithdraw.statusCode = statusdisb;
+                        var datatr = await this.withdrawsService.create(datawithdraw);
+                        await this.accontbalanceWithdraw({ oid: iduser.toString() }, totalamount, "withdraw");
+
+                        try {
+                            if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
+                                data = {
+                                    "idUser": datatr.idUser,
+                                    "amount": datatr.amount,
+                                    "status": datatr.status,
+                                    "bankVerificationCharge": valuebankcharge,
+                                    "bankDisbursmentCharge": valuedisbcharge,
+                                    "timestamp": datatr.timestamp,
+                                    "verified": datatr.verified,
+                                    "description": datatr.description,
+                                    "partnerTrxid": datatr.partnerTrxid,
+                                    "statusOtp": datatr.statusOtp,
+                                    "totalamount": totalamount,
+                                    "_id": datatr._id,
+                                    "responOy": datadisbursemen
+                                };
+                            } else {
+                                data = {
+                                    "idUser": datatr.idUser,
+                                    "amount": datatr.amount,
+                                    "status": datatr.status,
+                                    "bankVerificationCharge": 0,
+                                    "bankDisbursmentCharge": valuedisbcharge,
+                                    "timestamp": datatr.timestamp,
+                                    "verified": datatr.verified,
+                                    "description": datatr.description,
+                                    "partnerTrxid": datatr.partnerTrxid,
+                                    "statusOtp": datatr.statusOtp,
+                                    "totalamount": totalamount,
+                                    "_id": datatr._id,
+                                    "responOy": datadisbursemen
+                                };
+                            }
+
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+                            return res.status(HttpStatus.OK).json({
+                                response_code: 202,
+                                "data": data,
+                                "message": messages
+                            });
+                        } catch (e) {
+
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+                            return res.status(HttpStatus.BAD_REQUEST).json({
+
+                                "message": messagesEror
+                            });
+                        }
+
+
+                    }
+                    else {
+                        let dtburs = new Date();
+                        dtburs.setHours(dtburs.getHours() + 7); // timestamp
+                        dtburs = new Date(dtburs);
+                        let dtb = dtburs.toISOString();
+                        let datawithdraw = new CreateWithdraws();
+                        datawithdraw.amount = amounreq;
+                        datawithdraw.bankVerificationCharge = mongoose.Types.ObjectId(idbankverificationcharge);
+                        datawithdraw.bankDisbursmentCharge = mongoose.Types.ObjectId(idBankDisbursmentCharge);
+                        datawithdraw.description = OyDisbursements.note;
+                        datawithdraw.idUser = { oid: iduser.toString() };
+                        datawithdraw.status = statusmessage;
+                        datawithdraw.timestamp = dtnow.toISOString();
+                        datawithdraw.verified = false;
+                        datawithdraw.partnerTrxid = partnertrxid;
+                        datawithdraw.statusOtp = null;
+                        datawithdraw.totalamount = totalamount;
+                        datawithdraw.idAccountBank = idbankaccount;
+                        datawithdraw.responOy = datadisbursemen;
+                        datawithdraw.statusCode = statusdisb;
+                        var datatr = await this.withdrawsService.create(datawithdraw);
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
+
+                        return res.status(HttpStatus.BAD_REQUEST).json({
+                            response_code: statuscode,
+                            message: statusmessage
+                        });
+                    }
+
+                }
+                else {
+                    // throw new BadRequestException("Request is Rejected (API Key is not Valid)");
+                    let dtburs = new Date();
+                    dtburs.setHours(dtburs.getHours() + 7); // timestamp
+                    dtburs = new Date(dtburs);
+                    let dtb = dtburs.toISOString();
+                    let datawithdraw = new CreateWithdraws();
+                    datawithdraw.amount = amounreq;
+                    datawithdraw.bankVerificationCharge = mongoose.Types.ObjectId(idbankverificationcharge);
+                    datawithdraw.bankDisbursmentCharge = mongoose.Types.ObjectId(idBankDisbursmentCharge);
+                    datawithdraw.description = OyDisbursements.note;
+                    datawithdraw.idUser = { oid: iduser.toString() };
                     datawithdraw.status = statusmessagedis;
                     datawithdraw.timestamp = dtnow.toISOString();
                     datawithdraw.verified = false;
@@ -5483,6 +5960,24 @@ export class TransactionsController {
         await this.accountbalancesService.createdata(dataacountbalance);
     }
 
+    async accontbalanceAdminWitdrawv2(type: string, iduseradmin: string, idusersell: string, amount: number) {
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+
+        var dataacountbalance = {
+            iduser: new Types.ObjectId(iduseradmin),
+            debet: 0,
+            kredit: amount,
+            type: type,
+            timestamp: dt.toISOString(),
+            description: type + " Charge dari user " + idusersell,
+
+        };
+
+        await this.accountbalancesService.createdatav2(dataacountbalance);
+    }
+
     async accontbalanceWithdraw(iduser: { oid: String }, amount: number, tipe: string) {
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
@@ -5508,6 +6003,32 @@ export class TransactionsController {
         };
 
         await this.accountbalancesService.createdata(dataacountbalance);
+    }
+    async accontbalanceWithdrawv2(iduser: string, amount: number, tipe: string) {
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var desccontent = "";
+
+        if (tipe === "inquiry") {
+            desccontent = "inquiry";
+        } else if (tipe === "disbursement") {
+            desccontent = "disbursement";
+        } else {
+            desccontent = "withdraw";
+        }
+
+        var dataacountbalance = {
+            iduser: new mongoose.Types.ObjectId(iduser),
+            debet: amount,
+            kredit: 0,
+            type: tipe,
+            timestamp: dt.toISOString(),
+            description: desccontent,
+
+        };
+
+        await this.accountbalancesService.createdatav2(dataacountbalance);
     }
 
     async accontbalanceWithdrawTopup(iduser: { oid: String }, amount: number, tipe: string) {
