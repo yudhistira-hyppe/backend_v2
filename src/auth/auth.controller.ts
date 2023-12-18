@@ -1386,6 +1386,17 @@ export class AuthController {
     const user_userbasics = await this.userbasicsService.findOne(user_email);
 
     if (await this.utilsService.ceckData(user_userbasics)) {
+      var statuscreator = false;
+
+      if(user_userbasics.creator != undefined)
+      {
+        statuscreator = user_userbasics.creator;
+      }
+      else
+      {
+        statuscreator = false;
+      }
+
       //Ceck User ActivityEvent Parent
       const user_activityevents = await this.activityeventsService.findParent(
         user_email,
@@ -1499,6 +1510,7 @@ export class AuthController {
           },
           version: getSetting.toString(),
           version_ios: getSetting_ios.toString(),
+          creator: statuscreator
         };
       } else {
         var fullurl = req.get("Host") + req.originalUrl;

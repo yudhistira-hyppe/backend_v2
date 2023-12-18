@@ -23,7 +23,7 @@ export class AssetsFilterService {
     }
 
     async findGet(): Promise<AssetsFilter[]> {
-        return this.sourceFilterModel.find({ "status":true });
+        return this.sourceFilterModel.find({ "status":true, "$or": [ { "active":true }, { "active" : null } ] });
     }
 
     async findOne(id: string): Promise<AssetsFilter> {
@@ -111,17 +111,31 @@ export class AssetsFilterService {
             );
         }
 
-        if(firstmatch.length != 0)
-        {
-            pipeline.push(
-                {
-                    "$match":
+        firstmatch.push(
+            {
+                "$or":
+                [
                     {
-                        "$and":firstmatch
+                        "active":null
+                    },
+                    {
+                        "active":
+                        {
+                            "$ne":false
+                        }
                     }
+                ]
+            }
+        );
+
+        pipeline.push(
+            {
+                "$match":
+                {
+                    "$and":firstmatch
                 }
-            );
-        }
+            }
+        );
 
         var setsorting = null;
         if(sorting == true)

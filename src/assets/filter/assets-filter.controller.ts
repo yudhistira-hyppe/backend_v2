@@ -718,6 +718,9 @@ export class AssetsFilterController {
         else if (request_json['status'] == "nonactive") {
             updatedata.status = false;
         }
+        else if(request_json['status'] == "delete") {
+            updatedata.active = false;
+        }
         updatedata.updatedAt = await this.utilsService.getDateTimeString();
 
         var mongo = require('mongoose');
@@ -856,9 +859,6 @@ export class AssetsFilterController {
                 console.log("THUMNAIL", "FAILED TO CREATE THUMNAIL");
             }
 
-            console.log()
-
-
             var result = await this.ossService.uploadFileBuffer(Buffer.from(ori), path_ori);
             var result_thum = await this.ossService.uploadFileBuffer(Buffer.from(thumnail), path_thum);
             if (result != undefined) {
@@ -929,7 +929,7 @@ export class AssetsFilterController {
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
         var timestamp_start = await this.utilsService.getDateTimeString();
-        var fullurl = header.host + '/api/updatedata/status/'+id;
+        var fullurl = header.host + '/api/assets/filter/updatedata/status/'+id;
 
         req.updatedAt = await this.utilsService.getDateTimeString();
         var mongo = require('mongoose');
@@ -946,6 +946,39 @@ export class AssetsFilterController {
                 info: ['Update successfully'],
             },
         }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/delete/:id')
+    async delete(@Param('id') id: string, @Headers() headers, @Req() req) {
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var timestamp_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+
+        if (id == undefined || id == "") {
+            await this.errorHandler.generateBadRequestException(
+                'Param id is required',
+            );
+        }
+
+        var updatedata = new CreateAssetsFilterDto();
+        updatedata.active = false; 
+
+        await this.assetsFilterService.update(id, updatedata);
+
+        var timestamp_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamp_start, timestamp_end, email, null, null, null);
+
+        var response = {
+            "response_code": 202,
+            "messages": {
+                info: ['Successfuly'],
+            },
+        }
+        return response;
+
     }
 
     @Get('detail/:id')

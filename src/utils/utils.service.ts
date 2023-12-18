@@ -1820,6 +1820,14 @@ export class UtilsService {
             }
           }
         }
+        if(get_userbasic.creator != undefined)
+        {
+          ProfileDTO_.creator = get_userbasic.creator;
+        }
+        else
+        {
+          ProfileDTO_.creator = false;
+        }
       }
     }
     return ProfileDTO_;

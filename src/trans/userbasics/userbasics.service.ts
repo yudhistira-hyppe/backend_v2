@@ -7670,6 +7670,7 @@ export class UserbasicsService {
           "pin": 1,
           "tutor": 1,
           "otppinVerified": 1,
+          "creator":1,
           urluserBadge:
           {
             "$ifNull":
@@ -7758,6 +7759,7 @@ export class UserbasicsService {
           "pin": 1,
           "otppinVerified": 1,
           "tutor": 1,
+          "creator":1,
           urluserBadge:
           {
             "$ifNull": [

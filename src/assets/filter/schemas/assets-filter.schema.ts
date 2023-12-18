@@ -42,5 +42,8 @@ export class AssetsFilter {
 
     @Prop()
     category_id: mongoose.Types.ObjectId;
+
+    @Prop()
+    active: boolean;
 }
 export const AssetsFilterSchema = SchemaFactory.createForClass(AssetsFilter);
