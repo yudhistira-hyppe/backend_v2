@@ -193,7 +193,16 @@ export class AssetsFilterController {
                 'Unabled to proceed failed upload Image Asset',
             );
         }
-        // CreateAssetsFilterDto_.status = true;
+
+        if(CreateAssetsFilterDto_.category_id != null && CreateAssetsFilterDto_.category_id != undefined)
+        {
+            var mongo = require('mongoose');
+            CreateAssetsFilterDto_.category_id = new mongo.Types.ObjectId(CreateAssetsFilterDto_.category_id); 
+        }
+        if(CreateAssetsFilterDto_.status != null && CreateAssetsFilterDto_.status != undefined)
+        {
+            CreateAssetsFilterDto_.status = Boolean(CreateAssetsFilterDto_.status);
+        }
         CreateAssetsFilterDto_.createdAt = await this.utilsService.getDateTimeString();
         CreateAssetsFilterDto_.updatedAt = await this.utilsService.getDateTimeString();
         this.assetsFilterService.create(CreateAssetsFilterDto_);
@@ -730,14 +739,197 @@ export class AssetsFilterController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post('/updatedata/:id')
-    async updateOne(@Param() id:string, @Body() req:CreateAssetsFilterDto, @Headers() header)
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'imageFile', maxCount: 1 }, { name: 'fileAsset', maxCount: 1 }]))
+    @Post('/updatedata')
+    async updateOne(@UploadedFiles() files: {
+        fileAsset?: Express.Multer.File[],
+        imageFile?: Express.Multer.File[]
+    }, @Body() req:CreateAssetsFilterDto, @Headers() header)
     {
+        var id = req._id;
+        var mongo = require('mongoose');
+        req._id = new mongo.Types.ObjectId(id);
+
+        console.log(req);
+
         var token = header['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
         var timestamp_start = await this.utilsService.getDateTimeString();
         var fullurl = header.host + '/api/updatedata/'+id;
+
+        //File Upload
+        if (files.fileAsset != undefined) {
+            const fileAsset = files.fileAsset[0];
+            const extension = fileAsset.originalname.substring(fileAsset.originalname.lastIndexOf('.'), fileAsset.originalname.length);
+            const fileAssetName = id + extension;
+            const path = "asset/effect/" + id + "/" + fileAssetName;
+            var result = await this.ossService.uploadFileBuffer(fileAsset.buffer, path);
+            if (result != undefined) {
+                if (result.res != undefined) {
+                    if (result.res.statusCode != undefined) {
+                        if (result.res.statusCode == 200) {
+                            req.fileAssetName = fileAssetName;
+                            req.fileAssetBasePath = path;
+                            req.fileAssetUri = result.res.requestUrls[0];
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed failed upload Asset',
+                            );
+                        }
+                    } else {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed failed upload Asset',
+                        );
+                    }
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed failed upload Asset',
+                    );
+                }
+            } else {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed failed upload Asset',
+                );
+            }
+        }
+
+        //Image Upload
+        if (files.imageFile != undefined) {
+            const imageFile = files.imageFile[0];
+            const extension = '.jpeg';
+            const imageFileName_ori = id + extension;
+            const imageFileName_thum = id + "_thum" + extension;
+            const path_ori = "asset/effect/" + id + "/" + imageFileName_ori;
+            const path_thum = "asset/effect/" + id + "/" + imageFileName_thum;
+
+            console.log(path_ori);
+            console.log(path_thum);
+
+
+            //Get Image Information
+            var image_information = await sharp(imageFile.buffer).metadata();
+            var image_height = image_information.height;
+            var image_width = image_information.width;
+            var image_orientation = image_information.orientation;
+
+            //Get Image Mode
+            var image_mode = await this.utilsService.getImageMode(image_width, image_height);
+
+            //Set Image Mode
+            var New_height = 0;
+            var New_width = 0;
+            if (image_mode == "LANDSCAPE") {
+                New_height = image_height;
+                New_width = image_width;
+            } else if (image_mode == "POTRET") {
+                New_height = image_height;
+                New_width = image_width;
+            }
+
+            //Set Convert
+            var file_convert = null;
+            file_convert = await sharp(imageFile.buffer, { failOnError: false }).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
+
+            
+            //Generate Thumnail
+            var image_information2 = await sharp(file_convert).metadata();
+            var image_orientation2 = image_information2.orientation;
+            var thumnail = null;
+            var ori = null;
+            try {
+                if (image_orientation2 == 1) {
+                    thumnail = await sharp(file_convert).resize(100, 100).toBuffer();
+                    ori = await sharp(file_convert).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
+                } else if (image_orientation2 == 6) {
+                    thumnail = await sharp(file_convert).rotate(90).resize(100, 100).toBuffer();
+                    ori = await sharp(file_convert).rotate(90).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+                } else if (image_orientation2 == 8) {
+                    thumnail = await sharp(file_convert).rotate(270).resize(100, 100).toBuffer();
+                    ori = await sharp(file_convert).rotate(270).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+                } else {
+                    thumnail = await sharp(file_convert).resize(100, 100).toBuffer();
+                    ori = file_convert;
+                }
+                console.log(typeof thumnail);
+            } catch (e) {
+                console.log("THUMNAIL", "FAILED TO CREATE THUMNAIL");
+            }
+
+            console.log()
+
+
+            var result = await this.ossService.uploadFileBuffer(Buffer.from(ori), path_ori);
+            var result_thum = await this.ossService.uploadFileBuffer(Buffer.from(thumnail), path_thum);
+            if (result != undefined) {
+                if (result.res != undefined) {
+                    if (result.res.statusCode != undefined) {
+                        if (result.res.statusCode == 200) {
+                            req.mediaName = imageFileName_ori;
+                            req.mediaBasePath = path_ori;
+                            req.mediaUri = result.res.requestUrls[0]
+
+                            req.mediaThumName = imageFileName_thum;
+                            req.mediaThumBasePath = path_thum;
+                            req.mediaThumUri = result_thum.res.requestUrls[0]
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed failed upload Image Asset',
+                            );
+                        }
+                    } else {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed failed upload Image Asset',
+                        );
+                    }
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed failed upload Image Asset',
+                    );
+                }
+            } else {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed failed upload Image Asset',
+                );
+            }
+        }
+
+        
+        if(req.category_id != null && req.category_id != undefined)
+        {
+            var mongo = require('mongoose');
+            req.category_id = new mongo.Types.ObjectId(req.category_id); 
+        }
+        if(req.status != null && req.status != undefined)
+        {
+            req.status = Boolean(req.status);
+        }
+        req.updatedAt = await this.utilsService.getDateTimeString();
+        var mongo = require('mongoose');
+        var konvertid = new mongo.Types.ObjectId(id);
+        await this.assetsFilterService.update(konvertid, req);
+
+        var timestamp_end = await this.utilsService.getDateTimeString();
+        var requestbody = JSON.parse(JSON.stringify(req));
+        this.logapiSS.create2(fullurl, timestamp_start, timestamp_end, email, null, null, requestbody);
+
+        return {
+            response_code:202,
+            messages: {
+                info: ['Update data with file successfully'],
+            },
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/updatedata/status/:id')
+    async updateStatusOne(@Param() id:string, @Body() req:CreateAssetsFilterDto, @Headers() header)
+    {
+        var token = header['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var timestamp_start = await this.utilsService.getDateTimeString();
+        var fullurl = header.host + '/api/updatedata/status/'+id;
 
         req.updatedAt = await this.utilsService.getDateTimeString();
         var mongo = require('mongoose');
@@ -752,6 +944,19 @@ export class AssetsFilterController {
             response_code:202,
             messages: {
                 info: ['Update successfully'],
+            },
+        }
+    }
+
+    @Get('detail/:id')
+    async getdata(@Param() id:string, @Headers() headers)
+    {
+        var result = await this.assetsFilterService.detail(id);
+        return {
+            response_code:202,
+            data:result,
+            messages: {
+                info: ['Process successfully'],
             },
         }
     }

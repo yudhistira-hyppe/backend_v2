@@ -186,6 +186,8 @@ export class AssetsFilterService {
                     mediaThumBasePath:1,
                     mediaThumUri:1,
                     status:1,
+                    createdAt:1,
+                    updatedAt:1,
                     namaCategory:
                     {
                         "$ifNull":
@@ -217,6 +219,84 @@ export class AssetsFilterService {
             throw new Error('Data is not found!');
         }
         return data;
+    }
+
+    async detail(id:string)
+    {
+        var mongo = require('mongoose');
+        var konvert = new mongo.Types.ObjectId(id);
+        var query = await this.sourceFilterModel.aggregate([
+            {
+                "$match":
+                {
+                    "_id":konvert
+                }
+            },
+            {
+                "$facet":
+                {
+                    'detail':
+                    [
+                        {
+                            $lookup:
+                                {
+                                    from: "filterCategory",
+                                    localField: "category_id",
+                                    foreignField: "_id",
+                                    as: "category_data"
+                                }
+                        },
+                        {
+                            "$project":
+                            {
+                                "_id": 1,
+                                "namafile": 1,
+                                "fileAssetName": 1,
+                                "fileAssetBasePath": 1,
+                                "fileAssetUri": 1,
+                                "mediaName": 1,
+                                "mediaBasePath": 1,
+                                "mediaUri": 1,
+                                "mediaThumName": 1,
+                                "mediaThumBasePath": 1,
+                                "mediaThumUri": 1,
+                                "status": 1,
+                                "category_id": 1,
+                                "namaCategory":
+                                {
+                                    "$ifNull":
+                                    [
+                                        {
+                                            "$arrayElemAt":
+                                            [
+                                                "$category_data.name", 0
+                                            ]
+                                        },
+                                        null
+                                    ]
+                                },
+                                "createdAt": 1,
+                                "updatedAt": 1
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "$project":
+                {
+                    "detail":
+                    {
+                        "$arrayElemAt":
+                        [
+                            "$detail", 0
+                        ]
+                    }
+                }
+            }
+        ]);
+
+        return query[0];
     }
 
 }
