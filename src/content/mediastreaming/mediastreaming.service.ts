@@ -5,7 +5,6 @@ import { ConfigService } from '@nestjs/config';
 import { Mediastreaming, MediastreamingDocument } from './schema/mediastreaming.schema';
 import { MediastreamingDto } from './dto/mediastreaming.dto';
 import { UtilsService } from 'src/utils/utils.service';
-var md5 = require('md5');
 @Injectable()
 export class MediastreamingService {
   private readonly logger = new Logger(MediastreamingService.name);
@@ -633,7 +632,7 @@ export class MediastreamingService {
       rtmpUrl = "rtmp://" + pullDomain + "/" + appName + "/" + streamName;
     } else {
       let rtmpToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pullKey;
-      let rtmpAuthKey: String = md5(rtmpToMd5);
+      let rtmpAuthKey: String = await this.md5(rtmpToMd5);
       rtmpUrl = "rtmp://" + pullDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + rtmpAuthKey;
     }
     return rtmpUrl;
@@ -645,43 +644,82 @@ export class MediastreamingService {
       pushUrl = "rtmp://" + pushDomain + "/" + appName + "/" + streamName;
     } else {
       let stringToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pushKey;
-      let authKey: String = md5(stringToMd5);
+      let authKey: String = await this.md5(stringToMd5);
       pushUrl = "rtmp://" + pushDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + authKey;
     }
     return pushUrl;
   }
 
-  // async md5(param: String){
-  //   const crypto = require('crypto');
-  //   const BigInteger = require("big-integer");
-  //   // const utf8EncodeText = new TextEncoder();
-  //   // const byteArray = utf8EncodeText.encode(param.toString());
-  //   // console.log(byteArray.toString())
-  //   var utf8 = unescape(encodeURIComponent(param.toString()));
-  //   var arr = [];
+  async generateStreamTest(pullDomain: String, pullKey: String, appName: String, streamName: String, expireTime: number): Promise<String> {
+    let rtmpUrl: String = "";
+    if (pullKey == "") {
+      rtmpUrl = "rtmp://" + pullDomain + "/" + appName + "/" + streamName;
+    } else {
+      let rtmpToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pullKey;
+      let rtmpAuthKey: String = await this.md5(rtmpToMd5);
+      rtmpUrl = "rtmp://" + pullDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + rtmpAuthKey;
+    }
+    return rtmpUrl;
+  }
 
-  //   for (var i = 0; i < utf8.length; i++) {
-  //     arr.push(utf8.charCodeAt(i));
-  //   }
+  async generateIngestTest(pushDomain: String, pushKey: String, appName: String, streamName: String, expireTime: number): Promise<String> {
+    let pushUrl: String = "";
+    if (pushKey == "") {
+      pushUrl = "rtmp://" + pushDomain + "/" + appName + "/" + streamName;
+    } else {
+      let stringToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pushKey;
+      let authKey: String = await this.md5(stringToMd5);
+      pushUrl = "rtmp://" + pushDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + authKey;
+    }
+    console.log(pushUrl)
+    return pushUrl;
+  }
 
-  //   // let parambytes = Buffer.from(param, 'utf-8').toString();
-  //   // // console.log(parambytes);
-  //   // const hash = crypto.createHash('md5');
-  //   // hash.update(parambytes);
-  //   // console.log(hash);
-  //   // let byteArray = hash.digest();
-  //   // console.log(byteArray);
-  //   var hash = crypto.createHash('md5').update(arr)
-  //   console.log(hash)
-  //   const byteArray2 = hash.digest();
-  //   console.log(byteArray2)
+  async generateUrlTest(streamId: string, expireTime: number): Promise<any> {
+    //Get URL_STREAM_LIVE
+    const GET_URL_STREAM_LIVE = this.configService.get("URL_STREAM_LIVE");
+    const URL_STREAM_LIVE = await this.utilsService.getSetting_Mixed(GET_URL_STREAM_LIVE);
 
-  //   let bigInt = BigInteger(byteArray2);
-  //   console.log(bigInt)
-  //   let result = bigInt.toString(16);
-  //   while (result.length < 32) {
-  //     result = "0" + result;
-  //   }
-  //   return result;
-  // }
+    //Get KEY_STREAM_LIVE
+    const GET_KEY_STREAM_LIVE = this.configService.get("KEY_STREAM_LIVE");
+    const KEY_STREAM_LIVE = await this.utilsService.getSetting_Mixed(GET_KEY_STREAM_LIVE);
+
+    //Get URL_INGEST_LIVE
+    const GET_URL_INGEST_LIVE = this.configService.get("URL_INGEST_LIVE");
+    const URL_INGEST_LIVE = await this.utilsService.getSetting_Mixed(GET_URL_INGEST_LIVE);
+
+    //Get KEY_INGEST_LIVE
+    const GET_KEY_INGEST_LIVE = this.configService.get("KEY_INGEST_LIVE");
+    const KEY_INGEST_LIVE = await this.utilsService.getSetting_Mixed(GET_KEY_INGEST_LIVE);
+
+    //Get APP_NAME_LIVE
+    const GET_APP_NAME_LIVE = this.configService.get("APP_NAME_LIVE");
+    const APP_NAME_LIVE = await this.utilsService.getSetting_Mixed(GET_APP_NAME_LIVE);
+
+    const urlStream = await this.generateStreamTest(URL_STREAM_LIVE.toString(), KEY_STREAM_LIVE.toString(), APP_NAME_LIVE.toString(), streamId, expireTime);
+    const urlIngest = await this.generateIngestTest(URL_INGEST_LIVE.toString(), KEY_INGEST_LIVE.toString(), APP_NAME_LIVE.toString(), streamId, expireTime);
+    console.log({
+      urlStream: urlStream,
+      urlIngest: urlIngest
+    })
+    return {
+      urlStream: urlStream,
+      urlIngest: urlIngest
+    }
+  }
+
+  async md5(param: String){
+    if (param == null || param.length === 0) {
+      return null;
+    }
+    try {
+      const md5 = require('crypto').createHash('md5');
+      md5.update(param);
+      const result = md5.digest('hex');
+      return result;
+    } catch (error) {
+      console.error(error);
+    }
+    return null;
+  }
 }

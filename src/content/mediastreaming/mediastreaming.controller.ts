@@ -365,4 +365,9 @@ export class MediastreamingController {
 
     }
   }
+
+  @Post('/test')
+  async exampleGenerateLink(){
+    const getUrl = await this.mediastreamingService.generateUrlTest("657fb4b76ea72f0b782c610a", 1702873753);
+  }
 }
