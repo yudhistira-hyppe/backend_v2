@@ -186,12 +186,14 @@ export class MediastreamingController {
           await this.mediastreamingService.insertComment(MediastreamingDto_._id.toString(), dataComment);
           //SEND VIEW COUNT
           const dataStream = await this.mediastreamingService.findOneStreaming(MediastreamingDto_._id.toString());
+          console.log(dataStream)
           const dataStreamSend = {
             data: {
               idStream: dataStream._id,
               viewCount: dataStream.like.length
             }
           }
+          console.log(dataStreamSend)
           this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
           //SEND COMMENT SINGLE
           const getUser = await this.userbasicsService.getUser(profile._id.toString());
