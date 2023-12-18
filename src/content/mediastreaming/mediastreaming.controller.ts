@@ -179,41 +179,7 @@ export class MediastreamingController {
           const dataComment = {
             userId: new mongoose.Types.ObjectId(profile._id.toString()),
             status: true,
-            messages: profile_auth.username+" Leave in room",
-            createAt: currentDate,
-            updateAt: currentDate
-          }
-          await this.mediastreamingService.insertComment(MediastreamingDto_._id.toString(), dataComment);
-          //SEND VIEW COUNT
-          const dataStream = await this.mediastreamingService.findOneStreaming(MediastreamingDto_._id.toString());
-          const dataStreamSend = {
-            data: {
-              idStream: dataStream._id,
-              viewCount: dataStream.like.length
-            }
-          }
-          this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
-          //SEND COMMENT SINGLE
-          const getUser = await this.userbasicsService.getUser(profile._id.toString());
-          getUser[0]["idStream"] = MediastreamingDto_._id.toString();
-          getUser[0]["messages"] = profile_auth.username + " Leave in room";
-          const singleSend = {
-            data: getUser[0]
-          }
-          this.appGateway.eventStream("COMMENT_STREAM_SINGLE", JSON.stringify(singleSend));
-        } 
-      }
-      //CECK TYPE CLOSE_VIEW
-      if (MediastreamingDto_.type == "CLOSE_VIEW") {
-        const ceckView = await this.mediastreamingService.findView(profile._id.toString());
-        if (await this.utilsService.ceckData(ceckView)) {
-          //UPDATE VIEW
-          await this.mediastreamingService.updateView(MediastreamingDto_._id.toString(), profile._id.toString(), true, false, currentDate);
-          //UPDATE COMMENT
-          const dataComment = {
-            userId: new mongoose.Types.ObjectId(profile._id.toString()),
-            status: true,
-            messages: profile_auth.username + " Join in room",
+            messages: profile_auth.username +" Join in room",
             createAt: currentDate,
             updateAt: currentDate
           }
@@ -231,6 +197,40 @@ export class MediastreamingController {
           const getUser = await this.userbasicsService.getUser(profile._id.toString());
           getUser[0]["idStream"] = MediastreamingDto_._id.toString();
           getUser[0]["messages"] = profile_auth.username + " Join in room";
+          const singleSend = {
+            data: getUser[0]
+          }
+          this.appGateway.eventStream("COMMENT_STREAM_SINGLE", JSON.stringify(singleSend));
+        } 
+      }
+      //CECK TYPE CLOSE_VIEW
+      if (MediastreamingDto_.type == "CLOSE_VIEW") {
+        const ceckView = await this.mediastreamingService.findView(profile._id.toString());
+        if (await this.utilsService.ceckData(ceckView)) {
+          //UPDATE VIEW
+          await this.mediastreamingService.updateView(MediastreamingDto_._id.toString(), profile._id.toString(), true, false, currentDate);
+          //UPDATE COMMENT
+          const dataComment = {
+            userId: new mongoose.Types.ObjectId(profile._id.toString()),
+            status: true,
+            messages: profile_auth.username + " Leave in room",
+            createAt: currentDate,
+            updateAt: currentDate
+          }
+          await this.mediastreamingService.insertComment(MediastreamingDto_._id.toString(), dataComment);
+          //SEND VIEW COUNT
+          const dataStream = await this.mediastreamingService.findOneStreaming(MediastreamingDto_._id.toString());
+          const dataStreamSend = {
+            data: {
+              idStream: dataStream._id,
+              viewCount: dataStream.like.length
+            }
+          }
+          this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
+          //SEND COMMENT SINGLE
+          const getUser = await this.userbasicsService.getUser(profile._id.toString());
+          getUser[0]["idStream"] = MediastreamingDto_._id.toString();
+          getUser[0]["messages"] = profile_auth.username + " Leave in room";
           const singleSend = {
             data: getUser[0]
           }
