@@ -289,8 +289,8 @@ export class MediastreamingService {
   }
 
   async getDataView(_id: string, page: number, limit: number){
-    let page_ = (page * limit);
-    let limit_ = limit;
+    let page_ = (page > 0) ? (page * limit) : page;
+    let limit_ = (page > 0) ? ((page + 1) * limit) : limit;
     let paramaggregate = [
       {
         $match: {
@@ -628,7 +628,6 @@ export class MediastreamingService {
       urlStream: urlStream,
       urlIngest: urlIngest
     }
-    
   }
 
   async generateStream(pullDomain: String, pullKey: String, appName: String, streamName: String, expireTime: number): Promise<String>{

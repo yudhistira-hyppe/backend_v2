@@ -9,6 +9,8 @@ import { MediastreamingController } from './mediastreaming.controller';
 import { MediastreamingalicloudService } from './mediastreamingalicloud.service';
 import { SocketModule } from '../socket/socket.module';
 import { UserauthsModule } from 'src/trans/userauths/userauths.module';
+import { Mediastreamingrequest, MediastreamingrequestSchema } from './schema/mediastreamingrequest.schema';
+import { MediastreamingrequestService } from './mediastreamingrequest.service';
 
 @Module({
     imports: [
@@ -17,10 +19,10 @@ import { UserauthsModule } from 'src/trans/userauths/userauths.module';
         UserbasicsModule,
         UtilsModule,
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Mediastreaming.name, schema: MediastreamingSchema }], 'SERVER_FULL')
+        MongooseModule.forFeature([{ name: Mediastreaming.name, schema: MediastreamingSchema }, { name: Mediastreamingrequest.name, schema: MediastreamingrequestSchema }], 'SERVER_FULL')
     ],
     controllers: [MediastreamingController],
-    providers: [MediastreamingService, MediastreamingalicloudService],
-    exports: [MediastreamingService, MediastreamingalicloudService],
+    providers: [MediastreamingService, MediastreamingalicloudService, MediastreamingrequestService],
+    exports: [MediastreamingService, MediastreamingalicloudService, MediastreamingrequestService],
 })
 export class MediastreamingModule { }

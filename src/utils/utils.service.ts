@@ -1368,6 +1368,12 @@ export class UtilsService {
     return new Date();
   }
 
+  async getIntegertoDate(time: number): Promise<string> {
+    let myDate = new Date(1000 * time);
+    let convert = (myDate.toISOString().replace('T', ' '));
+    return convert.substring(0, convert.lastIndexOf('.'));
+  }
+
   now(): number {
     let now = new Date();
     return now.getTime();

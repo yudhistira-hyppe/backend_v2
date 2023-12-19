@@ -10,32 +10,32 @@ import { TransactionsService } from "src/trans/transactions/transactions.service
 export class TaskService {
   constructor(
     private readonly challengeService: ChallengeService,
-    private readonly transactionsService: TransactionsService, 
+    private readonly transactionsService: TransactionsService,
     private readonly adsService: AdsService,
   ) { }
 
 
   private readonly logger = new Logger(TaskService.name);
 
-  // @Cron('0 */7 * * * *')
-  // challengeJob2() {
-  //   this.logger.debug('----------CHALLEGE JOB START----------', new Date());
-  //   this.challengeService.sendNotifeChallenge();
-  //   this.challengeService.updateBadgeex();
-  //   this.challengeService.updateSubchallengeex();
+  @Cron('0 */7 * * * *')
+  challengeJob2() {
+    this.logger.debug('----------CHALLEGE JOB START----------', new Date());
+    this.challengeService.sendNotifeChallenge();
+    this.challengeService.updateBadgeex();
+    this.challengeService.updateSubchallengeex();
 
-  // }
+  }
 
-  // @Cron('0 */10 * * * *')
-  // ceckStatus() {
-  //   this.logger.debug('----------DISBURSEMENT JOB START----------', new Date());
-  //   this.transactionsService.ceckStatusDisbursement();
-  // }
+  @Cron('0 */10 * * * *')
+  ceckStatus() {
+    this.logger.debug('----------DISBURSEMENT JOB START----------', new Date());
+    this.transactionsService.ceckStatusDisbursement();
+  }
 
-  // @Cron('0 0 0 * * *')
-  // //@Cron('0 */1 * * * *')
-  // ceckADS() {
-  //   this.logger.debug('----------ADS JOB START----------', new Date());
-  //   this.adsService.ceckAdsActive();
-  // }
+  @Cron('0 0 0 * * *')
+  //@Cron('0 */1 * * * *')
+  ceckADS() {
+    this.logger.debug('----------ADS JOB START----------', new Date());
+    this.adsService.ceckAdsActive();
+  }
 }

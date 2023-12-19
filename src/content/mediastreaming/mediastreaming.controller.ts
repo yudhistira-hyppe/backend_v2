@@ -1,5 +1,4 @@
-import { Userauth } from './../../trans/userauths/schemas/userauth.schema';
-import { Body, Controller, HttpCode, Headers, Get, Param, HttpStatus, Post, UseGuards, Logger, Query, UseInterceptors, UploadedFile, Res, Request } from '@nestjs/common';
+import { Body, Controller, HttpCode, Headers, Get, HttpStatus, Post, UseGuards, Query } from '@nestjs/common';
 import { MediastreamingService } from './mediastreaming.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UtilsService } from '../../utils/utils.service';
@@ -7,12 +6,12 @@ import { ErrorHandler } from '../../utils/error.handler';
 import { Long } from 'mongodb';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import mongoose from 'mongoose';
-import { MediastreamingDto } from './dto/mediastreaming.dto';
+import { MediastreamingDto, MediastreamingRequestDto } from './dto/mediastreaming.dto';
 import { ConfigService } from '@nestjs/config';
 import { MediastreamingalicloudService } from './mediastreamingalicloud.service';
 import { AppGateway } from '../socket/socket.gateway';
-import { Mediastreaming } from './schema/mediastreaming.schema';
 import { UserauthsService } from 'src/trans/userauths/userauths.service';
+import { MediastreamingrequestService } from './mediastreamingrequest.service';
 
 @Controller("api/live") 
 export class MediastreamingController {
@@ -23,7 +22,8 @@ export class MediastreamingController {
     private readonly mediastreamingService: MediastreamingService,
     private readonly mediastreamingalicloudService: MediastreamingalicloudService,
     private readonly userbasicsService: UserbasicsService, 
-    private readonly userauthService: UserauthsService,
+    private readonly userauthService: UserauthsService, 
+    private readonly mediastreamingrequestService: MediastreamingrequestService, 
     private readonly appGateway: AppGateway,) { } 
 
   @UseGuards(JwtAuthGuard)
@@ -104,7 +104,7 @@ export class MediastreamingController {
   @UseGuards(JwtAuthGuard)
   @Post('/update')
   @HttpCode(HttpStatus.ACCEPTED)
-  async updateStreaming(@Body() MediastreamingDto_: MediastreamingDto, @Headers() headers, @Request() req) {
+  async updateStreaming(@Body() MediastreamingDto_: MediastreamingDto, @Headers() headers) {
     const currentDate = await this.utilsService.getDateTimeString();
     if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
@@ -309,7 +309,7 @@ export class MediastreamingController {
   @UseGuards(JwtAuthGuard)
   @Post('/view')
   @HttpCode(HttpStatus.ACCEPTED)
-  async getViewStreaming(@Body() MediastreamingDto_: MediastreamingDto, @Headers() headers, @Request() req) {
+  async getViewStreaming(@Body() MediastreamingDto_: MediastreamingDto, @Headers() headers) {
     const currentDate = await this.utilsService.getDateTimeString();
     if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
@@ -336,6 +336,59 @@ export class MediastreamingController {
     );
   }
 
+  @Get('/callback/apsara')
+  @HttpCode(HttpStatus.OK)
+  async getCallback(
+    @Query('action') action: string,
+    @Query('ip') ip: string,
+    @Query('id') id: string,
+    @Query('app	') app: string,
+    @Query('appname') appname: string,
+    @Query('time') time: string,
+    @Query('usrargs') usrargs: string,
+    @Query('height') height: string,
+    @Query('width') width: string){
+      if (id!=undefined){
+        const CeckData = await this.mediastreamingService.findOneStreaming(id.toString());
+        if (await this.utilsService.ceckData(CeckData)){
+          let MediastreamingDto_ = new MediastreamingDto();
+          if (action = "publish_done") {
+            MediastreamingDto_.status = false;
+            MediastreamingDto_.endLive = await this.utilsService.getIntegertoDate(Number(time));
+          }
+          // if (action = "publish") {
+          //   MediastreamingDto_.status = true;
+          //   MediastreamingDto_.startLive = await this.utilsService.getIntegertoDate(Number(time));
+          // }
+          this.mediastreamingService.updateStreaming(id.toString(), MediastreamingDto_)
+        }
+      }
+      const param = {
+        action: action,
+        ip: ip,
+        id: id,
+        app: app,
+        appname: appname,
+        time: time,
+        usrargs: usrargs,
+        height: height,
+        width: width,
+      }
+      const response = {
+        code: 200,
+        messages: "Succes"
+      }
+      let MediastreamingRequestDto_ = new MediastreamingRequestDto();
+      MediastreamingRequestDto_._id = new mongoose.Types.ObjectId();
+      MediastreamingRequestDto_.url = "/api/live/callback/apsara";
+      MediastreamingRequestDto_.request = param;
+      MediastreamingRequestDto_.response = response;
+      MediastreamingRequestDto_.createAt = await this.utilsService.getDateTimeString();
+      MediastreamingRequestDto_.updateAt = await this.utilsService.getDateTimeString();
+      this.mediastreamingrequestService.createStreamingRequest(MediastreamingRequestDto_);
+      return response
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('/list')
   @HttpCode(HttpStatus.ACCEPTED)
@@ -354,12 +407,12 @@ export class MediastreamingController {
     }
 
     try {
-      let _id: string[] = [];
+      let _id: mongoose.Types.ObjectId[] = [];
       const data = await this.mediastreamingalicloudService.DescribeLiveStreamsOnlineList(undefined, pageSize, pageNumber);
       if (data.totalNum>0){
         const arrayOnline = data.onlineInfo.liveStreamOnlineInfo;
         _id = arrayOnline.map(function (item) {
-          return item['streamName'];
+          return new mongoose.Types.ObjectId(item['streamName']);
         });
       }
       return await this.errorHandler.generateAcceptResponseCodeWithData(
