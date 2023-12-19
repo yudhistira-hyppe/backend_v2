@@ -24,3 +24,12 @@ export class MediastreamingDto {
   page: number;
   limit: number;
 }
+
+export class MediastreamingRequestDto{
+  _id: mongoose.Types.ObjectId;
+  url: String;
+  request: {}
+  response: {}
+  createAt: String;
+  updateAt: String;
+}

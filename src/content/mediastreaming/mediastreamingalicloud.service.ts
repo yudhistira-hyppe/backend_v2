@@ -5,6 +5,9 @@ import Util, * as $Util from '@alicloud/tea-util';
 import * as $tea from '@alicloud/tea-typescript';
 import { ConfigService } from '@nestjs/config';
 import { UtilsService } from 'src/utils/utils.service';
+import { MediastreamingrequestService } from './mediastreamingrequest.service';
+import { request } from 'https';
+import { Mediastreamingrequest } from './schema/mediastreamingrequest.schema';
 var md5 = require('md5');
 
 @Injectable()
@@ -13,6 +16,7 @@ export class MediastreamingalicloudService {
   constructor(
     private readonly utilsService: UtilsService,
     private readonly configService: ConfigService,
+    private readonly mediastreamingrequestService: MediastreamingrequestService,
   ) {}
 
   async createClient(): Promise<live20161101> {
@@ -63,11 +67,16 @@ export class MediastreamingalicloudService {
     let runtime = new $Util.RuntimeOptions({});
     try {
       const data = await client.describeLiveStreamsPublishListWithOptions(describeLiveStreamsPublishListRequest, runtime);
+      //SAVE LOG REQUEST
+      this.saveRequest(describeLiveStreamsPublishListRequest, "DescribeLiveStreamsPublishList", data);
       return data.body;
     } catch (error) {
+      //SAVE LOG REQUEST
+      this.saveRequest(describeLiveStreamsPublishListRequest, "DescribeLiveStreamsPublishList", error.message);
       console.log(error.message);
       console.log(error.data["Recommend"]);
-      Util.assertAsString(error.message);
+      //Util.assertAsString(error.message);
+      return null;
     }
   }
 
@@ -89,11 +98,17 @@ export class MediastreamingalicloudService {
     });
     let runtime = new $Util.RuntimeOptions({});
     try {
-      await client.describeLiveStreamStateWithOptions(describeLiveStreamStateRequest, runtime);
+      const data = await client.describeLiveStreamStateWithOptions(describeLiveStreamStateRequest, runtime);
+      //SAVE LOG REQUEST
+      this.saveRequest(describeLiveStreamStateRequest, "DescribeLiveStreamState", data);
+      return data;
     } catch (error) {
+      //SAVE LOG REQUEST
+      this.saveRequest(describeLiveStreamStateRequest, "DescribeLiveStreamState", error.message);
       console.log(error.message);
       console.log(error.data["Recommend"]);
-      Util.assertAsString(error.message);
+      //Util.assertAsString(error.message);
+      return null;
     } 
   }
 
@@ -128,11 +143,16 @@ export class MediastreamingalicloudService {
     let runtime = new $Util.RuntimeOptions({});
     try {
       const data = await client.describeLiveStreamsOnlineListWithOptions(describeLiveStreamsOnlineListRequest, runtime);
-      return data.body;
+      //SAVE LOG REQUEST
+      this.saveRequest(describeLiveStreamsOnlineListRequest, "DescribeLiveStreamsOnlineList", data);
+      return data;
     } catch (error) {
+      //SAVE LOG REQUEST
+      this.saveRequest(describeLiveStreamsOnlineListRequest, "DescribeLiveStreamsOnlineList", error.message);
       console.log(error.message);
       console.log(error.data["Recommend"]);
-      Util.assertAsString(error.message);
+      //Util.assertAsString(error.message);
+      return null;
     } 
   }
 
@@ -148,11 +168,63 @@ export class MediastreamingalicloudService {
     });
     let runtime = new $Util.RuntimeOptions({});
     try {
-      await client.describeLiveDomainLimitWithOptions(describeLiveDomainLimitRequest, runtime);
+      const data = await client.describeLiveDomainLimitWithOptions(describeLiveDomainLimitRequest, runtime);
+      //SAVE LOG REQUEST
+      this.saveRequest(describeLiveDomainLimitRequest, "DescribeLiveDomainLimit", data);
+      return data;
     } catch (error) {
+      //SAVE LOG REQUEST
+      this.saveRequest(describeLiveDomainLimitRequest, "DescribeLiveDomainLimit", error.message);
       console.log(error.message);
       console.log(error.data["Recommend"]);
-      Util.assertAsString(error.message);
+      //Util.assertAsString(error.message);
+      return null;
     }  
+  }
+
+  //QPS 15 per second per account
+  async SetLiveStreamsNotifyUrlConfig(Url: string, notifyReqAuth: string, NotifyAuthKey: string){
+    //Get URL_STREAM_LIVE
+    const GET_URL_STREAM_LIVE = this.configService.get("URL_STREAM_LIVE");
+    const URL_STREAM_LIVE = await this.utilsService.getSetting_Mixed(GET_URL_STREAM_LIVE);
+
+    let client = await this.createClient();
+
+    let param = {};
+    param['domainName'] = URL_STREAM_LIVE.toString();
+    param['notifyUrl'] = Url;
+    if (notifyReqAuth != undefined) {
+      if (notifyReqAuth == "yes") {
+        if (NotifyAuthKey != undefined) {
+          param['NotifyAuthKey'] = NotifyAuthKey;
+        }
+        param['notifyReqAuth'] = notifyReqAuth;
+      }
+    }
+    let setLiveStreamsNotifyUrlConfigRequest = new $live20161101.SetLiveStreamsNotifyUrlConfigRequest(param);
+    let runtime = new $Util.RuntimeOptions({});
+    try {
+      const data = await client.setLiveStreamsNotifyUrlConfigWithOptions(setLiveStreamsNotifyUrlConfigRequest, runtime);
+      //SAVE LOG REQUEST
+      this.saveRequest(setLiveStreamsNotifyUrlConfigRequest, "SetLiveStreamsNotifyUrlConfig", data);
+      return data;
+    } catch (error) {
+      //SAVE LOG REQUEST
+      this.saveRequest(setLiveStreamsNotifyUrlConfigRequest, "SetLiveStreamsNotifyUrlConfig", error.message);
+      console.log(error.message);
+      console.log(error.data["Recommend"]);
+      //Util.assertAsString(error.message);
+      return null;
+    }    
+  }
+
+  async saveRequest(request: any, url: any, response: any){
+    let Mediastreamingrequest_ = new Mediastreamingrequest();
+    Mediastreamingrequest_.request = request;
+    Mediastreamingrequest_.url = url;
+    Mediastreamingrequest_.response = response;
+    Mediastreamingrequest_.createAt = await this.utilsService.getDateString();
+    Mediastreamingrequest_.updateAt = await this.utilsService.getDateString();
+    this.mediastreamingrequestService.createStreamingRequest(Mediastreamingrequest_);
   }
 }

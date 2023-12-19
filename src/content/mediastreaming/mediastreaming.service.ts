@@ -628,7 +628,6 @@ export class MediastreamingService {
       urlStream: urlStream,
       urlIngest: urlIngest
     }
-    
   }
 
   async generateStream(pullDomain: String, pullKey: String, appName: String, streamName: String, expireTime: number): Promise<String>{
