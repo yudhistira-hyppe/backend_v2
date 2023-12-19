@@ -380,7 +380,7 @@ export class MediastreamingController {
       }
       let MediastreamingRequestDto_ = new MediastreamingRequestDto();
       MediastreamingRequestDto_._id = new mongoose.Types.ObjectId();
-      MediastreamingRequestDto_.url = "CALBACK APSARA";
+      MediastreamingRequestDto_.url = "/api/live/callback/apsara";
       MediastreamingRequestDto_.request = param;
       MediastreamingRequestDto_.response = response;
       MediastreamingRequestDto_.createAt = await this.utilsService.getDateTimeString();
