@@ -348,6 +348,21 @@ export class MediastreamingController {
     @Query('usrargs') usrargs: string,
     @Query('height') height: string,
     @Query('width') width: string){
+    if (id!=undefined){
+      const CeckData = await this.mediastreamingService.findOneStreaming(id.toString());
+      if (await this.utilsService.ceckData(CeckData)){
+        let MediastreamingDto_ = new MediastreamingDto();
+        if (action = "publish_done") {
+          MediastreamingDto_.status = false;
+          MediastreamingDto_.endLive = await this.utilsService.getIntegertoDate(Number(time));
+        }
+        if (action = "publish") {
+          MediastreamingDto_.status = true;
+          MediastreamingDto_.startLive = await this.utilsService.getIntegertoDate(Number(time));
+        }
+        this.mediastreamingService.updateStreaming(id.toString(), MediastreamingDto_)
+      }
+    }
     const param = {
       action: action,
       ip: ip,
