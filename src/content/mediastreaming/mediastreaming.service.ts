@@ -21,6 +21,467 @@ export class MediastreamingService {
     return DataSave;
   }
 
+  async getDataList(email: string, arrayId: mongoose.Types.ObjectId[], pageNumber, pageSize){
+    let skip_ = (pageNumber > 0) ? (pageNumber * pageSize) : pageNumber;
+    let limit_ = pageSize;
+    const DataList = await this.MediastreamingModel.aggregate([
+      {
+        $set: {
+          idStream: arrayId
+        },
+
+      },
+      {
+        $match: {
+          $expr: {
+            $in: ['$_id', '$idStream']
+          }
+        },
+
+      },
+      {
+        "$lookup": {
+          from: "userbasics",
+          as: "user",
+          let: {
+            email: email,
+            userID: "$userId"
+          },
+          pipeline: [
+            {
+              $match: {
+                $or: [
+                  {
+                    $expr:
+                    {
+                      $eq: ["$email", "$$email"]
+                    },
+
+                  },
+                  {
+                    $expr:
+                    {
+                      $eq: ["$_id", "$$userID"]
+                    },
+
+                  },
+
+                ]
+              },
+
+            }
+          ]
+        }
+      },
+      {
+        $set: {
+          userLogin: {
+            $filter: {
+              input: "$user",
+              as: "users",
+              cond: {
+                $eq: ["$$users.email", email]
+              }
+            }
+          },
+
+        }
+      },
+      {
+        $set: {
+          userStream: {
+            $filter: {
+              input: "$user",
+              as: "users",
+              cond: {
+                $ne: ["$$users.email", email]
+              }
+            }
+          },
+
+        }
+      },
+      {
+        "$lookup": {
+          from: "mediaprofilepicts",
+          as: "avatar",
+          let: {
+            localID: { $arrayElemAt: ["$userStream.profilePict.$id", 0] }
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $eq: ['$mediaID', "$$localID"]
+                }
+              }
+            },
+            {
+              $project: {
+                "mediaBasePath": 1,
+                "mediaUri": 1,
+                "originalName": 1,
+                "fsSourceUri": 1,
+                "fsSourceName": 1,
+                "fsTargetUri": 1,
+                "mediaType": 1,
+                "mediaEndpoint": {
+                  "$concat": ["/profilepict/", "$mediaID"]
+                }
+              }
+            }
+          ],
+
+        }
+      },
+      {
+        "$lookup": {
+          from: "insights",
+          as: "follower",
+          let: {
+            email: { $arrayElemAt: ["$userStream.email", 0] }
+          },
+          pipeline: [
+            {
+              $match: {
+                $or: [
+                  {
+                    $expr:
+                    {
+                      $eq: ["$email", "$$email"]
+                    },
+
+                  },
+
+                ]
+              },
+
+            },
+            {
+              $project: {
+                followers: 1
+              }
+            }
+          ]
+        }
+      },
+      {
+        "$lookup": {
+          from: "userauths",
+          as: "name",
+          let: {
+            email: { $arrayElemAt: ["$userStream.email", 0] }
+          },
+          pipeline: [
+            {
+              $match: {
+                $or: [
+                  {
+                    $expr:
+                    {
+                      $eq: ["$email", "$$email"]
+                    },
+
+                  },
+
+                ]
+              },
+
+            },
+            {
+              $project: {
+                username: 1
+              }
+            }
+          ]
+        }
+      },
+      {
+        "$lookup": {
+          from: "friend_list",
+          as: "friend",
+          let: {
+            userStream: {
+              $arrayElemAt: ['$userStream.email', 0]
+            },
+            userLogin: {
+              $arrayElemAt: ["$userLogin.email", 0]
+            },
+
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $or: [
+                  {
+                    $and: [
+                      {
+                        $expr: {
+                          $eq: ['$email', '$$userStream']
+                        }
+                      },
+                      {
+                        friendlist: {
+                          $elemMatch: {
+                            email: 'ilhamarahman97@gmail.com'
+                          }
+                        }
+                      },
+
+                    ]
+                  },
+                  {
+                    $and: [
+                      {
+                        friendlist: {
+                          $elemMatch: {
+                            email: '$$userStream'
+                          }
+                        }
+                      },
+                      {
+                        $expr: {
+                          $eq: ['$email', 'ilhamarahman97@gmail.com']
+                        }
+                      },
+
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              $project: {
+                email: 1,
+                friend:
+                {
+                  $cond: {
+                    if: {
+                      $gt: [{
+                        $size: '$friendlist'
+                      }, 0]
+                    },
+                    then: 1,
+                    else: 0
+                  }
+                },
+
+              }
+            },
+
+          ]
+        },
+
+      },
+      {
+        "$lookup": {
+          from: "contentevents",
+          as: "following",
+          let: {
+            localID: {
+              $arrayElemAt: ['$userStream.email', 0]
+            },
+            user: {
+              $arrayElemAt: ["$userLogin.email", 0]
+            },
+
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$senderParty', '$$localID']
+                    }
+                  },
+                  {
+                    $expr: {
+                      $eq: ['$email', '$$user']
+                    }
+                  },
+                  {
+                    "eventType": "FOLLOWING",
+
+                  },
+                  {
+                    "event": "ACCEPT"
+                  },
+                  {
+                    "active": true
+                  },
+
+                ]
+              }
+            },
+            {
+              $project: {
+                senderParty: 1,
+                following:
+                {
+                  $cond: {
+                    if: {
+                      $gt: [{
+                        $strLenCP: "$email"
+                      }, 0]
+                    },
+                    then: true,
+                    else: false
+                  }
+                },
+
+              }
+            }
+          ]
+        },
+
+      },
+      {
+        $set: {
+          interestLogin: {
+            $arrayElemAt: ["$userLogin.userInterests.$id", 0]
+          }
+        }
+      },
+      {
+        $set: {
+          interesStream: {
+            $arrayElemAt: ["$userStream.userInterests.$id", 0]
+          }
+        }
+      },
+      {
+        $set: {
+          ints: {
+            $concatArrays: [{
+              $arrayElemAt: ["$userStream.userInterests.$id", 0]
+            }, {
+              $arrayElemAt: ["$userLogin.userInterests.$id", 0]
+            }]
+          }
+        }
+      },
+      {
+        $set: {
+          interest: {
+            $subtract: [
+              {
+                $size: "$ints"
+              },
+              {
+                $size: {
+                  $setUnion: [
+                    "$ints",
+                    []
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        $set: {
+          views: {
+            $filter: {
+              input: "$view",
+              as: "views",
+              cond: {
+                $eq: ["$$views.status", true]
+              }
+            }
+          },
+
+        }
+      },
+      {
+        $set: {
+          totalView:
+          {
+            $size: "$views"
+          }
+        }
+      },
+      {
+        $set: {
+          totalLike:
+          {
+            $size: "$like"
+          }
+        }
+      },
+      {
+        $set: {
+          totalFollower:
+          {
+            $arrayElemAt: ["$follower.followers", 0]
+          }
+        }
+      },
+      {
+        $set: {
+          totalFriend:
+          {
+            $arrayElemAt: ["$friend.friend", 0]
+          }
+        }
+      },
+      {
+        $set: {
+          totalFollowing:
+          {
+            $arrayElemAt: ["$following.following", 0]
+          }
+        }
+      },
+      {
+        $sort: {
+          totalFriend: -1,
+          totalFollowing: -1,
+          interest: -1,
+          totalView: -1,
+          totalLike: -1,
+          totalFollower: -1,
+          startLive: -1,
+
+        }
+      },
+      {
+        $skip: skip_
+      },
+      {
+        $limit: limit_
+      },
+      {
+        $project: {
+          _id: 1,
+          userId: 1,
+          expireTime: 1,
+          startLive: 1,
+          status: 1,
+          urlStream: 1,
+          urlIngest: 1,
+          createAt: 1,
+          interest: 1,
+          totalView: 1,
+          totalLike: 1,
+          totalFollower: 1,
+          totalFriend: 1,
+          totalFollowing: 1,
+          username:
+          {
+            $arrayElemAt: ["$name.username", 0]
+          },
+          avatar: 1,
+        }
+      },
+    ]);
+    return DataList;
+  }
+
   async findOneStreaming(_id: string): Promise<Mediastreaming> {
     const data = await this.MediastreamingModel.findOne({ _id: new mongoose.Types.ObjectId(_id) });
     return data;

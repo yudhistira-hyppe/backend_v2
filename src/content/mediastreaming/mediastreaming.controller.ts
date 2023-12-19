@@ -409,45 +409,6 @@ export class MediastreamingController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/list')
-  @HttpCode(HttpStatus.ACCEPTED)
-  async listStreaming(
-    @Query('pageNumber') pageNumber: number,
-    @Query('pageRow') pageSize: number, @Headers() headers) {
-    if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unauthorized',
-      );
-    }
-    if (!(await this.utilsService.validasiTokenEmail(headers))) {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed email header dan token not match',
-      );
-    }
-
-    try {
-      let _id: mongoose.Types.ObjectId[] = [];
-      const data = await this.mediastreamingalicloudService.DescribeLiveStreamsOnlineList(undefined, pageSize, pageNumber);
-      if (data.totalNum>0){
-        const arrayOnline = data.onlineInfo.liveStreamOnlineInfo;
-        _id = arrayOnline.map(function (item) {
-          return new mongoose.Types.ObjectId(item['streamName']);
-        });
-      }
-      return await this.errorHandler.generateAcceptResponseCodeWithData(
-        "Get stream succesfully", _id,
-      );
-    }catch(e){
-
-    }
-  }
-
-  @Post('/test')
-  async exampleGenerateLink(){
-    const getUrl = await this.mediastreamingService.generateUrlTest("657fb4b76ea72f0b782c610a", 1702873753);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Post('/feedback')
   @HttpCode(HttpStatus.ACCEPTED)
   async post(@Body() MediastreamingDto_: MediastreamingDto, @Headers() headers) {
@@ -487,5 +448,45 @@ export class MediastreamingController {
         'Unabled to proceed',
       );
     }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/list')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async listStreaming(
+    @Query('pageNumber') pageNumber: number,
+    @Query('pageRow') pageSize: number, @Headers() headers) {
+    if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
+
+    try {
+      let _id: mongoose.Types.ObjectId[] = [];
+      const data = await this.mediastreamingalicloudService.DescribeLiveStreamsOnlineList(undefined, pageSize, pageNumber);
+      if (data.totalNum>0){
+        const arrayOnline = data.onlineInfo.liveStreamOnlineInfo;
+        _id = arrayOnline.map(function (item) {
+          return new mongoose.Types.ObjectId(item['streamName']);
+        });
+      }
+      const dataList = await this.mediastreamingService.getDataList(headers['x-auth-user'], _id, pageNumber, pageSize)
+      return await this.errorHandler.generateAcceptResponseCodeWithData(
+        "Get stream succesfully", dataList,
+      );
+    }catch(e){
+
+    }
+  }
+
+  @Post('/test')
+  async exampleGenerateLink(){
+    const getUrl = await this.mediastreamingService.generateUrlTest("657fb4b76ea72f0b782c610a", 1702873753);
   }
 }
