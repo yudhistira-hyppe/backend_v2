@@ -20999,6 +20999,7 @@ export class subChallengeService {
                             {
                                 $project: {
                                     _id: "$tempe",
+                                    contentEventID: 1,
                                     postID: 1,
                                     eventType: 1,
                                     postType: {
@@ -21050,6 +21051,7 @@ export class subChallengeService {
                 $project: {
                     _id: 1,
                     postType: 1,
+                    contentEventList:"$event",
                     pictPostScore: {
                         $arrayElemAt: ["$challenges.post.pict", 0]
                     },
@@ -21240,6 +21242,7 @@ export class subChallengeService {
                 $project: {
                     _id: 1,
                     postType: 1,
+                    contentEventList: 1,
                     pictPostScore: 1,
                     diaryPostScore: 1,
                     vidPostScore: 1,
@@ -21286,6 +21289,7 @@ export class subChallengeService {
                 $project: {
                     _id: 1,
                     postType: 1,
+                    contentEventList: 1,
                     pictPostScore: 1,
                     diaryPostScore: 1,
                     vidPostScore: 1,

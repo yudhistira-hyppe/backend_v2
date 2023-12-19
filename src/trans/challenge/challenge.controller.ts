@@ -1674,6 +1674,7 @@ export class ChallengeController {
     var getsubid = request_json['idChallenge'];
     var getuserid = request_json['idUser'];
     var uscall = null;
+    var statuskick = null;
 
     if (getsubid == null || getsubid == undefined) {
       var timestamps_end = await this.util.getDateTimeString();
@@ -1699,6 +1700,15 @@ export class ChallengeController {
 
     var parentdata = await this.challengeService.detailchallenge(getsubid);
     var getsubdata = await this.subchallenge.subchallengedetailwithlastrank(getsubid);
+    var checkpernahdikick = await this.userchallengeSS.checkUserjoinchallenge(getsubid, getuserid);
+    if(checkpernahdikick.length == 0 && checkpernahdikick[0].isActive == true)
+    {
+      statuskick = false;
+    }
+    else
+    {
+      statuskick = true;
+    }
 
     var listjoin = [];
     var firstdata = null;
@@ -1763,8 +1773,8 @@ export class ChallengeController {
     var timestamps_end = await this.util.getDateTimeString();
     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, request_json['idUser'], null, request_json);
 
-    if (getsubdata.length != 0 && firstdata != null && parentdata.objectChallenge == "KONTEN") {
-      this.beforejoinchallenge(getuserbasic, firstdata);
+    if (firstdata != null && parentdata.objectChallenge == "KONTEN" && statuskick == false) {
+      await this.beforejoinchallenge(getuserbasic, firstdata);
     }
 
     if (listjoin.length != 0) {
@@ -3684,6 +3694,7 @@ export class ChallengeController {
     if (data.length != 0) {
       var mongo = require('mongoose');
       var totalScore = 0;
+      var setinsertactivity = [];
       for (var i = 0; i < data.length; i++) {
         totalScore = totalScore + data[i].totalScore;
         var insertdata = new Postchallenge();
@@ -3701,12 +3712,36 @@ export class ChallengeController {
         insertdata.score = data[i].totalScore;
         insertdata.postType = data[i].postType;
 
+        setinsertactivity.push(
+          {
+            "type":"posts",
+            "id":data[i]._id,
+            "desc":"POST"
+          }
+        );
+
+        if(data[i].contentEventList.length != 0)
+        {
+          var datacontentevent = data[i].contentEventList;
+          for(var loopactivity = 0; loopactivity < datacontentevent.length; loopactivity++)
+          {
+            setinsertactivity.push(
+              {
+                "type":"contentevents",
+                "id":datacontentevent[loopactivity].contentEventID,
+                "desc":datacontentevent[loopactivity].eventType
+              }
+            );
+          }
+        } 
+
         // console.log(insertdata);
         await this.postchallengeService.create(insertdata);
       }
 
       var updatedata = new Userchallenges();
       updatedata.score = totalScore;
+      updatedata.activity = setinsertactivity;
       await this.userchallengeSS.update(subchallenge._id, updatedata);
     }
   }
