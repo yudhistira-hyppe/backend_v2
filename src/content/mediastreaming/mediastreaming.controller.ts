@@ -451,7 +451,7 @@ export class MediastreamingController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/list')
+  @Post('/list')
   @HttpCode(HttpStatus.ACCEPTED)
   async listStreaming(
     @Query('pageNumber') pageNumber: number,
