@@ -348,46 +348,46 @@ export class MediastreamingController {
     @Query('usrargs') usrargs: string,
     @Query('height') height: string,
     @Query('width') width: string){
-    if (id!=undefined){
-      const CeckData = await this.mediastreamingService.findOneStreaming(id.toString());
-      if (await this.utilsService.ceckData(CeckData)){
-        let MediastreamingDto_ = new MediastreamingDto();
-        if (action = "publish_done") {
-          MediastreamingDto_.status = false;
-          MediastreamingDto_.endLive = await this.utilsService.getIntegertoDate(Number(time));
+      if (id!=undefined){
+        const CeckData = await this.mediastreamingService.findOneStreaming(id.toString());
+        if (await this.utilsService.ceckData(CeckData)){
+          let MediastreamingDto_ = new MediastreamingDto();
+          if (action = "publish_done") {
+            MediastreamingDto_.status = false;
+            MediastreamingDto_.endLive = await this.utilsService.getIntegertoDate(Number(time));
+          }
+          // if (action = "publish") {
+          //   MediastreamingDto_.status = true;
+          //   MediastreamingDto_.startLive = await this.utilsService.getIntegertoDate(Number(time));
+          // }
+          this.mediastreamingService.updateStreaming(id.toString(), MediastreamingDto_)
         }
-        if (action = "publish") {
-          MediastreamingDto_.status = true;
-          MediastreamingDto_.startLive = await this.utilsService.getIntegertoDate(Number(time));
-        }
-        this.mediastreamingService.updateStreaming(id.toString(), MediastreamingDto_)
       }
-    }
-    const param = {
-      action: action,
-      ip: ip,
-      id: id,
-      app: app,
-      appname: appname,
-      time: time,
-      usrargs: usrargs,
-      height: height,
-      width: width,
-    }
-    const response = {
-      code: 200,
-      messages: "Succes"
-    }
-    let MediastreamingRequestDto_ = new MediastreamingRequestDto();
-    MediastreamingRequestDto_._id = new mongoose.Types.ObjectId();
-    MediastreamingRequestDto_.url = "CALBACK APSARA";
-    MediastreamingRequestDto_.request = param;
-    MediastreamingRequestDto_.response = response;
-    MediastreamingRequestDto_.createAt = await this.utilsService.getDateTimeString();
-    MediastreamingRequestDto_.updateAt = await this.utilsService.getDateTimeString();
-    this.mediastreamingrequestService.createStreamingRequest(MediastreamingRequestDto_);
-    return response
-}
+      const param = {
+        action: action,
+        ip: ip,
+        id: id,
+        app: app,
+        appname: appname,
+        time: time,
+        usrargs: usrargs,
+        height: height,
+        width: width,
+      }
+      const response = {
+        code: 200,
+        messages: "Succes"
+      }
+      let MediastreamingRequestDto_ = new MediastreamingRequestDto();
+      MediastreamingRequestDto_._id = new mongoose.Types.ObjectId();
+      MediastreamingRequestDto_.url = "CALBACK APSARA";
+      MediastreamingRequestDto_.request = param;
+      MediastreamingRequestDto_.response = response;
+      MediastreamingRequestDto_.createAt = await this.utilsService.getDateTimeString();
+      MediastreamingRequestDto_.updateAt = await this.utilsService.getDateTimeString();
+      this.mediastreamingrequestService.createStreamingRequest(MediastreamingRequestDto_);
+      return response
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get('/list')
