@@ -289,10 +289,8 @@ export class MediastreamingService {
   }
 
   async getDataView(_id: string, page: number, limit: number){
-    let page_ = ((page+1) * limit);
-    let limit_ = limit;
-    console.log(page_);
-    console.log(limit_);
+    let page_ = (page > 0) ? (page * limit) : page;
+    let limit_ = (page > 0) ? ((page + 1) * limit) : limit;
     let paramaggregate = [
       {
         $match: {
@@ -549,7 +547,7 @@ export class MediastreamingService {
         }
       },
     ];
-    console.log("paramaggregate",JSON.stringify(paramaggregate));
+    console.log(JSON.stringify(paramaggregate));
     const data = await this.MediastreamingModel.aggregate(paramaggregate);
     return data;
   }
