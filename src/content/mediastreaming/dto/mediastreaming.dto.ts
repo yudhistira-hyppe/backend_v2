@@ -23,6 +23,7 @@ export class MediastreamingDto {
   commentDisabled: boolean;
   page: number;
   limit: number;
+  feedback: number;
 }
 
 export class MediastreamingRequestDto{

@@ -34,6 +34,29 @@ export class MediastreamingService {
     return data;
   }
 
+  async findFollower(_id: string, userID: string) {
+    const data = await this.MediastreamingModel.find({
+      _id: new mongoose.Types.ObjectId(_id),
+      follower: {
+        $elemMatch: { userId: new mongoose.Types.ObjectId(userID), status: true }
+      }
+    });
+    return data;
+  }
+
+  async updateFollower(_id: string, userId: string, status: boolean, statusUpdate: boolean, updateAt: string) {
+    const data = await this.MediastreamingModel.updateOne({
+      _id: new mongoose.Types.ObjectId(_id),
+      "follower.userId": new mongoose.Types.ObjectId(userId),
+      "follower.status": status
+    },
+      {
+        $set: { "follower.$.status": statusUpdate, "follower.$.updateAt": updateAt }
+      });
+    console.log(data)
+    return data;
+  }
+
   async findView(_id: string, userID: string){
     const data = await this.MediastreamingModel.find({
       _id: new mongoose.Types.ObjectId(_id),
@@ -284,6 +307,302 @@ export class MediastreamingService {
         }
       },
     ];
+    const data = await this.MediastreamingModel.aggregate(paramaggregate);
+    return data;
+  }
+
+  async getDataEndLive(id: string){
+    const data = await this.MediastreamingModel.aggregate([
+      {
+        "$match": {
+          "_id": new mongoose.Types.ObjectId(id)
+        }
+      },
+      {
+        $set: {
+          view_active: {
+            $filter: {
+              input: "$view",
+              as: "view",
+              cond: {
+                $eq: ["$$view.status", true]
+              }
+            }
+          },
+
+        }
+      },
+      {
+        $set: {
+          follower_active: {
+            $filter: {
+              input: "$follower",
+              as: "follower",
+              cond: {
+                $eq: ["$$follower.status", true]
+              }
+            }
+          },
+
+        }
+      },
+      {
+        $set: {
+          view_unique: { "$setUnion": ["$view.userId", []] }
+        }
+      }
+    ]);
+    return data;
+  }
+
+  async getDataViewUnic(_id: string, page: number, limit: number) {
+    let page_ = (page > 0) ? (page * limit) : page;
+    let limit_ = (page > 0) ? ((page + 1) * limit) : limit;
+    let paramaggregate = [
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(_id)
+        }
+      },
+      {
+        "$project": {
+          "view": { "$setUnion": ["$view.userId", []] } 
+        }
+      },
+      {
+        $unwind:
+        {
+          path: "$view",
+          includeArrayIndex: "updateAt_index",
+
+        }
+      },
+      { "$limit": limit_ },
+      { "$skip": page_ },
+      {
+        "$lookup": {
+          from: "userbasics",
+          as: "data_userbasics",
+          let: {
+            localID: "$view"
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", "$$localID"]
+                },
+
+              }
+            },
+            {
+              $project: {
+                fullName: 1,
+                email: 1,
+                userAuth: "$userAuth.$id",
+                profilePict: "$profilePict.$id",
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "userauths",
+                as: "data_userauths",
+                let: {
+                  localID: '$userAuth'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $expr: {
+                        $eq: ['$_id', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      email: 1,
+                      username: 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "mediaprofilepicts",
+                as: "data_mediaprofilepicts",
+                let: {
+                  localID: '$profilePict'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $expr: {
+                        $eq: ['$_id', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "mediaBasePath": 1,
+                      "mediaUri": 1,
+                      "originalName": 1,
+                      "fsSourceUri": 1,
+                      "fsSourceName": 1,
+                      "fsTargetUri": 1,
+                      "mediaType": 1,
+                      "mediaEndpoint": {
+                        "$concat": ["/profilepict/", "$mediaID"]
+                      }
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              $project: {
+                fullName: 1,
+                email: 1,
+                userAuth: {
+                  "$let": {
+                    "vars": {
+                      "tmp": {
+                        "$arrayElemAt": ["$data_userauths", 0]
+                      }
+                    },
+                    "in": "$$tmp._id"
+                  }
+                },
+                username: {
+                  "$let": {
+                    "vars": {
+                      "tmp": {
+                        "$arrayElemAt": ["$data_userauths", 0]
+                      }
+                    },
+                    "in": "$$tmp.username"
+                  }
+                },
+                avatar: {
+                  "mediaBasePath": {
+                    "$let": {
+                      "vars": {
+                        "tmp": {
+                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                        }
+                      },
+                      "in": "$$tmp.mediaBasePath"
+                    }
+                  },
+                  "mediaUri": {
+                    "$let": {
+                      "vars": {
+                        "tmp": {
+                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                        }
+                      },
+                      "in": "$$tmp.mediaUri"
+                    }
+                  },
+                  "mediaType": {
+                    "$let": {
+                      "vars": {
+                        "tmp": {
+                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                        }
+                      },
+                      "in": "$$tmp.mediaType"
+                    }
+                  },
+                  "mediaEndpoint": {
+                    "$let": {
+                      "vars": {
+                        "tmp": {
+                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                        }
+                      },
+                      "in": "$$tmp.mediaEndpoint"
+                    }
+                  }
+                }
+              }
+            },
+
+          ],
+
+        }
+      },
+      {
+        "$project": {
+          "_id": {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics", 0]
+                }
+              },
+              "in": "$$tmp._id"
+            }
+          },
+          "email": {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics", 0]
+                }
+              },
+              "in": "$$tmp.email"
+            }
+          },
+          "fullName": {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics", 0]
+                }
+              },
+              "in": "$$tmp.fullName"
+            }
+          },
+          "userAuth": {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics", 0]
+                }
+              },
+              "in": "$$tmp.userAuth"
+            }
+          },
+          "username": {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics", 0]
+                }
+              },
+              "in": "$$tmp.username"
+            }
+          },
+          "avatar": {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics", 0]
+                }
+              },
+              "in": "$$tmp.avatar"
+            }
+          },
+        }
+      },
+    ];
+    console.log(JSON.stringify(paramaggregate));
     const data = await this.MediastreamingModel.aggregate(paramaggregate);
     return data;
   }
@@ -574,6 +893,18 @@ export class MediastreamingService {
         "view": view
       }
     });
+    return data;
+  }
+
+  async insertFollower(_id: string, follower: any) {
+    const data = await this.MediastreamingModel.updateOne({
+      _id: new mongoose.Types.ObjectId(_id)
+    },
+      {
+        $push: {
+          "follower": follower
+        }
+      });
     return data;
   }
 

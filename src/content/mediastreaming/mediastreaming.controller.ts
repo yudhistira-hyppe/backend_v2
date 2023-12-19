@@ -296,9 +296,24 @@ export class MediastreamingController {
           this.appGateway.eventStream("COMMENT_STREAM_DISABLED", JSON.stringify(allSend));
         }
       }
-      return await this.errorHandler.generateAcceptResponseCode(
-        "Update stream succesfully",
-      );
+
+      if (MediastreamingDto_.type == "STOP") {
+        const getDataStream = await this.mediastreamingService.getDataEndLive(MediastreamingDto_._id.toString());
+        const dataResponse = {
+          totalViews: getDataStream[0].view_unique.length,
+          totalShare: getDataStream[0].share.length,
+          totalFollower: getDataStream[0].follower.length, 
+          totalComment: getDataStream[0].comment.length,
+          totalLike: getDataStream[0].like.length
+        }
+        return await this.errorHandler.generateAcceptResponseCodeWithData(
+          "Update stream succesfully", dataResponse
+        );
+      } else {
+        return await this.errorHandler.generateAcceptResponseCode(
+          "Update stream succesfully",
+        );
+      }
     } else {
       await this.errorHandler.generateInternalServerErrorException(
         'Unabled to proceed, _id Stream not exist',
@@ -310,7 +325,6 @@ export class MediastreamingController {
   @Post('/view')
   @HttpCode(HttpStatus.ACCEPTED)
   async getViewStreaming(@Body() MediastreamingDto_: MediastreamingDto, @Headers() headers) {
-    const currentDate = await this.utilsService.getDateTimeString();
     if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
@@ -328,9 +342,14 @@ export class MediastreamingController {
         ceckId,
       );
     }
-    console.log(MediastreamingDto_)
-
-    const data = await this.mediastreamingService.getDataView(MediastreamingDto_._id.toString(), MediastreamingDto_.page, MediastreamingDto_.limit);
+    let data = [];
+    if (MediastreamingDto_.type != undefined) {
+      if (MediastreamingDto_.type == "END") {
+        data = await this.mediastreamingService.getDataViewUnic(MediastreamingDto_._id.toString(), MediastreamingDto_.page, MediastreamingDto_.limit);
+      }
+    } else {
+      data = await this.mediastreamingService.getDataView(MediastreamingDto_._id.toString(), MediastreamingDto_.page, MediastreamingDto_.limit);
+    }
     return await this.errorHandler.generateAcceptResponseCodeWithData(
       "Get view succesfully", data,
     );
@@ -426,5 +445,47 @@ export class MediastreamingController {
   @Post('/test')
   async exampleGenerateLink(){
     const getUrl = await this.mediastreamingService.generateUrlTest("657fb4b76ea72f0b782c610a", 1702873753);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/feedback')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async post(@Body() MediastreamingDto_: MediastreamingDto, @Headers() headers) {
+    if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
+    //VALIDASI PARAM _id
+    var ceck_id = await this.utilsService.validateParam("_id", MediastreamingDto_._id.toString(), "string")
+    if (ceck_id != "") {
+      await this.errorHandler.generateBadRequestException(
+        ceck_id,
+      );
+    }
+    //VALIDASI PARAM feedBack
+    var ceck_feedBack = await this.utilsService.validateParam("feedBack", MediastreamingDto_.feedBack.toString(), "number")
+    if (ceck_feedBack != "") {
+      await this.errorHandler.generateBadRequestException(
+        ceck_feedBack,
+      );
+    }
+    try {
+      let _MediastreamingDto_ = new MediastreamingDto();
+      _MediastreamingDto_.feedBack = MediastreamingDto_.feedBack;
+      await this.mediastreamingService.updateStreaming(MediastreamingDto_._id.toString(), _MediastreamingDto_);
+      return await this.errorHandler.generateAcceptResponseCode(
+        "Update stream succesfully",
+      );
+    } catch (e) {
+      await this.errorHandler.generateInternalServerErrorException(
+        'Unabled to proceed',
+      );
+    }
   }
 }

@@ -33,6 +33,8 @@ import { Postchallenge } from 'src/trans/postchallenge/schemas/postchallenge.sch
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { logApis } from 'src/trans/logapis/schema/logapis.schema';
 import { subChallengeService } from 'src/trans/challenge/subChallenge.service';
+import { MediastreamingService } from '../mediastreaming/mediastreaming.service';
+import mongoose from 'mongoose';
 @Controller()
 export class ContenteventsController {
   private readonly logger = new Logger(ContenteventsController.name);
@@ -55,7 +57,8 @@ export class ContenteventsController {
     private readonly tagCountService: TagCountService,
     private readonly postchallengeService: PostchallengeService,
     private readonly errorHandler: ErrorHandler,
-    private readonly logapiSS: LogapisService,
+    private readonly logapiSS: LogapisService, 
+    private readonly mediastreamingService: MediastreamingService,
     private readonly subChallengeService: subChallengeService) { }
 
   @Post('api/contentevents')
@@ -1024,6 +1027,22 @@ export class ContenteventsController {
 
         }
 
+        //INSERt FOLOWING STREAM
+        if (request.body.idMediaStreaming == undefined) {
+          const ceckView = await this.mediastreamingService.findFollower(request.body.idMediaStreaming.toString(), userbasic1._id.toString());
+          if (!(await this.utilsService.ceckData(ceckView))) {
+            const dataFollower = {
+              userId: new mongoose.Types.ObjectId(userbasic1._id.toString()),
+              status: true,
+              createAt: current_date,
+              updateAt: current_date
+            }
+            await this.mediastreamingService.insertFollower(request.body.idMediaStreaming, dataFollower)
+          }else{
+            await this.mediastreamingService.updateFollower(request.body.idMediaStreaming.toString(), userbasic1._id.toString(), false, true, current_date);
+          }
+        }
+
         try {
           const resultdata1 = await this.contenteventsService.create(CreateContenteventsDto1);
           let idevent1 = resultdata1._id;
@@ -1691,6 +1710,14 @@ export class ContenteventsController {
           await this.insightsService.updateUnFollower(email_receiverParty);
           await this.insightsService.updateUnFollowing(email_user);
           await this.insightsService.updateUnFollow(email_user);
+
+          //INSERt UNFOLLOW STREAM
+          if (request.body.idMediaStreaming == undefined) {
+            const ceckView = await this.mediastreamingService.findFollower(request.body.idMediaStreaming.toString(), userbasic1._id.toString());
+            if (await this.utilsService.ceckData(ceckView)) {
+              await this.mediastreamingService.updateFollower(request.body.idMediaStreaming.toString(), userbasic1._id.toString(), true, false, current_date);
+            }
+          }
 
           let idevent1 = ceck_data_FOLLOWING._id;
           //await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNFOLLOW", userbasic1._id);
