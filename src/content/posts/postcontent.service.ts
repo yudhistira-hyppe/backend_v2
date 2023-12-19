@@ -748,6 +748,7 @@ export class PostContentService {
     Contentevents_.flowIsDone = true;
     Contentevents_.email = data_userbasics.email.toString();
     Contentevents_.sequenceNumber = 0;
+    Contentevents_.postID = body.postID;
     Contentevents_._class = 'io.melody.hyppe.content.domain.ContentEvent';
     this.contentEventService.create(Contentevents_);
     return Posts_;
