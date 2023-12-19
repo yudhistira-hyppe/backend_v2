@@ -411,7 +411,7 @@ export class MediastreamingController {
   @UseGuards(JwtAuthGuard)
   @Post('/feedback')
   @HttpCode(HttpStatus.ACCEPTED)
-  async post(@Body() MediastreamingDto_: MediastreamingDto, @Headers() headers) {
+  async feedback(@Body() MediastreamingDto_: MediastreamingDto, @Headers() headers) {
     if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
@@ -453,9 +453,7 @@ export class MediastreamingController {
   @UseGuards(JwtAuthGuard)
   @Post('/list')
   @HttpCode(HttpStatus.ACCEPTED)
-  async listStreaming(
-    @Query('pageNumber') pageNumber: number,
-    @Query('pageRow') pageSize: number, @Headers() headers) {
+  async listStreaming(@Body() MediastreamingDto_: MediastreamingDto, @Headers() headers) {
     if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
@@ -469,14 +467,16 @@ export class MediastreamingController {
 
     try {
       let _id: mongoose.Types.ObjectId[] = [];
-      const data = await this.mediastreamingalicloudService.DescribeLiveStreamsOnlineList(undefined, pageSize, pageNumber);
-      if (data.totalNum>0){
-        const arrayOnline = data.onlineInfo.liveStreamOnlineInfo;
-        _id = arrayOnline.map(function (item) {
-          return new mongoose.Types.ObjectId(item['streamName']);
-        });
-      }
-      const dataList = await this.mediastreamingService.getDataList(headers['x-auth-user'], _id, pageNumber, pageSize)
+      const data = await this.mediastreamingalicloudService.DescribeLiveStreamsOnlineList(undefined, MediastreamingDto_.page, MediastreamingDto_.limit);
+      const arrayOnline = data.body.onlineInfo.liveStreamOnlineInfo;
+
+      _id = arrayOnline.map(function (item) {
+        console.log("streamName", item['streamName'])
+        return new mongoose.Types.ObjectId(item['streamName']);
+      });
+      console.log("_id", _id)
+      const dataList = await this.mediastreamingService.getDataList(headers['x-auth-user'], _id, MediastreamingDto_.page, MediastreamingDto_.limit)
+      console.log("dataList",dataList)
       return await this.errorHandler.generateAcceptResponseCodeWithData(
         "Get stream succesfully", dataList,
       );
