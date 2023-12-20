@@ -445,7 +445,7 @@ export class MediastreamingController {
       );
     } catch (e) {
       await this.errorHandler.generateInternalServerErrorException(
-        'Unabled to proceed',
+        'Unabled to proceed ' +e,
       );
     }
   }
@@ -480,8 +480,10 @@ export class MediastreamingController {
       return await this.errorHandler.generateAcceptResponseCodeWithData(
         "Get stream succesfully", dataList,
       );
-    }catch(e){
-
+    } catch (e) {
+      await this.errorHandler.generateInternalServerErrorException(
+        'Unabled to proceed ' + e,
+      );
     }
   }
 
