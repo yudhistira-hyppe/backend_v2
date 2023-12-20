@@ -462,6 +462,7 @@ export class MediastreamingService {
           expireTime: 1,
           startLive: 1,
           status: 1,
+          title: 1,
           urlStream: 1,
           urlIngest: 1,
           createAt: 1,
@@ -474,6 +475,10 @@ export class MediastreamingService {
           username:
           {
             $arrayElemAt: ["$name.username", 0]
+          },
+          fullName:
+          {
+            $arrayElemAt: ["$user.fullName", 0]
           },
           //avatar: 1,
           avatar: {
@@ -958,6 +963,7 @@ export class MediastreamingService {
           userId: 1,
           expireTime: 1,
           startLive: 1,
+          title: 1,
           status: 1,
           urlStream: 1,
           urlIngest: 1,
@@ -968,6 +974,10 @@ export class MediastreamingService {
           totalFollower: 1,
           totalFriend: 1,
           totalFollowing: 1,
+          fullName:
+          {
+            $arrayElemAt: ["$user.fullName", 0]
+          },
           username:
           {
             $arrayElemAt: ["$name.username", 0]
