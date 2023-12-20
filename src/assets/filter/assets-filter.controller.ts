@@ -203,6 +203,7 @@ export class AssetsFilterController {
         {
             CreateAssetsFilterDto_.status = Boolean(CreateAssetsFilterDto_.status);
         }
+        CreateAssetsFilterDto_.active = true;
         CreateAssetsFilterDto_.createdAt = await this.utilsService.getDateTimeString();
         CreateAssetsFilterDto_.updatedAt = await this.utilsService.getDateTimeString();
         this.assetsFilterService.create(CreateAssetsFilterDto_);
