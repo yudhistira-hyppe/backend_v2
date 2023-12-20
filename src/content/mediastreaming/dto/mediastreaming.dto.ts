@@ -24,6 +24,7 @@ export class MediastreamingDto {
   page: number;
   limit: number;
   feedback: number;
+  feedbackText: String;
 }
 
 export class MediastreamingRequestDto{

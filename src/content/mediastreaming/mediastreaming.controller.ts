@@ -447,7 +447,7 @@ export class MediastreamingController {
       await this.errorHandler.generateBadRequestException(
         ceck_id,
       );
-    }
+    } 
     //VALIDASI PARAM feedBack
     var ceck_feedBack = await this.utilsService.validateParam("feedBack", MediastreamingDto_.feedBack.toString(), "number")
     if (ceck_feedBack != "") {
@@ -458,6 +458,7 @@ export class MediastreamingController {
     try {
       let _MediastreamingDto_ = new MediastreamingDto();
       _MediastreamingDto_.feedBack = MediastreamingDto_.feedBack;
+      _MediastreamingDto_.feedbackText = MediastreamingDto_.feedbackText;
       await this.mediastreamingService.updateStreaming(MediastreamingDto_._id.toString(), _MediastreamingDto_);
       return await this.errorHandler.generateAcceptResponseCode(
         "Update stream succesfully",
