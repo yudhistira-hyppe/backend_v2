@@ -250,7 +250,7 @@ export class MediastreamingController {
           const dataStreamSend = {
             data:{
               idStream: dataStream._id,
-              likeCount: dataStream.like.length
+              likeCount: MediastreamingDto_.like.length
             }
           }
           this.appGateway.eventStream("LIKE_STREAM", JSON.stringify(dataStreamSend));
