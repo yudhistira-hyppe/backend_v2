@@ -488,6 +488,7 @@ export class MediastreamingController {
       );
     }
 
+    let dataList = [];
     try {
       let _id: mongoose.Types.ObjectId[] = [];
       const data = await this.mediastreamingalicloudService.DescribeLiveStreamsOnlineList(undefined, MediastreamingDto_.page, MediastreamingDto_.limit);
@@ -498,14 +499,14 @@ export class MediastreamingController {
         return new mongoose.Types.ObjectId(item['streamName']);
       });
       console.log("_id", _id)
-      const dataList = await this.mediastreamingService.getDataList(headers['x-auth-user'], _id, MediastreamingDto_.page, MediastreamingDto_.limit)
+      dataList = await this.mediastreamingService.getDataList(headers['x-auth-user'], _id, MediastreamingDto_.page, MediastreamingDto_.limit)
       console.log("dataList",dataList)
       return await this.errorHandler.generateAcceptResponseCodeWithData(
         "Get stream succesfully", dataList,
       );
     } catch (e) {
-      await this.errorHandler.generateInternalServerErrorException(
-        'Unabled to proceed ' + e,
+      return await this.errorHandler.generateAcceptResponseCodeWithData(
+        "Get stream succesfully", dataList,
       );
     }
   }

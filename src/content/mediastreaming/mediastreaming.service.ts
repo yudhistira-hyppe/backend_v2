@@ -1882,15 +1882,14 @@ export class MediastreamingService {
   }
 
   async updateView(_id: string, userId: string, statusSearch: boolean, statusUpdate: boolean, updateAt: string) {
-    const data = await this.MediastreamingModel.updateOne({
+    const data = await this.MediastreamingModel.findOneAndUpdate({
       _id: new mongoose.Types.ObjectId(_id),
-      "view.userId": new mongoose.Types.ObjectId(userId),
-      "view.status": statusSearch
+      "view": { "$elemMatch": { "userId": new mongoose.Types.ObjectId(userId), "status": statusSearch } }
     }, 
     {
       $set: { "view.$.status": statusUpdate, "view.$.updateAt": updateAt }
-    });
-    console.log(data)
+    },
+    );
     return data;
   }
 
