@@ -375,6 +375,9 @@ export class MediastreamingController {
             MediastreamingDto_.status = false;
             MediastreamingDto_.endLive = await this.utilsService.getIntegertoDate(Number(time));
           }
+          if (action = "publish") {
+            MediastreamingDto_.status = true;
+          }
           // if (action = "publish") {
           //   MediastreamingDto_.status = true;
           //   MediastreamingDto_.startLive = await this.utilsService.getIntegertoDate(Number(time));
@@ -449,12 +452,12 @@ export class MediastreamingController {
       );
     } 
     //VALIDASI PARAM feedBack
-    var ceck_feedBack = await this.utilsService.validateParam("feedBack", MediastreamingDto_.feedBack.toString(), "number")
-    if (ceck_feedBack != "") {
-      await this.errorHandler.generateBadRequestException(
-        ceck_feedBack,
-      );
-    }
+    // var ceck_feedBack = await this.utilsService.validateParam("feedBack", MediastreamingDto_.feedBack.toString(), "number")
+    // if (ceck_feedBack != "") {
+    //   await this.errorHandler.generateBadRequestException(
+    //     ceck_feedBack,
+    //   );
+    // }
     try {
       let _MediastreamingDto_ = new MediastreamingDto();
       _MediastreamingDto_.feedBack = MediastreamingDto_.feedBack;
