@@ -34,3 +34,20 @@ export class MediastreamingRequestDto{
   createAt: String;
   updateAt: String;
 }
+
+export class CallbackModeration {
+  DomainName: String;
+  AppName: String;
+  StreamName: String;
+  OssEndpoint: String;
+  OssBucket: String;
+  OssObject: String;
+  Result: CallbackModerationResult[];
+}
+export class CallbackModerationResult {
+  BizType: String;
+  Scene: String;
+  Label: String;
+  Rate: number; 
+  Extent: String;
+}

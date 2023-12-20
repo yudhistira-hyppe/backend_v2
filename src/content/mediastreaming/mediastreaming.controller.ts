@@ -6,7 +6,7 @@ import { ErrorHandler } from '../../utils/error.handler';
 import { Long } from 'mongodb';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import mongoose from 'mongoose';
-import { MediastreamingDto, MediastreamingRequestDto } from './dto/mediastreaming.dto';
+import { CallbackModeration, MediastreamingDto, MediastreamingRequestDto } from './dto/mediastreaming.dto';
 import { ConfigService } from '@nestjs/config';
 import { MediastreamingalicloudService } from './mediastreamingalicloud.service';
 import { AppGateway } from '../socket/socket.gateway';
@@ -357,7 +357,7 @@ export class MediastreamingController {
 
   @Get('/callback/apsara')
   @HttpCode(HttpStatus.OK)
-  async getCallback(
+  async getCallbackApsara(
     @Query('action') action: string,
     @Query('ip') ip: string,
     @Query('id') id: string,
@@ -406,6 +406,25 @@ export class MediastreamingController {
       MediastreamingRequestDto_.updateAt = await this.utilsService.getDateTimeString();
       this.mediastreamingrequestService.createStreamingRequest(MediastreamingRequestDto_);
       return response
+  }
+
+  @Post('/callback/moderation')
+  @HttpCode(HttpStatus.OK)
+  async getCallbackModeration(@Body() CallbackModeration_: CallbackModeration) {
+    const param = CallbackModeration_
+    const response = {
+      code: 200,
+      messages: "Succes"
+    }
+    let MediastreamingRequestDto_ = new MediastreamingRequestDto();
+    MediastreamingRequestDto_._id = new mongoose.Types.ObjectId();
+    MediastreamingRequestDto_.url = "/api/live/callback/apsara";
+    MediastreamingRequestDto_.request = param;
+    MediastreamingRequestDto_.response = response;
+    MediastreamingRequestDto_.createAt = await this.utilsService.getDateTimeString();
+    MediastreamingRequestDto_.updateAt = await this.utilsService.getDateTimeString();
+    this.mediastreamingrequestService.createStreamingRequest(MediastreamingRequestDto_);
+    return response
   }
 
   @UseGuards(JwtAuthGuard)

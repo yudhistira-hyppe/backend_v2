@@ -218,6 +218,36 @@ export class MediastreamingalicloudService {
     }    
   }
 
+  async AddLiveDetectNotifyConfig(url:string) {
+    //Get URL_STREAM_LIVE
+    const GET_URL_STREAM_LIVE = this.configService.get("URL_STREAM_LIVE");
+    const URL_STREAM_LIVE = await this.utilsService.getSetting_Mixed(GET_URL_STREAM_LIVE);
+
+    let param = {}; 
+    param['domainName'] = URL_STREAM_LIVE.toString();
+    param['notifyUrl'] = url;
+
+    let client = await this.createClient();
+    let addLiveDetectNotifyConfigRequest = new $live20161101.AddLiveDetectNotifyConfigRequest({
+      domainName: URL_STREAM_LIVE,
+      notifyUrl: url,
+    });
+    let runtime = new $Util.RuntimeOptions({});
+    try {
+      const data = await client.addLiveDetectNotifyConfigWithOptions(addLiveDetectNotifyConfigRequest, runtime);
+      //SAVE LOG REQUEST
+      this.saveRequest(addLiveDetectNotifyConfigRequest, "addLiveDetectNotifyConfig", data);
+      return data;
+    } catch (error) {
+      //SAVE LOG REQUEST
+      this.saveRequest(addLiveDetectNotifyConfigRequest, "addLiveDetectNotifyConfig", error.message);
+      console.log(error.message);
+      console.log(error.data["Recommend"]);
+      //Util.assertAsString(error.message);
+      return null;
+    }    
+  }
+
   async saveRequest(request: any, url: any, response: any){
     let Mediastreamingrequest_ = new Mediastreamingrequest();
     Mediastreamingrequest_.request = request;
