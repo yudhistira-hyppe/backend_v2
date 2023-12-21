@@ -151,4 +151,157 @@ export class UserbasicnewController {
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
         return { response_code: 202, data, skip, limit, messages };
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('userbasics/newuser/v2')
+    async countPostsesiactiv(@Req() request, @Headers() headers): Promise<Object> {
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var fullurl = request.get("Host") + request.originalUrl;
+
+        var datasesi = [];
+
+        var startdate = null;
+        var enddate = null;
+        const messages = {
+            "info": ["The process successful"],
+        };
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+
+        var date1 = new Date(startdate);
+        var date2 = new Date(enddate);
+
+        //calculate time difference  
+        var time_difference = date2.getTime() - date1.getTime();
+
+        //calculate days difference by dividing total milliseconds in a day  
+        var resultTime = time_difference / (1000 * 60 * 60 * 24);
+        console.log(resultTime);
+        try {
+            datasesi = await this.UserbasicnewService.userNew(startdate, enddate);
+        } catch (e) {
+            datasesi = [];
+        }
+
+        var data = [];
+        if (resultTime > 0) {
+            for (var i = 0; i < resultTime + 1; i++) {
+                var dt = new Date(startdate);
+                dt.setDate(dt.getDate() + i);
+                var splitdt = dt.toISOString();
+                var dts = splitdt.split('T');
+                var stdt = dts[0].toString();
+                var count = 0;
+                for (var j = 0; j < datasesi.length; j++) {
+                    if (datasesi[j].date == stdt) {
+                        count = datasesi[j].count;
+                        break;
+                    }
+                }
+                data.push({
+                    'date': stdt,
+                    'count': count
+                });
+
+            }
+
+        }
+
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('userbasics/demografis/v2')
+    async countPostareas(@Req() request, @Headers() headers): Promise<any> {
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var fullurl = request.get("Host") + request.originalUrl;
+
+        var data = [];
+
+        var startdate = null;
+        var enddate = null;
+        var wilayah = [];
+        var dataSumwilayah = [];
+        var lengwilayah = 0;
+        var sumwilayah = 0;
+        const messages = {
+            "info": ["The process successful"],
+        };
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+
+        try {
+            data = await this.UserbasicnewService.demografis(startdate, enddate);
+            wilayah = data[0].wilayah;
+            lengwilayah = wilayah.length;
+        } catch (e) {
+            data = [];
+            wilayah = [];
+            lengwilayah = 0;
+        }
+
+
+        if (lengwilayah > 0) {
+
+        for (let i = 0; i < lengwilayah; i++) {
+            sumwilayah += wilayah[i].count;
+
+        }
+
+        } else {
+            sumwilayah = 0;
+        }
+
+        if (lengwilayah > 0) {
+
+            for (let i = 0; i < lengwilayah; i++) {
+                let count = wilayah[i].count;
+                let state = null;
+                let stateName = wilayah[i].stateName;
+
+                if (stateName == null) {
+                state = "Other";
+                } else {
+                state = stateName;
+                }
+
+                let persen = count * 100 / sumwilayah;
+                let objcounwilayah = {
+                stateName: state,
+                count: count,
+                persen: persen.toFixed(2)
+                }
+                dataSumwilayah.push(objcounwilayah);
+            }
+
+        } else {
+            dataSumwilayah = [];
+        }
+
+        data[0].wilayah = dataSumwilayah;
+
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        return { response_code: 202, data, messages };
+    }
 }
