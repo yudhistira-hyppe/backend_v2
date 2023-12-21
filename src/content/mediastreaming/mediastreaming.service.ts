@@ -982,6 +982,10 @@ export class MediastreamingService {
           {
             $arrayElemAt: ["$name.username", 0]
           },
+          email:
+          {
+            $arrayElemAt: ["$user.email", 0]
+          },
           //avatar: 1,
           avatar: {
             "mediaBasePath": {
