@@ -2000,7 +2000,7 @@ export class MediastreamingService {
     } else {
       //let rtmpToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pullKey;
       let rtmpToMd5: String = "/" + appName + "/" + streamName + ".m3u8-" + expireTime.toString() + "-0-0-" + pullKey;
-      let rtmpAuthKey: String = await this.md5(rtmpToMd5);
+      let rtmpAuthKey: String = await this.md5_(rtmpToMd5);
       //rtmpUrl = "rtmp://" + pullDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + rtmpAuthKey;
       rtmpUrl = "http://" + pullDomain + "/" + appName + "/" + streamName + ".m3u8" + "?auth_key=" + expireTime.toString() + "-0-0-" + rtmpAuthKey;
     }
@@ -2014,7 +2014,7 @@ export class MediastreamingService {
       pushUrl = "rtmp://" + pushDomain + "/" + appName + "/" + streamName;
     } else {
       let stringToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pushKey;
-      let authKey: String = await this.md5(stringToMd5);
+      let authKey: String = await this.md5_(stringToMd5);
       pushUrl = "rtmp://" + pushDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + authKey;
     }
     return pushUrl;
@@ -2026,7 +2026,7 @@ export class MediastreamingService {
       rtmpUrl = "rtmp://" + pullDomain + "/" + appName + "/" + streamName;
     } else {
       let rtmpToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pullKey;
-      let rtmpAuthKey: String = await this.md5(rtmpToMd5);
+      let rtmpAuthKey: String = await this.md5_(rtmpToMd5);
       rtmpUrl = "rtmp://" + pullDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + rtmpAuthKey;
     }
     return rtmpUrl;
@@ -2038,7 +2038,7 @@ export class MediastreamingService {
       pushUrl = "rtmp://" + pushDomain + "/" + appName + "/" + streamName;
     } else {
       let stringToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pushKey;
-      let authKey: String = await this.md5(stringToMd5);
+      let authKey: String = await this.md5_(stringToMd5);
       pushUrl = "rtmp://" + pushDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + authKey;
     }
     console.log(pushUrl)
@@ -2078,7 +2078,7 @@ export class MediastreamingService {
     }
   }
 
-  async md5(param: String){
+  async _md5_(param: String){
     if (param == null || param.length === 0) {
       return null;
     }
@@ -2091,5 +2091,24 @@ export class MediastreamingService {
       console.error(error);
     }
     return null;
+  }
+
+  async md5_(param: String) {
+    if (param == null || param.length === 0) {
+      return null;
+    }
+    let digest;
+    try {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(param.toString());
+      const hashBuffer = await crypto.subtle.digest('MD5', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+      digest = hashHex;
+    } catch (error) {
+      console.error(error);
+      return "";
+    }
+    return digest;
   }
 }
