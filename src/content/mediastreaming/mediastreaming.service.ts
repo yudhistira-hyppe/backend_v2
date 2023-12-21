@@ -1999,10 +1999,12 @@ export class MediastreamingService {
       rtmpUrl = "rtmp://" + pullDomain + "/" + appName + "/" + streamName;
     } else {
       //let rtmpToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pullKey;
-      let rtmpToMd5: String = "/" + appName + "/" + streamName + ".m3u8-" + expireTime.toString() + "-0-0-" + pullKey;
+      //let rtmpToMd5: String = "/" + appName + "/" + streamName + ".m3u8-" + expireTime.toString() + "-0-0-" + pullKey;
+      let rtmpToMd5: String = "/" + appName + "/" + streamName + ".flv-" + expireTime.toString() + "-0-0-" + pullKey;
       let rtmpAuthKey: String = await this.md5_(rtmpToMd5);
       //rtmpUrl = "rtmp://" + pullDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + rtmpAuthKey;
-      rtmpUrl = "http://" + pullDomain + "/" + appName + "/" + streamName + ".m3u8" + "?auth_key=" + expireTime.toString() + "-0-0-" + rtmpAuthKey;
+      //rtmpUrl = "http://" + pullDomain + "/" + appName + "/" + streamName + ".m3u8" + "?auth_key=" + expireTime.toString() + "-0-0-" + rtmpAuthKey;
+      rtmpUrl = "http://" + pullDomain + "/" + appName + "/" + streamName + ".flv" + "?auth_key=" + expireTime.toString() + "-0-0-" + rtmpAuthKey;
     }
     
     return rtmpUrl;
