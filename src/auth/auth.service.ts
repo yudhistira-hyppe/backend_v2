@@ -10364,6 +10364,7 @@ export class AuthService {
             data_CreateUserbasicDto.createdAt = current_date;
             data_CreateUserbasicDto.updatedAt = current_date;
             data_CreateUserbasicDto.statusKyc = 'unverified';
+            data_CreateUserbasicDto.creator = false;
             data_CreateUserbasicDto.tutor = [
               {
                 key: "protection",

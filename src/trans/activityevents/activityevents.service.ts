@@ -253,7 +253,7 @@ export class ActivityeventsService {
 
   }
 
-  async filteruser(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number, descending: any, type: string) {
+  async filteruser(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number, descending: any, type: string, statuscreator: any[]) {
 
     var arrlokasi = [];
     var idlokasi = null;
@@ -501,6 +501,13 @@ export class ActivityeventsService {
             },
 
           },
+          creator:{
+            "$ifNull":
+            [
+              { $arrayElemAt: ["$user.creator", 0] },
+              false   
+            ]
+          },
           username: {
             $arrayElemAt: ["$userName.username", 0]
           },
@@ -612,6 +619,7 @@ export class ActivityeventsService {
           fullName: 1,
           gender: 1,
           username: 1,
+          creator:1,
           role: 1,
           countries: 1,
           cities: 1,
@@ -709,6 +717,21 @@ export class ActivityeventsService {
             {
               jenis: {
                 $in: jenis
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+
+    if (statuscreator && statuscreator !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              creator: {
+                $in: statuscreator
               }
             },
 
