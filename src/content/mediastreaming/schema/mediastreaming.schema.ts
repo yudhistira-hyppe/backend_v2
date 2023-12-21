@@ -42,5 +42,7 @@ export class Mediastreaming{
     feedback: number;
     @Prop()
     pause: boolean;
+    @Prop()
+    kick: any[];
 }
 export const MediastreamingSchema = SchemaFactory.createForClass(Mediastreaming);

@@ -26,6 +26,7 @@ export class MediastreamingDto {
   feedback: number;
   feedbackText: String;
   pause: boolean;
+  userIdKick: mongoose.Types.ObjectId;
 }
 
 export class MediastreamingRequestDto{
