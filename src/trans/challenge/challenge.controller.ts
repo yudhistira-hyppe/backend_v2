@@ -1701,13 +1701,20 @@ export class ChallengeController {
     var parentdata = await this.challengeService.detailchallenge(getsubid);
     var getsubdata = await this.subchallenge.subchallengedetailwithlastrank(getsubid);
     var checkpernahdikick = await this.userchallengeSS.checkUserjoinchallenge(getsubid, getuserid);
-    if(checkpernahdikick.length == 0 && checkpernahdikick[0].isActive == true)
+    if(checkpernahdikick.length == 0)
     {
       statuskick = false;
     }
     else
     {
-      statuskick = true;
+      if(checkpernahdikick[0].isActive == true)
+      {
+        throw new NotAcceptableException("Unabled to proceed, user already join challenge");
+      }
+      else
+      {
+        statuskick = true;
+      }
     }
 
     var listjoin = [];
@@ -1774,7 +1781,7 @@ export class ChallengeController {
     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, request_json['idUser'], null, request_json);
 
     if (firstdata != null && parentdata.objectChallenge == "KONTEN" && statuskick == false) {
-      await this.beforejoinchallenge(getuserbasic, firstdata);
+      this.beforejoinchallenge(getuserbasic, firstdata);
     }
 
     if (listjoin.length != 0) {
