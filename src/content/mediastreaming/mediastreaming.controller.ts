@@ -327,6 +327,8 @@ export class MediastreamingController {
               comment: MediastreamingDto_.commentDisabled
             }
           }
+          _MediastreamingDto_.commentDisabled = MediastreamingDto_.commentDisabled;
+          await this.mediastreamingService.updateStreaming(MediastreamingDto_._id.toString(), _MediastreamingDto_);
           this.appGateway.eventStream("COMMENT_STREAM_DISABLED", JSON.stringify(allSend));
         }
       }

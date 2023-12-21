@@ -44,5 +44,7 @@ export class Mediastreaming{
     pause: boolean;
     @Prop()
     kick: any[];
+    @Prop()
+    commentDisabled: boolean;
 }
 export const MediastreamingSchema = SchemaFactory.createForClass(Mediastreaming);
