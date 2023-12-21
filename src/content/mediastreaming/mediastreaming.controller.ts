@@ -162,6 +162,14 @@ export class MediastreamingController {
         _MediastreamingDto_.status = false;
         _MediastreamingDto_.endLive = currentDate;
         await this.mediastreamingService.updateStreaming(MediastreamingDto_._id.toString(), _MediastreamingDto_);
+        //SEND STATUS STOP
+        const dataPause = {
+          data: {
+            idStream: MediastreamingDto_._id.toString(),
+            status: false
+          }
+        }
+        this.appGateway.eventStream("STATUS_STREAM", JSON.stringify(dataPause));
       }
       //CECK TYPE STOP
       if (MediastreamingDto_.type == "PAUSE") {
@@ -324,45 +332,45 @@ export class MediastreamingController {
       }
       //CECK TYPE COMMENT
       if (MediastreamingDto_.type == "KICK") {
-        if (MediastreamingDto_.userIdKick != undefined) {
-          const ceckView = await this.mediastreamingService.findView(MediastreamingDto_._id.toString(), MediastreamingDto_.userIdKick.toString());
-          if (await this.utilsService.ceckData(ceckView)) {
-            //UPDATE VIEW
-            await this.mediastreamingService.updateView(MediastreamingDto_._id.toString(), profile._id.toString(), true, false, currentDate);
-            //UPDATE VIEW
-            await this.mediastreamingService.updateView(MediastreamingDto_._id.toString(), profile._id.toString(), true, false, currentDate);
-            //UPDATE COMMENT
-            const dataComment = {
-              userId: new mongoose.Types.ObjectId(profile._id.toString()),
-              status: true,
-              messages: profile_auth.username + " Was kicked from the room",
-              createAt: currentDate,
-              updateAt: currentDate
-            }
-            await this.mediastreamingService.insertComment(MediastreamingDto_._id.toString(), dataComment);
-            //SEND VIEW COUNT
-            const dataStream = await this.mediastreamingService.findOneStreamingView(MediastreamingDto_._id.toString());
-            let viewCount = 0;
-            if (dataStream.length > 0) {
-              viewCount = dataStream[0].view.length;
-            }
-            const dataStreamSend = {
-              data: {
-                idStream: MediastreamingDto_._id.toString(),
-                viewCount: viewCount
-              }
-            }
-            this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
-            //SEND COMMENT SINGLE
-            const getUser = await this.userbasicsService.getUser(profile._id.toString());
-            getUser[0]["idStream"] = MediastreamingDto_._id.toString();
-            getUser[0]["messages"] = profile_auth.username + " Leave in room";
-            const singleSend = {
-              data: getUser[0]
-            }
-            this.appGateway.eventStream("COMMENT_STREAM_SINGLE", JSON.stringify(singleSend));
-          }
-        }
+        // if (MediastreamingDto_.userIdKick != undefined) {
+        //   const ceckView = await this.mediastreamingService.findView(MediastreamingDto_._id.toString(), MediastreamingDto_.userIdKick.toString());
+        //   if (await this.utilsService.ceckData(ceckView)) {
+        //     //UPDATE VIEW
+        //     await this.mediastreamingService.updateView(MediastreamingDto_._id.toString(), profile._id.toString(), true, false, currentDate);
+        //     //UPDATE VIEW
+        //     await this.mediastreamingService.updateView(MediastreamingDto_._id.toString(), profile._id.toString(), true, false, currentDate);
+        //     //UPDATE COMMENT
+        //     const dataComment = {
+        //       userId: new mongoose.Types.ObjectId(profile._id.toString()),
+        //       status: true,
+        //       messages: profile_auth.username + " Was kicked from the room",
+        //       createAt: currentDate,
+        //       updateAt: currentDate
+        //     }
+        //     await this.mediastreamingService.insertComment(MediastreamingDto_._id.toString(), dataComment);
+        //     //SEND VIEW COUNT
+        //     const dataStream = await this.mediastreamingService.findOneStreamingView(MediastreamingDto_._id.toString());
+        //     let viewCount = 0;
+        //     if (dataStream.length > 0) {
+        //       viewCount = dataStream[0].view.length;
+        //     }
+        //     const dataStreamSend = {
+        //       data: {
+        //         idStream: MediastreamingDto_._id.toString(),
+        //         viewCount: viewCount
+        //       }
+        //     }
+        //     this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
+        //     //SEND COMMENT SINGLE
+        //     const getUser = await this.userbasicsService.getUser(profile._id.toString());
+        //     getUser[0]["idStream"] = MediastreamingDto_._id.toString();
+        //     getUser[0]["messages"] = profile_auth.username + " Leave in room";
+        //     const singleSend = {
+        //       data: getUser[0]
+        //     }
+        //     this.appGateway.eventStream("COMMENT_STREAM_SINGLE", JSON.stringify(singleSend));
+        //   }
+        // }
       }
 
       if (MediastreamingDto_.type == "STOP") {
