@@ -2375,6 +2375,46 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/user/updatestatuscreator')
+  async updateCreator(@Req() request: any, @Headers() headers) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = request.get("Host") + request.originalUrl;
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if(request_json.creator == null || request_json.creator == undefined)
+    {
+      await this.errorHandler.generateNotAcceptableException("Unable to proceed. creator field is required");
+    }
+    
+    if(request_json.idUser == null || request_json.idUser == undefined)
+    {
+      await this.errorHandler.generateNotAcceptableException("Unable to proceed. idUser field is required");
+    }
+
+    var updatedata = new CreateUserbasicDto();
+    updatedata.creator = request_json.creator;
+    updatedata.updatedAt = await this.utilsService.getDateTimeString();
+
+    var getdata = await this.userbasicsService.findbyid(request_json.idUser);
+
+    await this.userbasicsService.updateData(getdata.email.toString(), updatedata);
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    var reqbody = JSON.parse(JSON.stringify(request.body));
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+    return {
+      "response_code": 202,
+      "messages": {
+        "info": [
+          "The process successful"
+        ]
+      }
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/user/noneactive')
   async noneActive(@Req() request: any, @Headers() headers) {
     var timestamps_start = await this.utilsService.getDateTimeString();
