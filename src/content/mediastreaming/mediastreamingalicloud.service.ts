@@ -218,6 +218,7 @@ export class MediastreamingalicloudService {
     }    
   }
 
+  //QPS 30 per second per account
   async AddLiveDetectNotifyConfig(url:string) {
     //Get URL_STREAM_LIVE
     const GET_URL_STREAM_LIVE = this.configService.get("URL_STREAM_LIVE");

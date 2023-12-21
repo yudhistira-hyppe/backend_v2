@@ -1028,7 +1028,7 @@ export class ContenteventsController {
         }
 
         //INSERt FOLOWING STREAM
-        if (request.body.idMediaStreaming == undefined) {
+        if (request.body.idMediaStreaming != undefined) {
           const ceckView = await this.mediastreamingService.findFollower(request.body.idMediaStreaming.toString(), userbasic1._id.toString());
           if (!(await this.utilsService.ceckData(ceckView))) {
             const dataFollower = {
