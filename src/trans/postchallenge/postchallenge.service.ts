@@ -120,4 +120,27 @@ export class PostchallengeService {
             },
         );
     }
+
+    async findByUserandChallenge(idchallenge:string, iduser:string)
+    {
+        var mongo = require('mongoose');
+        var query = await this.PostchallengeModel.aggregate([
+            {
+                "$match":
+                {
+                    "$and":
+                    [
+                        {
+                            "idChallenge": new mongo.Types.ObjectId(idchallenge)
+                        },
+                        {
+                            "idUser": new mongo.Types.ObjectId(iduser)
+                        }
+                    ]
+                }
+            }
+        ]);
+
+        return query;
+    }
 }
