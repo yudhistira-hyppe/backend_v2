@@ -3903,7 +3903,26 @@ export class ChallengeController {
       insertreject['idAdmin'] = idadmin;
       insertreject['time'] = await this.util.getDateTimeString();
       insertreject['emailAdmin'] = admin.email;
-      insertreject['remark'] = reason;
+      
+      var insertstring = reason;
+      var getdetail = await this.challengeService.findOne(idchallenge);
+      if(getdetail.objectChallenge == "KONTEN")
+      {
+        var getdata = await this.postchallengeService.findByUserandChallenge(idchallenge, exileUser._id.toString());
+        if(getdata.length != 0)
+        {
+          insertstring = insertstring + " total score per post before kick :";
+          for(var looppostchallenge = 0; looppostchallenge < getdata.length; looppostchallenge++)
+          {
+            insertstring = insertstring + " postID (" + getdata[looppostchallenge].postID + ") = " + getdata[looppostchallenge].score + (looppostchallenge == getdata.length - 1 ? "." : ",");
+
+            await this.postchallengeService.updateByUSer(getdata[looppostchallenge]._id, getdata[looppostchallenge].idSubChallenge, getdata[looppostchallenge].idChallenge, getdata[looppostchallenge].postID);
+          }
+
+        }
+      }
+
+      insertreject['remark'] = insertstring;
       getarray.push(insertreject);
 
       var updatedata = new Userchallenges();
