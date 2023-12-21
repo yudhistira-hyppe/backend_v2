@@ -163,6 +163,25 @@ export class MediastreamingController {
         _MediastreamingDto_.endLive = currentDate;
         await this.mediastreamingService.updateStreaming(MediastreamingDto_._id.toString(), _MediastreamingDto_);
       }
+      //CECK TYPE STOP
+      if (MediastreamingDto_.type == "PAUSE") {
+        //UPDATE STATUS PAUSE
+        const pause = (ceckId.pause != undefined) ? ceckId.pause:false;
+        if (pause){
+          _MediastreamingDto_.pause = false;
+        } else {
+          _MediastreamingDto_.pause = true;
+        }
+        await this.mediastreamingService.updateStreaming(MediastreamingDto_._id.toString(), _MediastreamingDto_);
+        //SEND STATUS PAUSE
+        const dataPause = {
+          data: {
+            idStream: MediastreamingDto_._id.toString(),
+            pause: _MediastreamingDto_.pause
+          }
+        }
+        this.appGateway.eventStream("STATUS_STREAM", JSON.stringify(dataPause));
+      }
       //CECK TYPE OPEN_VIEW
       if (MediastreamingDto_.type == "OPEN_VIEW") {
         const ceckView = await this.mediastreamingService.findView(MediastreamingDto_._id.toString(), profile._id.toString());
@@ -314,6 +333,10 @@ export class MediastreamingController {
         }
         return await this.errorHandler.generateAcceptResponseCodeWithData(
           "Update stream succesfully", dataResponse
+        );
+      } else if (MediastreamingDto_.type == "OPEN_VIEW") {
+        return await this.errorHandler.generateAcceptResponseCodeWithData(
+          "Update stream succesfully", ceckId
         );
       } else {
         return await this.errorHandler.generateAcceptResponseCode(

@@ -25,6 +25,7 @@ export class MediastreamingDto {
   limit: number;
   feedback: number;
   feedbackText: String;
+  pause: boolean;
 }
 
 export class MediastreamingRequestDto{

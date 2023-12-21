@@ -40,5 +40,7 @@ export class Mediastreaming{
     createAt: String;
     @Prop()
     feedback: number;
+    @Prop()
+    pause: boolean;
 }
 export const MediastreamingSchema = SchemaFactory.createForClass(Mediastreaming);
