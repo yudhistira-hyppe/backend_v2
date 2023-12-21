@@ -2001,7 +2001,7 @@ export class MediastreamingService {
       //let rtmpToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pullKey;
       //let rtmpToMd5: String = "/" + appName + "/" + streamName + ".m3u8-" + expireTime.toString() + "-0-0-" + pullKey;
       let rtmpToMd5: String = "/" + appName + "/" + streamName + ".flv-" + expireTime.toString() + "-0-0-" + pullKey;
-      let rtmpAuthKey: String = await this.md5_(rtmpToMd5);
+      let rtmpAuthKey: String = await this._md5_(rtmpToMd5);
       //rtmpUrl = "rtmp://" + pullDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + rtmpAuthKey;
       //rtmpUrl = "http://" + pullDomain + "/" + appName + "/" + streamName + ".m3u8" + "?auth_key=" + expireTime.toString() + "-0-0-" + rtmpAuthKey;
       rtmpUrl = "http://" + pullDomain + "/" + appName + "/" + streamName + ".flv" + "?auth_key=" + expireTime.toString() + "-0-0-" + rtmpAuthKey;
@@ -2016,7 +2016,7 @@ export class MediastreamingService {
       pushUrl = "rtmp://" + pushDomain + "/" + appName + "/" + streamName;
     } else {
       let stringToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pushKey;
-      let authKey: String = await this.md5_(stringToMd5);
+      let authKey: String = await this._md5_(stringToMd5);
       pushUrl = "rtmp://" + pushDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + authKey;
     }
     return pushUrl;
@@ -2028,7 +2028,7 @@ export class MediastreamingService {
       rtmpUrl = "rtmp://" + pullDomain + "/" + appName + "/" + streamName;
     } else {
       let rtmpToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pullKey;
-      let rtmpAuthKey: String = await this.md5_(rtmpToMd5);
+      let rtmpAuthKey: String = await this._md5_(rtmpToMd5);
       rtmpUrl = "rtmp://" + pullDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + rtmpAuthKey;
     }
     return rtmpUrl;
@@ -2040,7 +2040,7 @@ export class MediastreamingService {
       pushUrl = "rtmp://" + pushDomain + "/" + appName + "/" + streamName;
     } else {
       let stringToMd5: String = "/" + appName + "/" + streamName + "-" + expireTime.toString() + "-0-0-" + pushKey;
-      let authKey: String = await this.md5_(stringToMd5);
+      let authKey: String = await this._md5_(stringToMd5);
       pushUrl = "rtmp://" + pushDomain + "/" + appName + "/" + streamName + "?auth_key=" + expireTime.toString() + "-0-0-" + authKey;
     }
     console.log(pushUrl)
