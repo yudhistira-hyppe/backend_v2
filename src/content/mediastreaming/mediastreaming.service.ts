@@ -2103,7 +2103,7 @@ export class MediastreamingService {
     try {
       const encoder = new TextEncoder();
       const data = encoder.encode(param.toString());
-      const hashBuffer = await crypto.subtle.digest('MD5', data);
+      const hashBuffer = await require('crypto').subtle.digest('MD5', data);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
       digest = hashHex;
