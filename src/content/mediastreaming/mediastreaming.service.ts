@@ -1036,6 +1036,25 @@ export class MediastreamingService {
     return data;
   }
 
+  async findOneStreamingView(_id: string): Promise<Mediastreaming[]> {
+    let paramaggregate = [
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(_id),
+          "view": { "$elemMatch": { "status": true } }
+        }
+      },
+      {
+        "$project": {
+          "view": { "$setUnion": ["$view.userId", []] }
+        }
+      },
+    ];
+    console.log(JSON.stringify(paramaggregate));
+    const data = await this.MediastreamingModel.aggregate(paramaggregate);
+    return data;
+  }
+
   async updateStreaming(_id: string, MediastreamingDto_: MediastreamingDto) {
     const data = await this.MediastreamingModel.findByIdAndUpdate(
       { _id: new mongoose.Types.ObjectId(_id) },

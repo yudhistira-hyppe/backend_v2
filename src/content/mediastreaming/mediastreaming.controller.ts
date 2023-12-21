@@ -186,15 +186,17 @@ export class MediastreamingController {
           }
           await this.mediastreamingService.insertComment(MediastreamingDto_._id.toString(), dataComment);
           //SEND VIEW COUNT
-          const dataStream = await this.mediastreamingService.findOneStreaming(MediastreamingDto_._id.toString());
-          console.log(dataStream)
+          const dataStream = await this.mediastreamingService.findOneStreamingView(MediastreamingDto_._id.toString());
+          let viewCount = 0;
+          if (dataStream.length > 0) {
+            viewCount = dataStream[0].view.length;
+          }
           const dataStreamSend = {
             data: {
-              idStream: dataStream._id,
-              viewCount: dataStream.view.length
+              idStream: MediastreamingDto_._id.toString(),
+              viewCount: viewCount
             }
           }
-          console.log(dataStreamSend)
           this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
           //SEND COMMENT SINGLE
           const getUser = await this.userbasicsService.getUser(profile._id.toString());
@@ -222,11 +224,15 @@ export class MediastreamingController {
           }
           await this.mediastreamingService.insertComment(MediastreamingDto_._id.toString(), dataComment);
           //SEND VIEW COUNT
-          const dataStream = await this.mediastreamingService.findOneStreaming(MediastreamingDto_._id.toString());
+          const dataStream = await this.mediastreamingService.findOneStreamingView(MediastreamingDto_._id.toString());
+          let viewCount = 0;
+          if (dataStream.length > 0) {
+            viewCount = dataStream[0].view.length;
+          }
           const dataStreamSend = {
             data: {
-              idStream: dataStream._id,
-              viewCount: dataStream.view.length
+              idStream: MediastreamingDto_._id.toString(),
+              viewCount: viewCount
             }
           }
           this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
@@ -512,7 +518,13 @@ export class MediastreamingController {
   }
 
   @Post('/test')
-  async exampleGenerateLink(){
-    const getUrl = await this.mediastreamingService.generateUrlTest("657fb4b76ea72f0b782c610a", 1702873753);
+  async exampleGenerateLink(@Body() MediastreamingDto_: MediastreamingDto){
+    // const getUrl = await this.mediastreamingService.generateUrlTest("657fb4b76ea72f0b782c610a", 1702873753);
+    const dataStream = await this.mediastreamingService.findOneStreamingView(MediastreamingDto_._id.toString());
+    if (dataStream.length > 0) {
+      return dataStream[0].view;
+    }else{
+      return [];
+    }
   }
 }
