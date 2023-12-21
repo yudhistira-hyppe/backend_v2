@@ -524,6 +524,17 @@ export class ProfileController {
         data['groupId'] = dataGroup._id;
         data['group'] = dataGroup.nameGroup;
       }
+      var getpassword = await this.basic2SS.findBymail(datauserbasicsService[0].email);
+      var dummy = 'HyppeNew';
+      var checkresult = await this.utilsService.comparePassword(dummy, getpassword.password);
+      if(checkresult == true)
+      {
+        data['loginSource'] = 'socmed';
+      }
+      else
+      {
+        data['loginSource'] = 'manual';
+      }
       return {
         response_code: 202,
         data:[data],

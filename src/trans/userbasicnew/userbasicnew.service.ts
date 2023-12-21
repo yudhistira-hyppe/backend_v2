@@ -440,15 +440,6 @@ export class UserbasicnewService {
             {
                 $lookup:
                 {
-                    from: 'friend_list',
-                    localField: 'email',
-                    foreignField: 'email',
-                    as: 'friend_data',
-                },
-            },
-            {
-                $lookup:
-                {
                     from: 'userbankaccounts',
                     let:
                     {
@@ -640,10 +631,7 @@ export class UserbasicnewService {
                                         },
                                         friend:
                                         {
-                                            "$arrayElemAt":
-                                                [
-                                                    "$friend_data.totalfriend", 0
-                                                ]
+                                            "$size":"$friend"
                                         }
                                     },
                                     langIso: "$languagesLangIso",

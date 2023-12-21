@@ -127,6 +127,7 @@ export class CreateuserbasicnewDto {
   postType: string;
   kyc: any[];
   guestMode: boolean;
+  friend: any[];
 }
 
 export class SearchUserbasicDto {

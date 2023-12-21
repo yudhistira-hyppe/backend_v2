@@ -12395,6 +12395,7 @@ export class AuthService {
           data_CreateUserbasicDto.roles = ['ROLE_USER'];
           data_CreateUserbasicDto.oneTimePassword = OTP.toString();
           data_CreateUserbasicDto.guestMode = false;
+          data_CreateUserbasicDto.friend = [];
           var authUsers = {
             "devices": [
               {

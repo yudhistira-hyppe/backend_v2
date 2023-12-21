@@ -152,6 +152,8 @@ export class Userbasicnew {
     @Prop()
     tempfollower: any[];
     @Prop()
+    friend: any[];
+    @Prop()
     citiesName: string;
     @Prop()
     statesName: string;

@@ -1440,8 +1440,6 @@ export class SocmedService {
 
     if (await this.utilsService.ceckData(datauserbasicsService) && datauserbasicsService.guestMode == false){
 
-      console.log('kok masuk kesini');
-
       type = 'LOGIN';
       if (datauserbasicsService.isEmailVerified != undefined) {
         var updatedata = new CreateuserbasicnewDto();
@@ -2117,6 +2115,7 @@ export class SocmedService {
             data_CreateUserbasicDto.profileID = gen_profileID;
             data_CreateUserbasicDto.password = pass_gen;
             data_CreateUserbasicDto.userID = ID_user;
+            data_CreateUserbasicDto.friend = [];
             data_CreateUserbasicDto.insight = {
               $ref: 'insights',
               $id: ID_insights,
