@@ -1745,7 +1745,7 @@ export class ChallengeController {
         var createdata = new Userchallenges();
         createdata.isBot = false;
         createdata.maxScore = 0;
-        createdata.maxDate = null;
+        createdata.maxDate = timestamps_start.split(" ")[0];
         var setscore = 0;
         if(botmode == true)
         {
@@ -1758,8 +1758,6 @@ export class ChallengeController {
             var getuser = listuserarr.find(objschar => objschar.iduser.toString() === getuserid);
             if(getuser != undefined)
             {
-              createdata.maxScore = checkuser.maxScore;
-              createdata.maxDate = timestamps_start.split(" ")[0];
               createdata.isBot = true;
               setscore = getuser.scoreAwal;
 
