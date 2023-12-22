@@ -1747,9 +1747,12 @@ export class ChallengeController {
 
       var datediff = getfromdb.getTime() - convertnow.getTime();
       if (datediff >= 0) {
+        var createdata = new Userchallenges();
+        createdata.isBot = false;
         var setscore = 0;
         if(botmode == true)
         {
+          createdata.isBot = true;
           setscore = checkuser.scoreAwal;
           var getbotpost = await this.postSS.findByPostId(checkuser.postid);
           var tambah = Number(getbotpost.likes.toString()) + Number(checkuser.likeAwal);
@@ -1759,7 +1762,6 @@ export class ChallengeController {
           await this.postSS.updateByPostId(getbotpost._id.toString(), updatepost);
         }
 
-        var createdata = new Userchallenges();
         createdata._id = mongo.Types.ObjectId();
         createdata.idChallenge = new mongo.Types.ObjectId(getsubid);
         createdata.idUser = new mongo.Types.ObjectId(getuserid);

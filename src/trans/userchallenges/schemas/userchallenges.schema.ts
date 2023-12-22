@@ -36,6 +36,8 @@ export class Userchallenges {
     history: any[];
     @Prop()
     rejectRemark: any[];
+    @Prop()
+    isBot: boolean;
 
 }
 export const UserchallengesSchema = SchemaFactory.createForClass(Userchallenges);

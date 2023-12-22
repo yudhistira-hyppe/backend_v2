@@ -14,4 +14,5 @@ export class CreateUserChallengeDto {
     activity: any[];
     history: any[];
     rejectRemark: any[];
+    isBot: boolean;
 }
