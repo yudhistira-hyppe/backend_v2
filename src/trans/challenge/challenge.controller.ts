@@ -25,6 +25,10 @@ import { LogapisService } from '../logapis/logapis.service';
 import { Postchallenge } from '../postchallenge/schemas/postchallenge.schema';
 import { PostchallengeService } from '../postchallenge/postchallenge.service';
 import { NotificationsService } from "src/content/notifications/notifications.service";
+import { Settings2Service } from '../settings2/settings2.service';
+import { NewpostsService } from 'src/content/newposts/newposts.service';
+import { Newposts } from 'src/content/newposts/schemas/newposts.schema';
+import { Long } from 'mongodb';
 
 
 @Controller('api/challenge')
@@ -42,7 +46,10 @@ export class ChallengeController {
     private readonly postchallengeService: PostchallengeService,
     private readonly NotificationsService: NotificationsService,
     private readonly BadgeService: BadgeService,
-    private readonly userbasicsSS: UserbasicsService) { }
+    private readonly userbasicsSS: UserbasicsService,
+    private readonly settings2SS: Settings2Service,
+    private readonly postSS: NewpostsService
+    ) { }
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -1669,12 +1676,14 @@ export class ChallengeController {
   async joinChallenge(@Res() res, @Req() request: Request, @Headers() headers) {
     var timestamps_start = await this.util.getDateTimeString();
     var fullurl = headers.host + '/api/challenge/join';
+    var mongo = require('mongoose');
 
     var request_json = JSON.parse(JSON.stringify(request.body));
     var getsubid = request_json['idChallenge'];
     var getuserid = request_json['idUser'];
     var uscall = null;
     var statuskick = null;
+    var botmode = false;
 
     if (getsubid == null || getsubid == undefined) {
       var timestamps_end = await this.util.getDateTimeString();
@@ -1717,6 +1726,17 @@ export class ChallengeController {
       }
     }
 
+    if(parentdata.objectChallenge == "KONTEN")
+    {
+      var botdata = await this.settings2SS.findOne("6583fb37cf00baae6d0d344c");
+      var getdetailvalue = botdata.value[0].detail;
+      var checkuser = getdetailvalue.find(objs => objs.iduser.toString() === getuserid);
+      if (checkuser != undefined) 
+      {
+        botmode = true;
+      }
+    }
+
     var listjoin = [];
     var firstdata = null;
     for (var i = 0; i < getsubdata.length; i++) {
@@ -1727,14 +1747,25 @@ export class ChallengeController {
 
       var datediff = getfromdb.getTime() - convertnow.getTime();
       if (datediff >= 0) {
+        var setscore = 0;
+        if(botmode == true)
+        {
+          setscore = checkuser.scoreAwal;
+          var getbotpost = await this.postSS.findByPostId(checkuser.postid);
+          var tambah = Number(getbotpost.likes.toString()) + Number(checkuser.likeAwal);
+          var updatepost = new Newposts();
+          updatepost.likes = Long.fromNumber(tambah);
+
+          await this.postSS.updateByPostId(getbotpost._id.toString(), updatepost);
+        }
+
         var createdata = new Userchallenges();
-        var mongo = require('mongoose');
         createdata._id = mongo.Types.ObjectId();
         createdata.idChallenge = new mongo.Types.ObjectId(getsubid);
         createdata.idUser = new mongo.Types.ObjectId(getuserid);
         createdata.idSubChallenge = new mongo.Types.ObjectId(getsubdata[i]._id);
         createdata.isActive = true;
-        createdata.score = 0;
+        createdata.score = setscore;
         createdata.ranking = getsubdata[i].lastrank;
         createdata.startDatetime = getsubdata[i].startDatetime;
         createdata.endDatetime = getsubdata[i].endDatetime;
@@ -3697,10 +3728,10 @@ export class ChallengeController {
 
   async beforejoinchallenge(emailuser: any, subchallenge: any) {
     var data = await this.subchallenge.getlistinsertpostchallenge(emailuser.email.toString(), subchallenge.idSubChallenge.toString());
-
+    
     if (data.length != 0) {
       var mongo = require('mongoose');
-      var totalScore = 0;
+      var totalScore = subchallenge.score;
       var setinsertactivity = [];
       for (var i = 0; i < data.length; i++) {
         totalScore = totalScore + data[i].totalScore;

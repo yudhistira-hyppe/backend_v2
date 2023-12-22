@@ -21,6 +21,8 @@ import { LogapisModule } from '../logapis/logapis.module';
 import { LanguagesModule } from '../../infra/languages/languages.module';
 import { PostchallengeModule } from '../postchallenge/postchallenge.module';
 import { NotificationsModule } from "src/content/notifications/notifications.module";
+import { Settings2Module } from '../settings2/settings2.module';
+import { NewpostsModule } from 'src/content/newposts/newposts.module';
 @Module({
   imports: [
     PostchallengeModule,
@@ -34,6 +36,8 @@ import { NotificationsModule } from "src/content/notifications/notifications.mod
     BadgeModule,
     UserchallengesModule,
     UserbasicsModule,
+    Settings2Module,
+    NewpostsModule,
     MongooseModule.forFeature([
       { name: Challenge.name, schema: ChallengeSchema },
       { name: subChallenge.name, schema: subChallengeSchema },
