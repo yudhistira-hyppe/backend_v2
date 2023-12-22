@@ -104,4 +104,63 @@ export class TemplatesController {
       messages: messages,
     };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('listing/push_notification/v2')
+  async listing2(@Request() req) {
+    var keyword = null;
+    var startdate = null;
+    var enddate = null;
+    var sorting = null;
+    var page = null;
+    var limit = null;
+
+    var request_json = JSON.parse(JSON.stringify(req.body));
+    if (request_json['ascending'] != null && request_json['ascending'] != undefined) {
+      sorting = request_json['ascending'];
+    }
+    else {
+      throw new BadRequestException("Unabled to proceed, ascending field is required");
+    }
+
+    if (request_json['page'] != null && request_json['page'] != undefined) {
+      page = request_json['page'];
+    }
+    else {
+      throw new BadRequestException("Unabled to proceed, page field is required");
+    }
+
+    if (request_json['limit'] != null && request_json['limit'] != undefined) {
+      limit = request_json['limit'];
+    }
+    else {
+      throw new BadRequestException("Unabled to proceed, limit field is required");
+    }
+
+    if (request_json['keyword'] != null && request_json['keyword'] != undefined) {
+      keyword = request_json['keyword'];
+    }
+
+    if (request_json["startdate"] !== undefined && request_json["enddate"] !== undefined) {
+      startdate = request_json["startdate"];
+
+      var currentdate = new Date(new Date(request_json["enddate"]).setDate(new Date(request_json["enddate"]).getDate() + 1));
+      var dateend = currentdate.toISOString().split("T")[0];
+      enddate = dateend;
+    }
+
+    var data = await this.TemplatesService.pushnotif_listing2(keyword, startdate, enddate, sorting, page, limit);
+    var totaldata = await this.TemplatesService.pushnotif_listing2(keyword, startdate, enddate, null, null, null);
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    return {
+      response_code: 202,
+      data: data,
+      total: totaldata.length,
+      messages: messages,
+    };
+  }
 }

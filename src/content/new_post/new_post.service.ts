@@ -11152,4 +11152,84 @@ export class NewPostService {
     return query;
 
   }
+
+  async analitycview(startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+
+      var dt = dateend.substring(0, 10);
+    } catch (e) {
+      dt = "";
+    }
+    var query = await this.loaddata.aggregate([
+      {
+        "$match":
+        {
+          createdAt: {
+            $gte: startdate,
+            $lte: dt
+
+          }
+
+        }
+      },
+      {
+        "$project":
+        {
+          createdAt:
+          {
+            "$substr":
+              [
+                "$createdAt",
+                0,
+                10
+              ]
+          },
+          views: 1,
+          likes: 1,
+          comments: 1
+        }
+      },
+      {
+        "$group":
+        {
+          _id: "$createdAt",
+          views:
+          {
+            "$sum": "$views"
+
+          },
+          likes:
+          {
+            "$sum": "$likes"
+
+          },
+          comments:
+          {
+            "$sum": "$comments"
+
+          },
+
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          date: "$_id",
+          views: "$views",
+          likes: "$likes",
+          comments: "$comments"
+        }
+      },
+      {
+        "$sort":
+        {
+          date: 1
+        }
+      }
+    ]);
+    return query;
+  }
 }

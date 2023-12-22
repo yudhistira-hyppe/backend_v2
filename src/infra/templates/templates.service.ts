@@ -308,4 +308,156 @@ export class TemplatesService {
     var query = await this.TemplatesModel.aggregate(pipeline);
     return query;
   }
+
+  async pushnotif_listing2(target: string, start: string, end: string, sorting: boolean, page: number, limit: number) {
+    var pipeline = [];
+
+    pipeline.push({
+      "$match":
+      {
+        "$and":
+          [
+            {
+              "$expr":
+              {
+                "$eq":
+                  [
+                    "$name", "PUSH_NOTIFICATION"
+                  ]
+              }
+            },
+            {
+              "$expr":
+              {
+                "$eq":
+                  [
+                    "$active", true
+                  ]
+              }
+            },
+          ]
+      }
+    },
+      {
+        $lookup:
+        {
+          from: 'newUserBasics',
+          localField: 'email',
+          foreignField: 'email',
+          as: 'basic_data',
+        }
+      },
+      {
+        "$project":
+        {
+          _id: 1,
+          name: 1,
+          event: 1,
+          subject: 1,
+          subject_id: 1,
+          body_detail: 1,
+          body_detail_id: 1,
+          email: 1,
+          createdAt: 1,
+          fullName:
+          {
+            "$arrayElemAt":
+              [
+                "$basic_data.fullName", 0
+              ]
+          },
+        }
+      },);
+
+    var firstmatch = [];
+    if (start != null) {
+      firstmatch.push({
+        "$expr":
+        {
+          "$gte":
+            [
+              "$createdAt",
+              start
+            ]
+        }
+      },
+        {
+          "$expr":
+          {
+            "$lte":
+              [
+                "$createdAt",
+                end
+              ]
+          }
+        },)
+    }
+
+    if (target != null) {
+      firstmatch.push(
+        {
+          "$or":
+            [
+              {
+                subject:
+                {
+                  "$regex": target,
+                  "$options": "i"
+                }
+              },
+              {
+                subject_id:
+                {
+                  "$regex": target,
+                  "$options": "i"
+                }
+              }
+            ]
+        }
+      );
+    }
+
+    if (firstmatch.length != 0) {
+      pipeline.push(
+        {
+          "$match":
+          {
+            "$and": firstmatch
+          }
+        }
+      );
+    }
+
+    if (sorting != null) {
+      var setascending = null;
+      if (sorting == true) {
+        setascending = 1;
+      }
+      else {
+        setascending = -1;
+      }
+
+      pipeline.push({
+        "$sort":
+        {
+          "createdAt": setascending
+        }
+      });
+    }
+
+    if (page > 0) {
+      pipeline.push({
+        "$skip": limit * page
+      });
+    }
+
+    if (limit > 0) {
+      pipeline.push({
+        "$limit": limit
+      });
+    }
+
+    var query = await this.TemplatesModel.aggregate(pipeline);
+    return query;
+  }
 }
