@@ -1729,11 +1729,14 @@ export class ChallengeController {
     if(parentdata.objectChallenge == "KONTEN")
     {
       var botdata = await this.settings2SS.findOne("6583fb37cf00baae6d0d344c");
-      var getdetailvalue = botdata.value[0].detail;
-      var checkuser = getdetailvalue.find(objs => objs.iduser.toString() === getuserid);
-      if (checkuser != undefined) 
+      if(await this.util.ceckData(botdata))
       {
-        botmode = true;
+        var getdetailvalue = botdata.value[0].detail;
+        var checkuser = getdetailvalue.find(objs => objs.iduser.toString() === getuserid);
+        if (checkuser != undefined) 
+        {
+          botmode = true;
+        }
       }
     }
 
