@@ -1752,7 +1752,7 @@ export class ChallengeController {
       if (datediff >= 0) {
         var createdata = new Userchallenges();
         createdata.isBot = false;
-        createdata.maxScore = null;
+        createdata.maxScore = 0;
         createdata.maxDate = null;
         var setscore = 0;
         if(botmode == true)
