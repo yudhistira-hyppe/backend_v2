@@ -1729,12 +1729,7 @@ export class ChallengeController {
     var botdata = await this.settings2SS.findOne("6583fb37cf00baae6d0d344c");
     if(await this.util.ceckData(botdata))
     {
-      var getdetailvalue = botdata.value[0].detail;
-      var checkuser = getdetailvalue.find(objs => objs.iduser.toString() === getuserid);
-      if (checkuser != undefined) 
-      {
-        botmode = true;
-      }
+      botmode = true;
     }
 
     var listjoin = [];
@@ -1754,19 +1749,30 @@ export class ChallengeController {
         var setscore = 0;
         if(botmode == true)
         {
-          createdata.maxScore = botdata.value[0].maxScore;
-          createdata.maxDate = timestamps_start.split(" ")[0];
-          createdata.isBot = true;
-          setscore = checkuser.scoreAwal;
+          var getdetailvalue = JSON.parse(JSON.stringify(botdata.value));
 
-          if(parentdata.objectChallenge == "KONTEN")
+          var checkuser = getdetailvalue.find(objs => objs.idSubChallenge.toString() === getsubdata[i]._id.toString());
+          if (checkuser != undefined) 
           {
-            var getbotpost = await this.postSS.findByPostId(checkuser.postid);
-            var tambah = Number(getbotpost.likes.toString()) + Number(checkuser.likeAwal);
-            var updatepost = new Newposts();
-            updatepost.likes = Long.fromNumber(tambah);
+            var listuserarr = checkuser.detail;
+            var getuser = listuserarr.find(objschar => objschar.iduser.toString() === getuserid);
+            if(getuser != undefined)
+            {
+              createdata.maxScore = checkuser.maxScore;
+              createdata.maxDate = timestamps_start.split(" ")[0];
+              createdata.isBot = true;
+              setscore = getuser.scoreAwal;
 
-            await this.postSS.updateByPostId(getbotpost._id.toString(), updatepost);
+              if(parentdata.objectChallenge == "KONTEN")
+              {
+                var getbotpost = await this.postSS.findByPostId(getuser.postid);
+                var tambah = Number(getbotpost.likes.toString()) + Number(getuser.likeAwal);
+                var updatepost = new Newposts();
+                updatepost.likes = Long.fromNumber(tambah);
+
+                await this.postSS.updateByPostId(getbotpost._id.toString(), updatepost);
+              }
+            }
           }
         }
 
