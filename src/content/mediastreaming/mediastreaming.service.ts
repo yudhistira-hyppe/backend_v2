@@ -969,7 +969,7 @@ export class MediastreamingService {
           urlIngest: 1,
           createAt: 1,
           interest: 1,
-          totalView: 1,
+          totalView: 23000,
           totalLike: 1,
           totalFollower: 1,
           totalFriend: 1,

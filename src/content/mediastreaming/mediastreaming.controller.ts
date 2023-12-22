@@ -221,8 +221,7 @@ export class MediastreamingController {
           const dataStreamSend = {
             data: {
               idStream: MediastreamingDto_._id.toString(),
-              //viewCount: viewCount
-              viewCount: 23000
+              viewCount: viewCount
             }
           }
           this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
