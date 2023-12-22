@@ -284,8 +284,7 @@ export class MediastreamingController {
             data:{
               idStream: dataStream._id,
               userId: profile._id.toString(),
-              likeCount: 2300
-              //likeCount: MediastreamingDto_.like.length
+              likeCount: MediastreamingDto_.like.length
             }
           }
           this.appGateway.eventStream("LIKE_STREAM", JSON.stringify(dataStreamSend));

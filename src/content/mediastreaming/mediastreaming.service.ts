@@ -398,20 +398,18 @@ export class MediastreamingService {
       },
       {
         $set: {
-          totalView:2300
-          // totalView:
-          // {
-          //   $size: "$views"
-          // }
+          totalView:
+          {
+            $size: "$views"
+          }
         }
       },
       {
         $set: {
-          totalLike: 2300
-          // totalLike:
-          // {
-          //   $size: "$like"
-          // }
+          totalLike:
+          {
+            $size: "$like"
+          }
         }
       },
       {
