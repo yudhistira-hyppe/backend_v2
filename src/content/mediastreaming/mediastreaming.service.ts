@@ -36,7 +36,6 @@ export class MediastreamingService {
             $in: ['$_id', '$idStream']
           }
         },
-
       },
       {
         "$lookup": {
@@ -67,7 +66,6 @@ export class MediastreamingService {
 
                 ]
               },
-
             }
           ]
         }
@@ -896,15 +894,39 @@ export class MediastreamingService {
       },
       {
         "$project": {
+          "userId":1,
           "view": { "$setUnion": ["$view.userId", []] } 
         }
       },
       {
         $unwind:
         {
-          path: "$view",
-          includeArrayIndex: "updateAt_index",
+          path: "$view"
+        }
+      },
+      {
+        "$lookup": {
+          from: "userbasics",
+          as: "data_userbasics_streamer",
+          let: {
+            localID: "$userId"
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$_id", "$$localID"]
+                },
 
+              }
+            },
+            {
+              $project: {
+                fullName: 1,
+                email: 1,
+              }
+            },
+          ],
         }
       },
       { "$limit": limit_ },
@@ -1068,7 +1090,101 @@ export class MediastreamingService {
         }
       },
       {
+        "$lookup": {
+          from: "contentevents",
+          as: "following",
+          let: {
+            localID: {
+              "$let": {
+                "vars": {
+                  "tmp": {
+                    "$arrayElemAt": ["$data_userbasics_streamer", 0]
+                  }
+                },
+                "in": "$$tmp.email"
+              }
+            },
+            user: {
+              "$let": {
+                "vars": {
+                  "tmp": {
+                    "$arrayElemAt": ["$data_userbasics", 0]
+                  }
+                },
+                "in": "$$tmp.email"
+              }
+            },
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$senderParty', '$$user']
+                    }
+                  },
+                  {
+                    $expr: {
+                      $eq: ['$email', '$$localID']
+                    }
+                  },
+                  {
+                    "eventType": "FOLLOWING",
+                  },
+                  {
+                    "event": "ACCEPT"
+                  },
+                  {
+                    "active": true
+                  },
+                ]
+              }
+            },
+            {
+              $project: {
+                senderParty: 1,
+                following:
+                {
+                  $cond: {
+                    if: {
+                      $gt: [{
+                        $strLenCP: "$email"
+                      }, 0]
+                    },
+                    then: true,
+                    else: false
+                  }
+                },
+
+              }
+            }
+          ]
+        },
+      },
+      {
         "$project": {
+          userview: {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics_streamer", 0]
+                }
+              },
+              "in": "$$tmp.email"
+            }
+          },
+          userstream: {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics", 0]
+                }
+              },
+              "in": "$$tmp.email"
+            }
+          },
           "_id": {
             "$let": {
               "vars": {
@@ -1129,10 +1245,19 @@ export class MediastreamingService {
               "in": "$$tmp.avatar"
             }
           },
+          following:
+          {
+            $cond: {
+              if: {
+                $gt: [{ $size: "$following" }, 0]
+              },
+              then: true,
+              else: false
+            }
+          },
         }
       },
     ];
-    console.log(JSON.stringify(paramaggregate));
     const data = await this.MediastreamingModel.aggregate(paramaggregate);
     return data;
   }
