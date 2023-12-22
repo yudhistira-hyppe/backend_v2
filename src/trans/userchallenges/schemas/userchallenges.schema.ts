@@ -38,6 +38,10 @@ export class Userchallenges {
     rejectRemark: any[];
     @Prop()
     isBot: boolean;
+    @Prop()
+    maxDate: string;
+    @Prop()
+    maxScore: number;
 
 }
 export const UserchallengesSchema = SchemaFactory.createForClass(Userchallenges);

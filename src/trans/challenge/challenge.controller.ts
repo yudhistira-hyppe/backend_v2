@@ -1726,18 +1726,10 @@ export class ChallengeController {
       }
     }
 
-    if(parentdata.objectChallenge == "KONTEN")
+    var botdata = await this.settings2SS.findOne("6583fb37cf00baae6d0d344c");
+    if(await this.util.ceckData(botdata))
     {
-      var botdata = await this.settings2SS.findOne("6583fb37cf00baae6d0d344c");
-      if(await this.util.ceckData(botdata))
-      {
-        var getdetailvalue = botdata.value[0].detail;
-        var checkuser = getdetailvalue.find(objs => objs.iduser.toString() === getuserid);
-        if (checkuser != undefined) 
-        {
-          botmode = true;
-        }
-      }
+      botmode = true;
     }
 
     var listjoin = [];
@@ -1752,17 +1744,36 @@ export class ChallengeController {
       if (datediff >= 0) {
         var createdata = new Userchallenges();
         createdata.isBot = false;
+        createdata.maxScore = 0;
+        createdata.maxDate = null;
         var setscore = 0;
         if(botmode == true)
         {
-          createdata.isBot = true;
-          setscore = checkuser.scoreAwal;
-          var getbotpost = await this.postSS.findByPostId(checkuser.postid);
-          var tambah = Number(getbotpost.likes.toString()) + Number(checkuser.likeAwal);
-          var updatepost = new Newposts();
-          updatepost.likes = Long.fromNumber(tambah);
+          var getdetailvalue = JSON.parse(JSON.stringify(botdata.value));
 
-          await this.postSS.updateByPostId(getbotpost._id.toString(), updatepost);
+          var checkuser = getdetailvalue.find(objs => objs.idSubChallenge.toString() === getsubdata[i]._id.toString());
+          if (checkuser != undefined) 
+          {
+            var listuserarr = checkuser.detail;
+            var getuser = listuserarr.find(objschar => objschar.iduser.toString() === getuserid);
+            if(getuser != undefined)
+            {
+              createdata.maxScore = checkuser.maxScore;
+              createdata.maxDate = timestamps_start.split(" ")[0];
+              createdata.isBot = true;
+              setscore = getuser.scoreAwal;
+
+              if(parentdata.objectChallenge == "KONTEN")
+              {
+                var getbotpost = await this.postSS.findByPostId(getuser.postid);
+                var tambah = Number(getbotpost.likes.toString()) + Number(getuser.likeAwal);
+                var updatepost = new Newposts();
+                updatepost.likes = Long.fromNumber(tambah);
+
+                await this.postSS.updateByPostId(getbotpost._id.toString(), updatepost);
+              }
+            }
+          }
         }
 
         createdata._id = mongo.Types.ObjectId();
