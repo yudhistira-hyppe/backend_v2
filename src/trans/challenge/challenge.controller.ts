@@ -1752,9 +1752,13 @@ export class ChallengeController {
       if (datediff >= 0) {
         var createdata = new Userchallenges();
         createdata.isBot = false;
+        createdata.maxScore = null;
+        createdata.maxDate = null;
         var setscore = 0;
         if(botmode == true)
         {
+          createdata.maxScore = botdata.value[0].maxScore;
+          createdata.maxDate = timestamps_start.split(" ")[0];
           createdata.isBot = true;
           setscore = checkuser.scoreAwal;
           var getbotpost = await this.postSS.findByPostId(checkuser.postid);

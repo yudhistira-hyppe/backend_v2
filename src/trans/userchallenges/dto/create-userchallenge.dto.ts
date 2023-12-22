@@ -15,4 +15,6 @@ export class CreateUserChallengeDto {
     history: any[];
     rejectRemark: any[];
     isBot: boolean;
+    maxDate: string;
+    maxScore: number;
 }
