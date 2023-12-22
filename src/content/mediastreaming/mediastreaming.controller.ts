@@ -284,7 +284,8 @@ export class MediastreamingController {
             data:{
               idStream: dataStream._id,
               userId: profile._id.toString(),
-              likeCount: MediastreamingDto_.like.length
+              likeCount: 2300
+              //likeCount: MediastreamingDto_.like.length
             }
           }
           this.appGateway.eventStream("LIKE_STREAM", JSON.stringify(dataStreamSend));
@@ -582,7 +583,6 @@ export class MediastreamingController {
       });
       console.log("_id", _id)
       dataList = await this.mediastreamingService.getDataList(headers['x-auth-user'], _id, MediastreamingDto_.page, MediastreamingDto_.limit)
-      console.log("dataList",dataList)
       return await this.errorHandler.generateAcceptResponseCodeWithData(
         "Get stream succesfully", dataList,
       );
