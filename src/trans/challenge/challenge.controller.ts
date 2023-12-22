@@ -1726,17 +1726,14 @@ export class ChallengeController {
       }
     }
 
-    if(parentdata.objectChallenge == "KONTEN")
+    var botdata = await this.settings2SS.findOne("6583fb37cf00baae6d0d344c");
+    if(await this.util.ceckData(botdata))
     {
-      var botdata = await this.settings2SS.findOne("6583fb37cf00baae6d0d344c");
-      if(await this.util.ceckData(botdata))
+      var getdetailvalue = botdata.value[0].detail;
+      var checkuser = getdetailvalue.find(objs => objs.iduser.toString() === getuserid);
+      if (checkuser != undefined) 
       {
-        var getdetailvalue = botdata.value[0].detail;
-        var checkuser = getdetailvalue.find(objs => objs.iduser.toString() === getuserid);
-        if (checkuser != undefined) 
-        {
-          botmode = true;
-        }
+        botmode = true;
       }
     }
 
@@ -1761,12 +1758,16 @@ export class ChallengeController {
           createdata.maxDate = timestamps_start.split(" ")[0];
           createdata.isBot = true;
           setscore = checkuser.scoreAwal;
-          var getbotpost = await this.postSS.findByPostId(checkuser.postid);
-          var tambah = Number(getbotpost.likes.toString()) + Number(checkuser.likeAwal);
-          var updatepost = new Newposts();
-          updatepost.likes = Long.fromNumber(tambah);
 
-          await this.postSS.updateByPostId(getbotpost._id.toString(), updatepost);
+          if(parentdata.objectChallenge == "KONTEN")
+          {
+            var getbotpost = await this.postSS.findByPostId(checkuser.postid);
+            var tambah = Number(getbotpost.likes.toString()) + Number(checkuser.likeAwal);
+            var updatepost = new Newposts();
+            updatepost.likes = Long.fromNumber(tambah);
+
+            await this.postSS.updateByPostId(getbotpost._id.toString(), updatepost);
+          }
         }
 
         createdata._id = mongo.Types.ObjectId();
