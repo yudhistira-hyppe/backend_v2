@@ -207,7 +207,7 @@ export class MediastreamingController {
           const dataComment = {
             userId: new mongoose.Types.ObjectId(profile._id.toString()),
             status: true,
-            messages: profile_auth.username +" Join in room",
+            messages: profile_auth.username +" Joined",
             createAt: currentDate,
             updateAt: currentDate
           }
@@ -242,14 +242,14 @@ export class MediastreamingController {
           //UPDATE VIEW
           await this.mediastreamingService.updateView(MediastreamingDto_._id.toString(), profile._id.toString(), true, false, currentDate);
           //UPDATE COMMENT
-          const dataComment = {
-            userId: new mongoose.Types.ObjectId(profile._id.toString()),
-            status: true,
-            messages: profile_auth.username + " Leave in room",
-            createAt: currentDate,
-            updateAt: currentDate
-          }
-          await this.mediastreamingService.insertComment(MediastreamingDto_._id.toString(), dataComment);
+          // const dataComment = {
+          //   userId: new mongoose.Types.ObjectId(profile._id.toString()),
+          //   status: true,
+          //   messages: profile_auth.username + " Leave in room",
+          //   createAt: currentDate,
+          //   updateAt: currentDate
+          // }
+          // await this.mediastreamingService.insertComment(MediastreamingDto_._id.toString(), dataComment);
           //SEND VIEW COUNT
           const dataStream = await this.mediastreamingService.findOneStreamingView(MediastreamingDto_._id.toString());
           let viewCount = 0;
@@ -264,13 +264,13 @@ export class MediastreamingController {
           }
           this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
           //SEND COMMENT SINGLE
-          const getUser = await this.userbasicsService.getUser(profile._id.toString());
-          getUser[0]["idStream"] = MediastreamingDto_._id.toString();
-          getUser[0]["messages"] = profile_auth.username + " Leave in room";
-          const singleSend = {
-            data: getUser[0]
-          }
-          this.appGateway.eventStream("COMMENT_STREAM_SINGLE", JSON.stringify(singleSend));
+          // const getUser = await this.userbasicsService.getUser(profile._id.toString());
+          // getUser[0]["idStream"] = MediastreamingDto_._id.toString();
+          // getUser[0]["messages"] = profile_auth.username + " Leave in room";
+          // const singleSend = {
+          //   data: getUser[0]
+          // }
+          // this.appGateway.eventStream("COMMENT_STREAM_SINGLE", JSON.stringify(singleSend));
         }
       }
       //CECK TYPE LIKE
