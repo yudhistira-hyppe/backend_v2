@@ -207,7 +207,7 @@ export class MediastreamingController {
           const dataComment = {
             userId: new mongoose.Types.ObjectId(profile._id.toString()),
             status: true,
-            messages: profile_auth.username +" Joined",
+            messages: "Joined",
             createAt: currentDate,
             updateAt: currentDate
           }
@@ -228,7 +228,7 @@ export class MediastreamingController {
           //SEND COMMENT SINGLE
           const getUser = await this.userbasicsService.getUser(profile._id.toString());
           getUser[0]["idStream"] = MediastreamingDto_._id.toString();
-          getUser[0]["messages"] = profile_auth.username + " Join in room";
+          getUser[0]["messages"] = "Joined";
           const singleSend = {
             data: getUser[0]
           }
