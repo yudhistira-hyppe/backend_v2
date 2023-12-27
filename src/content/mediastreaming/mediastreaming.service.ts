@@ -1042,15 +1042,27 @@ export class MediastreamingService {
     let paramaggregate = [
       {
         $match: {
-          _id: new mongoose.Types.ObjectId(_id),
-          "view": { "$elemMatch": { "status": true } }
+          _id: new mongoose.Types.ObjectId(_id)
         }
       },
       {
-        "$project": {
-          "view": { "$setUnion": ["$view.userId", []] }
+        $project: {
+          view: {
+            $filter: {
+              input: '$view',
+              as: 'item',
+              cond: {
+                $eq: ["$$item.status", true]
+              }
+            }
+          }
         }
-      },
+      }
+      // {
+      //   "$project": {
+      //     "view": { "$setUnion": ["$view.userId", []] }
+      //   }
+      // },
     ];
     console.log(JSON.stringify(paramaggregate));
     const data = await this.MediastreamingModel.aggregate(paramaggregate);
