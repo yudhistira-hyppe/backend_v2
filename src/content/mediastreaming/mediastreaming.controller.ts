@@ -388,8 +388,25 @@ export class MediastreamingController {
           "Update stream succesfully", dataResponse
         );
       } else if (MediastreamingDto_.type == "OPEN_VIEW") {
+        const dataStream = await this.mediastreamingService.findOneStreamingView(MediastreamingDto_._id.toString());
+        const MediastreamingDto_Res = new MediastreamingDto();
+        MediastreamingDto_Res._id = ceckId._id;
+        MediastreamingDto_Res.title = ceckId.title;
+        MediastreamingDto_Res.userId = ceckId.userId;
+        MediastreamingDto_Res.expireTime = ceckId.expireTime;
+        MediastreamingDto_Res.startLive = ceckId.startLive;
+        MediastreamingDto_Res.status = ceckId.status;
+        MediastreamingDto_Res.view = ceckId.view;
+        MediastreamingDto_Res.comment = ceckId.comment;
+        MediastreamingDto_Res.like = ceckId.like;
+        MediastreamingDto_Res.share = ceckId.share;
+        MediastreamingDto_Res.follower = ceckId.follower;
+        MediastreamingDto_Res.urlStream = ceckId.urlStream;
+        MediastreamingDto_Res.urlIngest = ceckId.urlIngest;
+        MediastreamingDto_Res.createAt = ceckId.createAt;
+        MediastreamingDto_Res.viewCountActive = dataStream[0].view.length;
         return await this.errorHandler.generateAcceptResponseCodeWithData(
-          "Update stream succesfully", ceckId
+          "Update stream succesfully", MediastreamingDto_Res
         );
       } else {
         return await this.errorHandler.generateAcceptResponseCode(

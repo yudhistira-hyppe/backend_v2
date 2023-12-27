@@ -55,16 +55,13 @@ export class MediastreamingService {
     //                 {
     //                   $eq: ["$email", "$$email"]
     //                 },
-
     //               },
     //               {
     //                 $expr:
     //                 {
     //                   $eq: ["$_id", "$$userID"]
     //                 },
-
     //               },
-
     //             ]
     //           },
     //         }
@@ -271,7 +268,6 @@ export class MediastreamingService {
 
     //       ]
     //     },
-
     //   },
     //   {
     //     "$lookup": {
@@ -284,7 +280,6 @@ export class MediastreamingService {
     //         user: {
     //           $arrayElemAt: ["$userLogin.email", 0]
     //         },
-
     //       },
     //       pipeline: [
     //         {
@@ -303,7 +298,6 @@ export class MediastreamingService {
     //               },
     //               {
     //                 "eventType": "FOLLOWING",
-
     //               },
     //               {
     //                 "event": "ACCEPT"
