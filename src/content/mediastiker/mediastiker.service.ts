@@ -1174,6 +1174,495 @@ export class MediastikerService {
         return data[0];
     }
 
+    async stickerchartbyId2(id: string) {
+        var mongo = require('mongoose');
+        var konvertid = mongo.Types.ObjectId(id);
+        var data = await this.MediastikerModel.aggregate([
+            {
+                "$match":
+                {
+                    _id: konvertid
+                }
+            },
+            {
+                "$limit": 1
+            },
+            {
+                "$lookup":
+                {
+                    from: "newPosts",
+                    as: "posts_data",
+                    let:
+                    {
+                        stiker_id: "$_id"
+                    },
+                    pipeline:
+                        [
+                            {
+                                "$unwind":
+                                {
+                                    path: "$stiker"
+                                }
+                            },
+                            {
+                                "$match":
+                                {
+                                    "$expr":
+                                    {
+                                        "$eq":
+                                            [
+                                                "$stiker._id", "$$stiker_id"
+                                            ]
+                                    }
+                                }
+                            },
+                            {
+                                "$group":
+                                {
+                                    _id: "$email",
+                                    tipedata:
+                                    {
+                                        "$push":
+                                        {
+                                            "postType": "$postType"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "$lookup":
+                                {
+                                    from: 'newUserBasics',
+                                    localField: '_id',
+                                    foreignField: 'email',
+                                    as: 'basic_data',
+                                }
+                            },
+                            {
+                                "$unwind":
+                                {
+                                    path: "$basic_data",
+                                    preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    _id: 1,
+                                    tipedata: 1,
+                                    userInterests: "$basic_data.userInterests",
+                                    state: 
+                                    {
+                                        "$ifNull":
+                                        [
+                                            "$basic_data.statesName",
+                                            "OTHER"
+                                        ]
+                                    },
+                                    age:
+                                    {
+                                        "$switch": {
+                                            "branches": [{
+                                                "case": {
+                                                    "$and": [{
+                                                        "$gte": [{
+                                                            "$cond": {
+                                                                "if": {
+                                                                    "$and": ["$basic_data.dob", {
+                                                                        "$ne": ["$basic_data.dob", ""]
+                                                                    }]
+                                                                },
+                                                                "then": {
+                                                                    "$toInt": {
+                                                                        "$divide": [{
+                                                                            "$subtract": [new Date(), {
+                                                                                "$toDate": "$basic_data.dob"
+                                                                            }]
+                                                                        }, 31536000000]
+                                                                    }
+                                                                },
+                                                                "else": 0
+                                                            }
+                                                        }, 1]
+                                                    }, {
+                                                        "$lte": [{
+                                                            "$cond": {
+                                                                "if": {
+                                                                    "$and": ["$basic_data.dob", {
+                                                                        "$ne": ["$basic_data.dob", ""]
+                                                                    }]
+                                                                },
+                                                                "then": {
+                                                                    "$toInt": {
+                                                                        "$divide": [{
+                                                                            "$subtract": [new Date(), {
+                                                                                "$toDate": "$basic_data.dob"
+                                                                            }]
+                                                                        }, 31536000000]
+                                                                    }
+                                                                },
+                                                                "else": 0
+                                                            }
+                                                        }, 14]
+                                                    }]
+                                                },
+                                                "then": "< 14 Tahun"
+                                            }, {
+                                                "case": {
+                                                    "$and": [{
+                                                        "$gte": [{
+                                                            "$cond": {
+                                                                "if": {
+                                                                    "$and": ["$basic_data.dob", {
+                                                                        "$ne": ["$basic_data.dob", ""]
+                                                                    }]
+                                                                },
+                                                                "then": {
+                                                                    "$toInt": {
+                                                                        "$divide": [{
+                                                                            "$subtract": [new Date(), {
+                                                                                "$toDate": "$basic_data.dob"
+                                                                            }]
+                                                                        }, 31536000000]
+                                                                    }
+                                                                },
+                                                                "else": 0
+                                                            }
+                                                        }, 14]
+                                                    }, {
+                                                        "$lte": [{
+                                                            "$cond": {
+                                                                "if": {
+                                                                    "$and": ["$basic_data.dob", {
+                                                                        "$ne": ["$basic_data.dob", ""]
+                                                                    }]
+                                                                },
+                                                                "then": {
+                                                                    "$toInt": {
+                                                                        "$divide": [{
+                                                                            "$subtract": [new Date(), {
+                                                                                "$toDate": "$basic_data.dob"
+                                                                            }]
+                                                                        }, 31536000000]
+                                                                    }
+                                                                },
+                                                                "else": 0
+                                                            }
+                                                        }, 24]
+                                                    }]
+                                                },
+                                                "then": "14 - 24 Tahun"
+                                            }, {
+                                                "case": {
+                                                    "$and": [{
+                                                        "$gte": [{
+                                                            "$cond": {
+                                                                "if": {
+                                                                    "$and": ["$basic_data.dob", {
+                                                                        "$ne": ["$basic_data.dob", ""]
+                                                                    }]
+                                                                },
+                                                                "then": {
+                                                                    "$toInt": {
+                                                                        "$divide": [{
+                                                                            "$subtract": [new Date(), {
+                                                                                "$toDate": "$basic_data.dob"
+                                                                            }]
+                                                                        }, 31536000000]
+                                                                    }
+                                                                },
+                                                                "else": 0
+                                                            }
+                                                        }, 25]
+                                                    }, {
+                                                        "$lte": [{
+                                                            "$cond": {
+                                                                "if": {
+                                                                    "$and": ["$basic_data.dob", {
+                                                                        "$ne": ["$basic_data.dob", ""]
+                                                                    }]
+                                                                },
+                                                                "then": {
+                                                                    "$toInt": {
+                                                                        "$divide": [{
+                                                                            "$subtract": [new Date(), {
+                                                                                "$toDate": "$basic_data.dob"
+                                                                            }]
+                                                                        }, 31536000000]
+                                                                    }
+                                                                },
+                                                                "else": 0
+                                                            }
+                                                        }, 35]
+                                                    }]
+                                                },
+                                                "then": "24 - 35 Tahun"
+                                            }, {
+                                                "case": {
+                                                    "$and": [{
+                                                        "$gte": [{
+                                                            "$cond": {
+                                                                "if": {
+                                                                    "$and": ["$basic_data.dob", {
+                                                                        "$ne": ["$basic_data.dob", ""]
+                                                                    }]
+                                                                },
+                                                                "then": {
+                                                                    "$toInt": {
+                                                                        "$divide": [{
+                                                                            "$subtract": [new Date(), {
+                                                                                "$toDate": "$basic_data.dob"
+                                                                            }]
+                                                                        }, 31536000000]
+                                                                    }
+                                                                },
+                                                                "else": 0
+                                                            }
+                                                        }, 35]
+                                                    }, {
+                                                        "$lte": [{
+                                                            "$cond": {
+                                                                "if": {
+                                                                    "$and": ["$basic_data.dob", {
+                                                                        "$ne": ["$basic_data.dob", ""]
+                                                                    }]
+                                                                },
+                                                                "then": {
+                                                                    "$toInt": {
+                                                                        "$divide": [{
+                                                                            "$subtract": [new Date(), {
+                                                                                "$toDate": "$basic_data.dob"
+                                                                            }]
+                                                                        }, 31536000000]
+                                                                    }
+                                                                },
+                                                                "else": 0
+                                                            }
+                                                        }, 44]
+                                                    }]
+                                                },
+                                                "then": "35 - 44 Tahun"
+                                            }, {
+                                                "case": {
+                                                    "$gt": [{
+                                                        "$cond": {
+                                                            "if": {
+                                                                "$and": ["$basic_data.dob", {
+                                                                    "$ne": ["$basic_data.dob", ""]
+                                                                }]
+                                                            },
+                                                            "then": {
+                                                                "$toInt": {
+                                                                    "$divide": [{
+                                                                        "$subtract": [new Date(), {
+                                                                            "$toDate": "$basic_data.dob"
+                                                                        }]
+                                                                    }, 31536000000]
+                                                                }
+                                                            },
+                                                            "else": 0
+                                                        }
+                                                    }, 43]
+                                                },
+                                                "then": "> 44 Tahun"
+                                            }],
+                                            "default": "OTHER"
+                                        }
+                                    },
+                                    gender:"$basic_data.gender",
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    _id: 1,
+                                    tipedata: 1,
+                                    totalpost:
+                                    {
+                                        "$size": "$tipedata"
+                                    },
+                                    userInterests: 1,
+                                    age: 1,
+                                    gender: 1,
+                                    total: 1,
+                                    state: 1
+                                }
+                            },
+                            {
+                                "$facet":
+                                {
+                                    "usedbytype":
+                                        [
+                                            {
+                                                "$unwind":
+                                                {
+                                                    path: "$tipedata",
+                                                    preserveNullAndEmptyArrays: true
+                                                }
+                                            },
+                                            {
+                                                "$group":
+                                                {
+                                                    _id: "$tipedata.postType",
+                                                    total:
+                                                    {
+                                                        "$sum": 1
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                    "gender":
+                                        [
+                                            {
+                                                "$group":
+                                                {
+                                                    _id: "$gender",
+                                                    total:
+                                                    {
+                                                        "$sum": "$totalpost"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "$sort":
+                                                {
+                                                    total: -1
+                                                }
+                                            }
+                                        ],
+                                    "age":
+                                        [
+                                            {
+                                                "$group":
+                                                {
+                                                    _id: "$age",
+                                                    total:
+                                                    {
+                                                        "$sum": "$totalpost"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "$sort":
+                                                {
+                                                    total: -1
+                                                }
+                                            }
+                                        ],
+                                    "area":
+                                        [
+                                            {
+                                                "$group":
+                                                {
+                                                    _id: "$state",
+                                                    total:
+                                                    {
+                                                        "$sum": "$totalpost"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "$sort":
+                                                {
+                                                    total: -1
+                                                }
+                                            }
+                                        ],
+                                    "interest":
+                                        [
+                                            {
+                                                "$unwind":
+                                                {
+                                                    path: "$userInterests"
+                                                }
+                                            },
+                                            {
+                                                "$project":
+                                                {
+                                                    interest: "$userInterests.$id"
+                                                }
+                                            },
+                                            {
+                                                "$group":
+                                                {
+                                                    _id: "$interest"
+                                                }
+                                            },
+                                            {
+                                                $lookup:
+                                                {
+                                                    from: 'interests_repo',
+                                                    localField: '_id',
+                                                    foreignField: '_id',
+                                                    as: 'interest_data',
+                                                }
+                                            },
+                                            {
+                                                "$project":
+                                                {
+                                                    _id: 0,
+                                                    interests:
+                                                    {
+                                                        "$arrayElemAt":
+                                                            [
+                                                                "$interest_data.interestName", 0
+                                                            ]
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                }
+                            }
+                        ]
+                }
+            },
+            {
+                "$project":
+                {
+                    // used:"$countused",
+                    search: "$countsearch",
+                    used:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$posts_data.usedbytype", 0
+                            ]
+                    },
+                    gender:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$posts_data.gender", 0
+                            ]
+                    },
+                    age:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$posts_data.age", 0
+                            ]
+                    },
+                    area:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$posts_data.area", 0
+                            ]
+                    },
+                    interest:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$posts_data.interest", 0
+                            ]
+                    },
+                }
+            }
+        ]);
+
+        return data[0];
+    }
+
     async listingapp(keyword: string, jenis: string) {
         var pipeline = [];
         pipeline.push(

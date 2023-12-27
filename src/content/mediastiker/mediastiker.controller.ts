@@ -910,6 +910,12 @@ export class MediastikerController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get(':id/chart/v2')
+    async getdetailchartbyid2(@Param('id') id: string) {
+        return await this.MediastikerService.stickerchartbyId(id);
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Post('listingapp')
     async listingapp(@Req() request) {
         var request_json = JSON.parse(JSON.stringify(request.body));
