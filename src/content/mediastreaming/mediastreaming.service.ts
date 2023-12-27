@@ -608,7 +608,7 @@ export class MediastreamingService {
         {
           "$lookup": {
             from: "mediaprofilepicts",
-            as: "avatar",
+            as: "avatars",
             let: {
               localID: { $arrayElemAt: ["$userStream.profilePict.$id", 0] }
             },
@@ -989,7 +989,49 @@ export class MediastreamingService {
             {
               $arrayElemAt: ["$user.email", 0]
             },
-            avatar: 1,
+            //avatar: 1,
+            avatar: {
+              "mediaBasePath": {
+                "$let": {
+                  "vars": {
+                    "tmp": {
+                      "$arrayElemAt": ["$avatars", 0]
+                    }
+                  },
+                  "in": "$$tmp.mediaBasePath"
+                }
+              },
+              "mediaUri": {
+                "$let": {
+                  "vars": {
+                    "tmp": {
+                      "$arrayElemAt": ["$avatars", 0]
+                    }
+                  },
+                  "in": "$$tmp.mediaUri"
+                }
+              },
+              "mediaType": {
+                "$let": {
+                  "vars": {
+                    "tmp": {
+                      "$arrayElemAt": ["$avatars", 0]
+                    }
+                  },
+                  "in": "$$tmp.mediaType"
+                }
+              },
+              "mediaEndpoint": {
+                "$let": {
+                  "vars": {
+                    "tmp": {
+                      "$arrayElemAt": ["$avatars", 0]
+                    }
+                  },
+                  "in": "$$tmp.mediaEndpoint"
+                }
+              }
+            }
           }
         },
       ]
