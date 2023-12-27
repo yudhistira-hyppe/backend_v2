@@ -162,11 +162,13 @@ export class MediastreamingController {
         _MediastreamingDto_.status = false;
         _MediastreamingDto_.endLive = currentDate;
         await this.mediastreamingService.updateStreaming(MediastreamingDto_._id.toString(), _MediastreamingDto_);
+        const getDataStream = await this.mediastreamingService.getDataEndLive(MediastreamingDto_._id.toString());
         //SEND STATUS STOP
         const dataPause = {
           data: {
             idStream: MediastreamingDto_._id.toString(),
-            status: false
+            status: false,
+            totalViews: getDataStream[0].view_unique.length,
           }
         }
         this.appGateway.eventStream("STATUS_STREAM", JSON.stringify(dataPause));
