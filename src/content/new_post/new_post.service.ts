@@ -11,6 +11,7 @@ import { CreateNewPostDTO, PostResponseApps, PostData, Avatar, Metadata, TagPeop
 import { ContenteventsService } from '../contentevents/contentevents.service';
 import { ErrorHandler } from 'src/utils/error.handler';
 import { MediamusicService } from '../mediamusic/mediamusic.service';
+import { GetusercontentsService } from 'src/trans/getusercontents/getusercontents.service';
 
 @Injectable()
 export class NewPostService {
@@ -25,7 +26,8 @@ export class NewPostService {
     private readonly errorHandler: ErrorHandler,
     private readonly basic2SS: UserbasicnewService,
     private readonly contentEventService: ContenteventsService,
-    private readonly musicSS: MediamusicService
+    private readonly musicSS: MediamusicService,
+    private readonly loadApsara: GetusercontentsService
   ) { }
 
   async findOne(id: string) {
@@ -11231,5 +11233,512 @@ export class NewPostService {
       }
     ]);
     return query;
+  }
+
+  async boostconsolebawah2(email: string, startdate: string, enddate: string, type: string, sessionId: any[], statusPengajuan: any[], descending: boolean, page: number, limit: number) {
+    var pipeline = [];
+    var order = null;
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+
+      var dt = dateend.substring(0, 10);
+    } catch (e) {
+      dt = "";
+    }
+
+    var arrsessionId = [];
+    var idsessionId = null;
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+    var lengsessionId = null;
+
+    try {
+      lengsessionId = sessionId.length;
+    } catch (e) {
+      lengsessionId = 0;
+    }
+    if (lengsessionId > 0) {
+
+      for (let i = 0; i < lengsessionId; i++) {
+        let idses = sessionId[i];
+        idsessionId = mongoose.Types.ObjectId(idses);
+        arrsessionId.push(idsessionId);
+      }
+    }
+
+    if (descending === true) {
+      order = -1;
+    } else {
+      order = 1;
+    }
+    if (email && email !== undefined) {
+      pipeline.push(
+        {
+
+          $match: {
+
+            email: email
+          }
+        },
+      );
+    }
+
+    pipeline.push(
+      {
+
+        $match: {
+          $and: [{
+            boosted: {
+              $ne: []
+            }
+          }, {
+            boosted: {
+              $ne: null
+            }
+          }],
+          active: true,
+
+        }
+      },
+      {
+        $set: {
+          "datenow":
+          {
+            "$dateToString": {
+              "format": "%Y-%m-%d %H:%M:%S",
+              "date": {
+                $add: [new Date(), + 25200000]
+              }
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          datenow: 1,
+
+          jangkauan: {
+            $size: {
+              $arrayElemAt: ['$boosted.boostViewer', 0]
+            },
+
+          },
+          typeboost: {
+            $arrayElemAt: ['$boosted.type', 0]
+          },
+          start: {
+            $arrayElemAt: ['$boosted.boostSession.start', 0]
+          },
+          end: {
+            $arrayElemAt: ['$boosted.boostSession.end', 0]
+          },
+          boostSessionid: {
+            $arrayElemAt: ['$boosted.boostSession.id', 0]
+          },
+          tempmedia: {
+            $arrayElemAt: ['$mediaSource', 0]
+          },
+
+        }
+      },
+      {
+        $lookup: {
+          from: 'newUserBasics',
+          localField: 'email',
+          foreignField: 'email',
+          as: 'databasic',
+
+        },
+
+      },
+      {
+        $unwind: {
+          path: "$databasic",
+
+        }
+      },
+      {
+        $lookup: {
+          from: 'boostSession',
+          localField: 'boostSessionid',
+          foreignField: '_id',
+          as: 'boostSesidata',
+
+        },
+
+      },
+      {
+        "$lookup": {
+          "from": "transactions",
+          "as": "trans",
+          "let": {
+            "local_id": "$postID",
+
+          },
+          "pipeline": [
+            {
+              $match:
+              {
+                $expr: {
+                  $eq: ['$postid', '$$local_id']
+                }
+              }
+            },
+            {
+              $project: {
+                iduserbuyer: 1,
+                idusersell: 1,
+                noinvoice: 1,
+                status: 1,
+                amount: 1,
+                timestamp: 1,
+                postid: 1
+              }
+            },
+            {
+              $match: {
+                idusersell: '$databasic._id',
+                status: "Success"
+              }
+            },
+
+          ],
+
+        },
+
+      },
+      {
+        $project: {
+          iduser: '$databasic._id',
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          postType: 1,
+          email: 1,
+          jangkauan: 1,
+          start: 1,
+          end: 1,
+          typeboost: 1,
+          sessionName: {
+            $arrayElemAt: ['$boostSesidata.name', 0]
+          },
+          sessionType: {
+            $arrayElemAt: ['$boostSesidata.type', 0]
+          },
+          sessionStart: {
+            $arrayElemAt: ['$boostSesidata.start', 0]
+          },
+          sessionEnd: {
+            $arrayElemAt: ['$boostSesidata.end', 0]
+          },
+          type: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$postType', 'pict']
+                  },
+                  'then': "HyppePic"
+                },
+                {
+                  'case': {
+                    '$eq': ['$postType', 'vid']
+                  },
+                  'then': "HyppeVid"
+                },
+                {
+                  'case': {
+                    '$eq': ['$postType', 'diary']
+                  },
+                  'then': "HyppeDiary"
+                },
+                {
+                  'case': {
+                    '$eq': ['$postType', 'story']
+                  },
+                  'then': "HyppeStory"
+                },
+
+              ],
+              default: ''
+            }
+          },
+          description: 1,
+          title: 1,
+          active: 1,
+          datenow: 1,
+          trans: 1,
+          boostSessionid: 1,
+          tempmedia: 1,
+          statusPengajuan: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$lt': ['$datenow', '$start'],
+
+                  },
+                  'then': 'Dijadwalkan'
+                },
+                {
+                  'case': {
+                    $and: [
+                      {
+                        '$gt': ['$datenow', '$start'],
+
+                      },
+                      {
+                        '$lt': ['$datenow', '$end'],
+
+                      }
+                    ]
+                  },
+                  'then': 'Sedang Berlangsung'
+                },
+                {
+                  'case': {
+                    '$gt': ['$datenow', '$end'],
+
+                  },
+                  'then': 'Selesai'
+                },
+
+              ],
+              default: 'Dijadwalkan'
+            }
+          },
+          keterangan:
+          {
+            $cond: {
+              if: {
+
+                $eq: ["$trans", []]
+              },
+              then: 'Belum Terjual',
+              else: 'Terjual',
+
+            }
+          },
+        }
+      },
+      {
+          "$addFields":
+          {
+              "cleanUri":
+              { 
+                  $replaceOne: 
+                  { 
+                      input: "$tempmedia.mediaUri", 
+                      find: "_0001.jpeg", 
+                      replacement: "" 
+                  }
+              }
+          }
+      },
+      {
+        $project: {
+          iduser: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          postType: 1,
+          email: 1,
+          type: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          jangkauan: 1,
+          start: 1,
+          end: 1,
+          sessionName: 1,
+          sessionType: 1,
+          sessionStart: 1,
+          sessionEnd: 1,
+          statusPengajuan: 1,
+          datenow: 1,
+          keterangan: 1,
+          typeboost: 1,
+          boostSessionid: 1,
+          mediaBasePath:
+          {
+              "$ifNull":
+              [
+                  "$tempmedia.mediaBasePath",
+                  null
+              ]
+          },
+          mediaUri:
+          {
+              "$ifNull":
+              [
+                  "$tempmedia.mediaUri",
+                  null
+              ]
+          },
+          mediaType:
+          {
+              "$ifNull":
+              [
+                  "$tempmedia.mediaType",
+                  null
+              ]
+          },
+          mediaThumbEndpoint:
+          {
+              "$ifNull":
+              [
+                  "$tempmedia.mediaThumbEndpoint",
+                  {
+                      "$concat":
+                      [
+                          "/thumb/",
+                          "$cleanUri"
+                      ]
+                  }
+              ]
+          },
+          mediaEndpoint:
+          {
+              "$ifNull":
+              [
+                  "$tempmedia.mediaEndpoint",
+                  {
+                      "$cond":
+                      {
+                          if:
+                          {
+                              "$eq":
+                              [
+                                  "$postType", "pict"
+                              ]
+                          },
+                          then:
+                          {
+                              "$concat":
+                              [
+                                  "/pict/",
+                                  "$cleanUri"
+                              ]
+                          },
+                          else:
+                          {
+                              "$concat":
+                              [
+                                  "/stream/",
+                                  "$cleanUri"
+                              ]
+                          }
+                      }
+                  }
+              ]
+          },
+          mediaThumbUri:
+          {
+              "$ifNull":
+              [
+                  "$tempmedia.mediaThumbUri",
+                  null
+              ]
+          },
+          apsara:
+          {
+              "$ifNull":
+              [
+                  "$tempmedia.apsara",
+                  false
+              ]
+          },
+          apsaraId:
+          {
+              "$ifNull":
+              [
+                  "$tempmedia.apsaraId",
+                  false
+              ]
+          },
+
+        }
+      },
+    );
+
+    if (type && type !== undefined) {
+      pipeline.push({
+        $match: {
+          typeboost: type
+        }
+      },);
+    }
+    if (statusPengajuan && statusPengajuan !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              statusPengajuan: {
+                $in: statusPengajuan
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+    if (sessionId && sessionId !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              boostSessionid: {
+                $in: arrsessionId
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+    if (startdate && startdate !== undefined) {
+      pipeline.push({ $match: { start: { $gte: startdate } } });
+    }
+    if (enddate && enddate !== undefined) {
+      pipeline.push({ $match: { start: { $lte: dt } } });
+    }
+    pipeline.push({
+      $sort: {
+        start: order
+      },
+
+    },);
+    if (page > 0) {
+      pipeline.push({ $skip: (page * limit) });
+    }
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
+
+    var setutil = require('util');
+    var query = await this.loaddata.aggregate(pipeline);
+
+    var data = [];
+
+    for (var i = 0; i < query.length; i++) {
+      let dataconten = await this.loadApsara.getapsaraDatabase(query, i);
+
+      data.push(dataconten[i]);
+    }
+
+    console.log(data);
+
+    return data;
+
   }
 }

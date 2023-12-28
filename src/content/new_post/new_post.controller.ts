@@ -1870,4 +1870,108 @@ export class NewPostController {
 
         return { response_code: 202, messages, data: arrdataview };
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('getusercontents/boostconsole/list/v2')
+    async finddataboostbawah2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/getusercontents/boostconsole/list/v2';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var page = null;
+        var startdate = null;
+        var enddate = null;
+        var statuspengajuan = [];
+        var limit = null;
+        var totalpage = 0;
+        var totalallrow = 0;
+        var totalsearch = 0;
+        var total = 0;
+        var descending = null;
+        var email = null;
+        var type = null;
+        var sessionid = [];
+        var query = null;
+        var data = null;
+        var datasearch = null;
+        var dataall = null;
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        email = request_json["email"];
+        type = request_json["type"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        sessionid = request_json["sessionid"];
+        descending = request_json["descending"];
+        statuspengajuan = request_json["statuspengajuan"];
+        try {
+            query = await this.newPostService.boostconsolebawah2(email, startdate, enddate, type, sessionid, statuspengajuan, descending, page, limit);
+            data = query;
+        } catch (e) {
+            query = null;
+            data = [];
+        }
+        try {
+            total = query.length;
+        } catch (e) {
+            total = 0;
+        }
+
+        // try {
+        //     datasearch = await this.getusercontentsService.boostconsolebawahcount(email, startdate, enddate, type, sessionid, statuspengajuan);
+        //     totalsearch = datasearch[0].totalpost;
+        // } catch (e) {
+        //     totalsearch = 0;
+        // }
+
+        // try {
+        //     dataall = await this.getusercontentsService.boostconsolebawahcount(undefined, undefined, undefined, undefined, undefined, undefined);
+        //     totalallrow = dataall[0].totalpost;
+
+        // } catch (e) {
+        //     totalallrow = 0;
+        // }
+
+
+        // var tpage = null;
+        // var tpage2 = null;
+
+        // tpage2 = (totalsearch / limit).toFixed(0);
+        // tpage = (totalsearch % limit);
+        // if (tpage > 0 && tpage < 5) {
+        //     totalpage = parseInt(tpage2) + 1;
+
+        // } else {
+        //     totalpage = parseInt(tpage2);
+        // }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        return { response_code: 202, data, page, limit, total, totalallrow: 0, totalsearch: 0, totalpage: 0, messages };
+
+    }
 }
