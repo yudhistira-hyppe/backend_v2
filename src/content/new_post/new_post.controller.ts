@@ -1974,4 +1974,36 @@ export class NewPostController {
         return { response_code: 202, data, page, limit, total, totalallrow: 0, totalsearch: 0, totalpage: 0, messages };
 
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('getusercontents/boostconsole/v2')
+    async finddataboost(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/getusercontents/boostconsole/v2';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        //var request_json = JSON.parse(JSON.stringify(request.body));
+
+        var query = null;
+        var data = null;
+
+        try {
+            query = await this.newPostService.boostlistconsole();
+            data = query;
+        } catch (e) {
+            query = null;
+            data = [];
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+        return { response_code: 202, data, messages };
+    }
 }

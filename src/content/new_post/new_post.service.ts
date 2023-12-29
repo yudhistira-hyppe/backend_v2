@@ -11741,4 +11741,341 @@ export class NewPostService {
     return data;
 
   }
+
+  async boostlistconsole() {
+    var query = await this.loaddata.aggregate([
+        {
+          $match: {
+            $and: [{
+              boosted: {
+                $ne: []
+              }
+            }, {
+              boosted: {
+                $ne: null
+              }
+            }]
+          }
+        },
+        {
+          $facet: {
+            "totalpost": [
+    
+              {
+                $group: {
+                  _id: null,
+                  totalpost: {
+                    $sum: 1
+                  }
+                }
+              }
+            ],
+            "jangkauan": [
+    
+              {
+                $project: {
+    
+                  view: {
+                    $arrayElemAt: ["$boosted.boostViewer", 0]
+                  },
+    
+                }
+              },
+              {
+                $project: {
+    
+                  view: {
+                    $size: '$view'
+                  },
+    
+                }
+              },
+              {
+                $unwind: '$view'
+              },
+              {
+                $group: {
+                  _id: null,
+                  "total": {
+                    $sum: "$view"
+                  }
+                }
+              }
+            ],
+            "post": [
+    
+              {
+    
+                $match: {
+    
+                  active: true
+                }
+              },
+              {
+                $project: {
+                  createdAt: 1,
+                  updatedAt: 1,
+                  postID: 1,
+                  email: 1,
+                  postType: 1,
+                  description: 1,
+                  title: 1,
+                  active: 1,
+                  jangkauan: {
+                    $size: {
+                      $arrayElemAt: ['$boosted.boostViewer', 0]
+                    },
+    
+                  },
+                  tempmedia: {
+                      $arrayElemAt: ['$mediaSource', 0]
+                  },
+    
+                }
+              },
+              {
+                $project: {
+                  createdAt: 1,
+                  updatedAt: 1,
+                  postID: 1,
+                  postType: 1,
+                  email: 1,
+                  jangkauan: 1,
+                  type: {
+                    $switch: {
+                      branches: [
+                        {
+                          'case': {
+                            '$eq': ['$postType', 'pict']
+                          },
+                          'then': "HyppePic"
+                        },
+                        {
+                          'case': {
+                            '$eq': ['$postType', 'vid']
+                          },
+                          'then': "HyppeVid"
+                        },
+                        {
+                          'case': {
+                            '$eq': ['$postType', 'diary']
+                          },
+                          'then': "HyppeDiary"
+                        },
+                        {
+                          'case': {
+                            '$eq': ['$postType', 'story']
+                          },
+                          'then': "HyppeStory"
+                        },
+    
+                      ],
+                      default: ''
+                    }
+                  },
+                  description: 1,
+                  title: 1,
+                  active: 1,
+                  tempmedia: 1,
+                }
+              },
+              {
+                $project: {
+                  refs: 1,
+                  idmedia: 1,
+                  createdAt: 1,
+                  updatedAt: 1,
+                  postID: 1,
+                  postType: 1,
+                  email: 1,
+                  type: 1,
+                  description: 1,
+                  title: 1,
+                  active: 1,
+                  jangkauan: 1,
+                  tempmedia: 1,
+                }
+              },
+              {
+                $addFields: {
+                    "cleanUri":
+                    { 
+                        $replaceOne: 
+                        { 
+                            input: "$tempmedia.mediaUri", 
+                            find: "_0001.jpeg", 
+                            replacement: "" 
+                        }
+                    }
+                },
+              },
+              {
+                $project: {
+    
+                  createdAt: 1,
+                  updatedAt: 1,
+                  postID: 1,
+                  postType: 1,
+                  email: 1,
+                  type: 1,
+                  description: 1,
+                  title: 1,
+                  active: 1,
+                  jangkauan: 1,
+                    mediaBasePath:
+                    {
+                        "$ifNull":
+                        [
+                            "$tempmedia.mediaBasePath",
+                            null
+                        ]
+                    },
+                    mediaUri:
+                    {
+                        "$ifNull":
+                        [
+                            "$tempmedia.mediaUri",
+                            null
+                        ]
+                    },
+                    mediaType:
+                    {
+                        "$ifNull":
+                        [
+                            "$tempmedia.mediaType",
+                            null
+                        ]
+                    },
+                    mediaThumbEndpoint:
+                    {
+                        "$ifNull":
+                        [
+                            "$tempmedia.mediaThumbEndpoint",
+                            {
+                                "$concat":
+                                [
+                                    "/thumb/",
+                                    "$cleanUri"
+                                ]
+                            }
+                        ]
+                    },
+                    mediaEndpoint:
+                    {
+                        "$ifNull":
+                        [
+                            "$tempmedia.mediaEndpoint",
+                            {
+                                "$cond":
+                                {
+                                    if:
+                                    {
+                                        "$eq":
+                                        [
+                                            "$postType", "pict"
+                                        ]
+                                    },
+                                    then:
+                                    {
+                                        "$concat":
+                                        [
+                                            "/pict/",
+                                            "$cleanUri"
+                                        ]
+                                    },
+                                    else:
+                                    {
+                                        "$concat":
+                                        [
+                                            "/stream/",
+                                            "$cleanUri"
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    mediaThumbUri:
+                    {
+                        "$ifNull":
+                        [
+                            "$tempmedia.mediaThumbUri",
+                            null
+                        ]
+                    },
+                    apsaraId:
+                    {
+                        "$ifNull":
+                        [
+                            "$tempmedia.apsaraId",
+                            null
+                        ]
+                    },
+                    apsara:
+                    {
+                        "$ifNull":
+                        [
+                            "$tempmedia.apsara",
+                            false
+                        ]
+                    },
+                }
+              },
+              { $sort: { jangkauan: -1 } },
+              { $limit: 5 }
+    
+            ]
+          }
+        },
+        {
+          $project: {
+    
+            totalpost: {
+              $arrayElemAt: ["$totalpost.totalpost", 0]
+            },
+            jangkauan: {
+              $arrayElemAt: ["$jangkauan.total", 0]
+            },
+            post: 1
+          }
+        },
+    
+    ]);
+    
+    var data = [];
+
+    for (var i = 0; i < query[0].post.length; i++) {
+      let dataconten = await this.loadApsara.getapsaraDatabase(query[0].post, i);
+
+      data.push(dataconten[i]);
+    }
+
+    var totalpost = 0;
+    var jangkauan = 0;
+    var sumtotal = 0;
+
+    try {
+      totalpost = query[0].totalpost;
+    } catch (e) {
+      totalpost = 0;
+    }
+    try {
+      jangkauan = query[0].jangkauan;
+    } catch (e) {
+      jangkauan = 0;
+    }
+
+    sumtotal = totalpost + jangkauan;
+    var persentotalpost = (totalpost * 100) / sumtotal;
+    var persenjangkauan = (jangkauan * 100) / sumtotal;
+
+    return {
+      "totalpost": totalpost,
+      "persentotalpost": persentotalpost.toFixed(2),
+      "jangkauan": jangkauan,
+      "persenjangkauan": persenjangkauan.toFixed(2),
+      "post": data
+
+    };
+  }
 }
