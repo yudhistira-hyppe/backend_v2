@@ -17,7 +17,11 @@ export class CreateAssetsFilterDto {
     mediaThumBasePath: String;
     mediaThumUri: String;
 
+    active: boolean;
     status: boolean;
+    category_id: mongoose.Types.ObjectId;
+    createdAt: string;
+    updatedAt: string;
 }
 
 

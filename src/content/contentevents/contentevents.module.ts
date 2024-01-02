@@ -23,8 +23,10 @@ import { TagCountModule } from 'src/content/tag_count/tag_count.module';
 import { PostchallengeModule } from 'src/trans/postchallenge/postchallenge.module';
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { HttpModule } from '@nestjs/axios';
+import { MediastreamingModule } from '../mediastreaming/mediastreaming.module';
 @Module({
     imports: [
+        MediastreamingModule,
         HttpModule,
         PostchallengeModule,
         TagCountModule,

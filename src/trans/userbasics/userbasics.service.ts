@@ -667,6 +667,147 @@ export class UserbasicsService {
     return result;
   }
 
+  async getUser(userid: string){
+    let paramaggregate = [
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(userid),
+
+        }
+      },
+      {
+        "$lookup": {
+          from: "userauths",
+          as: "data_userauths",
+          let: {
+            localID: '$userAuth.$id'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $eq: ['$_id', '$$localID']
+                }
+              }
+            },
+            {
+              $project: {
+                email: 1,
+                username: 1
+              }
+            }
+          ],
+
+        }
+      },
+      {
+        "$lookup": {
+          from: "mediaprofilepicts",
+          as: "data_mediaprofilepicts",
+          let: {
+            localID: '$profilePict.$id'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $eq: ['$_id', '$$localID']
+                }
+              }
+            },
+            {
+              $project: {
+                "mediaBasePath": 1,
+                "mediaUri": 1,
+                "originalName": 1,
+                "fsSourceUri": 1,
+                "fsSourceName": 1,
+                "fsTargetUri": 1,
+                "mediaType": 1,
+                "mediaEndpoint": {
+                  "$concat": ["/profilepict/", "$mediaID"]
+                }
+              }
+            }
+          ],
+
+        }
+      },
+      {
+        $project: {
+          fullName: 1,
+          email: 1,
+          userAuth: {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userauths", 0]
+                }
+              },
+              "in": "$$tmp._id"
+            }
+          },
+          username: {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userauths", 0]
+                }
+              },
+              "in": "$$tmp.username"
+            }
+          },
+          avatar: {
+            "mediaBasePath": {
+              "$let": {
+                "vars": {
+                  "tmp": {
+                    "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                  }
+                },
+                "in": "$$tmp.mediaBasePath"
+              }
+            },
+            "mediaUri": {
+              "$let": {
+                "vars": {
+                  "tmp": {
+                    "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                  }
+                },
+                "in": "$$tmp.mediaUri"
+              }
+            },
+            "mediaType": {
+              "$let": {
+                "vars": {
+                  "tmp": {
+                    "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                  }
+                },
+                "in": "$$tmp.mediaType"
+              }
+            },
+            "mediaEndpoint": {
+              "$let": {
+                "vars": {
+                  "tmp": {
+                    "$arrayElemAt": ["$data_mediaprofilepicts", 0]
+                  }
+                },
+                "in": "$$tmp.mediaEndpoint"
+              }
+            }
+          }
+        }
+      },
+    ];
+    const data = await this.userbasicModel.aggregate(paramaggregate);
+    return data;
+  }
+
   async findByProfileId(mediaprofilepicts: any): Promise<Userbasic> {
     return this.userbasicModel.findOne({ "profilePict": mediaprofilepicts }).exec();
   }
@@ -7529,6 +7670,7 @@ export class UserbasicsService {
           "pin": 1,
           "tutor": 1,
           "otppinVerified": 1,
+          "creator":1,
           urluserBadge:
           {
             "$ifNull":
@@ -7617,6 +7759,7 @@ export class UserbasicsService {
           "pin": 1,
           "otppinVerified": 1,
           "tutor": 1,
+          "creator":1,
           urluserBadge:
           {
             "$ifNull": [
@@ -7656,14 +7799,6 @@ export class UserbasicsService {
 
   //async listkyc(keys: string, status: any[], startdate: string, enddate: string, descending: boolean, page: number, limit: number)
   async listkycsummary2(startdate: string, enddate: string, jenisquery: string, keys: string, status: any[], descending: boolean, page: number, limit: number) {
-    try {
-      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-
-      var dateend = currentdate.toISOString();
-    } catch (e) {
-      dateend = "";
-    }
-
     var pipeline = [];
     var firstmatch = [];
     var order = null;
@@ -7692,22 +7827,32 @@ export class UserbasicsService {
     );
 
     if (startdate != null && startdate !== undefined) {
+      var convertstart = startdate.split(" ")[0];
+      
       firstmatch.push(
         {
           createdAt:
           {
-            "$gte": startdate
+            "$gte": convertstart
           }
         }
       );
     }
 
     if (enddate != null && enddate !== undefined) {
+      try {
+        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+  
+        var dateend = currentdate.toISOString().split("T")[0];
+      } catch (e) {
+        dateend = "";
+      }
+      
       firstmatch.push(
         {
           createdAt:
           {
-            "$lte": dateend
+            "$lt": dateend
           }
         }
       );

@@ -88,6 +88,7 @@ export class CreateUserbasicDto {
   import: String;
   userBadge: any[];
   tutor: any[];
+  creator: boolean;
 }
 
 export class SearchUserbasicDto {

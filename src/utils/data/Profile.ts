@@ -61,6 +61,7 @@ export class ProfileDTO {
     devicetype: String;
     urluserBadge: any[];
     tutor: any[];
+    creator: boolean;
 }
 
 export class LocationDTO {

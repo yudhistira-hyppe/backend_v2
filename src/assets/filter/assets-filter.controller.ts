@@ -12,6 +12,7 @@ import * as https from "https";
 import * as http from "http";
 const sharp = require('sharp');
 import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { CreateFilterDto } from '../filtercategory/dto/create-filter.dto';
 
 
 @Controller('api/assets/filter')
@@ -192,7 +193,19 @@ export class AssetsFilterController {
                 'Unabled to proceed failed upload Image Asset',
             );
         }
-        CreateAssetsFilterDto_.status = true;
+
+        if(CreateAssetsFilterDto_.category_id != null && CreateAssetsFilterDto_.category_id != undefined)
+        {
+            var mongo = require('mongoose');
+            CreateAssetsFilterDto_.category_id = new mongo.Types.ObjectId(CreateAssetsFilterDto_.category_id); 
+        }
+        if(CreateAssetsFilterDto_.status != null && CreateAssetsFilterDto_.status != undefined)
+        {
+            CreateAssetsFilterDto_.status = Boolean(CreateAssetsFilterDto_.status);
+        }
+        CreateAssetsFilterDto_.active = true;
+        CreateAssetsFilterDto_.createdAt = await this.utilsService.getDateTimeString();
+        CreateAssetsFilterDto_.updatedAt = await this.utilsService.getDateTimeString();
         this.assetsFilterService.create(CreateAssetsFilterDto_);
         return await this.errorHandler.generateAcceptResponseCodeWithData(
             "Create Assets File succesfully", CreateAssetsFilterDto_
@@ -258,6 +271,7 @@ export class AssetsFilterController {
                 mediaThumBasePath: item.mediaThumUri,
                 mediaThumUri: mediaThumUri,
                 status: item.status,
+                category_id: item.category_id
             }
         }));
 
@@ -320,6 +334,87 @@ export class AssetsFilterController {
             data: data_,
             messages: {
                 info: ['Get assets successfully'],
+            },
+        };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Post('/listconsole')
+    async listConsole(@Headers() headers, @Req() request) {
+        var nama = null;
+        var startdate = null;
+        var enddate = null;
+        var kategori = null;
+        var status = null;
+        var page = null;
+        var limit = null;
+        var sorting = null;
+        
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var timestamp_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if(request_json['keyword'] != null && request_json['keyword'] != undefined)
+        {
+            nama = request_json['keyword'];
+        }
+
+        if(request_json['startdate'] != null && request_json['startdate'] != undefined && request_json['enddate'] != null && request_json['enddate'] != undefined)
+        {
+            startdate = request_json['startdate'];
+            enddate = request_json['enddate'];
+        }
+
+        if(request_json['kategori'] != null && request_json['kategori'] != undefined)
+        {
+            kategori = request_json['kategori'];
+        }
+
+        if(request_json['status'] != null && request_json['status'] != undefined)
+        {
+            status = request_json['status'];
+        }
+
+        if(request_json['page'] == null || request_json['page'] == undefined)
+        {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, page field is required',
+            );
+        }
+
+        if(request_json['limit'] == null || request_json['limit'] == undefined)
+        {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, limit field is required',
+            );
+        }
+
+        if(request_json['ascending'] == null || request_json['ascending'] == undefined)
+        {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, ascending field is required',
+            );
+        }
+
+        var page = request_json['page'];
+        var limit = request_json['limit'];
+        var sorting = request_json['ascending'];
+
+        var data = await this.assetsFilterService.indexConsole(nama, startdate, enddate, kategori, status, page, limit, sorting);
+
+        var timestamp_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamp_start, timestamp_end, email, null, null, request_json);
+
+        return {
+            response_code: 202,
+            data:data,
+            messages: {
+                info: ['Process successfully'],
             },
         };
     }
@@ -587,4 +682,316 @@ export class AssetsFilterController {
     //         response.download(null);
     //     }
     // }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/updatelist')
+    async updatejamaah(@Req() req, @Headers() headers)
+    {
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var timestamp_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+
+        var request_json = JSON.parse(JSON.stringify(req.body));
+        if(request_json['list'] == null || request_json['list'] == undefined || request_json['list'].length == 0)
+        {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, list field is required',
+            );
+        }
+
+        
+        if(request_json['status'] == null || request_json['status'] == undefined)
+        {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, status field is required',
+            );
+        }
+
+        var loopdata = request_json['list'];
+
+        var updatedata = new CreateAssetsFilterDto();
+
+        if (request_json['status'] == "active") {
+            updatedata.status = true;
+        }
+        else if (request_json['status'] == "nonactive") {
+            updatedata.status = false;
+        }
+        else if(request_json['status'] == "delete") {
+            updatedata.active = false;
+        }
+        updatedata.updatedAt = await this.utilsService.getDateTimeString();
+
+        var mongo = require('mongoose');
+        for(var i = 0; i < loopdata.length; i++)
+        {
+            var konvertid = new mongo.Types.ObjectId(loopdata[i]);
+            await this.assetsFilterService.update(konvertid, updatedata);
+        }
+
+        var timestamp_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamp_start, timestamp_end, email, null, null, request_json);
+
+        return {
+            response_code:202,
+            messages: {
+                info: ['Update successfully'],
+            },
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'imageFile', maxCount: 1 }, { name: 'fileAsset', maxCount: 1 }]))
+    @Post('/updatedata')
+    async updateOne(@UploadedFiles() files: {
+        fileAsset?: Express.Multer.File[],
+        imageFile?: Express.Multer.File[]
+    }, @Body() req:CreateAssetsFilterDto, @Headers() header)
+    {
+        var id = req._id;
+        var mongo = require('mongoose');
+        req._id = new mongo.Types.ObjectId(id);
+
+        console.log(req);
+
+        var token = header['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var timestamp_start = await this.utilsService.getDateTimeString();
+        var fullurl = header.host + '/api/updatedata/'+id;
+
+        //File Upload
+        if (files.fileAsset != undefined) {
+            const fileAsset = files.fileAsset[0];
+            const extension = fileAsset.originalname.substring(fileAsset.originalname.lastIndexOf('.'), fileAsset.originalname.length);
+            const fileAssetName = id + extension;
+            const path = "asset/effect/" + id + "/" + fileAssetName;
+            var result = await this.ossService.uploadFileBuffer(fileAsset.buffer, path);
+            if (result != undefined) {
+                if (result.res != undefined) {
+                    if (result.res.statusCode != undefined) {
+                        if (result.res.statusCode == 200) {
+                            req.fileAssetName = fileAssetName;
+                            req.fileAssetBasePath = path;
+                            req.fileAssetUri = result.res.requestUrls[0];
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed failed upload Asset',
+                            );
+                        }
+                    } else {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed failed upload Asset',
+                        );
+                    }
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed failed upload Asset',
+                    );
+                }
+            } else {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed failed upload Asset',
+                );
+            }
+        }
+
+        //Image Upload
+        if (files.imageFile != undefined) {
+            const imageFile = files.imageFile[0];
+            const extension = '.jpeg';
+            const imageFileName_ori = id + extension;
+            const imageFileName_thum = id + "_thum" + extension;
+            const path_ori = "asset/effect/" + id + "/" + imageFileName_ori;
+            const path_thum = "asset/effect/" + id + "/" + imageFileName_thum;
+
+            console.log(path_ori);
+            console.log(path_thum);
+
+
+            //Get Image Information
+            var image_information = await sharp(imageFile.buffer).metadata();
+            var image_height = image_information.height;
+            var image_width = image_information.width;
+            var image_orientation = image_information.orientation;
+
+            //Get Image Mode
+            var image_mode = await this.utilsService.getImageMode(image_width, image_height);
+
+            //Set Image Mode
+            var New_height = 0;
+            var New_width = 0;
+            if (image_mode == "LANDSCAPE") {
+                New_height = image_height;
+                New_width = image_width;
+            } else if (image_mode == "POTRET") {
+                New_height = image_height;
+                New_width = image_width;
+            }
+
+            //Set Convert
+            var file_convert = null;
+            file_convert = await sharp(imageFile.buffer, { failOnError: false }).resize(Math.round(New_width), Math.round(New_height)).withMetadata({ image_orientation }).toBuffer();
+
+            
+            //Generate Thumnail
+            var image_information2 = await sharp(file_convert).metadata();
+            var image_orientation2 = image_information2.orientation;
+            var thumnail = null;
+            var ori = null;
+            try {
+                if (image_orientation2 == 1) {
+                    thumnail = await sharp(file_convert).resize(100, 100).toBuffer();
+                    ori = await sharp(file_convert).resize(Math.round(New_width), Math.round(New_height)).toBuffer();
+                } else if (image_orientation2 == 6) {
+                    thumnail = await sharp(file_convert).rotate(90).resize(100, 100).toBuffer();
+                    ori = await sharp(file_convert).rotate(90).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+                } else if (image_orientation2 == 8) {
+                    thumnail = await sharp(file_convert).rotate(270).resize(100, 100).toBuffer();
+                    ori = await sharp(file_convert).rotate(270).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
+                } else {
+                    thumnail = await sharp(file_convert).resize(100, 100).toBuffer();
+                    ori = file_convert;
+                }
+                console.log(typeof thumnail);
+            } catch (e) {
+                console.log("THUMNAIL", "FAILED TO CREATE THUMNAIL");
+            }
+
+            var result = await this.ossService.uploadFileBuffer(Buffer.from(ori), path_ori);
+            var result_thum = await this.ossService.uploadFileBuffer(Buffer.from(thumnail), path_thum);
+            if (result != undefined) {
+                if (result.res != undefined) {
+                    if (result.res.statusCode != undefined) {
+                        if (result.res.statusCode == 200) {
+                            req.mediaName = imageFileName_ori;
+                            req.mediaBasePath = path_ori;
+                            req.mediaUri = result.res.requestUrls[0]
+
+                            req.mediaThumName = imageFileName_thum;
+                            req.mediaThumBasePath = path_thum;
+                            req.mediaThumUri = result_thum.res.requestUrls[0]
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed failed upload Image Asset',
+                            );
+                        }
+                    } else {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed failed upload Image Asset',
+                        );
+                    }
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed failed upload Image Asset',
+                    );
+                }
+            } else {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed failed upload Image Asset',
+                );
+            }
+        }
+
+        
+        if(req.category_id != null && req.category_id != undefined)
+        {
+            var mongo = require('mongoose');
+            req.category_id = new mongo.Types.ObjectId(req.category_id); 
+        }
+        if(req.status != null && req.status != undefined)
+        {
+            req.status = Boolean(req.status);
+        }
+        req.updatedAt = await this.utilsService.getDateTimeString();
+        var mongo = require('mongoose');
+        var konvertid = new mongo.Types.ObjectId(id);
+        await this.assetsFilterService.update(konvertid, req);
+
+        var timestamp_end = await this.utilsService.getDateTimeString();
+        var requestbody = JSON.parse(JSON.stringify(req));
+        this.logapiSS.create2(fullurl, timestamp_start, timestamp_end, email, null, null, requestbody);
+
+        return {
+            response_code:202,
+            messages: {
+                info: ['Update data with file successfully'],
+            },
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/updatedata/status/:id')
+    async updateStatusOne(@Param() id:string, @Body() req:CreateAssetsFilterDto, @Headers() header)
+    {
+        var token = header['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var timestamp_start = await this.utilsService.getDateTimeString();
+        var fullurl = header.host + '/api/assets/filter/updatedata/status/'+id;
+
+        req.updatedAt = await this.utilsService.getDateTimeString();
+        var mongo = require('mongoose');
+        var konvertid = new mongo.Types.ObjectId(id);
+        await this.assetsFilterService.update(konvertid, req);
+
+        var timestamp_end = await this.utilsService.getDateTimeString();
+        var requestbody = JSON.parse(JSON.stringify(req));
+        this.logapiSS.create2(fullurl, timestamp_start, timestamp_end, email, null, null, requestbody);
+
+        return {
+            response_code:202,
+            messages: {
+                info: ['Update successfully'],
+            },
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/delete/:id')
+    async delete(@Param('id') id: string, @Headers() headers, @Req() req) {
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var timestamp_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+
+        if (id == undefined || id == "") {
+            await this.errorHandler.generateBadRequestException(
+                'Param id is required',
+            );
+        }
+
+        var updatedata = new CreateAssetsFilterDto();
+        updatedata.active = false; 
+
+        await this.assetsFilterService.update(id, updatedata);
+
+        var timestamp_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamp_start, timestamp_end, email, null, null, null);
+
+        var response = {
+            "response_code": 202,
+            "messages": {
+                info: ['Successfuly'],
+            },
+        }
+        return response;
+
+    }
+
+    @Get('detail/:id')
+    async getdata(@Param() id:string, @Headers() headers)
+    {
+        var result = await this.assetsFilterService.detail(id);
+        return {
+            response_code:202,
+            data:result,
+            messages: {
+                info: ['Process successfully'],
+            },
+        }
+    }
 }

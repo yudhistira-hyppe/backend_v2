@@ -253,7 +253,7 @@ export class ActivityeventsService {
 
   }
 
-  async filteruser(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number, descending: any, type: string) {
+  async filteruser(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number, descending: any, type: string, statuscreator: any[]) {
 
     var arrlokasi = [];
     var idlokasi = null;
@@ -501,6 +501,13 @@ export class ActivityeventsService {
             },
 
           },
+          creator:{
+            "$ifNull":
+            [
+              { $arrayElemAt: ["$user.creator", 0] },
+              false   
+            ]
+          },
           username: {
             $arrayElemAt: ["$userName.username", 0]
           },
@@ -554,46 +561,46 @@ export class ActivityeventsService {
           lastlogin: "$createdAt",
           urluserBadge:
           {
-              "$ifNull":
+            "$ifNull":
               [
                 {
                   "$filter":
                   {
                     input:
-                    { 
-                      $arrayElemAt: 
-                      [
-                        "$user.userBadge", 0
-                      ] 
+                    {
+                      $arrayElemAt:
+                        [
+                          "$user.userBadge", 0
+                        ]
                     },
-                    as:"listbadge",
+                    as: "listbadge",
                     cond:
                     {
                       "$and":
-                      [
-                        {
-                          "$eq":
-                          [
-                            "$$listbadge.isActive", true
-                          ]
-                        },
-                        {
-                          "$lte": [
-                            {
-                              "$dateToString": {
-                                "format": "%Y-%m-%d %H:%M:%S",
-                                "date": {
-                                  "$add": [
-                                    new Date(),
-                                    25200000
-                                  ]
+                        [
+                          {
+                            "$eq":
+                              [
+                                "$$listbadge.isActive", true
+                              ]
+                          },
+                          {
+                            "$lte": [
+                              {
+                                "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                    "$add": [
+                                      new Date(),
+                                      25200000
+                                    ]
+                                  }
                                 }
-                              }
-                            },
-                            "$$listbadge.endDatetime"
-                          ]
-                        }
-                      ]
+                              },
+                              "$$listbadge.endDatetime"
+                            ]
+                          }
+                        ]
                     }
                   }
                 },
@@ -612,6 +619,7 @@ export class ActivityeventsService {
           fullName: 1,
           gender: 1,
           username: 1,
+          creator:1,
           role: 1,
           countries: 1,
           cities: 1,
@@ -622,15 +630,15 @@ export class ActivityeventsService {
           urluserBadge:
           {
             "$ifNull":
-            [
-              {
-                "$arrayElemAt":
-                [
-                  "$urluserBadge",0
-                ]
-              },
-              null
-            ]
+              [
+                {
+                  "$arrayElemAt":
+                    [
+                      "$urluserBadge", 0
+                    ]
+                },
+                null
+              ]
           },
         }
       },
@@ -645,13 +653,24 @@ export class ActivityeventsService {
 
       pipeline.push({
         $match: {
-          username: {
-            $regex: username,
-            $options: 'i'
-          },
+          $or: [
+            {
+              username: {
+                $regex: username,
+                $options: 'i'
+              },
 
+            },
+            {
+              email: {
+                $regex: username,
+                $options: 'i'
+              },
+
+            },
+          ]
         }
-      },);
+      });
 
     }
 
@@ -678,10 +697,17 @@ export class ActivityeventsService {
     }
 
     if (startdate && startdate !== undefined) {
-      pipeline.push({ $match: { createdAt: { $gte: startdate } } });
+      var convertstart = startdate.split(" ")[0];
+      pipeline.push({ $match: { createdAt: { $gte: convertstart } } });
     }
     if (enddate && enddate !== undefined) {
-      pipeline.push({ $match: { createdAt: { $lte: dt } } });
+      try {
+        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+        var dateend = currentdate.toISOString().split("T")[0];
+      } catch (e) {
+        dateend = enddate.substring(0,10);
+      }
+      pipeline.push({ $match: { createdAt: { $lt: dateend } } });
     }
 
     if (jenis && jenis !== undefined) {
@@ -691,6 +717,21 @@ export class ActivityeventsService {
             {
               jenis: {
                 $in: jenis
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+
+    if (statuscreator && statuscreator !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              creator: {
+                $in: statuscreator
               }
             },
 
@@ -1210,85 +1251,85 @@ export class ActivityeventsService {
       dt = "";
     }
     var query = await this.activityeventsModel.aggregate([
-        {
-            $project: {
-                event: 1,
-                createdAt: 1,
-                email: "$payload.email"
-            }
-        },
-        {
-            $match: {
-                $or: [
-                    {
-                        $and: [
-                            {
-                                event: "AWAKE",
-                                
-                            },
-                            {
-                                createdAt: 
-                                {
-                                    $gte: startdate,
-                                    $lte: dt
-                                }
-                            }
-                        ]
-                    },
-                ]
-            }
-        },
-        {
-            $group: {
-                _id: {
-                    tgl: {
-                        $substrCP: ['$createdAt', 0, 10]
-                    },
-                    dt: '$email',
-                    
-                },
-                
-            },
-            
-        },
-        {
-            $project:
+      {
+        $project: {
+          event: 1,
+          createdAt: 1,
+          email: "$payload.email"
+        }
+      },
+      {
+        $match: {
+          $or: [
             {
-                    _id:"$kusnur",
-                    tgl:"$_id.tgl",
-                    email:"$_id.dt",
-                    
-            }
-        },
-        {
-                $sort:{
-                        tgl:1
-                }
-        },
-        {
-            $group:
-            {
-                _id:"$tgl",
-                count: 
+              $and: [
                 {
-                    $sum: 1
+                  event: "AWAKE",
+
                 },
-            }
+                {
+                  createdAt:
+                  {
+                    $gte: startdate,
+                    $lte: dt
+                  }
+                }
+              ]
+            },
+          ]
+        }
+      },
+      {
+        $group: {
+          _id: {
+            tgl: {
+              $substrCP: ['$createdAt', 0, 10]
+            },
+            dt: '$email',
+
+          },
+
         },
+
+      },
+      {
+        $project:
         {
-            "$project":
-            {
-                "_id":0,
-                "date":"$_id",
-                "count":1
-            }
-        },
+          _id: "$kusnur",
+          tgl: "$_id.tgl",
+          email: "$_id.dt",
+
+        }
+      },
+      {
+        $sort: {
+          tgl: 1
+        }
+      },
+      {
+        $group:
         {
-            "$sort":
-            {
-                "date":1
-            }
-        }	
+          _id: "$tgl",
+          count:
+          {
+            $sum: 1
+          },
+        }
+      },
+      {
+        "$project":
+        {
+          "_id": 0,
+          "date": "$_id",
+          "count": 1
+        }
+      },
+      {
+        "$sort":
+        {
+          "date": 1
+        }
+      }
     ]);
     return query;
   }

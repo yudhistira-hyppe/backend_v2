@@ -25,6 +25,10 @@ import { LogapisService } from '../logapis/logapis.service';
 import { Postchallenge } from '../postchallenge/schemas/postchallenge.schema';
 import { PostchallengeService } from '../postchallenge/postchallenge.service';
 import { NotificationsService } from "src/content/notifications/notifications.service";
+import { Settings2Service } from '../settings2/settings2.service';
+import { NewpostsService } from 'src/content/newposts/newposts.service';
+import { Newposts } from 'src/content/newposts/schemas/newposts.schema';
+import { Long } from 'mongodb';
 
 
 @Controller('api/challenge')
@@ -42,7 +46,10 @@ export class ChallengeController {
     private readonly postchallengeService: PostchallengeService,
     private readonly NotificationsService: NotificationsService,
     private readonly BadgeService: BadgeService,
-    private readonly userbasicsSS: UserbasicsService) { }
+    private readonly userbasicsSS: UserbasicsService,
+    private readonly settings2SS: Settings2Service,
+    private readonly postSS: NewpostsService
+    ) { }
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -1669,11 +1676,14 @@ export class ChallengeController {
   async joinChallenge(@Res() res, @Req() request: Request, @Headers() headers) {
     var timestamps_start = await this.util.getDateTimeString();
     var fullurl = headers.host + '/api/challenge/join';
+    var mongo = require('mongoose');
 
     var request_json = JSON.parse(JSON.stringify(request.body));
     var getsubid = request_json['idChallenge'];
     var getuserid = request_json['idUser'];
     var uscall = null;
+    var statuskick = null;
+    var botmode = false;
 
     if (getsubid == null || getsubid == undefined) {
       var timestamps_end = await this.util.getDateTimeString();
@@ -1699,6 +1709,28 @@ export class ChallengeController {
 
     var parentdata = await this.challengeService.detailchallenge(getsubid);
     var getsubdata = await this.subchallenge.subchallengedetailwithlastrank(getsubid);
+    var checkpernahdikick = await this.userchallengeSS.checkUserjoinchallenge(getsubid, getuserid);
+    if(checkpernahdikick.length == 0)
+    {
+      statuskick = false;
+    }
+    else
+    {
+      if(checkpernahdikick[0].isActive == true)
+      {
+        throw new NotAcceptableException("Unabled to proceed, user already join challenge");
+      }
+      else
+      {
+        statuskick = true;
+      }
+    }
+
+    var botdata = await this.settings2SS.findOne("6583fb37cf00baae6d0d344c");
+    if(await this.util.ceckData(botdata))
+    {
+      botmode = true;
+    }
 
     var listjoin = [];
     var firstdata = null;
@@ -1711,13 +1743,43 @@ export class ChallengeController {
       var datediff = getfromdb.getTime() - convertnow.getTime();
       if (datediff >= 0) {
         var createdata = new Userchallenges();
-        var mongo = require('mongoose');
+        createdata.isBot = false;
+        createdata.maxScore = 0;
+        createdata.maxDate = timestamps_start.split(" ")[0];
+        var setscore = 0;
+        if(botmode == true)
+        {
+          var getdetailvalue = JSON.parse(JSON.stringify(botdata.value));
+
+          var checkuser = getdetailvalue.find(objs => objs.idSubChallenge.toString() === getsubdata[i]._id.toString());
+          if (checkuser != undefined) 
+          {
+            var listuserarr = checkuser.detail;
+            var getuser = listuserarr.find(objschar => objschar.iduser.toString() === getuserid);
+            if(getuser != undefined)
+            {
+              createdata.isBot = true;
+              setscore = getuser.scoreAwal;
+
+              if(parentdata.objectChallenge == "KONTEN")
+              {
+                var getbotpost = await this.postSS.findByPostId(getuser.postid);
+                var tambah = Number(getbotpost.likes.toString()) + Number(getuser.likeAwal);
+                var updatepost = new Newposts();
+                updatepost.likes = Long.fromNumber(tambah);
+
+                await this.postSS.updateByPostId(getbotpost._id.toString(), updatepost);
+              }
+            }
+          }
+        }
+
         createdata._id = mongo.Types.ObjectId();
         createdata.idChallenge = new mongo.Types.ObjectId(getsubid);
         createdata.idUser = new mongo.Types.ObjectId(getuserid);
         createdata.idSubChallenge = new mongo.Types.ObjectId(getsubdata[i]._id);
         createdata.isActive = true;
-        createdata.score = 0;
+        createdata.score = setscore;
         createdata.ranking = getsubdata[i].lastrank;
         createdata.startDatetime = getsubdata[i].startDatetime;
         createdata.endDatetime = getsubdata[i].endDatetime;
@@ -1763,7 +1825,7 @@ export class ChallengeController {
     var timestamps_end = await this.util.getDateTimeString();
     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, request_json['idUser'], null, request_json);
 
-    if (getsubdata.length != 0 && firstdata != null && parentdata.objectChallenge == "KONTEN") {
+    if (firstdata != null && parentdata.objectChallenge == "KONTEN" && statuskick == false) {
       this.beforejoinchallenge(getuserbasic, firstdata);
     }
 
@@ -2004,7 +2066,7 @@ export class ChallengeController {
     }
 
     var data = await this.subchallenge.listinguserchallenge(challengeid, pilihansession, jenisakun, username, startage, endage, jeniskelamin, sorting, limit, page);
-    var totaldata = await this.subchallenge.listinguserchallenge(challengeid, pilihansession, jenisakun, username, startage, endage, jeniskelamin, sorting, null, null);
+    // var totaldata = await this.subchallenge.listinguserchallenge(challengeid, pilihansession, jenisakun, username, startage, endage, jeniskelamin, sorting, null, null);
 
     const messages = {
       "info": ["The create successful"],
@@ -2016,7 +2078,6 @@ export class ChallengeController {
     return {
       response_code: 202,
       "data": data,
-      "totaldata": totaldata.length,
       "message": messages
     }
   }
@@ -3783,10 +3844,11 @@ export class ChallengeController {
 
   async beforejoinchallenge(emailuser: any, subchallenge: any) {
     var data = await this.subchallenge.getlistinsertpostchallenge(emailuser.email.toString(), subchallenge.idSubChallenge.toString());
-
+    
     if (data.length != 0) {
       var mongo = require('mongoose');
-      var totalScore = 0;
+      var totalScore = subchallenge.score;
+      var setinsertactivity = [];
       for (var i = 0; i < data.length; i++) {
         totalScore = totalScore + data[i].totalScore;
         var insertdata = new Postchallenge();
@@ -3804,12 +3866,36 @@ export class ChallengeController {
         insertdata.score = data[i].totalScore;
         insertdata.postType = data[i].postType;
 
+        setinsertactivity.push(
+          {
+            "type":"posts",
+            "id":data[i]._id,
+            "desc":"POST"
+          }
+        );
+
+        if(data[i].contentEventList.length != 0)
+        {
+          var datacontentevent = data[i].contentEventList;
+          for(var loopactivity = 0; loopactivity < datacontentevent.length; loopactivity++)
+          {
+            setinsertactivity.push(
+              {
+                "type":"contentevents",
+                "id":datacontentevent[loopactivity].contentEventID,
+                "desc":datacontentevent[loopactivity].eventType
+              }
+            );
+          }
+        } 
+
         // console.log(insertdata);
         await this.postchallengeService.create(insertdata);
       }
 
       var updatedata = new Userchallenges();
       updatedata.score = totalScore;
+      updatedata.activity = setinsertactivity;
       await this.userchallengeSS.update(subchallenge._id, updatedata);
     }
   }
@@ -3964,7 +4050,26 @@ export class ChallengeController {
       insertreject['idAdmin'] = idadmin;
       insertreject['time'] = await this.util.getDateTimeString();
       insertreject['emailAdmin'] = admin.email;
-      insertreject['remark'] = reason;
+      
+      var insertstring = reason;
+      var getdetail = await this.challengeService.findOne(idchallenge);
+      if(getdetail.objectChallenge == "KONTEN")
+      {
+        var getdata = await this.postchallengeService.findByUserandChallenge(idchallenge, exileUser._id.toString());
+        if(getdata.length != 0)
+        {
+          insertstring = insertstring + " total score per post before kick :";
+          for(var looppostchallenge = 0; looppostchallenge < getdata.length; looppostchallenge++)
+          {
+            insertstring = insertstring + " postID (" + getdata[looppostchallenge].postID + ") = " + getdata[looppostchallenge].score + (looppostchallenge == getdata.length - 1 ? "." : ",");
+
+            await this.postchallengeService.updateByUSer(getdata[looppostchallenge]._id, getdata[looppostchallenge].idSubChallenge, getdata[looppostchallenge].idChallenge, getdata[looppostchallenge].postID);
+          }
+
+        }
+      }
+
+      insertreject['remark'] = insertstring;
       getarray.push(insertreject);
 
       var updatedata = new Userchallenges();

@@ -262,6 +262,7 @@ export class GetuserprofilesController {
     var datafilter = null;
     var totalfilter = 0;
     var descending = null;
+    var creator = null;
     var type = null;
     const messages = {
       "info": ["The process successful"],
@@ -279,6 +280,7 @@ export class GetuserprofilesController {
     endlogin = request_json["endlogin"];
     descending = request_json["descending"];
     type = request_json["type"];
+    creator = request_json["creator"];
     var allrow = 0;
     var totalallrow = 0;
     var totalrow = 0;
@@ -301,7 +303,7 @@ export class GetuserprofilesController {
     }
 
     try {
-      data = await this.activityeventsService.filteruser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin, page, limit, descending, type);
+      data = await this.activityeventsService.filteruser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin, page, limit, descending, type, creator);
       totalrow = data.length;
     } catch (e) {
       data = [];

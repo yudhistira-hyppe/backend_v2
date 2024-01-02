@@ -13,6 +13,7 @@ import { LogapisModule } from '../logapis/logapis.module';
       MongooseModule.forFeature([{ name: SettingsMixed.name, schema: Settings2Schema }], 'SERVER_FULL')
   ],
   controllers: [Settings2Controller],
-  providers: [Settings2Service]
+  providers: [Settings2Service],
+  exports:[Settings2Service]
 })
 export class Settings2Module {}

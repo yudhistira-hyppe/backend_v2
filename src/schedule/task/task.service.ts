@@ -10,7 +10,7 @@ import { TransactionsService } from "src/trans/transactions/transactions.service
 export class TaskService {
   constructor(
     private readonly challengeService: ChallengeService,
-    private readonly transactionsService: TransactionsService, 
+    private readonly transactionsService: TransactionsService,
     private readonly adsService: AdsService,
   ) { }
 

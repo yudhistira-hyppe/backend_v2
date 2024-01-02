@@ -28106,10 +28106,21 @@ export class GetusercontentsService {
 
       pipeline.push({
         $match: {
-          username: {
-            $regex: username,
-            $options: 'i'
-          },
+          "$or":
+          [
+            {
+              username: {
+                $regex: username,
+                $options: 'i'
+              }
+            },
+            {
+              email:{
+                $regex: username,
+                $options: "i"
+              }
+            }
+          ],
 
         }
       },);

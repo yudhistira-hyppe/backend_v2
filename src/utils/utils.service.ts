@@ -1334,6 +1334,15 @@ export class UtilsService {
     }
   }
 
+  async getSetting_Mixed(_id_setting: string) {
+    var getSetting = await this.settingMixes.findOne({ _id: new mongoose.Types.ObjectId(_id_setting) });
+    if (getSetting != null) {
+      return getSetting.value;
+    } else {
+      return null;
+    }
+  }
+
   async getDeepAr(id: string) {
     var getDeepAr = await this.deepArService.findOne(id);
     if (getDeepAr != null) {
@@ -1595,6 +1604,15 @@ export class UtilsService {
     return DateTime.substring(0, DateTime.lastIndexOf('.'));
   }
 
+  async getDate(): Promise<any> {
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    return {
+      date: date,
+      dateString: DateTime.substring(0, DateTime.lastIndexOf('.')),
+    }
+  }
+
   async consvertDateTimeString(date: Date): Promise<string> {
     var DateTime = new Date(date).toISOString().replace('T', ' ');
     return DateTime.substring(0, 10);
@@ -1618,8 +1636,34 @@ export class UtilsService {
     return DateTime;
   }
 
+  async getDateTimeStartAliFormat(): Promise<string> {
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+    return DateTime.substring(0, DateTime.lastIndexOf('.')).split(' ')[0] + "Z";
+  }
+
+  async getDateTimeEndAliFormat(day: number): Promise<string> {
+    var date = new Date();
+    date.setDate(date.getDate() + day);
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+    return DateTime.substring(0, DateTime.lastIndexOf('.')).split(' ')[0] + "Z";
+  }
+
+  async getDateTimePlusDayISOString(day:number): Promise<string> {
+    var date = new Date();
+    date.setDate(date.getDate() + day);
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+    return DateTime;
+  }
+
   async getDateTimeDate(): Promise<Date> {
     return new Date();
+  }
+
+  async getIntegertoDate(time: number): Promise<string> {
+    let myDate = new Date(1000 * time);
+    let convert = (myDate.toISOString().replace('T', ' '));
+    return convert.substring(0, convert.lastIndexOf('.'));
   }
 
   now(): number {
@@ -2088,6 +2132,14 @@ export class UtilsService {
               }
             }
           }
+        }
+        if(get_userbasic.creator != undefined)
+        {
+          ProfileDTO_.creator = get_userbasic.creator;
+        }
+        else
+        {
+          ProfileDTO_.creator = false;
         }
       }
     }

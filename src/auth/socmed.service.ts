@@ -864,6 +864,7 @@ export class SocmedService {
             };
           }
           data_CreateUserbasicDto._class = _class_UserProfile;
+          data_CreateUserbasicDto.creator = false;
 
           //Insert UserBasic
           await this.userbasicsService.create(data_CreateUserbasicDto);
