@@ -6750,4 +6750,54 @@ export class UserbasicnewService {
         ]);
         return query;
     }
+
+    async findInbyid(userid: any[]) {
+        var result = await this.UserbasicnewModel.aggregate([
+          {
+            "$match":
+            {
+              "_id":
+              {
+                "$in": userid
+              }
+            }
+          },
+          {
+            "$project":
+            {
+              _id: 1,
+              email: 1,
+              username:1
+            }
+          }
+        ]);
+    
+        return result;
+    }
+
+    async getcount() {
+        var query = await this.UserbasicnewModel.aggregate([
+          {
+            $group: {
+              _id: null,
+              totalpost: {
+                $sum: 1
+              }
+            }
+          }
+        ]);
+        return query;
+    }
+
+    async getuser(page: number, limit: number) {
+        var pipeline = [];
+    
+        pipeline.push(
+          { $skip: page * limit },
+          { $limit: limit },
+        );
+        var query = await this.UserbasicnewModel.aggregate(pipeline);
+    
+        return query;
+    }
 }
