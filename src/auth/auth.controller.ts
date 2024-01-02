@@ -6836,7 +6836,7 @@ export class AuthController {
   @Post('api/user/guest')
   @HttpCode(HttpStatus.ACCEPTED)
   async guest(@Body() GuestRequest_: GuestRequest) {
-    if (GuestRequest_.email == undefined) {
+    if (GuestRequest_.email==undefined){
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed email is required',
       );
@@ -6845,7 +6845,7 @@ export class AuthController {
     const currentDate = await this.utilsService.getDateTimeString();
     const getUserBasic = await this.basic2SS.findbyemail(GuestRequest_.email.toLowerCase());
     const datasetting = await this.settingsService.findAll();
-    if (await this.utilsService.ceckData(getUserBasic)) {
+    if (await this.utilsService.ceckData(getUserBasic)){
       //GEN TOKEN AND REFRESH TOKEN
       const refresh_token = await this.authService.updateRefreshToken2(GuestRequest_.email.toLowerCase());
       const token = (await this.utilsService.generateToken(GuestRequest_.email.toLowerCase(), GuestRequest_.deviceId)).toString();
@@ -6890,7 +6890,7 @@ export class AuthController {
               ID_langIso = data_language._id;
               Name_langIso = data_language.lang;
             }
-          } else {
+          }else{
             const data_language = await this.languagesService.findOneLangiso("en");
             if (await this.utilsService.ceckData(data_language)) {
               ID_langIso = data_language._id;
@@ -6942,7 +6942,7 @@ export class AuthController {
         CreateuserbasicnewDto_.isCredentialsNonExpired = true;
         CreateuserbasicnewDto_.roles = ['ROLE_USER'];
         CreateuserbasicnewDto_.statusKyc = 'unverified';
-        if (GuestRequest_.location != undefined) {
+        if (GuestRequest_.location!=undefined){
           CreateuserbasicnewDto_.location = GuestRequest_.location;
         }
         CreateuserbasicnewDto_.tutor = [
@@ -7154,7 +7154,7 @@ export class AuthController {
       //GEN TOKEN AND REFRESH TOKEN
       const refresh_token = await this.authService.updateRefreshToken2(GuestRequest_.email.toLowerCase());
       const token = (await this.utilsService.generateToken(GuestRequest_.email.toLowerCase(), GuestRequest_.deviceId)).toString();
-
+    
       //GENERATE PROFILE
       let ProfileDTO_ = new ProfileDTO();
       ProfileDTO_ = await this.utilsService.generateProfile2(GuestRequest_.email.toLowerCase(), 'LOGIN');
@@ -7174,6 +7174,4 @@ export class AuthController {
       return GlobalResponse_;
     }
   }
-
-
 }

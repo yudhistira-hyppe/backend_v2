@@ -13,9 +13,12 @@ import { PostsModule } from '../posts/posts.module';
 import { GetusercontentsModule } from 'src/trans/getusercontents/getusercontents.module';
 import { MediamusicModule } from '../mediamusic/mediamusic.module';
 import { SettingsModule } from 'src/trans/settings/settings.module';
+import { MediastikerModule } from '../mediastiker/mediastiker.module';
+import { NewPostContentService } from './new_postcontent.service';
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    MediastikerModule,
     UtilsModule,
     SettingsModule,
     ContenteventsModule,
@@ -28,7 +31,7 @@ import { SettingsModule } from 'src/trans/settings/settings.module';
     MongooseModule.forFeature([{ name: newPosts.name, schema: NewpostsSchema }], 'SERVER_FULL')
   ],
   controllers: [NewPostController],
-  providers: [NewPostService],
-  exports: [NewPostService]
+  providers: [NewPostService, NewPostContentService],
+  exports: [NewPostService, NewPostContentService]
 })
 export class NewPostModule { }

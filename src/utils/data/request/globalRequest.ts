@@ -55,11 +55,12 @@ export class RecoverPasswordRequest {
     @IsNotEmpty()
     status: string;
 }
+
 export class GuestRequest {
     @IsEmail()
     @IsNotEmpty()
     email: string;
-    regSrc: string;
+    regSrc: string; 
     deviceId: string;
     langIso: string;
     location: {
