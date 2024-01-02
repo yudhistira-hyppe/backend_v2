@@ -132,5 +132,155 @@ export class NewpostService {
         return query;
     }
 
+    async analiticPost(startdate: string, enddate: string) {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+
+            var dt = dateend.substring(0, 10);
+        } catch (e) {
+            dt = "";
+        }
+        var query = await this.PostsModel.aggregate(
+            [
+                {
+                    "$match":
+                    {
+                        createdAt:
+                        {
+                            "$gte": startdate,
+                            "$lte": dt
+                        },
+                        postType:
+                        {
+                            "$in": ["pict", "vid", "diary", "story"]
+                        }
+                    }
+                },
+                {
+                    "$project":
+                    {
+                        createdAt:
+                        {
+                            "$substr":
+                                [
+                                    "$createdAt", 0, 10
+                                ]
+                        },
+                        postType: 1
+                    }
+                },
+
+                {
+                    "$group":
+                    {
+                        _id: "$createdAt",
+                        pict:
+                        {
+                            "$sum":
+                            {
+                                "$switch":
+                                {
+                                    branches:
+                                        [
+                                            {
+                                                "case":
+                                                {
+                                                    "$eq": ["$postType", "pict"]
+                                                },
+                                                "then": 1
+                                            }
+                                        ],
+                                    "default": 0
+                                }
+                            }
+                        },
+                        vid:
+                        {
+                            "$sum":
+                            {
+                                "$switch":
+                                {
+                                    branches:
+                                        [
+                                            {
+                                                "case":
+                                                {
+                                                    "$eq": ["$postType", "vid"]
+                                                },
+                                                "then": 1
+                                            }
+                                        ],
+                                    "default": 0
+                                }
+                            }
+                        },
+                        story:
+                        {
+                            "$sum":
+                            {
+                                "$switch":
+                                {
+                                    branches:
+                                        [
+                                            {
+                                                "case":
+                                                {
+                                                    "$eq": ["$postType", "story"]
+                                                },
+                                                "then": 1
+                                            }
+                                        ],
+                                    "default": 0
+                                }
+                            }
+                        },
+                        diary:
+                        {
+                            "$sum":
+                            {
+                                "$switch":
+                                {
+                                    branches:
+                                        [
+                                            {
+                                                "case":
+                                                {
+                                                    "$eq": ["$postType", "diary"]
+                                                },
+                                                "then": 1
+                                            }
+                                        ],
+                                    "default": 0
+                                }
+                            }
+                        },
+                    }
+                },
+
+                {
+                    $project: {
+                        _id: 0,
+                        date: "$_id",
+                        diary: "$diary",
+                        pict: "$pict",
+                        vid: "$vid",
+                        story: "$story"
+                    }
+                },
+
+                {
+                    "$sort":
+                    {
+                        date: 1
+                    }
+                }
+            ]
+        );
+        return query;
+
+    }
+
 
 }

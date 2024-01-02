@@ -3585,6 +3585,95 @@ export class PostsController {
     return { response_code: 202, messages, data: arrdataview };
   }
 
+  @Post('api/posts/analityc/v2')
+  @UseGuards(JwtAuthGuard)
+  async getByChartv2(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/analityc/v2";
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
+    var data = null;
+    var startdate = null;
+    var enddate = null;
+    var datasummary = [];
+    var lengviews = 0;
+    var arrdataview = [];
+    const messages = {
+      "info": ["The process successful"],
+    };
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["startdate"] !== undefined) {
+      startdate = request_json["startdate"];
+    } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["enddate"] !== undefined) {
+      enddate = request_json["enddate"];
+    } else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    var date1 = new Date(startdate);
+    var date2 = new Date(enddate);
+
+    //calculate time difference  
+    var time_difference = date2.getTime() - date1.getTime();
+
+    //calculate days difference by dividing total milliseconds in a day  
+    var resultTime = time_difference / (1000 * 60 * 60 * 24);
+    console.log(resultTime);
+    try {
+      datasummary = await this.NewPostService.analiticPost(startdate, enddate);
+      lengviews = datasummary.length;
+    }
+    catch (e) {
+      datasummary = [];
+      lengviews = 0;
+    }
+
+    if (resultTime > 0) {
+      for (var i = 0; i < resultTime + 1; i++) {
+        var dt = new Date(startdate);
+        dt.setDate(dt.getDate() + i);
+        var splitdt = dt.toISOString();
+        var dts = splitdt.split('T');
+        var stdt = dts[0].toString();
+        var diary = 0;
+        var pict = 0;
+        var vid = 0;
+        var story = 0;
+        for (var j = 0; j < lengviews; j++) {
+          if (datasummary[j].date == stdt) {
+            diary = datasummary[j].diary;
+            pict = datasummary[j].pict;
+            vid = datasummary[j].vid;
+            story = datasummary[j].story;
+            break;
+          }
+        }
+        arrdataview.push({
+          'date': stdt,
+          'diary': diary,
+          'pict': pict,
+          'vid': vid,
+          'story': story
+        });
+
+      }
+
+    }
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
+
+    return { response_code: 202, messages, data: arrdataview };
+  }
+
   @Post('api/posts/landing-page/recentStory')
   @UseGuards(JwtAuthGuard)
   async getRecentStory(@Req() request: Request, @Headers() headers): Promise<any> {
