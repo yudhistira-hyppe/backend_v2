@@ -51,6 +51,7 @@ import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 
 import { MediastikerService } from 'src/content/mediastiker/mediastiker.service';
+import { NewpostService } from '../disqus/newpost/newpost.service';
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -80,7 +81,8 @@ export class PostsController {
     private readonly logapiSS: LogapisService,
     private readonly basic2SS: UserbasicnewService,
     private readonly MediastikerService: MediastikerService,
-    private readonly methodepaymentsService: MethodepaymentsService) { }
+    private readonly methodepaymentsService: MethodepaymentsService,
+    private readonly NewPostService: NewpostService) { }
 
   @Post()
   async create(@Body() CreatePostsDto: CreatePostsDto) {
@@ -3409,7 +3411,7 @@ export class PostsController {
       throw new BadRequestException("Unabled to proceed");
     }
 
-    var tempdata = await this.PostsService.getPostByDate(date);
+    var tempdata = await this.NewPostService.getPostByDate(date);
     var getdata = [];
     try {
       getdata = tempdata[0].resultdata;

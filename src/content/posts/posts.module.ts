@@ -48,6 +48,7 @@ import { PostchallengeModule } from 'src/trans/postchallenge/postchallenge.modul
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { MediastikerModule } from '../mediastiker/mediastiker.module';
 import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
+import { NewpostModule } from '../disqus/newpost/newpost.module';
 @Module({
 
     imports: [
@@ -75,7 +76,7 @@ import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
         ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule, InterestsModule,
         UserauthsModule, MediavideosModule, InsightsModule, ContenteventsModule, MediadiariesModule, MediastoriesModule,
         MediapictsModule, MediadiariesModule, MediaprofilepictsModule, PostPlayModule, TemplatesRepoModule, DisqusModule
-        , DisquslogsModule, SettingsModule, NotificationsModule, InsightlogsModule, SocketModule,
+        , DisquslogsModule, SettingsModule, NotificationsModule, InsightlogsModule, SocketModule, NewpostModule,
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_FULL')
     ],
     controllers: [PostsController],

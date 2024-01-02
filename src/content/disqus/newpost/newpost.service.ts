@@ -35,6 +35,102 @@ export class NewpostService {
             },
         );
     }
+    async getPostByDate(startdate: string) {
+        var before = new Date(startdate).toISOString().split("T")[0];
+        var input = new Date();
+        input.setDate(input.getDate() + 1);
+        var today = new Date(input).toISOString().split("T")[0];
+        //kalo error, coba ganti jadi set dan jadi object
+        var query = await this.PostsModel.aggregate([
+            {
+                "$match":
+                {
+                    createdAt:
+                    {
+                        "$gte": before,
+                        "$lte": today
+                    },
+                }
+            },
+            {
+                "$project":
+                {
+                    createdAt:
+                    {
+                        "$substr":
+                            [
+                                "$createdAt", 0, 10
+                            ]
+                    }
+                }
+            },
+            {
+                "$group":
+                {
+                    _id:
+                    {
+                        "$dateFromString":
+                        {
+                            "format": "%Y-%m-%d",
+                            "dateString": "$createdAt"
+
+                        }
+                    },
+                    totalperhari:
+                    {
+                        "$sum": 1
+                    }
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: 1,
+                    totalperhari: 1
+                }
+            },
+            {
+                "$unwind":
+                {
+                    path: "$_id"
+                }
+            },
+            {
+                "$sort":
+                {
+                    _id: 1
+                }
+            },
+            {
+                "$group":
+                {
+                    _id: null,
+                    total:
+                    {
+                        "$sum": "$totalperhari"
+                    },
+                    resultdata:
+                    {
+                        "$push":
+                        {
+                            _id:
+                            {
+                                "$substr":
+                                    [
+                                        {
+                                            "$toString": "$_id"
+                                        }, 0, 10
+                                    ]
+                            },
+                            totaldata: "$totalperhari"
+                        }
+                    }
+                }
+            }
+        ]);
+
+        return query;
+    }
 
 
 }
