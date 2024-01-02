@@ -1,92 +1,77 @@
 import mongoose from "mongoose";
 
 export class CreateNewPostDTO {
+  //POST
   _id: String;
   postID: String;
   email: String;
   postType: String;
   description: String;
-  active: boolean;
+  active: Boolean;
   createdAt: String;
   updatedAt: String;
-  certified: boolean;
-  isBoost: number;
-  expiration:
-    {
-      numberLong: String
-    };
+  expiration: Long;
   visibility: String;
   location: String;
   tags: any[];
-  allowComments: boolean;
+  allowComments: Boolean;
   isSafe: Boolean;
   isOwned: Boolean;
-  likes: {
-    numberLong: String
-  }
-  views: {
-    numberLong: String
-  }
-  shares: {
-    numberLong: String
-  }
-  saleLike: boolean;
-  saleView: boolean;
-  saleAmount: number;
+  likes: Long;
+  views: Long;
+  shares: Long;
+  comments: Long;
+  reactions: Long;
   userProfile: any;
-  category: any[];
-  tagPeople: any[];
-  tagDescription: any[];
   contentMedias: any[];
-  boosted: any[];
+  _class: any[];
   viewer: any[];
+  metadata: {
+    duration: Number
+    postRoll: Number
+    postType: String
+    preRoll: Number
+    midRoll: Number
+    postID: String
+    email: String
+    width: Number
+    height: Number
+  }
+  isCertified: Boolean;
+  boosted: any[];
+  isShared: boolean
+  category: any[];
+  certified: boolean
+  saleAmount: number;
+  saleLike: Boolean;
+  saleView: Boolean;
+  tagDescription: any[];
+  tagPeople: any[];
+  contentModerationDate: string
+  moderationReason: string;
+  statusCB: string;
+  isBoost: number;
+  contentModeration: boolean
+  contentModerationResponse: string
+  reportedStatus: string
+  reportedUserHandle: any[];
+  musicId: mongoose.Types.ObjectId;
+  reportedUser: any[];
+  reportedUserCount: number
+  stiker: any[];
+  text: any[];
+
+  //CONTENT EVENT
   userView: any[];
   userLike: any[];
-  _class: any[];
-  mediaBasePath: any[];
-  mediaUri: any[];
-  originalName: any[];
-  fsSourceUri: any[];
-  fsTargetUri: any[];
-  mediaMime: any[];
-  descMigration: any[];
-  statusMigration: any[];
-  apsara: any[];
-  mediaThumBasePath: any[];
-  mediaThumUri: any[];
-  uploadSource: any[];
-  reactions: number;
-  rotate: number;
-  apsaraId: string;
-  reportedStatus: string;
-  reportedUserCount:number;
-  metadata:Metadata;
-  mediaSource:any[];
+
+  //MEDIA
+  mediaSource: any[];
 }
-
-export class CreatenewPost2Dto {
-
-
-  _id: String;
-  contentEventID: String;
-  email: String;
-  eventType: String;
-  active: boolean;
-  event: String;
-  createdAt: String;
-  updatedAt: String;
-  postID: String;
-  senderParty: String;
-  sequenceNumber: Number;
-  flowIsDone: boolean;
-  _class: String;
-  receiverParty: String;
-  skip: number;
-  limit: number;
-}
-
-export class Messages {
-  info: string[];
+export class CreatePostResponse {
+  response_code: number;
+  messages: Messages;
+  data: any;
 }
 
 export class Metadata {
@@ -117,14 +102,6 @@ export class Avatar {
   mediaEndpoint: string;
 }
 
-export class TagPeople {
-  avatar: Avatar;
-  email: string;
-  username: string;
-  status: string;
-  urluserBadge: any[];
-}
-
 export class Privacy {
   isPostPrivate: boolean;
   isIdVerified: boolean;
@@ -132,14 +109,12 @@ export class Privacy {
   isPrivate: boolean;
 }
 
-export class InsightPost {
-  follower: number;
-  following: number;
-  likes: number;
-  views: number;
-  shares: number;
-  comments: number;
-  reactions: number;
+export class TagPeople {
+  avatar: Avatar;
+  email: string;
+  username: string;
+  status: string;
+  urluserBadge: any[];
 }
 
 export class PostData {
@@ -202,9 +177,141 @@ export class PostData {
   text: any[];
 }
 
+export class Messages {
+  info: string[];
+}
+
 export class PostResponseApps {
   response_code: number;
   data: PostData[];
   messages: Messages;
   version: string;
+}
+
+export class VideoList {
+  Status: string;
+  VideoId: string;
+  Size: number;
+  DownloadSwitch: string;
+  Title: string;
+  Duration: number;
+  ModificationTime: Date;
+  CateId: number;
+  CateName: string;
+  PreprocessStatus: string;
+  AppId: string;
+  CreationTime: Date;
+  CoverURL: string;
+  RegionId: string;
+  StorageLocation: string;
+  Snapshots: string[];
+  TemplateGroupId: string;
+}
+
+export class ApsaraVideoResponse {
+  RequestId: string;
+  VideoList: VideoList[];
+}
+
+export class Mezzanine {
+  FileURL: string;
+  OriginalFileName: string;
+  Height: number;
+  Width: number;
+  FileSize: number;
+}
+
+export class ImageInfo {
+  Status: string;
+  Mezzanine: Mezzanine;
+  CreationTime: Date;
+  ImageId: string;
+  Title: string;
+  RegionId: string;
+  StorageLocation: string;
+  URL: string;
+  ImageType: string;
+}
+
+export class ApsaraImageResponse {
+  RequestId: string;
+  NonExistImageIds: any[];
+  ImageInfo: ImageInfo[];
+}
+
+export class ApsaraPlayResponse {
+  PlayUrl: string;
+  Duration: string;
+}
+
+export class InsightPost {
+  follower: number;
+  following: number;
+  likes: number;
+  views: number;
+  shares: number;
+  comments: number;
+  reactions: number;
+}
+
+export class PostLandingData {
+  video: PostData[];
+  pict: PostData[];
+  story: PostData[];
+  diary: PostData[];
+}
+
+export class PostLandingResponseApps {
+  response_code: number;
+  data: PostLandingData;
+  messages: Messages;
+  version: string;
+}
+
+export class PostBuildData {
+  vids: string[];
+  picts: string[];
+  user: string[];
+  interest: string[];
+}
+
+export class GetVideoPlayAuthResponse {
+  PlayAuth: string;
+  RequestId: string;
+  VideoMeta: {
+    Status: string;
+    Duration: string;
+    Title: string,
+    VideoId: string,
+    CoverURL: string,
+  };
+} 
+export class CreatePostRequest {
+  postID: string;
+  postType: string;
+  description: string;
+  tags: string;
+  visibility: string;
+  allowComments: boolean;
+  certified: boolean;
+  cats: string;
+  tagPeople: string;
+  stiker: any;
+  image: any;
+  type: any;
+  position: string;
+  text: any;
+  width: any;
+  height: any;
+  musicId: mongoose.Types.ObjectId;
+  saleAmount: number;
+  location: string;
+  lat: number;
+  lon: number;
+  saleLike: boolean;
+  saleView: boolean;
+  isSafe: boolean;
+  isOwned: boolean;
+  tagDescription: string;
+  isShared: boolean;
 }
