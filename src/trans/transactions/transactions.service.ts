@@ -5214,7 +5214,7 @@ export class TransactionsService {
 
             {
                 $lookup: {
-                    from: "userbasics",
+                    from: "newUserBasics",
                     localField: "iduserbuyer",
                     foreignField: "_id",
                     as: "user_data"
@@ -5324,7 +5324,7 @@ export class TransactionsService {
 
             {
                 $lookup: {
-                    from: "userbasics",
+                    from: "newUserBasics",
                     localField: "idusersell",
                     foreignField: "_id",
                     as: "user_data"
@@ -5467,7 +5467,7 @@ export class TransactionsService {
             },
             {
                 $lookup: {
-                    from: "userbasics",
+                    from: "newUserBasics",
                     localField: "iduserbuyer",
                     foreignField: "_id",
                     as: "userbasics_data"

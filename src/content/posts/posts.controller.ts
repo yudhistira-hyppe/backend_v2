@@ -3382,6 +3382,79 @@ export class PostsController {
 
     return { response_code: 202, messages, data };
   }
+  @Post('api/posts/postbychart/v2')
+  @UseGuards(JwtAuthGuard)
+  async getPostChartBasedDate2(@Req() request: Request, @Headers() headers): Promise<any> {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/postbychart";
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
+    var data = null;
+    var date = null;
+    var iduser = null;
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["date"] !== undefined) {
+      date = request_json["date"];
+    }
+    else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    var tempdata = await this.PostsService.getPostByDate(date);
+    var getdata = [];
+    try {
+      getdata = tempdata[0].resultdata;
+    }
+    catch (e) {
+      getdata = [];
+    }
+
+    var startdate = new Date(date);
+    startdate.setDate(startdate.getDate() - 1);
+    var tempdate = new Date(startdate).toISOString().split("T")[0];
+    var end = new Date().toISOString().split("T")[0];
+    var array = [];
+
+    //kalo lama, berarti error disini!!
+    while (tempdate != end) {
+      var temp = new Date(tempdate);
+      temp.setDate(temp.getDate() + 1);
+      tempdate = new Date(temp).toISOString().split("T")[0];
+      //console.log(tempdate);
+
+      let obj = getdata.find(objs => objs._id === tempdate);
+      //console.log(obj);
+      if (obj == undefined) {
+        obj =
+        {
+          _id: tempdate,
+          totaldata: 0
+        }
+      }
+
+      array.push(obj);
+    }
+
+    data =
+    {
+      data: array,
+      total: (getdata.length == parseInt('0') ? parseInt('0') : tempdata[0].total)
+    }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, request_json);
+
+    return { response_code: 202, messages, data };
+  }
 
   @Get('api/posts/showsertifikasistatbychart')
   @UseGuards(JwtAuthGuard)
