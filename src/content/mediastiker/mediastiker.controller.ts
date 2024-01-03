@@ -912,7 +912,7 @@ export class MediastikerController {
     @UseGuards(JwtAuthGuard)
     @Get(':id/chart/v2')
     async getdetailchartbyid2(@Param('id') id: string) {
-        return await this.MediastikerService.stickerchartbyId(id);
+        return await this.MediastikerService.stickerchartbyId2(id);
     }
 
     @UseGuards(JwtAuthGuard)
