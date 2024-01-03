@@ -12433,33 +12433,33 @@ export class NewPostService {
                   timestamp: 1
                 }
               },
-              {
-                "$lookup": {
-                  "from": "newUserBasics",
-                  "as": "authpenjual",
-                  "let": {
-                    "local_id": "$emailpenjual"
-                  },
-                  "pipeline": [
-                    {
-                      "$match": {
-                        "$expr": {
-                          "$eq": [
-                            "$email",
-                            "$$local_id"
-                          ]
-                        }
-                      }
-                    },
+              // {
+              //   "$lookup": {
+              //     "from": "newUserBasics",
+              //     "as": "authpenjual",
+              //     "let": {
+              //       "local_id": "$emailpenjual"
+              //     },
+              //     "pipeline": [
+              //       {
+              //         "$match": {
+              //           "$expr": {
+              //             "$eq": [
+              //               "$email",
+              //               "$$local_id"
+              //             ]
+              //           }
+              //         }
+              //       },
 
-                  ],
+              //     ],
 
-                }
-              },
+              //   }
+              // },
               {
                 $project: {
                   penjual: {
-                    $arrayElemAt: ['$authpenjual.username', 0]
+                    $arrayElemAt: ['$penjual.username', 0]
                   },
                   amount: 1,
                   status: 1,
