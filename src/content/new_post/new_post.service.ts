@@ -30,17 +30,24 @@ export class NewPostService {
     private readonly loadApsara: GetusercontentsService
   ) { }
 
+  async create(CreatePostsDto: newPosts): Promise<newPosts> {
+    const createPostsDto = await this.loaddata.create(CreatePostsDto);
+    return createPostsDto;
+  }
+
   async findOne(id: string) {
     var data = await this.loaddata.findOne({ postID: id }).exec();
-
     return data;
   }
+
   async findUserPost(email: string): Promise<number> {
     return this.loaddata.where('email', email).where('active', true).where('postType').ne('story').count();
   }
+
   async findNewpostid(id: string): Promise<newPosts> {
     return this.loaddata.findOne({ _id: id }).exec();
   }
+
   async databasenew(buy: string, report: string, iduser: Object, username: string, description: string, kepemilikan: any[], statusjual: any[], postType: any[], kategori: any[], hashtag: any[], startdate: string, enddate: string, startmount: number, endmount: number, descending: boolean, page: number, limit: number, popular: any) {
 
     try {

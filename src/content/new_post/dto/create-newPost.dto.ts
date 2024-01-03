@@ -314,4 +314,4 @@ export class CreatePostRequest {
   isOwned: boolean;
   tagDescription: string;
   isShared: boolean;
-}
+} 
