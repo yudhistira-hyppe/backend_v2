@@ -12,6 +12,7 @@ import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { SettingsService } from 'src/trans/settings/settings.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { PostContentService } from '../posts/postcontent.service';
+import { Request } from 'express';
 @Controller('api/')
 export class NewPostController {
     constructor(
@@ -20,9 +21,9 @@ export class NewPostController {
         private readonly mediastikerService: MediastikerService,
         private readonly contenteventsService: ContenteventsService,
         private readonly basic2SS: UserbasicnewService,
-        private readonly logapiSS: LogapisService, 
+        private readonly logapiSS: LogapisService,
         private readonly settingsService: SettingsService,
-        private readonly utilsService: UtilsService, 
+        private readonly utilsService: UtilsService,
     ) { }
 
     // @UseGuards(JwtAuthGuard)
@@ -127,8 +128,7 @@ export class NewPostController {
     @UseGuards(JwtAuthGuard)
     @Post('posts/getuserposts/v2')
     @UseInterceptors(FileInterceptor('postContent'))
-    async getUserPost(@Body() body, @Headers() headers): Promise<any> 
-    {
+    async getUserPost(@Body() body, @Headers() headers): Promise<any> {
         var fullurl = headers.host + "/api/posts/getuserposts/v2";
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
@@ -143,7 +143,7 @@ export class NewPostController {
         console.log(auth);
         var profile = await this.basic2SS.findbyemail(auth.email);
         if (profile == null) {
-        
+
             var dt = new Date(Date.now());
             dt.setHours(dt.getHours() + 7); // timestamp
             dt = new Date(dt);
@@ -155,9 +155,9 @@ export class NewPostController {
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, body.body);
 
             return {
-                response_code : 204,
-                message : {
-                    "info":[
+                response_code: 204,
+                message: {
+                    "info": [
                         "User tidak terdaftar"
                     ]
                 }
@@ -174,19 +174,17 @@ export class NewPostController {
         for (var i = 0; i < data.length; i++) {
             tempdata = data[i];
             if (tempdata.isApsara == true) {
-            listdata.push(tempdata.apsaraId);
+                listdata.push(tempdata.apsaraId);
             }
             else {
-            listdata.push(undefined);
+                listdata.push(undefined);
             }
 
             var getmusicapsara = null;
-            try
-            {
+            try {
                 getmusicapsara = tempdata.music.apsaraThumnail;
             }
-            catch(e)
-            {
+            catch (e) {
                 getmusicapsara = undefined;
             }
             listmusic.push(getmusicapsara);
@@ -252,9 +250,9 @@ export class NewPostController {
         var version = String(ver.value);
 
         return {
-            response_code:202,
-            data:data,
-            version:version
+            response_code: 202,
+            data: data,
+            version: version
         }
     }
 
@@ -302,14 +300,14 @@ export class NewPostController {
 
         //kalo lama, berarti error disini!!
         while (tempdate != end) {
-        var temp = new Date(tempdate);
-        temp.setDate(temp.getDate() + 1);
-        tempdate = new Date(temp).toISOString().split("T")[0];
-        //console.log(tempdate);
+            var temp = new Date(tempdate);
+            temp.setDate(temp.getDate() + 1);
+            tempdate = new Date(temp).toISOString().split("T")[0];
+            //console.log(tempdate);
 
-        let obj = getdata.find(objs => objs._id === tempdate);
-        //console.log(obj);
-        if (obj == undefined) {
+            let obj = getdata.find(objs => objs._id === tempdate);
+            //console.log(obj);
+            if (obj == undefined) {
                 obj =
                 {
                     _id: tempdate,
@@ -385,7 +383,7 @@ export class NewPostController {
         var lengviews = 0;
         var arrdataview = [];
         const messages = {
-        "info": ["The process successful"],
+            "info": ["The process successful"],
         };
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["startdate"] !== undefined) {
@@ -684,5 +682,110 @@ export class NewPostController {
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
 
         return { response_code: 202, data, messages };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('api/getusercontents/database/v2')
+    async finddata2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var page = null;
+        var startdate = null;
+        var enddate = null;
+        var limit = null;
+        var totalpage = 0;
+        var totalallrow = 0;
+        var totalsearch = 0;
+        var total = 0;
+        var username = null;
+        var kepemilikan = [];
+        var statusjual = [];
+        var data = [];
+        var description = null;
+        var postType = [];
+        var kategori = [];
+        var startmount = null;
+        var endmount = null;
+        var descending = null;
+        var iduser = null;
+        var buy = null;
+        var reported = null;
+        var popular = null;
+        var hashtag = null;
+        var userid = null;
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        username = request_json["username"];
+        description = request_json["description"];
+        kepemilikan = request_json["kepemilikan"];
+        statusjual = request_json["statusjual"];
+        postType = request_json["postType"];
+        kategori = request_json["kategori"];
+        startmount = request_json["startmount"];
+        endmount = request_json["endmount"];
+        descending = request_json["descending"];
+        buy = request_json["buy"];
+        reported = request_json["reported"];
+        popular = request_json["popular"];
+        hashtag = request_json["hashtag"];
+        if (request_json["limit"] !== undefined) {
+            iduser = request_json["iduser"];
+            userid = mongoose.Types.ObjectId(iduser);
+        }
+        var query = null;
+        var datasearch = null;
+        var dataall = null;
+
+        if (iduser !== undefined) {
+            try {
+                query = await this.newPostService.databasenew2(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, hashtag, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+                data = query;
+            } catch (e) {
+                query = null;
+                data = [];
+            }
+        } else {
+            try {
+                query = await this.newPostService.databasenew2(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, hashtag, startdate, enddate, startmount, endmount, descending, page, limit, popular);
+                data = query;
+            } catch (e) {
+                query = null;
+                data = [];
+            }
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+
+        return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
 }
