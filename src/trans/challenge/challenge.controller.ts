@@ -29,6 +29,7 @@ import { Settings2Service } from '../settings2/settings2.service';
 import { NewpostsService } from 'src/content/newposts/newposts.service';
 import { Newposts } from 'src/content/newposts/schemas/newposts.schema';
 import { Long } from 'mongodb';
+import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
 
 
 @Controller('api/challenge')
@@ -47,6 +48,7 @@ export class ChallengeController {
     private readonly NotificationsService: NotificationsService,
     private readonly BadgeService: BadgeService,
     private readonly userbasicsSS: UserbasicsService,
+    private readonly userbasics2SS: UserbasicnewService,
     private readonly settings2SS: Settings2Service,
     private readonly postSS: NewpostsService
     ) { }
@@ -555,6 +557,534 @@ export class ChallengeController {
         }
         else {
           this.insertchildofchallenge(insertdata, null);
+        }
+      }
+
+      // console.log(JSON.stringify(listsubchallenge));
+
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      return res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "data": insertdata,
+        "message": messages
+      });
+    }
+    catch (e) {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        "message": messagesEror
+      });
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('v2')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'bannerBoard', maxCount: 1 }, { name: 'bannerSearch', maxCount: 1 }, { name: 'popUpnotif', maxCount: 1 }, { name: 'badge_profile_1', maxCount: 1 }, { name: 'badge_general_1', maxCount: 1 }, { name: 'badge_profile_2', maxCount: 1 }, { name: 'badge_general_2', maxCount: 1 }, { name: 'badge_profile_3', maxCount: 1 }, { name: 'badge_general_3', maxCount: 1 },]))
+  async create2(
+    @UploadedFiles() files: {
+      bannerBoard?: Express.Multer.File[]
+      bannerSearch?: Express.Multer.File[]
+      popUpnotif?: Express.Multer.File[],
+      badge_profile_1: Express.Multer.File[],
+      badge_general_1: Express.Multer.File[],
+      badge_profile_2: Express.Multer.File[],
+      badge_general_2: Express.Multer.File[],
+      badge_profile_3: Express.Multer.File[],
+      badge_general_3: Express.Multer.File[],
+    },
+    @Req() request: Request,
+    @Res() res,
+    @Headers() headers
+  ) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/v2';
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
+    if (files.bannerBoard == undefined) {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed. banner board image is required");
+    }
+
+    if (files.bannerSearch == undefined) {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed. banner search image is required");
+    }
+
+    if (files.popUpnotif == undefined) {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed. pop up notification image is required");
+    }
+
+    var mongoose = require('mongoose');
+    var insertdata = new CreateChallengeDto();
+    insertdata._id = new mongoose.Types.ObjectId();
+
+    insertdata.nameChallenge = request_json['nameChallenge'];
+    var importlib = require('mongoose');
+    insertdata.jenisChallenge = importlib.Types.ObjectId(request_json['jenisChallenge']);
+    insertdata.description = request_json['description'];
+    insertdata.createdAt = await this.util.getDateTimeString();
+    insertdata.updatedAt = await this.util.getDateTimeString();
+    insertdata.startChallenge = request_json['startChallenge'];
+    insertdata.endChallenge = request_json['endChallenge'];
+    insertdata.durasi = Number(request_json['durasi']);
+    insertdata.jumlahSiklusdurasi = Number(request_json['jumlahSiklusdurasi']);
+    var convertagain = new Date(request_json['startTime']);
+    convertagain.setHours(convertagain.getHours() + 7);
+    var convertdatastart = convertagain.toISOString().split("T")[1];
+    insertdata.startTime = convertdatastart.split(".")[0];
+    // convertagain.setSeconds(convertagain.getSeconds() - 1);
+    // var convertlagi = convertagain.toISOString().split("T")[1];
+    // insertdata.endTime = convertlagi.split(".")[0];
+    insertdata.endTime = insertdata.startTime;
+    insertdata.tampilStatusPengguna = request_json['tampilStatusPengguna'];
+    insertdata.objectChallenge = request_json['objectChallenge'];
+
+    if (request_json['statusChallenge'] == 'PUBLISH') {
+      var getdata = await this.challengeService.findAll(null, request_json['jenisChallenge'], null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
+      if ((request_json['jenisChallenge'] == '647055de0435000059003462' && getdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && getdata.length >= 5)) {
+        if (request_json['jenisChallenge'] == '647055de0435000059003462') {
+          throw new NotAcceptableException("Challenge Utama yang sudah aktif telah memenuhi batas maksimal (Maksimal: 3 challenge aktif)")
+        }
+        else {
+          throw new NotAcceptableException("Challenge Lainnya yang sudah aktif telah memenuhi batas maksimal (Maksimal: 5 challenge aktif)")
+        }
+      }
+      else {
+        insertdata.statusChallenge = request_json['statusChallenge'];
+      }
+    }
+    else {
+      insertdata.statusChallenge = request_json['statusChallenge'];
+    }
+
+    // insertdata.statusChallenge = request_json['statusChallenge'];
+
+    // return res.status(HttpStatus.OK).json({
+    //   response_code: 202,
+    //   statuschallenge : insertdata.statusChallenge
+    // });
+
+    var arraymetrik = [];
+    let setmetrik = {};
+    if (request_json['pilihanMetrik'] == 'akun') {
+      var setreferal = null;
+      var setikuti = null;
+
+      setreferal = (request_json["akun_referal"] == undefined && request_json["akun_referal"] == null ? 0 : Number(request_json['akun_referal']));
+      setikuti = (request_json["akun_ikuti"] == undefined && request_json["akun_ikuti"] == null ? 0 : Number(request_json['akun_ikuti']));
+
+      if (setreferal == 0 && setikuti == 0) {
+        var timestamps_end = await this.util.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        throw new BadRequestException("Unabled to proceed, referral score or following score is required");
+      }
+
+      setmetrik = {
+        "Aktivitas": true,
+        "Interaksi": false,
+        "InteraksiKonten": [],
+        "AktivitasAkun": [
+          {
+            "Referal": setreferal,
+            "Ikuti": setikuti
+          }
+        ]
+      }
+    }
+    else {
+      if (request_json["konten_hyppevid_createpost"] == undefined && request_json["konten_hyppevid_createpost"] == null) {
+        request_json['konten_hyppevid_createpost'] = 0;
+      }
+
+      if (request_json["konten_hyppepic_createpost"] == undefined && request_json["konten_hyppepic_createpost"] == null) {
+        request_json['konten_hyppepic_createpost'] = 0;
+      }
+
+      if (request_json["konten_hyppediary_createpost"] == undefined && request_json["konten_hyppediary_createpost"] == null) {
+        request_json['konten_hyppediary_createpost'] = 0;
+      }
+
+      if (request_json["konten_hyppevid_likepost"] == undefined && request_json["konten_hyppevid_likepost"] == null) {
+        request_json['konten_hyppevid_likepost'] = 0;
+      }
+
+      if (request_json["konten_hyppepic_likepost"] == undefined && request_json["konten_hyppepic_likepost"] == null) {
+        request_json['konten_hyppepic_likepost'] = 0;
+      }
+
+      if (request_json["konten_hyppediary_likepost"] == undefined && request_json["konten_hyppediary_likepost"] == null) {
+        request_json['konten_hyppediary_likepost'] = 0;
+      }
+
+      if (request_json["konten_hyppevid_viewpost"] == undefined && request_json["konten_hyppevid_viewpost"] == null) {
+        request_json['konten_hyppevid_viewpost'] = 0;
+      }
+
+      if (request_json["konten_hyppediary_viewpost"] == undefined && request_json["konten_hyppediary_viewpost"] == null) {
+        request_json['konten_hyppediary_viewpost'] = 0;
+      }
+
+      var setinteraksikonten = {
+        "suka": [
+          {
+            "HyppeVid": Number(request_json['konten_hyppevid_likepost']),
+            "HyppePic": Number(request_json['konten_hyppepic_likepost']),
+            "HyppeDiary": Number(request_json['konten_hyppediary_likepost'])
+          }
+        ],
+        "tonton": [
+          {
+            "HyppeVid": Number(request_json['konten_hyppevid_viewpost']),
+            "HyppeDiary": Number(request_json['konten_hyppediary_viewpost'])
+          }
+        ],
+      }
+
+      if (insertdata.objectChallenge == 'KONTEN') {
+        setinteraksikonten['buatKonten'] = [];
+      }
+      else {
+        setinteraksikonten['buatKonten'] = [
+          {
+            "HyppeVid": Number(request_json['konten_hyppevid_createpost']),
+            "HyppePic": Number(request_json['konten_hyppepic_createpost']),
+            "HyppeDiary": Number(request_json['konten_hyppediary_createpost'])
+          }
+        ];
+      }
+
+      if (request_json["konten_tagar"] != null && request_json["konten_tagar"] != undefined) {
+        setinteraksikonten['tagar'] = request_json['konten_tagar'];
+      }
+
+      setmetrik = {
+        "Aktivitas": false,
+        "Interaksi": true,
+        "AktivitasAkun": [],
+        "InteraksiKonten": [setinteraksikonten]
+      }
+    }
+
+    arraymetrik.push(setmetrik);
+    insertdata.metrik = arraymetrik;
+
+    var setpesertafield = {};
+    setpesertafield["caraGabung"] = request_json['caraGabung'].toUpperCase();
+    var cekgabung = setpesertafield["caraGabung"];
+    var datatipeAkun = request_json['tipeAkun'];
+    var konversitipeAkun = datatipeAkun.toString().split(",");
+
+    if (cekgabung == "DENGAN UNDANGAN") {
+      setpesertafield["tipeAkunTerverikasi"] = 'NO';
+    }
+    else {
+      if (konversitipeAkun.length == 2) {
+        setpesertafield["tipeAkunTerverikasi"] = 'ALL';
+      }
+      else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TERVERIFIKASI') {
+        setpesertafield["tipeAkunTerverikasi"] = 'YES';
+      }
+      else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TIDAKTERVERIFIKASI') {
+        setpesertafield["tipeAkunTerverikasi"] = 'NO';
+      }
+      else {
+        setpesertafield["tipeAkunTerverikasi"] = 'NO';
+      }
+    }
+
+    var datajeniskelamin = request_json['jenis_kelamin'];
+    var konversikelamin = (cekgabung == "SEMUA PENGGUNA" ? datajeniskelamin.toString() : "");
+    konversikelamin.split(",");
+    var tempkelamindata = null;
+    var setjeniskelamin = {};
+    var listkelamin = new Map();
+    listkelamin.set('L', 'LAKI-LAKI');
+    listkelamin.set('P', 'PEREMPUAN');
+    listkelamin.set('O', 'OTHER');
+
+    for (let [key, value] of listkelamin) {
+      var searchkelamin = konversikelamin.includes(key);
+      if (searchkelamin == true) {
+        setjeniskelamin[value] = 'YES';
+      }
+      else {
+        setjeniskelamin[value] = 'NO';
+      }
+    }
+
+    setpesertafield["jenisKelamin"] = [setjeniskelamin];
+
+    var datalokasi = request_json['lokasi'];
+    var konversilokasi = (cekgabung == "SEMUA PENGGUNA" ? ((datalokasi != '' && datalokasi != null && datalokasi != undefined) ? datalokasi.toString().split(",") : []) : []);
+    var templokasidata = null;
+    var setlokasi = [];
+    if (konversilokasi.length != 0) {
+      var mongoose = require('mongoose');
+      for (var i = 0; i < konversilokasi.length; i++) {
+        templokasidata = new mongoose.Types.ObjectId(konversilokasi[i].toString());
+        setlokasi.push(templokasidata);
+      }
+    }
+
+    setpesertafield["lokasiPengguna"] = setlokasi;
+
+    var dataumur = request_json['rentangumur'];
+    var konversiumur = (cekgabung == "SEMUA PENGGUNA" ? dataumur.toString() : "");
+    konversiumur.split(",");
+    var listumur = ["<14", "14-28", "29-43", "44<", "LAINNYA"];
+    var setumur = {};
+    var mongoose = require('mongoose');
+    for (var i = 0; i < listumur.length; i++) {
+      var searchumur = konversiumur.includes(listumur[i]);
+      if (searchumur == true) {
+        setumur[listumur[i]] = 'YES';
+      }
+      else {
+        setumur[listumur[i]] = 'NO';
+      }
+    }
+
+    setpesertafield['rentangUmur'] = [setumur];
+
+    insertdata.peserta = [setpesertafield];
+
+    var setleaderboard = {};
+    if (request_json['leaderboard_tampilbadge_dileaderboard'] == 'true' || request_json['leaderboard_tampilbadge_dileaderboard'] == true) {
+      setleaderboard['tampilBadge'] = true;
+    }
+    else {
+      setleaderboard['tampilBadge'] = false;
+    }
+
+    setleaderboard['Height'] = (request_json["leaderboard_Height"] == undefined && request_json["leaderboard_Height"] == null ? 0 : Number(request_json['leaderboard_Height']));
+    setleaderboard['Width'] = (request_json["leaderboard_Width"] == undefined && request_json["leaderboard_Width"] == null ? 0 : Number(request_json['leaderboard_Width']));
+    setleaderboard['maxSize'] = (request_json["leaderboard_maxSize"] == undefined && request_json["leaderboard_maxSize"] == null ? 0 : Number(request_json['leaderboard_maxSize']));
+    setleaderboard['minSize'] = (request_json["leaderboard_minSize"] == undefined && request_json["leaderboard_minSize"] == null ? 0 : Number(request_json['leaderboard_minSize']));
+    setleaderboard['warnaBackground'] = request_json['leaderboard_warnaBackground'];
+    setleaderboard['formatFile'] = request_json['leaderboard_formatFile'];
+    var ektensileaderboard = request_json['leaderboard_formatFile'];
+    var insertbanner = files.bannerBoard[0];
+    var path = "images/challenge/" + insertdata._id + "_bannerLeaderboard" + "." + ektensileaderboard;
+    var result = await this.osservices.uploadFile(insertbanner, path);
+    setleaderboard['bannerLeaderboard'] = result.url;
+    // setleaderboard['bannerLeaderboard'] = path;
+
+    insertdata.leaderBoard = [setleaderboard];
+
+    var setketentuanhadiah = {};
+    // if(request_json['ketentuanhadiah_tampilbadge'] == true)
+    if (request_json['ketentuanhadiah_tampilbadge'] == 'true' || request_json['ketentuanhadiah_tampilbadge'] == true) {
+      setketentuanhadiah['badgePemenang'] = true;
+
+      setketentuanhadiah['Height'] = (request_json["ketentuanhadiah_Height"] == undefined && request_json["ketentuanhadiah_Height"] == null ? 0 : Number(request_json['ketentuanhadiah_Height']));
+      setketentuanhadiah['Width'] = (request_json["ketentuanhadiah_Width"] == undefined && request_json["ketentuanhadiah_Width"] == null ? 0 : Number(request_json['ketentuanhadiah_Width']));
+      setketentuanhadiah['maxSize'] = (request_json["ketentuanhadiah_maxSize"] == undefined && request_json["ketentuanhadiah_maxSize"] == null ? 0 : Number(request_json['ketentuanhadiah_maxSize']));
+      setketentuanhadiah['minSize'] = (request_json["ketentuanhadiah_minSize"] == undefined && request_json["ketentuanhadiah_minSize"] == null ? 0 : Number(request_json['ketentuanhadiah_minSize']));
+      setketentuanhadiah['formatFile'] = request_json['ketentuanhadiah_formatFile'];
+      var listjuara = request_json['listbadge'];
+      if (listjuara == null || listjuara == undefined || listjuara == '') {
+        var timestamps_end = await this.util.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        throw new BadRequestException("unable to proceed. badge list required");
+      }
+      var konversilistjuara = listjuara.toString().split(",");
+      var mongoose = require('mongoose');
+      var setjuara = {};
+      var listbadgeprofile = [files.badge_profile_1, files.badge_profile_2, files.badge_profile_3];
+      var listbadgegeneral = [files.badge_general_1, files.badge_general_2, files.badge_general_3];
+      for (var i = 0; i < konversilistjuara.length; i++) {
+        var tambahsatu = i + 1;
+        var settype = 'juara' + tambahsatu.toString();
+        var convertid = null;
+
+        if (konversilistjuara[i].toString() == 'new') {
+          var getbadgeprofile = listbadgeprofile[i];
+          var getbadgegeneral = listbadgegeneral[i];
+
+          var insertnewbadge = new CreateBadgeDto();
+          insertnewbadge.name = insertdata.nameChallenge + "_" + settype;
+          insertnewbadge.type = settype;
+
+          var resultbadge = await this.badge.create(getbadgegeneral, getbadgeprofile, insertnewbadge);
+          var getbadgeid = resultbadge._id;
+          // var getbadgeid = insertnewbadge.name;
+          convertid = new mongoose.Types.ObjectId(getbadgeid.toString());
+        }
+        else {
+          convertid = new mongoose.Types.ObjectId(konversilistjuara[i].toString());
+        }
+        setjuara[settype] = convertid;
+      }
+      setketentuanhadiah['badge'] = [setjuara];
+    }
+    else {
+      setketentuanhadiah['badgePemenang'] = false;
+      setketentuanhadiah['Height'] = null;
+      setketentuanhadiah['Width'] = null;
+      setketentuanhadiah['maxSize'] = null;
+      setketentuanhadiah['minSize'] = null;
+      setketentuanhadiah['formatFile'] = null;
+      setketentuanhadiah['badge'] = [];
+    }
+
+    insertdata.ketentuanHadiah = [setketentuanhadiah];
+
+    var setbannersearch = {};
+
+    setbannersearch['Height'] = (request_json["bannersearch_Height"] == undefined && request_json["bannersearch_Height"] == null ? 0 : Number(request_json['bannersearch_Height']));
+    setbannersearch['Width'] = (request_json["bannersearch_Width"] == undefined && request_json["bannersearch_Width"] == null ? 0 : Number(request_json['bannersearch_Width']));
+    setbannersearch['maxSize'] = (request_json["bannersearch_maxSize"] == undefined && request_json["bannersearch_maxSize"] == null ? 0 : Number(request_json['bannersearch_maxSize']));
+    setbannersearch['minSize'] = (request_json["bannersearch_minSize"] == undefined && request_json["bannersearch_minSize"] == null ? 0 : Number(request_json['bannersearch_minSize']));
+    setbannersearch['formatFile'] = request_json['bannersearch_formatFile'];
+    var ektensisearch = request_json['bannersearch_formatFile'];
+    var insertsearch = files.bannerSearch[0];
+    var path = "images/challenge/" + insertdata._id + "_bannerSearch" + "." + ektensisearch;
+    var result = await this.osservices.uploadFile(insertsearch, path);
+    setbannersearch['image'] = result.url;
+    // setbannersearch['image'] = path;
+
+    insertdata.bannerSearch = [setbannersearch];
+
+    var setpopup = {};
+    setpopup['Height'] = (request_json["popup_Height"] == undefined && request_json["popup_Height"] == null ? 0 : Number(request_json['popup_Height']));
+    setpopup['Width'] = (request_json["popup_Width"] == undefined && request_json["popup_Width"] == null ? 0 : Number(request_json['popup_Width']));
+    setpopup['maxSize'] = (request_json["popup_maxSize"] == undefined && request_json["popup_maxSize"] == null ? 0 : Number(request_json['popup_maxSize']));
+    setpopup['minSize'] = (request_json["popup_minSize"] == undefined && request_json["popup_minSize"] == null ? 0 : Number(request_json['popup_minSize']));
+    setpopup['formatFile'] = request_json['popup_formatFile'];
+    var ektensipopup = request_json['popup_formatFile'];
+    var insertpopup = files.popUpnotif[0];
+    var path = "images/challenge/" + insertdata._id + "_popup" + "." + ektensipopup;
+    var result = await this.osservices.uploadFile(insertpopup, path);
+    setpopup['image'] = result.url;
+    // setpopup['image'] = path;
+
+    insertdata.popUp = [setpopup];
+
+    if (request_json['hadiah_set_hadiahpemenang'] == 'true' || request_json['hadiah_set_hadiahpemenang'] == true) {
+      var sethadiah = {};
+      var settemphadiah = {};
+      if (request_json['hadiah_jenispemenang'] == 'RANKING') {
+        settemphadiah["currency"] = request_json['hadiah_currency'].toUpperCase();
+        var getlistjuara = request_json['hadiah_juara'];
+        var konversijuara = getlistjuara.toString().split(",");
+        for (var i = 0; i < konversijuara.length; i++) {
+          var temploop = i + 1;
+          var stringnama = 'juara' + temploop.toString();
+          settemphadiah[stringnama] = Number(konversijuara[i]);
+        }
+
+        sethadiah = {
+          "typeHadiah": "RANKING",
+          "ranking": [settemphadiah]
+        };
+      }
+      else {
+        settemphadiah['pointPrice'] = request_json['point_price'];
+        settemphadiah['pointPriceMax'] = request_json['point_price_max'];
+
+        sethadiah = {
+          "typeHadiah": "POINT",
+          "point": [settemphadiah]
+        };
+      }
+
+      insertdata.hadiahPemenang = [sethadiah];
+    }
+    else {
+      insertdata.hadiahPemenang = [];
+    }
+
+    var setnotifikasi = {};
+    var listnotifikasipush = ['akanDatang', 'challengeDimulai', 'updateLeaderboard', 'challengeAkanBerakhir', 'challengeBerakhir', 'untukPemenang'];
+    var listvariable = ['include', 'title', 'titleEN', 'description', 'descriptionEN', 'unit', 'aturWaktu'];
+    for (var i = 0; i < listnotifikasipush.length; i++) {
+      var tempnotifikasi = {};
+      var getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_include';
+      if (request_json[getvarname] != undefined && request_json[getvarname] != null && request_json[getvarname] == 'YES') {
+        for (var j = 0; j < listvariable.length; j++) {
+          getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_' + listvariable[j];
+          if (getvarname == 'notifikasiPush_updateLeaderboard_aturWaktu') {
+            var convertdata = request_json[getvarname].split(",");
+            var inputdatatoarray = [];
+            for (var k = 0; k < convertdata.length; k++) {
+              inputdatatoarray.push(parseInt(convertdata[k]));
+            }
+
+            tempnotifikasi[listvariable[j]] = inputdatatoarray;
+          }
+          else if (listvariable[j] == 'aturWaktu') {
+            if (listnotifikasipush[i] != 'challengeDimulai') {
+              tempnotifikasi[listvariable[j]] = parseInt(request_json[getvarname]);
+            }
+          }
+          else {
+            tempnotifikasi[listvariable[j]] = request_json[getvarname];
+          }
+        }
+      }
+      else {
+        for (var j = 0; j < listvariable.length; j++) {
+          getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_' + listvariable[j];
+          if (listvariable[j] == 'include') {
+            tempnotifikasi[listvariable[j]] = 'NO';
+          }
+          else if (getvarname == 'notifikasiPush_updateLeaderboard_aturWaktu') {
+            tempnotifikasi[listvariable[j]] = [];
+          }
+          else if (listvariable[j] == 'aturWaktu') {
+            if (listnotifikasipush[i] != 'challengeDimulai') {
+              tempnotifikasi[listvariable[j]] = 0;
+            }
+          }
+          else {
+            tempnotifikasi[listvariable[j]] = null;
+          }
+        }
+      }
+
+      setnotifikasi[listnotifikasipush[i]] = [
+        tempnotifikasi
+      ];
+    }
+
+    insertdata.notifikasiPush = [setnotifikasi];
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+
+    try {
+      await this.challengeService.create(insertdata);
+
+      var checkpartisipan = request_json['list_partisipan_challenge'];
+      var checkjoinchallenge = request_json['caraGabung'];
+      var checkstatusChallenge = request_json['statusChallenge'];
+      if (checkstatusChallenge != 'NONACTIVE') {
+        if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined) {
+          this.insertchildofchallenge2(insertdata, request_json['list_partisipan_challenge']);
+        }
+        else {
+          this.insertchildofchallenge2(insertdata, null);
         }
       }
 
@@ -1350,6 +1880,612 @@ export class ChallengeController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('update/:id/v2')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'bannerBoard', maxCount: 1 }, { name: 'bannerSearch', maxCount: 1 }, { name: 'popUpnotif', maxCount: 1 }, { name: 'badge_profile_1', maxCount: 1 }, { name: 'badge_general_1', maxCount: 1 }, { name: 'badge_profile_2', maxCount: 1 }, { name: 'badge_general_2', maxCount: 1 }, { name: 'badge_profile_3', maxCount: 1 }, { name: 'badge_general_3', maxCount: 1 },]))
+  async update2(
+    @Param('id') id: string,
+    @UploadedFiles() files: {
+      bannerBoard?: Express.Multer.File[]
+      bannerSearch?: Express.Multer.File[]
+      popUpnotif?: Express.Multer.File[],
+      badge_profile_1: Express.Multer.File[],
+      badge_general_1: Express.Multer.File[],
+      badge_profile_2: Express.Multer.File[],
+      badge_general_2: Express.Multer.File[],
+      badge_profile_3: Express.Multer.File[],
+      badge_general_3: Express.Multer.File[],
+    },
+    @Req() request: Request,
+    @Res() res,
+    @Headers() headers
+  ) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/update/' + id + '/v2';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var getdata = await this.challengeService.findOne(id);
+
+    if (request_json['statusChallenge'] == undefined) {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, status challenge field is required");
+    }
+
+    if (request_json['statusChallenge'] == 'PUBLISH') {
+      var setjenischallenge = null;
+      if (request_json['jenisChallenge'] == null) {
+        setjenischallenge = getdata["jenisChallenge"].toString();
+      }
+      else {
+        setjenischallenge = request_json['jenisChallenge'];
+      }
+    }
+
+    if (getdata["statusChallenge"] == 'DRAFT') {
+
+      if (request_json['statusChallenge'] == 'PUBLISH') {
+        var cekdata = await this.challengeService.findAll(null, setjenischallenge, null, null, null, ["SEDANG BERJALAN", "AKAN DATANG"], null, true, null, null);
+        if ((request_json['jenisChallenge'] == '647055de0435000059003462' && cekdata.length >= 3) || (request_json['jenisChallenge'] == '64706cbfd3d174ff4989b167' && cekdata.length >= 5)) {
+          if (request_json['jenisChallenge'] == '647055de0435000059003462') {
+            throw new NotAcceptableException("Challenge Utama yang sudah aktif telah memenuhi batas maksimal (Maksimal: 3 challenge aktif)")
+          }
+          else {
+            throw new NotAcceptableException("Challenge Lainnya yang sudah aktif telah memenuhi batas maksimal (Maksimal: 5 challenge aktif)")
+          }
+        }
+      }
+
+      // var insertdata = new CreateChallengeDto();
+      var insertdata = getdata;
+      // var mongo = require('mongoose');
+      // insertdata._id = new mongo.Types.ObjectId(id);
+
+      insertdata.nameChallenge = request_json['nameChallenge'];
+      var importlib = require('mongoose');
+      insertdata.jenisChallenge = importlib.Types.ObjectId(request_json['jenisChallenge']);
+      insertdata.description = request_json['description'];
+      insertdata.updatedAt = await this.util.getDateTimeString();
+      insertdata.startChallenge = request_json['startChallenge'];
+      insertdata.endChallenge = request_json['endChallenge'];
+      insertdata.durasi = Number(request_json['durasi']);
+      insertdata.jumlahSiklusdurasi = Number(request_json['jumlahSiklusdurasi']);
+      var convertagain = new Date(request_json['startTime']);
+      convertagain.setHours(convertagain.getHours() + 7);
+      var convertdatastart = convertagain.toISOString().split("T")[1];
+      insertdata.startTime = convertdatastart.split(".")[0];
+      // convertagain.setSeconds(convertagain.getSeconds() - 1);
+      // var convertlagi = convertagain.toISOString().split("T")[1];
+      insertdata.endTime = insertdata.startTime;
+      insertdata.tampilStatusPengguna = request_json['tampilStatusPengguna'];
+      insertdata.objectChallenge = request_json['objectChallenge'];
+      insertdata.statusChallenge = request_json['statusChallenge'];
+
+      var arraymetrik = [];
+      let setmetrik = {};
+      if (request_json['pilihanMetrik'] == 'akun') {
+        var setreferal = null;
+        var setikuti = null;
+
+        setreferal = (request_json["akun_referal"] == undefined && request_json["akun_referal"] == null ? 0 : Number(request_json['akun_referal']));
+        setikuti = (request_json["akun_ikuti"] == undefined && request_json["akun_ikuti"] == null ? 0 : Number(request_json['akun_ikuti']));
+
+        if (setreferal == 0 && setikuti == 0) {
+          var timestamps_end = await this.util.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+          throw new BadRequestException("Unabled to proceed, referral score or following score is required");
+        }
+
+        setmetrik = {
+          "Aktivitas": true,
+          "Interaksi": false,
+          "InteraksiKonten": [],
+          "AktivitasAkun": [
+            {
+              "Referal": setreferal,
+              "Ikuti": setikuti
+            }
+          ]
+        }
+      }
+      else {
+        if (request_json["konten_hyppevid_createpost"] == undefined && request_json["konten_hyppevid_createpost"] == null) {
+          request_json['konten_hyppevid_createpost'] = 0;
+        }
+
+        if (request_json["konten_hyppepic_createpost"] == undefined && request_json["konten_hyppepic_createpost"] == null) {
+          request_json['konten_hyppepic_createpost'] = 0;
+        }
+
+        if (request_json["konten_hyppediary_createpost"] == undefined && request_json["konten_hyppediary_createpost"] == null) {
+          request_json['konten_hyppediary_createpost'] = 0;
+        }
+
+        if (request_json["konten_hyppevid_likepost"] == undefined && request_json["konten_hyppevid_likepost"] == null) {
+          request_json['konten_hyppevid_likepost'] = 0;
+        }
+
+        if (request_json["konten_hyppepic_likepost"] == undefined && request_json["konten_hyppepic_likepost"] == null) {
+          request_json['konten_hyppepic_likepost'] = 0;
+        }
+
+        if (request_json["konten_hyppediary_likepost"] == undefined && request_json["konten_hyppediary_likepost"] == null) {
+          request_json['konten_hyppediary_likepost'] = 0;
+        }
+
+        if (request_json["konten_hyppevid_viewpost"] == undefined && request_json["konten_hyppevid_viewpost"] == null) {
+          request_json['konten_hyppevid_viewpost'] = 0;
+        }
+
+        if (request_json["konten_hyppediary_viewpost"] == undefined && request_json["konten_hyppediary_viewpost"] == null) {
+          request_json['konten_hyppediary_viewpost'] = 0;
+        }
+
+        var setinteraksikonten = {
+          "suka": [
+            {
+              "HyppeVid": Number(request_json['konten_hyppevid_likepost']),
+              "HyppePic": Number(request_json['konten_hyppepic_likepost']),
+              "HyppeDiary": Number(request_json['konten_hyppediary_likepost'])
+            }
+          ],
+          "tonton": [
+            {
+              "HyppeVid": Number(request_json['konten_hyppevid_viewpost']),
+              "HyppeDiary": Number(request_json['konten_hyppediary_viewpost'])
+            }
+          ],
+        }
+
+        if (insertdata.objectChallenge == 'KONTEN') {
+          setinteraksikonten['buatKonten'] = [];
+        }
+        else {
+          setinteraksikonten['buatKonten'] = [
+            {
+              "HyppeVid": Number(request_json['konten_hyppevid_createpost']),
+              "HyppePic": Number(request_json['konten_hyppepic_createpost']),
+              "HyppeDiary": Number(request_json['konten_hyppediary_createpost'])
+            }
+          ];
+        }
+
+        if (request_json["konten_tagar"] != null && request_json["konten_tagar"] != undefined) {
+          setinteraksikonten['tagar'] = request_json['konten_tagar'];
+        }
+
+        setmetrik = {
+          "Aktivitas": false,
+          "Interaksi": true,
+          "AktivitasAkun": [],
+          "InteraksiKonten": [setinteraksikonten]
+        }
+      }
+
+      arraymetrik.push(setmetrik);
+      insertdata.metrik = arraymetrik;
+
+      var setpesertafield = {};
+      setpesertafield["caraGabung"] = request_json['caraGabung'].toUpperCase();
+      var cekgabung = setpesertafield["caraGabung"];
+      var datatipeAkun = request_json['tipeAkun'];
+      var konversitipeAkun = datatipeAkun.toString().split(",");
+
+      if (cekgabung == "DENGAN UNDANGAN") {
+        setpesertafield["tipeAkunTerverikasi"] = 'NO';
+      }
+      else {
+        if (konversitipeAkun.length == 2) {
+          setpesertafield["tipeAkunTerverikasi"] = 'ALL';
+        }
+        else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TERVERIFIKASI') {
+          setpesertafield["tipeAkunTerverikasi"] = 'YES';
+        }
+        else if (konversitipeAkun.length == 1 && konversitipeAkun[0] == 'TIDAKTERVERIFIKASI') {
+          setpesertafield["tipeAkunTerverikasi"] = 'NO';
+        }
+        else {
+          setpesertafield["tipeAkunTerverikasi"] = 'NO';
+        }
+      }
+
+      var datajeniskelamin = request_json['jenis_kelamin'];
+      var konversikelamin = (cekgabung == "SEMUA PENGGUNA" ? datajeniskelamin.toString() : "");
+      konversikelamin.split(",");
+      var tempkelamindata = null;
+      var setjeniskelamin = {};
+      var listkelamin = new Map();
+      listkelamin.set('L', 'LAKI-LAKI');
+      listkelamin.set('P', 'PEREMPUAN');
+      listkelamin.set('O', 'OTHER');
+
+      for (let [key, value] of listkelamin) {
+        var searchkelamin = konversikelamin.includes(key);
+        if (searchkelamin == true) {
+          setjeniskelamin[value] = 'YES';
+        }
+        else {
+          setjeniskelamin[value] = 'NO';
+        }
+      }
+
+      setpesertafield["jenisKelamin"] = [setjeniskelamin];
+
+      var datalokasi = request_json['lokasi'];
+      var konversilokasi = (cekgabung == "SEMUA PENGGUNA" ? ((datalokasi != '' && datalokasi != null && datalokasi != undefined) ? datalokasi.toString().split(",") : []) : []);
+      var templokasidata = null;
+      var setlokasi = [];
+      if (konversilokasi.length != 0) {
+        var mongoose = require('mongoose');
+        for (var i = 0; i < konversilokasi.length; i++) {
+          templokasidata = new mongoose.Types.ObjectId(konversilokasi[i].toString());
+          setlokasi.push(templokasidata);
+        }
+      }
+
+      setpesertafield["lokasiPengguna"] = setlokasi;
+
+      var dataumur = request_json['rentangumur'];
+      var konversiumur = (cekgabung == "SEMUA PENGGUNA" ? dataumur.toString() : "");
+      konversiumur.split(",");
+      var listumur = ["<14", "14-28", "29-43", "44<", "LAINNYA"];
+      var setumur = {};
+      var mongoose = require('mongoose');
+      for (var i = 0; i < listumur.length; i++) {
+        var searchumur = konversiumur.includes(listumur[i]);
+        if (searchumur == true) {
+          setumur[listumur[i]] = 'YES';
+        }
+        else {
+          setumur[listumur[i]] = 'NO';
+        }
+      }
+
+      setpesertafield['rentangUmur'] = [setumur];
+
+      insertdata.peserta = [setpesertafield];
+
+      var setleaderboard = {};
+      if (request_json['leaderboard_tampilbadge_dileaderboard'] == 'true' || request_json['leaderboard_tampilbadge_dileaderboard'] == true) {
+        setleaderboard['tampilBadge'] = true;
+      }
+      else {
+        setleaderboard['tampilBadge'] = false;
+      }
+
+      setleaderboard['Height'] = (request_json["leaderboard_Height"] == undefined && request_json["leaderboard_Height"] == null ? 0 : Number(request_json['leaderboard_Height']));
+      setleaderboard['Width'] = (request_json["leaderboard_Width"] == undefined && request_json["leaderboard_Width"] == null ? 0 : Number(request_json['leaderboard_Width']));
+      setleaderboard['maxSize'] = (request_json["leaderboard_maxSize"] == undefined && request_json["leaderboard_maxSize"] == null ? 0 : Number(request_json['leaderboard_maxSize']));
+      setleaderboard['minSize'] = (request_json["leaderboard_minSize"] == undefined && request_json["leaderboard_minSize"] == null ? 0 : Number(request_json['leaderboard_minSize']));
+      setleaderboard['warnaBackground'] = request_json['leaderboard_warnaBackground'];
+      setleaderboard['formatFile'] = request_json['leaderboard_formatFile'];
+
+      if (files.bannerBoard != undefined) {
+        var ektensileaderboard = request_json['leaderboard_formatFile'];
+        var insertbanner = files.bannerBoard[0];
+        var path = "images/challenge/" + insertdata._id + "_bannerLeaderboard" + "." + ektensileaderboard;
+        var result = await this.osservices.uploadFile(insertbanner, path);
+        setleaderboard['bannerLeaderboard'] = result.url;
+        // setleaderboard['bannerLeaderboard'] = path;
+      }
+      else {
+        setleaderboard['bannerLeaderboard'] = getdata["leaderBoard"][0]["bannerLeaderboard"];
+      }
+
+      insertdata.leaderBoard = [setleaderboard];
+
+      var setketentuanhadiah = {};
+      // if(request_json['ketentuanhadiah_tampilbadge'] == true)
+      if (request_json['ketentuanhadiah_tampilbadge'] == 'true' || request_json['ketentuanhadiah_tampilbadge'] == true) {
+        setketentuanhadiah['badgePemenang'] = true;
+
+        setketentuanhadiah['Height'] = (request_json["ketentuanhadiah_Height"] == undefined && request_json["ketentuanhadiah_Height"] == null ? 0 : Number(request_json['ketentuanhadiah_Height']));
+        setketentuanhadiah['Width'] = (request_json["ketentuanhadiah_Width"] == undefined && request_json["ketentuanhadiah_Width"] == null ? 0 : Number(request_json['ketentuanhadiah_Width']));
+        setketentuanhadiah['maxSize'] = (request_json["ketentuanhadiah_maxSize"] == undefined && request_json["ketentuanhadiah_maxSize"] == null ? 0 : Number(request_json['ketentuanhadiah_maxSize']));
+        setketentuanhadiah['minSize'] = (request_json["ketentuanhadiah_minSize"] == undefined && request_json["ketentuanhadiah_minSize"] == null ? 0 : Number(request_json['ketentuanhadiah_minSize']));
+        setketentuanhadiah['formatFile'] = request_json['ketentuanhadiah_formatFile'];
+        var listjuara = request_json['listbadge'];
+        if (listjuara == null || listjuara == undefined || listjuara == '') {
+          var timestamps_end = await this.util.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+          throw new BadRequestException("unable to proceed. badge list required");
+        }
+        var konversilistjuara = listjuara.toString().split(",");
+        var mongoose = require('mongoose');
+        var setjuara = {};
+        var listbadgeprofile = [files.badge_profile_1, files.badge_profile_2, files.badge_profile_3];
+        var listbadgegeneral = [files.badge_general_1, files.badge_general_2, files.badge_general_3];
+        for (var i = 0; i < konversilistjuara.length; i++) {
+          var tambahsatu = i + 1;
+          var settype = 'juara' + tambahsatu.toString();
+          var convertid = null;
+
+          if (konversilistjuara[i].toString() == 'new') {
+            var getbadgeprofile = listbadgeprofile[i];
+            var getbadgegeneral = listbadgegeneral[i];
+
+            var insertnewbadge = new CreateBadgeDto();
+            insertnewbadge.name = insertdata.nameChallenge + "_" + settype;
+            insertnewbadge.type = settype;
+
+            var resultbadge = await this.badge.create(getbadgegeneral, getbadgeprofile, insertnewbadge);
+            var getbadgeid = resultbadge._id;
+            // var getbadgeid = insertnewbadge.name;
+            convertid = new mongoose.Types.ObjectId(getbadgeid.toString());
+          }
+          else {
+            convertid = new mongoose.Types.ObjectId(konversilistjuara[i].toString());
+          }
+          setjuara[settype] = convertid;
+        }
+        setketentuanhadiah['badge'] = [setjuara];
+      }
+      else {
+        setketentuanhadiah['badgePemenang'] = false;
+        setketentuanhadiah['Height'] = null;
+        setketentuanhadiah['Width'] = null;
+        setketentuanhadiah['maxSize'] = null;
+        setketentuanhadiah['minSize'] = null;
+        setketentuanhadiah['formatFile'] = null;
+        setketentuanhadiah['badge'] = [];
+      }
+
+      insertdata.ketentuanHadiah = [setketentuanhadiah];
+
+      var setbannersearch = {};
+
+      setbannersearch['Height'] = (request_json["bannersearch_Height"] == undefined && request_json["bannersearch_Height"] == null ? 0 : Number(request_json['bannersearch_Height']));
+      setbannersearch['Width'] = (request_json["bannersearch_Width"] == undefined && request_json["bannersearch_Width"] == null ? 0 : Number(request_json['bannersearch_Width']));
+      setbannersearch['maxSize'] = (request_json["bannersearch_maxSize"] == undefined && request_json["bannersearch_maxSize"] == null ? 0 : Number(request_json['bannersearch_maxSize']));
+      setbannersearch['minSize'] = (request_json["bannersearch_minSize"] == undefined && request_json["bannersearch_minSize"] == null ? 0 : Number(request_json['bannersearch_minSize']));
+      setbannersearch['formatFile'] = request_json['bannersearch_formatFile'];
+      var ektensisearch = request_json['bannersearch_formatFile'];
+
+      if (files.bannerSearch != undefined) {
+        var insertsearch = files.bannerSearch[0];
+        var path = "images/challenge/" + insertdata._id + "_bannerSearch" + "." + ektensisearch;
+        var result = await this.osservices.uploadFile(insertsearch, path);
+        setbannersearch['image'] = result.url;
+        // setbannersearch['image'] = path;
+      }
+      else {
+        setbannersearch['image'] = getdata["bannerSearch"][0]["image"];
+      }
+
+      insertdata.bannerSearch = [setbannersearch];
+
+      var setpopup = {};
+      setpopup['Height'] = (request_json["popup_Height"] == undefined && request_json["popup_Height"] == null ? 0 : Number(request_json['popup_Height']));
+      setpopup['Width'] = (request_json["popup_Width"] == undefined && request_json["popup_Width"] == null ? 0 : Number(request_json['popup_Width']));
+      setpopup['maxSize'] = (request_json["popup_maxSize"] == undefined && request_json["popup_maxSize"] == null ? 0 : Number(request_json['popup_maxSize']));
+      setpopup['minSize'] = (request_json["popup_minSize"] == undefined && request_json["popup_minSize"] == null ? 0 : Number(request_json['popup_minSize']));
+      setpopup['formatFile'] = request_json['popup_formatFile'];
+      var ektensipopup = request_json['popup_formatFile'];
+      if (files.popUpnotif != undefined) {
+        var insertpopup = files.popUpnotif[0];
+        var path = "images/challenge/" + insertdata._id + "_popup" + "." + ektensipopup;
+        var result = await this.osservices.uploadFile(insertpopup, path);
+        setpopup['image'] = result.url;
+        // setpopup['image'] = path;
+      }
+      else {
+        setpopup['image'] = getdata["popUp"][0]["image"];
+      }
+
+      insertdata.popUp = [setpopup];
+
+      if (request_json['hadiah_set_hadiahpemenang'] == 'true' || request_json['hadiah_set_hadiahpemenang'] == true) {
+        var sethadiah = {};
+        var settemphadiah = {};
+        if (request_json['hadiah_jenispemenang'] == 'RANKING') {
+          settemphadiah["currency"] = request_json['hadiah_currency'].toUpperCase();
+          var getlistjuara = request_json['hadiah_juara'];
+          var konversijuara = getlistjuara.toString().split(",");
+          for (var i = 0; i < konversijuara.length; i++) {
+            var temploop = i + 1;
+            var stringnama = 'juara' + temploop.toString();
+            settemphadiah[stringnama] = Number(konversijuara[i]);
+          }
+
+          sethadiah = {
+            "typeHadiah": "RANKING",
+            "ranking": [settemphadiah]
+          };
+        }
+        else {
+          settemphadiah['pointPrice'] = request_json['point_price'];
+          settemphadiah['pointPriceMax'] = request_json['point_price_max'];
+
+          sethadiah = {
+            "typeHadiah": "POINT",
+            "point": [settemphadiah]
+          };
+        }
+
+        insertdata.hadiahPemenang = [sethadiah];
+      }
+      else {
+        insertdata.hadiahPemenang = [];
+      }
+
+      var setnotifikasi = {};
+      var listnotifikasipush = ['akanDatang', 'challengeDimulai', 'updateLeaderboard', 'challengeAkanBerakhir', 'challengeBerakhir', 'untukPemenang'];
+      var listvariable = ['include', 'title', 'titleEN', 'description', 'descriptionEN', 'unit', 'aturWaktu'];
+      for (var i = 0; i < listnotifikasipush.length; i++) {
+        var tempnotifikasi = {};
+        var getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_include';
+        if (request_json[getvarname] != undefined && request_json[getvarname] != null && request_json[getvarname] == 'YES') {
+          for (var j = 0; j < listvariable.length; j++) {
+            getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_' + listvariable[j];
+            if (getvarname == 'notifikasiPush_updateLeaderboard_aturWaktu') {
+              var convertdata = request_json[getvarname].split(",");
+              var inputdatatoarray = [];
+              for (var k = 0; k < convertdata.length; k++) {
+                inputdatatoarray.push(parseInt(convertdata[k]));
+              }
+
+              tempnotifikasi[listvariable[j]] = inputdatatoarray;
+            }
+            else if (listvariable[j] == 'aturWaktu') {
+              if (listnotifikasipush[i] != 'challengeDimulai') {
+                tempnotifikasi[listvariable[j]] = parseInt(request_json[getvarname]);
+              }
+            }
+            else {
+              tempnotifikasi[listvariable[j]] = request_json[getvarname];
+            }
+          }
+        }
+        else {
+          for (var j = 0; j < listvariable.length; j++) {
+            getvarname = 'notifikasiPush_' + listnotifikasipush[i] + '_' + listvariable[j];
+            if (listvariable[j] == 'include') {
+              tempnotifikasi[listvariable[j]] = 'NO';
+            }
+            else if (getvarname == 'notifikasiPush_updateLeaderboard_aturWaktu') {
+              tempnotifikasi[listvariable[j]] = [];
+            }
+            else if (listvariable[j] == 'aturWaktu') {
+              if (listnotifikasipush[i] != 'challengeDimulai') {
+                tempnotifikasi[listvariable[j]] = 0;
+              }
+            }
+            else {
+              tempnotifikasi[listvariable[j]] = null;
+            }
+          }
+        }
+
+        setnotifikasi[listnotifikasipush[i]] = [
+          tempnotifikasi
+        ];
+      }
+
+      insertdata.notifikasiPush = [setnotifikasi];
+
+
+      var checkpartisipan = request_json['list_partisipan_challenge'];
+      var checkjoinchallenge = request_json['caraGabung'];
+      var checkstatusChallenge = request_json['statusChallenge'];
+      if (checkstatusChallenge != 'NONACTIVE') {
+        if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined) {
+          this.insertchildofchallenge2(insertdata, request_json['list_partisipan_challenge']);
+        }
+        else {
+          this.insertchildofchallenge2(insertdata, null);
+        }
+      }
+
+      await this.challengeService.update(id, insertdata);
+    }
+    else {
+      if (files.bannerBoard != undefined) {
+        var insertbanner = files.bannerBoard[0];
+        var path = "images/challenge/" + id + "_bannerLeaderboard" + "." + getdata["leaderBoard"][0]["formatFile"];
+        // var path = "images/challenge/" + getoriginalname;
+        var result = await this.osservices.uploadFile(insertbanner, path);
+        // setleaderboard['bannerLeaderboard'] = result.url;
+        getdata["leaderBoard"][0]["bannerLeaderboard"] = result.url;
+      }
+
+      if (files.bannerSearch != undefined) {
+        var insertbannersearch = files.bannerSearch[0];
+        var path = "images/challenge/" + id + "_bannerSearch" + "." + getdata["bannerSearch"][0]["formatFile"];
+        // var path = "images/challenge/" + getoriginalname;
+        var result = await this.osservices.uploadFile(insertbannersearch, path);
+        // setleaderboard['image'] = result.url;
+        getdata["bannerSearch"][0]["image"] = result.url;
+      }
+
+      if (files.popUpnotif != undefined) {
+        var insertpopup = files.popUpnotif[0];
+        var path = "images/challenge/" + id + "_popup" + "." + getdata["popUp"][0]["formatFile"];
+        // var path = "images/challenge/" + getoriginalname;
+        var result = await this.osservices.uploadFile(insertpopup, path);
+        // setleaderboard['image'] = result.url;
+        getdata["popUp"][0]["image"] = result.url;
+      }
+
+      if (request_json['description'] != undefined) {
+        getdata["description"] = request_json['description'];
+      }
+
+      if (request_json['leaderboard_warnaBackground'] != undefined) {
+        getdata["leaderBoard"][0]["warnaBackground"] = request_json['leaderboard_warnaBackground'];
+      }
+
+      if (request_json['listbadge'] != undefined) {
+        var listjuara = request_json['listbadge'];
+        var konversilistjuara = listjuara.toString().split(",");
+        var mongoose = require('mongoose');
+        var setjuara = {};
+        var listbadgeprofile = [files.badge_profile_1, files.badge_profile_2, files.badge_profile_3];
+        var listbadgegeneral = [files.badge_general_1, files.badge_general_2, files.badge_general_3];
+        for (var i = 0; i < konversilistjuara.length; i++) {
+          var tambahsatu = i + 1;
+          var settype = 'juara' + tambahsatu.toString();
+          var convertid = null;
+
+          if (konversilistjuara[i].toString() == 'new') {
+            var getbadgeprofile = listbadgeprofile[i];
+            var getbadgegeneral = listbadgegeneral[i];
+
+            var insertnewbadge = new CreateBadgeDto();
+            insertnewbadge.name = getdata.nameChallenge + "_" + settype;
+            insertnewbadge.type = settype;
+
+            var resultbadge = await this.badge.create(getbadgegeneral, getbadgeprofile, insertnewbadge);
+            var getbadgeid = resultbadge._id;
+            // var getbadgeid = insertnewbadge.name;
+            convertid = new mongoose.Types.ObjectId(getbadgeid.toString());
+          }
+          else {
+            convertid = new mongoose.Types.ObjectId(konversilistjuara[i].toString());
+          }
+          setjuara[settype] = convertid;
+        }
+
+        getdata['ketentuanHadiah'][0]['badge'] = [setjuara];
+      }
+
+      getdata["statusChallenge"] = request_json["statusChallenge"];
+      getdata['updatedAt'] = await this.util.getDateTimeString();
+      await this.challengeService.update(id, getdata);
+    }
+
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+    try {
+
+      return res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "data": getdata,
+        "message": messages
+      });
+    }
+    catch (e) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        "message": messagesEror
+      });
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('subchallenge/disactivate/:id')
   async setnonactive(
     @Param('id') id: string,
@@ -1866,6 +3002,201 @@ export class ChallengeController {
     // }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('join/v2')
+  async joinChallenge2(@Res() res, @Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/join/v2';
+    var mongo = require('mongoose');
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var getsubid = request_json['idChallenge'];
+    var getuserid = request_json['idUser'];
+    var uscall = null;
+    var statuskick = null;
+    var botmode = false;
+
+    if (getsubid == null || getsubid == undefined) {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, challenge id field is required");
+    }
+
+    if (getuserid == null || getuserid == undefined) {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, user id field is required");
+    }
+
+    var getuserbasic = await this.userbasics2SS.findOne(getuserid);
+    if (getuserbasic == null) {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
+
+      throw new NotAcceptableException("Unabled to proceed, user data not found");
+    }
+
+    var parentdata = await this.challengeService.detailchallenge(getsubid);
+    var getsubdata = await this.subchallenge.subchallengedetailwithlastrank(getsubid);
+    var checkpernahdikick = await this.userchallengeSS.checkUserjoinchallenge(getsubid, getuserid);
+    if(checkpernahdikick.length == 0)
+    {
+      statuskick = false;
+    }
+    else
+    {
+      if(checkpernahdikick[0].isActive == true)
+      {
+        throw new NotAcceptableException("Unabled to proceed, user already join challenge");
+      }
+      else
+      {
+        statuskick = true;
+      }
+    }
+
+    var botdata = await this.settings2SS.findOne("6583fb37cf00baae6d0d344c");
+    if(await this.util.ceckData(botdata))
+    {
+      botmode = true;
+    }
+
+    var listjoin = [];
+    var firstdata = null;
+    for (var i = 0; i < getsubdata.length; i++) {
+      var getdatenow = await this.util.getDateTimeString();
+      var convertnow = new Date(getdatenow);
+
+      var getfromdb = new Date(getsubdata[i].endDatetime);
+
+      var datediff = getfromdb.getTime() - convertnow.getTime();
+      if (datediff >= 0) {
+        var createdata = new Userchallenges();
+        createdata.isBot = false;
+        createdata.maxScore = 0;
+        createdata.maxDate = timestamps_start.split(" ")[0];
+        var setscore = 0;
+        if(botmode == true)
+        {
+          var getdetailvalue = JSON.parse(JSON.stringify(botdata.value));
+
+          var checkuser = getdetailvalue.find(objs => objs.idSubChallenge.toString() === getsubdata[i]._id.toString());
+          if (checkuser != undefined) 
+          {
+            var listuserarr = checkuser.detail;
+            var getuser = listuserarr.find(objschar => objschar.iduser.toString() === getuserid);
+            if(getuser != undefined)
+            {
+              createdata.isBot = true;
+              setscore = getuser.scoreAwal;
+
+              if(parentdata.objectChallenge == "KONTEN")
+              {
+                var getbotpost = await this.postSS.findByPostId(getuser.postid);
+                var tambah = Number(getbotpost.likes.toString()) + Number(getuser.likeAwal);
+                var updatepost = new Newposts();
+                updatepost.likes = Long.fromNumber(tambah);
+
+                await this.postSS.updateByPostId(getbotpost._id.toString(), updatepost);
+              }
+            }
+          }
+        }
+
+        createdata._id = mongo.Types.ObjectId();
+        createdata.idChallenge = new mongo.Types.ObjectId(getsubid);
+        createdata.idUser = new mongo.Types.ObjectId(getuserid);
+        createdata.idSubChallenge = new mongo.Types.ObjectId(getsubdata[i]._id);
+        createdata.isActive = true;
+        createdata.score = setscore;
+        createdata.ranking = getsubdata[i].lastrank;
+        createdata.startDatetime = getsubdata[i].startDatetime;
+        createdata.endDatetime = getsubdata[i].endDatetime;
+        createdata.objectChallenge = parentdata.objectChallenge;
+        createdata.createdAt = await this.util.getDateTimeString();
+        createdata.updatedAt = await this.util.getDateTimeString();
+        createdata.activity = [];
+        createdata.history = [];
+
+        listjoin.push(createdata);
+        await this.userchallengeSS.create(createdata);
+
+
+        if (firstdata == null) {
+          firstdata = new Userchallenges();
+          firstdata._id = createdata._id;
+          firstdata.idChallenge = createdata.idChallenge;
+          firstdata.idUser = createdata.idUser;
+          firstdata.idSubChallenge = createdata.idSubChallenge;
+          firstdata.isActive = createdata.isActive;
+          firstdata.score = createdata.score;
+          firstdata.ranking = createdata.ranking;
+          firstdata.startDatetime = createdata.startDatetime;
+          firstdata.endDatetime = createdata.endDatetime;
+          firstdata.objectChallenge = createdata.objectChallenge;
+          firstdata.createdAt = createdata.createdAt;
+          firstdata.updatedAt = createdata.updatedAt;
+          firstdata.activity = createdata.activity;
+          firstdata.history = createdata.history;
+          firstdata.session = getsubdata[i].session;
+        }
+      }
+    }
+
+    const messages = {
+      "info": ["The create successful"],
+    };
+
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, request_json['idUser'], null, request_json);
+
+    if (firstdata != null && parentdata.objectChallenge == "KONTEN" && statuskick == false) {
+      this.beforejoinchallenge(getuserbasic, firstdata);
+    }
+
+    if (listjoin.length != 0) {
+      this.insertuserintonotifchallenge2(listjoin);
+    }
+    return res.status(HttpStatus.OK).json({
+      response_code: 202,
+      "data": listjoin,
+      "message": messages
+    });
+    // var checkdata = await this.userchallengeSS.checkUserjoinchallenge(getsubid, getuserid);
+    // if (checkdata.length == 1) {
+    //   var languages_json = JSON.parse(JSON.stringify(getuserbasic.languages));
+
+    //   var timestamps_end = await this.util.getDateTimeString();
+    //   this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
+
+    //   if (languages_json.$id == '6152481690f7b2293d0bf653') {
+    //     if (checkdata[0].isActive == true) {
+    //       throw new BadRequestException("user already registered");
+    //     }
+    //     else {
+    //       throw new BadRequestException("you have been kicked out of this challenge");
+    //     }
+    //   }
+    //   else {
+    //     if (checkdata[0].isActive == true) {
+    //       throw new BadRequestException("pengguna telah melakukan pendaftaran");
+    //     }
+    //     else {
+    //       throw new BadRequestException("anda sudah dikeluarkan dari challenge");
+    //     }
+    //   }
+    // }
+    // else {
+
+    // }
+  }
+
   // @Delete(':id')
   // remove(@Param('id') id: string) {
   //   return this.challengeService.remove(id);
@@ -1976,6 +3307,114 @@ export class ChallengeController {
       }
 
       this.notifchallenge(parentdata._id.toString());
+    }
+  }
+
+  async insertchildofchallenge2(parentdata, participant) {
+    if (participant != null) {
+      var timestamp_start = await this.util.getDateTimeString();
+      // console.log(timestamp_start);
+      var setparticipantchallenge = [];
+      if (participant == "ALL") {
+        var totaldata = await this.userbasics2SS.getcount();
+        var setpagination = parseInt(totaldata[0].totalpost) / 200;
+        var ceksisa = (parseInt(totaldata[0].totalpost) % 200);
+        if (ceksisa > 0 && ceksisa < 5) {
+          setpagination = setpagination + 1;
+        }
+
+        for (var looppagination = 0; looppagination < setpagination; looppagination++) {
+          var getalluserbasic = await this.userbasics2SS.getuser(looppagination, 200);
+
+          for (var loopuser = 0; loopuser < getalluserbasic.length; loopuser++) {
+            setparticipantchallenge.push(getalluserbasic[loopuser]._id.toString());
+          }
+        }
+      }
+      else {
+        var partisipan = participant;
+        if (typeof (partisipan) != "string") {
+          var temp = "";
+          for (var loopP = 0; loopP < partisipan.length; loopP++) {
+            var getpartisipan = partisipan[loopP].toString();
+            temp = temp + getpartisipan + ((loopP == partisipan.length - 1) ? "" : ",");
+          }
+
+          partisipan = temp;
+        }
+        setparticipantchallenge = partisipan.toString().split(",");
+      }
+
+      var tempparticipant = [];
+      for (var loopparticipant = 0; loopparticipant < setparticipantchallenge.length; loopparticipant++) {
+        var importlibpart = require('mongoose');
+        var setparticipantid = importlibpart.Types.ObjectId(setparticipantchallenge[loopparticipant]);
+        tempparticipant.push(setparticipantid);
+      }
+
+      var timestamp_end = await this.util.getDateTimeString();
+      // console.log(timestamp_end);
+      parentdata.listParticipant = tempparticipant;
+    }
+    else {
+      parentdata.listParticipant = [];
+    }
+
+    var konvertstring = parentdata._id;
+    await this.challengeService.update(konvertstring.toString(), parentdata);
+
+    if (parentdata.statusChallenge == "PUBLISH") {
+      var satuanhari = parentdata.durasi;
+      // if (parentdata.jenisDurasi == 'WEEK') {
+      //   satuanhari = parentdata.durasi * 7;
+      // }
+      // else {
+      //   satuanhari = parentdata.durasi;
+      // }
+
+      var listtanggal = [];
+      var getvalue = parentdata.startChallenge;
+      var temptanggal = new Date(getvalue.split(" ")[0] + " " + parentdata.startTime);
+      temptanggal.setHours(temptanggal.getHours() + 7);
+      var getvalue = parentdata.endChallenge;
+      var endtanggal = new Date(getvalue.split(" ")[0] + " " + parentdata.startTime);
+      endtanggal.setHours(endtanggal.getHours() + 7);
+
+      // if (satuanhari == 0) {
+      //   endtanggal.setDate(endtanggal.getDate() + 1);
+      // }
+
+      for (var i = 0; i < parentdata.jumlahSiklusdurasi; i++) {
+        var pecahdata = temptanggal.toISOString().split("T");
+        var startdatetime = pecahdata[0] + " " + parentdata.startTime;
+
+        temptanggal.setDate(temptanggal.getDate() + satuanhari);
+
+        var pecahdata = temptanggal.toISOString().split("T");
+        var enddatetime = pecahdata[0] + " " + parentdata.startTime;
+
+        temptanggal = new Date(temptanggal);
+
+        var datediff = endtanggal.getTime() - temptanggal.getTime();
+
+        if (datediff >= 0) {
+          listtanggal.push([startdatetime, enddatetime]);
+        }
+      }
+
+      for (var i = 0; i < listtanggal.length; i++) {
+        var insertsub = new CreateSubChallengeDto();
+        var mongoose = require('mongoose');
+        insertsub._id = new mongoose.Types.ObjectId();
+        insertsub.startDatetime = listtanggal[i][0];
+        insertsub.endDatetime = listtanggal[i][1];
+        insertsub.isActive = true;
+        insertsub.challengeId = parentdata._id;
+        insertsub.session = i + 1;
+        await this.subchallenge.create(insertsub);
+      }
+
+      this.notifchallenge2(parentdata._id.toString());
     }
   }
 
@@ -3535,12 +4974,391 @@ export class ChallengeController {
     }
   }
 
+  async notifchallenge2(idChallenge: string) {
+    var mongo = require('mongoose');
+    var konvertid = new mongo.Types.ObjectId(idChallenge);
+    var listpartisipan = null;
+    var subchallenge = null;
+    var pushnotifikasi = null;
+
+    try {
+      var detail = await this.challengeService.findOne(idChallenge);
+      subchallenge = await this.subchallenge.findbyid(idChallenge);
+      pushnotifikasi = detail.notifikasiPush[0];
+      if (detail.peserta[0].caraGabung == "DENGAN UNDANGAN") {
+        listpartisipan = detail.listParticipant;
+        var result = await this.userbasics2SS.findInbyid(listpartisipan);
+      }
+      else {
+        listpartisipan = null;
+      }
+    } catch (e) {
+      listpartisipan = null;
+    }
+
+    var insertdatamany = [];
+    for (var loopsub = 0; loopsub < subchallenge.length; loopsub++) {
+      console.log("loop sub challenge " + subchallenge[loopsub]._id);
+      for (const keyPush in pushnotifikasi) {
+        var getkey = keyPush;
+        var getdata = pushnotifikasi[getkey];
+        var getdata = getdata[0];
+        if (getdata.include == "YES") {
+          // console.log(getkey);
+          if (getkey == "akanDatang" || getkey == "challengeDimulai") {
+            let dt = null;
+            dt = new Date(subchallenge[loopsub].startDatetime);
+            if (getkey == "akanDatang") {
+              dt.setHours(dt.getHours() + 7 + getdata.aturWaktu); // timestamp
+            }
+            else {
+              dt.setHours(dt.getHours() + 7); // timestamp
+            }
+            dt = new Date(dt);
+            let strdate = dt.toISOString();
+            let repdate = strdate.replace('T', ' ');
+            let splitdate = repdate.split('.');
+            let timedate = splitdate[0];
+
+            var setinsertpartisipan = [];
+            if (listpartisipan != null && listpartisipan.length != 0) {
+              for (var j = 0; j < result.length; j++) {
+                var setnotif = {};
+                setnotif['idUser'] = result[j]._id;
+                setnotif['email'] = result[j].email;
+                setnotif['username'] = result[j].username;
+                setnotif['ranking'] = 0;
+                var gettitle = getdata.title;
+                var converttitle = null;
+                try {
+                  var cariusername = gettitle.replaceAll("$username", result[j].username);
+                  var ranking = cariusername.replaceAll("$ranking", "");
+                  var badge = ranking.replaceAll("$badge", "");
+                  converttitle = badge.replaceAll("$title", detail.nameChallenge);
+                }
+                catch (e) {
+                  converttitle = gettitle;
+                }
+                var gettitleEN = getdata.titleEN;
+                var converttitleEN = null;
+                try {
+                  var cariusername = gettitleEN.replaceAll("$username", result[j].username);
+                  var ranking = cariusername.replaceAll("$ranking", "");
+                  var badge = ranking.replaceAll("$badge", "");
+                  converttitleEN = badge.replaceAll("$title", detail.nameChallenge);
+                }
+                catch (e) {
+                  converttitleEN = gettitleEN;
+                }
+                var getdesc = getdata.description;
+                var convertdesc = null;
+                try {
+                  var cariusername = getdesc.replaceAll("$username", result[j].username);
+                  var ranking = cariusername.replaceAll("$ranking", "");
+                  var badge = ranking.replaceAll("$badge", "");
+                  convertdesc = badge.replaceAll("$title", detail.nameChallenge);
+                }
+                catch (e) {
+                  convertdesc = getdesc;
+                }
+                var getdescEN = getdata.descriptionEN;
+                var convertdescEN = null;
+                try {
+                  var cariusername = getdescEN.replaceAll("$username", result[j].username);
+                  var ranking = cariusername.replaceAll("$ranking", "");
+                  var badge = ranking.replaceAll("$badge", "");
+                  convertdescEN = badge.replaceAll("$title", detail.nameChallenge);
+                }
+                catch (e) {
+                  convertdescEN = getdescEN;
+                }
+                setnotif['title'] = converttitle;
+                setnotif['titleEN'] = converttitleEN;
+                setnotif['notification'] = convertdesc;
+                setnotif['notificationEN'] = convertdescEN;
+                // setnotif['title'] = getdata.title;
+                // setnotif['titleEN'] = getdata.titleEN;
+                // setnotif['notification'] = getdata.description;
+                // setnotif['notificationEN'] = getdata.descriptionEN;
+                setinsertpartisipan.push(setnotif);
+              }
+            }
+            else {
+              var setnotif = {};
+              setnotif['idUser'] = "SEMUA PENGGUNA";
+              setnotif['email'] = "SEMUA PENGGUNA";
+              setnotif['username'] = "SEMUA PENGGUNA";
+              setnotif['ranking'] = 0;
+              var gettitle = getdata.title;
+              var converttitle = null;
+              try {
+                var caribadge = gettitle.replaceAll("$title", detail.nameChallenge);
+                var ranking = caribadge.replaceAll("$ranking", "");
+                converttitle = ranking.replaceAll("$badge", "");
+              }
+              catch (e) {
+                converttitle = gettitle;
+              }
+              var gettitleEN = getdata.titleEN;
+              var converttitleEN = null;
+              try {
+                var caribadge = gettitleEN.replaceAll("$title", detail.nameChallenge);
+                var ranking = caribadge.replaceAll("$ranking", "");
+                converttitleEN = ranking.replaceAll("$badge", "");
+              }
+              catch (e) {
+                converttitleEN = gettitleEN;
+              }
+              var getdesc = getdata.description;
+              var convertdesc = null;
+              try {
+                var caribadge = getdesc.replaceAll("$title", detail.nameChallenge);
+                var ranking = caribadge.replaceAll("$ranking", "");
+                convertdesc = ranking.replaceAll("$badge", "");
+              }
+              catch (e) {
+                convertdesc = getdesc;
+              }
+              var getdescEN = getdata.descriptionEN;
+              var convertdescEN = null;
+              try {
+                var caribadge = getdescEN.replaceAll("$title", detail.nameChallenge);
+                var ranking = caribadge.replaceAll("$ranking", "");
+                convertdescEN = ranking.replaceAll("$badge", "");
+              }
+              catch (e) {
+                convertdescEN = getdescEN;
+              }
+              setnotif['title'] = converttitle;
+              setnotif['titleEN'] = converttitleEN;
+              setnotif['notification'] = convertdesc;
+              setnotif['notificationEN'] = convertdescEN;
+              // setnotif['title'] = getdata.title;
+              // setnotif['titleEN'] = getdata.titleEN;
+              // setnotif['notification'] = getdata.description;
+              // setnotif['notificationEN'] = getdata.descriptionEN;
+              setinsertpartisipan.push(setnotif);
+            }
+
+            var setdata = new notifChallenge();
+            setdata._id = mongo.Types.ObjectId();
+            setdata.challengeID = subchallenge[loopsub].challengeId;
+            setdata.subChallengeID = subchallenge[loopsub]._id;
+            setdata.title = getdata.title;
+            setdata.description = getdata.description;
+            setdata.type = getkey;
+            setdata.userID = setinsertpartisipan;
+            setdata.session = subchallenge[loopsub].session;
+            setdata.isSend = false;
+            setdata.nameChallenge = detail.nameChallenge;
+            setdata.datetime = timedate;
+            if (listpartisipan == null || listpartisipan.length == 0) {
+              setdata.all = 1;
+            }
+            setdata.createdAt = await this.util.getDateTimeString();
+            // console.log(setdata);
+            insertdatamany.push(setdata);
+            try {
+              await this.notifChallengeService.create(setdata);
+            }
+            catch (e) {
+              console.log(e);
+            }
+
+            if (getkey == "challengeDimulai" && listpartisipan != null && listpartisipan.length != 0 && loopsub == 0) {
+              var setinsertpartisipan = [];
+              for (var j = 0; j < result.length; j++) {
+                var setnotif = {};
+                var titleID = 'Undangan challenge ' + detail.nameChallenge;
+                var titleEN = detail.nameChallenge + " Challenge Invitation";
+                var bodyID = 'Hai ' + result[j].username + ', kamu telah diundang untuk mengikuti challenge ' + detail.nameChallenge + '. Klik di sini!';
+                var bodyEN = 'Hi ' + result[j].username + ', you have been invited to participate in The ' + detail.nameChallenge + ' challenge. Click here!';
+                setnotif['idUser'] = result[j]._id;
+                setnotif['email'] = result[j].email;
+                setnotif['username'] = result[j].username;
+                setnotif['title'] = titleID;
+                setnotif['titleEN'] = titleEN;
+                setnotif['notification'] = bodyID;
+                setnotif['notificationEN'] = bodyEN;
+                setnotif['ranking'] = 0;
+                setinsertpartisipan.push(setnotif);
+              }
+              var setdata = new notifChallenge();
+              setdata._id = mongo.Types.ObjectId();
+              setdata.challengeID = subchallenge[loopsub].challengeId;
+              setdata.subChallengeID = subchallenge[loopsub]._id;
+              setdata.title = getdata.title;
+              setdata.description = getdata.description;
+              setdata.type = getkey;
+              setdata.userID = setinsertpartisipan;
+              setdata.session = subchallenge[loopsub].session;
+              setdata.isSend = false;
+              setdata.nameChallenge = detail.nameChallenge;
+              setdata.datetime = subchallenge[loopsub].startDatetime;
+              setdata.createdAt = await this.util.getDateTimeString();
+              // console.log(setdata);
+              insertdatamany.push(setdata);
+
+              try {
+                await this.notifChallengeService.create(setdata);
+              }
+              catch (e) {
+                console.log(e);
+              }
+            }
+          }
+        }
+      };
+    }
+  }
+
   async insertuserintonotifchallenge(listjoin: any[]) {
     var targetlist = ['updateLeaderboard', 'challengeAkanBerakhir', 'challengeBerakhir', 'untukPemenang'];
     if (listjoin.length != 0) {
       var getuserbasic = listjoin[0].idUser;
       var getchallenge = listjoin[0].idChallenge;
       var basicdata = await this.userbasicsSS.getUserDetails(getuserbasic);
+      var subdata = await this.subchallenge.findChild(getchallenge.toString());
+      var detailchallenge = await this.challengeService.findOne(getchallenge.toString());
+      var pushnotifikasi = detailchallenge.notifikasiPush[0];
+      var listnotif = await this.notifChallengeService.findChild(getchallenge.toString());
+
+      for (var i = 0; i < targetlist.length; i++) {
+        var checkexist = false;
+        for (var j = 0; j < listnotif.length; j++) {
+          if (listnotif[j].type == targetlist[i]) {
+            checkexist = true;
+          }
+        }
+
+        if (checkexist == false) {
+          if (pushnotifikasi[targetlist[i]][0].include == "YES") {
+            var mongo = require('mongoose');
+            var timenow = await this.util.getDateTimeString();
+            var getpushnotif = pushnotifikasi[targetlist[i]];
+            var aturWaktu = getpushnotif[0].aturWaktu;
+            for (var loopsub = 0; loopsub < subdata.length; loopsub++) {
+              var insertdata = new notifChallenge();
+              insertdata.challengeID = subdata[loopsub].challengeId;
+              insertdata.subChallengeID = new mongo.Types.ObjectId(subdata[loopsub]._id);
+              insertdata.createdAt = timenow;
+              insertdata.isSend = false;
+              insertdata.title = getpushnotif[0].title;
+              insertdata.description = getpushnotif[0].description;
+              insertdata.userID = [];
+              insertdata.session = subdata[loopsub].session;
+              insertdata.nameChallenge = detailchallenge.nameChallenge;
+              insertdata.type = targetlist[i];
+
+              if (targetlist[i] == 'updateLeaderboard') {
+                for (var loopleaderboard = 0; loopleaderboard < aturWaktu.length; loopleaderboard++) {
+                  insertdata._id = new mongo.Types.ObjectId();
+                  let dt = new Date(subdata[loopsub].startDatetime);
+                  dt.setHours(dt.getHours() + 7 + aturWaktu[loopleaderboard]); // timestamp
+                  dt = new Date(dt);
+                  let strdate = dt.toISOString();
+                  let repdate = strdate.replace('T', ' ');
+                  let splitdate = repdate.split('.');
+                  let timedate = splitdate[0];
+                  insertdata.datetime = timedate;
+                  await this.notifChallengeService.create(insertdata);
+                }
+              }
+              else {
+                insertdata._id = new mongo.Types.ObjectId();
+                let dt = new Date(subdata[loopsub].endDatetime);
+                dt.setHours(dt.getHours() + 7 + aturWaktu); // timestamp
+                dt = new Date(dt);
+                let strdate = dt.toISOString();
+                let repdate = strdate.replace('T', ' ');
+                let splitdate = repdate.split('.');
+                let timedate = splitdate[0];
+                insertdata.datetime = timedate;
+                await this.notifChallengeService.create(insertdata);
+              }
+            }
+          }
+        }
+      }
+
+      var listnotif = await this.notifChallengeService.findChild(getchallenge.toString());
+
+      console.log(listnotif);
+
+      for (var i = 0; i < listjoin.length; i++) {
+        for (var j = 0; j < listnotif.length; j++) {
+          if (listnotif[j].type != "akanDatang" && listnotif[j].type != "challengeDimulai") {
+            if (listnotif[j].subChallengeID.toString() == listjoin[i].idSubChallenge.toString()) {
+              // console.log(listnotif[j]);
+              var listuser = listnotif[j].userID;
+              var typenotif = listnotif[j].type;
+              var getnotifdata = detailchallenge.notifikasiPush[0][typenotif];
+              console.log(getnotifdata);
+              var setobject = {};
+              setobject['idUser'] = getuserbasic;
+              setobject['email'] = basicdata[0].email;
+              setobject['username'] = basicdata[0].username;
+              setobject['ranking'] = listjoin[i].ranking;
+              var gettitle = getnotifdata[0].title;
+              var converttitle = null;
+              try {
+                var cariusername = gettitle.replaceAll("$username", basicdata[0].username);
+                converttitle = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
+              }
+              catch (e) {
+                converttitle = gettitle;
+              }
+              var gettitleEN = getnotifdata[0].titleEN;
+              var converttitleEN = null;
+              try {
+                var cariusername = gettitleEN.replaceAll("$username", basicdata[0].username);
+                converttitleEN = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
+              }
+              catch (e) {
+                converttitleEN = gettitleEN;
+              }
+              var getdesc = getnotifdata[0].description;
+              var convertdesc = null;
+              try {
+                var cariusername = getdesc.replaceAll("$username", basicdata[0].username);
+                convertdesc = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
+              }
+              catch (e) {
+                convertdesc = getdesc;
+              }
+              var getdescEN = getnotifdata[0].descriptionEN;
+              var convertdescEN = null;
+              try {
+                var cariusername = getdescEN.replaceAll("$username", basicdata[0].username);
+                convertdescEN = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
+              }
+              catch (e) {
+                convertdescEN = getdescEN;
+              }
+              setobject['title'] = converttitle;
+              setobject['titleEN'] = converttitleEN;
+              setobject['notification'] = convertdesc;
+              setobject['notificationEN'] = convertdescEN;
+              listuser.push(setobject);
+
+              var updatedata = new notifChallenge();
+              updatedata.userID = listuser;
+              // console.log(listuser);
+
+              await this.notifChallengeService.update(listnotif[j]._id.toString(), updatedata);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  async insertuserintonotifchallenge2(listjoin: any[]) {
+    var targetlist = ['updateLeaderboard', 'challengeAkanBerakhir', 'challengeBerakhir', 'untukPemenang'];
+    if (listjoin.length != 0) {
+      var getuserbasic = listjoin[0].idUser;
+      var getchallenge = listjoin[0].idChallenge;
+      var basicdata = await this.userbasics2SS.findOne(getuserbasic);
       var subdata = await this.subchallenge.findChild(getchallenge.toString());
       var detailchallenge = await this.challengeService.findOne(getchallenge.toString());
       var pushnotifikasi = detailchallenge.notifikasiPush[0];
@@ -4037,6 +5855,104 @@ export class ChallengeController {
 
     var exileUser = await this.userbasicsSS.findOne(email);
     var admin = await this.userbasicsSS.findbyid(idadmin);
+
+    var getuserchallenge = await this.userchallengeSS.findByChallengeandUser(idchallenge, exileUser._id.toString());
+
+    if (getuserchallenge.length != 0) {
+      var insertid = [];
+      var getarray = getuserchallenge[0].rejectRemark;
+      if (getarray == null || getarray == undefined) {
+        getarray = [];
+      }
+      var insertreject = {};
+      insertreject['idAdmin'] = idadmin;
+      insertreject['time'] = await this.util.getDateTimeString();
+      insertreject['emailAdmin'] = admin.email;
+      
+      var insertstring = reason;
+      var getdetail = await this.challengeService.findOne(idchallenge);
+      if(getdetail.objectChallenge == "KONTEN")
+      {
+        var getdata = await this.postchallengeService.findByUserandChallenge(idchallenge, exileUser._id.toString());
+        if(getdata.length != 0)
+        {
+          insertstring = insertstring + " total score per post before kick :";
+          for(var looppostchallenge = 0; looppostchallenge < getdata.length; looppostchallenge++)
+          {
+            insertstring = insertstring + " postID (" + getdata[looppostchallenge].postID + ") = " + getdata[looppostchallenge].score + (looppostchallenge == getdata.length - 1 ? "." : ",");
+
+            await this.postchallengeService.updateByUSer(getdata[looppostchallenge]._id, getdata[looppostchallenge].idSubChallenge, getdata[looppostchallenge].idChallenge, getdata[looppostchallenge].postID);
+          }
+
+        }
+      }
+
+      insertreject['remark'] = insertstring;
+      getarray.push(insertreject);
+
+      var updatedata = new Userchallenges();
+      updatedata.isActive = false;
+      updatedata.ranking = null;
+      updatedata.rejectRemark = getarray;
+      updatedata.updatedAt = await this.util.getDateTimeString();
+
+      for (var i = 0; i < getuserchallenge.length; i++) {
+        insertid.push(getuserchallenge[i]._id.toString());
+      }
+
+      try {
+        await this.userchallengeSS.delete(insertid, exileUser._id.toString(), updatedata);
+
+        this.deleteDataviaBelakang(exileUser, idchallenge, reason);
+
+        const messages = {
+          "info": ["The create successful"],
+        };
+
+        res.status(HttpStatus.OK).json({
+          response_code: 202,
+          "message": messages
+        });
+      }
+      catch (e) {
+        console.log(e);
+      }
+    }
+    else {
+      res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "message": "data not found"
+      });
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('user/delete/v2')
+  async delete2(@Res() res, @Req() request: Request, @Headers() headers) {
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var idchallenge = request_json['idChallenge'];
+    var email = request_json['email'];
+    var idadmin = request_json['idAdmin'];
+    var reason = request_json['reason'];
+
+    if (idchallenge == null && idchallenge == undefined) {
+      throw new BadRequestException("Unabled to proceed, challenge id field is required");
+    }
+
+    if (email == null && email == undefined) {
+      throw new BadRequestException("Unabled to proceed, user id field is required");
+    }
+
+    if (idadmin == null && idadmin == undefined) {
+      throw new BadRequestException("Unabled to proceed, admin id field is required");
+    }
+
+    if (reason == null && reason == undefined) {
+      throw new BadRequestException("Unabled to proceed, reason field is required");
+    }
+
+    var exileUser = await this.userbasics2SS.findbyemail(email);
+    var admin = await this.userbasics2SS.findOne(idadmin);
 
     var getuserchallenge = await this.userchallengeSS.findByChallengeandUser(idchallenge, exileUser._id.toString());
 
