@@ -12314,15 +12314,15 @@ export class NewPostService {
 
           }
         },
-        {
-          $lookup: {
-            from: 'newUserBasics',
-            localField: 'email',
-            foreignField: 'email',
-            as: 'authdata',
+        // {
+        //   $lookup: {
+        //     from: 'newUserBasics',
+        //     localField: 'email',
+        //     foreignField: 'email',
+        //     as: 'authdata',
 
-          }
-        },
+        //   }
+        // },
         {
           "$lookup": {
             "from": "newUserBasics",
@@ -12477,9 +12477,9 @@ export class NewPostService {
           $addFields: {
 
 
-            'auth': {
-              $arrayElemAt: ['$authdata', 0]
-            },
+            // 'auth': {
+            //   $arrayElemAt: ['$authdata', 0]
+            // },
             'iduser': {
               $arrayElemAt: ['$basicdata.iduser', 0]
             },
@@ -12528,7 +12528,7 @@ export class NewPostService {
             refs: {
               $arrayElemAt: ['$contentMedias', 0]
             },
-            username: "$auth.username",
+            username: "$basicdata.username",
             createdAt: 1,
             updatedAt: 1,
             postID: 1,
