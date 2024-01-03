@@ -40,6 +40,166 @@ export class UserbasicnewService {
         return this.UserbasicnewModel.findOne({ username: username }).exec();
     }
 
+    async findone_(email: string) {
+        var query = await this.UserbasicnewModel.aggregate([
+
+            {
+                $match: {
+                    email: email
+                }
+            },
+            {
+                $project: {
+
+                    "profileID": 1,
+                    "email": 1,
+                    "fullName": 1,
+                    "gender": 1,
+                    "status": 1,
+                    "event": 1,
+                    "isComplete": 1,
+                    "isCelebrity": 1,
+                    "isIdVerified": 1,
+                    "isPrivate": 1,
+                    "isFollowPrivate": 1,
+                    "isPostPrivate": 1,
+                    "createdAt": 1,
+                    "updatedAt": 1,
+                    "insight": 1,
+                    "userInterests": 1,
+                    "userAuth": 1,
+                    "languages": 1,
+                    "_class": 1,
+                    "statusKyc": 1,
+                    "reportedUser": 1,
+                    "reportedUserHandle": 1,
+                    "listAddKyc": 1,
+                    "userAssets": 1,
+                    "__v": 1,
+                    "profilePict": 1,
+                    "bio": 1,
+                    "dob": 1,
+                    "mobileNumber": 1,
+                    "timeEmailSend": 1,
+                    "regSrc": 1,
+                    "icon": 1,
+                    "userBadge": 1,
+                    "countries": 1,
+                    "states": 1,
+                    "cities": 1,
+                    "idProofNumber": 1,
+                    "idProofStatus": 1,
+                    "pin": 1,
+                    "tutor": 1,
+                    "otppinVerified": 1,
+                    "creator": 1,
+                    urluserBadge:
+                    {
+                        "$ifNull":
+                            [
+                                {
+                                    "$filter":
+                                    {
+                                        input: "$userBadge",
+                                        as: "listbadge",
+                                        cond:
+                                        {
+                                            "$and":
+                                                [
+                                                    {
+                                                        "$eq":
+                                                            [
+                                                                "$$listbadge.isActive", true
+                                                            ]
+                                                    },
+                                                    {
+                                                        "$lte": [
+                                                            {
+                                                                "$dateToString": {
+                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                    "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "$$listbadge.endDatetime"
+                                                        ]
+                                                    }
+                                                ]
+                                        }
+                                    },
+                                },
+                                []
+                            ]
+                    },
+                }
+            },
+            {
+                $project: {
+
+                    "profileID": 1,
+                    "email": 1,
+                    "fullName": 1,
+                    "gender": 1,
+                    "status": 1,
+                    "event": 1,
+                    "isComplete": 1,
+                    "isCelebrity": 1,
+                    "isIdVerified": 1,
+                    "isPrivate": 1,
+                    "isFollowPrivate": 1,
+                    "isPostPrivate": 1,
+                    "createdAt": 1,
+                    "updatedAt": 1,
+                    "insight": 1,
+                    "userInterests": 1,
+                    "userAuth": 1,
+                    "languages": 1,
+                    "_class": 1,
+                    "statusKyc": 1,
+                    "reportedUser": 1,
+                    "reportedUserHandle": 1,
+                    "listAddKyc": 1,
+                    "userAssets": 1,
+                    "__v": 1,
+                    "profilePict": 1,
+                    "bio": 1,
+                    "dob": 1,
+                    "mobileNumber": 1,
+                    "timeEmailSend": 1,
+                    "regSrc": 1,
+                    "icon": 1,
+                    "userBadge": 1,
+                    "countries": 1,
+                    "states": 1,
+                    "cities": 1,
+                    "idProofNumber": 1,
+                    "idProofStatus": 1,
+                    "pin": 1,
+                    "otppinVerified": 1,
+                    "tutor": 1,
+                    "creator": 1,
+                    urluserBadge:
+                    {
+                        "$ifNull": [
+                            {
+                                "$arrayElemAt":
+                                    [
+                                        "$urluserBadge", 0
+                                    ]
+                            },
+                            null
+                        ]
+                    },
+                }
+            }
+        ]);
+        return query[0];
+    }
+
     async findbyboth(email: string): Promise<Userbasicnew> {
         return this.UserbasicnewModel.findOne(
             {

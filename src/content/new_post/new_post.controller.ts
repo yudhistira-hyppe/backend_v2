@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req, HttpCode, HttpStatus, Post, Body, Headers, BadRequestException, Param, Query, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, HttpCode, HttpStatus, Post, Body, Headers, BadRequestException, Param, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { NewPostService } from './new_post.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { CreatePostRequest, CreatePostResponse } from './dto/create-newPost.dto';
@@ -11,11 +11,10 @@ import { NewPostContentService } from './new_postcontent.service';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { SettingsService } from 'src/trans/settings/settings.service';
 import { UtilsService } from 'src/utils/utils.service';
-import { PostContentService } from '../posts/postcontent.service';
 @Controller('api/')
 export class NewPostController {
     constructor(
-        private readonly newPostContentService: PostContentService,
+        private readonly newPostContentService: NewPostContentService,
         private readonly newPostService: NewPostService,
         private readonly mediastikerService: MediastikerService,
         private readonly contenteventsService: ContenteventsService,
@@ -25,100 +24,100 @@ export class NewPostController {
         private readonly utilsService: UtilsService, 
     ) { }
 
-    // @UseGuards(JwtAuthGuard)
-    // @Post('api/posts/createpost')
-    // @UseInterceptors(FileInterceptor('postContent'))
-    // async createPostV4new(@UploadedFile() file: Express.Multer.File, @Body() CreatePostRequest_: CreatePostRequest, @Headers() headers): Promise<CreatePostResponse> {
-    //     console.log('============================================== CREATE POST HEADERS ==============================================', JSON.stringify(headers));
-    //     console.log('============================================== CREATE POST BODY ==============================================', JSON.stringify(CreatePostRequest_));
-    //     if (CreatePostRequest_.stiker !== undefined && CreatePostRequest_.image !== undefined && CreatePostRequest_.type !== undefined && CreatePostRequest_.position !== undefined) {
+    @UseGuards(JwtAuthGuard)
+    @Post('api/posts/createpost/v2')
+    @UseInterceptors(FileInterceptor('postContent'))
+    async createPostV4new(@UploadedFile() file: Express.Multer.File, @Body() CreatePostRequest_: CreatePostRequest, @Headers() headers): Promise<CreatePostResponse> {
+        console.log('============================================== CREATE POST HEADERS ==============================================', JSON.stringify(headers));
+        console.log('============================================== CREATE POST BODY ==============================================', JSON.stringify(CreatePostRequest_));
+        if (CreatePostRequest_.stiker !== undefined && CreatePostRequest_.image !== undefined && CreatePostRequest_.type !== undefined && CreatePostRequest_.position !== undefined) {
 
-    //         var arrayStiker = [];
-    //         var stiker = CreatePostRequest_.stiker;
+            var arrayStiker = [];
+            var stiker = CreatePostRequest_.stiker;
 
-    //         var splitstiker = stiker.toString();
-    //         var splitreq2stiker = splitstiker.split(',');
+            var splitstiker = stiker.toString();
+            var splitreq2stiker = splitstiker.split(',');
 
-    //         var image = CreatePostRequest_.image;
-    //         var splitimage = image.toString();
-    //         var splitreq2image = splitimage.split(',');
+            var image = CreatePostRequest_.image;
+            var splitimage = image.toString();
+            var splitreq2image = splitimage.split(',');
 
-    //         var type = CreatePostRequest_.type;
-    //         var splittype = type.toString();
-    //         var splitreq2type = splittype.split(',');
+            var type = CreatePostRequest_.type;
+            var splittype = type.toString();
+            var splitreq2type = splittype.split(',');
 
-    //         var position = CreatePostRequest_.position;
-    //         var splitposition = position.toString();
-    //         var splitreq2position = splitposition.split('#');
+            var position = CreatePostRequest_.position;
+            var splitposition = position.toString();
+            var splitreq2position = splitposition.split('#');
 
-    //         if (splitreq2stiker.length !== splitreq2image.length && splitreq2stiker.length !== splitreq2type.length && splitreq2stiker.length !== splitreq2position.length) {
-    //             throw new BadRequestException("Unabled to proceed,the length of data must be the same");
-    //         } else {
-    //             for (var i = 0; i < splitreq2stiker.length; i++) {
-    //                 let id = splitreq2stiker[i];
-    //                 let image = splitreq2image[i];
-    //                 let type = splitreq2type[i];
-    //                 let position = splitreq2position[i];
-    //                 var ids = new mongoose.Types.ObjectId(id);
-    //                 let arrayPosition = [];
-    //                 let splitpos = position.split(',');
-    //                 for (let x = 0; x < splitpos.length; x++) {
-    //                     var num = parseFloat(splitpos[x]);
-    //                     arrayPosition.push(num);
-    //                 }
+            if (splitreq2stiker.length !== splitreq2image.length && splitreq2stiker.length !== splitreq2type.length && splitreq2stiker.length !== splitreq2position.length) {
+                throw new BadRequestException("Unabled to proceed,the length of data must be the same");
+            } else {
+                for (var i = 0; i < splitreq2stiker.length; i++) {
+                    let id = splitreq2stiker[i];
+                    let image = splitreq2image[i];
+                    let type = splitreq2type[i];
+                    let position = splitreq2position[i];
+                    var ids = new mongoose.Types.ObjectId(id);
+                    let arrayPosition = [];
+                    let splitpos = position.split(',');
+                    for (let x = 0; x < splitpos.length; x++) {
+                        var num = parseFloat(splitpos[x]);
+                        arrayPosition.push(num);
+                    }
 
-    //                 var obj = {
-    //                     "_id": ids,
-    //                     "image": image,
-    //                     "position": arrayPosition,
-    //                     "type": type
-    //                 };
-    //                 arrayStiker.push(obj);
-    //             }
-    //             CreatePostRequest_.stiker = arrayStiker;
-    //         }
-    //     }
+                    var obj = {
+                        "_id": ids,
+                        "image": image,
+                        "position": arrayPosition,
+                        "type": type
+                    };
+                    arrayStiker.push(obj);
+                }
+                CreatePostRequest_.stiker = arrayStiker;
+            }
+        }
 
-    //     if (CreatePostRequest_.text !== undefined) {
+        if (CreatePostRequest_.text !== undefined) {
 
-    //         var arraytext = [];
-    //         var text = CreatePostRequest_.text;
+            var arraytext = [];
+            var text = CreatePostRequest_.text;
 
-    //         var splitreqtext = text.toString();
-    //         var splitreq2text = splitreqtext.split(',');
+            var splitreqtext = text.toString();
+            var splitreq2text = splitreqtext.split(',');
 
-    //         for (var i = 0; i < splitreq2text.length; i++) {
-    //             let idtext = splitreq2text[i];
-    //             arraytext.push(idtext);
-    //         }
-    //         CreatePostRequest_.text = arraytext;
-    //     }
-    //     var data = await this.newPostContentService.createNewPostV5(file, CreatePostRequest_, headers);
+            for (var i = 0; i < splitreq2text.length; i++) {
+                let idtext = splitreq2text[i];
+                arraytext.push(idtext);
+            }
+            CreatePostRequest_.text = arraytext;
+        }
+        var data = await this.newPostContentService.createNewPostV5(file, CreatePostRequest_, headers);
 
-    //     if (data !== undefined && data !== null) {
-    //         console.log(arrayStiker)
+        if (data !== undefined && data !== null) {
+            console.log(arrayStiker)
 
-    //         if (arrayStiker !== undefined && arrayStiker.length > 0) {
-    //             this.updateused(arrayStiker);
-    //         }
+            if (arrayStiker !== undefined && arrayStiker.length > 0) {
+                this.updateused(arrayStiker);
+            }
 
-    //         var postID = data.data.postID;
+            var postID = data.data.postID;
 
-    //         var email = data.data.email;
+            var email = data.data.email;
 
-    //         const databasic = await this.userbasicnewService.findOne(
-    //             email
-    //         );
-    //         var iduser = null;
-    //         if (databasic !== null) {
-    //             iduser = databasic._id;
-    //             //this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
-    //             await this.contenteventsService.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
-    //         }
-    //     }
+            const databasic = await this.basic2SS.findOne(
+                email
+            );
+            var iduser = null;
+            if (databasic !== null) {
+                iduser = databasic._id;
+                //this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
+                await this.contenteventsService.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
+            }
+        }
 
-    //     return data;
-    // }
+        return data;
+    }
 
     async updateused(list: any[]) {
         return await this.mediastikerService.updatedata(list, "used");

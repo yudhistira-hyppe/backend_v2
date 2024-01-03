@@ -18,7 +18,7 @@ export class newPosts {
   @Prop()
   description: String;
   @Prop()
-  active: Boolean;
+  active: boolean;
   @Prop()
   createdAt: String;
   @Prop()
@@ -32,11 +32,11 @@ export class newPosts {
   @Prop()
   tags: any[];
   @Prop()
-  allowComments: Boolean;
+  allowComments: boolean;
   @Prop()
-  isSafe: Boolean;
+  isSafe: boolean;
   @Prop()
-  isOwned: Boolean;
+  isOwned: boolean;
   @Prop()
   likes: Long;
   @Prop()
@@ -66,7 +66,7 @@ export class newPosts {
     height: Number
   }
   @Prop()
-  isCertified: Boolean;
+  isCertified: boolean;
   @Prop()
   boosted: any[];
   @Prop()
@@ -78,9 +78,9 @@ export class newPosts {
   @Prop()
   saleAmount: number;
   @Prop()
-  saleLike: Boolean;
+  saleLike: boolean;
   @Prop()
-  saleView: Boolean;
+  saleView: boolean;
   @Prop()
   tagDescription: any[];
   @Prop()
