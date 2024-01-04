@@ -46,6 +46,8 @@ import { Userchallenges } from '../trans/userchallenges/schemas/userchallenges.s
 import { subChallengeService } from '../trans/challenge/subChallenge.service';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { CreateuserbasicnewDto } from 'src/trans/userbasicnew/dto/Createuserbasicnew-dto';
+import { NewPostService } from 'src/content/new_post/new_post.service';
+import { newPosts } from 'src/content/new_post/schemas/newPost.schema';
 
 @Injectable()
 export class AuthService {
@@ -80,6 +82,7 @@ export class AuthService {
     private userchallengesService: UserchallengesService,
     private subChallengeService: subChallengeService,
     private readonly logapiSS: LogapisService,
+    private readonly post2SS: NewPostService,
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -12411,6 +12414,7 @@ export class AuthService {
           if(signupbyemail == true && datauserbasicsService != null && datauserbasicsService.guestMode == true)
           {
             await this.basic2SS.updatebyEmail(user_email, data_CreateUserbasicDto);
+            this.guestToreal(datauserbasicsService);
           }
           else
           {
@@ -15030,5 +15034,127 @@ export class AuthService {
 
   async scorereferralrequest(iduser: string, idevent: string, namatabel: string, event: string) {
     await this.contenteventsService.scorereferralrequest(iduser, idevent, namatabel, event)
+  }
+
+  async guestToreal(data:Userbasicnew)
+  {
+    if(data.tempfollowing.length != 0)
+    {
+      var inputfollowing = data.following;
+      var listfollower = data.tempfollowing;
+      for(var i = 0; i < listfollower.length; i++)
+      {
+        inputfollowing.push(listfollower[i]);
+
+        var getdata = await this.basic2SS.findbyemail(listfollower[i]);
+        var listuser = getdata.follower;
+        listuser.push(data.email.toString());
+        var updateuser = new CreateuserbasicnewDto();
+        updateuser.follower = listuser;
+        await this.basic2SS.update(getdata._id.toString(), updateuser); 
+        // await this.utilsService.sendFcmV2(data.email.toString(), listfollower[i], "FOLLOWER", "ACCEPT", "FOLLOWER");
+      }
+
+      var updateuser = new CreateuserbasicnewDto();
+      updateuser.tempfollowing = [];
+      updateuser.following = inputfollowing;
+      await this.basic2SS.update(data._id.toString(), updateuser);
+    }
+
+    var getlisttemp = await this.post2SS.countTemppost(data.email.toString(), "like");
+    var totalpostlike = null;
+    try
+    {
+      totalpostlike = getlisttemp[0].total;
+    }
+    catch(e)
+    {
+      totalpostlike = 0;
+    }
+
+    if(totalpostlike != 0)
+    {
+      var listlike = getlisttemp[0].data;
+      var pagelike = null;
+      var totalpage = totalpostlike / 3;
+      
+      var tpage2 = (totalpage).toFixed(0);
+      var tpage = (totalpostlike % 3);
+      if (tpage > 0 && tpage < 5) {
+        pagelike = parseInt(tpage2) + 1;
+  
+      } else {
+        pagelike = parseInt(tpage2);
+      }
+
+      for(var i = 0; i < pagelike; i++)
+      {
+        var currentlikepage = i * 25;
+        var nextlikepage = (i + 1) * 25;
+        var getlistpost = listlike.slice(currentlikepage, nextlikepage);
+        
+        var getresultlike = await this.post2SS.findById(getlistpost);
+        for(var j = 0; j < getresultlike.length; j++)
+        {
+          var datapost = getresultlike[j];
+          var getuserview = datapost.tempLike;
+          var filterlike = getuserview.filter((element) => element != data.email.toString());
+          var updatedata = new newPosts();
+          updatedata.tempLike = filterlike;
+          updatedata.userLike = datapost.userLike;
+          updatedata.userLike.push(data.email.toString());
+          
+          await this.post2SS.update(datapost.postID, updatedata);
+        }
+      }
+    }
+
+    var getlisttemp = await this.post2SS.countTemppost(data.email.toString(), "view");
+    var totalpostview = null;
+    try
+    {
+      totalpostview = getlisttemp[0].total;
+    }
+    catch(e)
+    {
+      totalpostview = 0;
+    }
+
+    if(totalpostview != 0)
+    {
+      var listview = getlisttemp[0].data; 
+      var pageview = null;
+      var totalpage = totalpostview / 3;
+      
+      var tpage2 = (totalpage).toFixed(0);
+      var tpage = (totalpostview % 3);
+      if (tpage > 0 && tpage < 5) {
+        pageview = parseInt(tpage2) + 1;
+  
+      } else {
+        pageview = parseInt(tpage2);
+      }
+
+      for(var i = 0; i < pageview; i++)
+      {
+        var currentviewpage = i * 25;
+        var nextviewpage = (i + 1) * 25;
+        var getlistpost = listview.slice(currentviewpage, nextviewpage);
+        
+        var getresultview = await this.post2SS.findById(getlistpost);
+        for(var j = 0; j < getresultview.length; j++)
+        {
+          var datapost = getresultview[j];
+          var getuserview = datapost.tempView;
+          var filterview = getuserview.filter((element) => element != data.email.toString());
+          var updatedata = new newPosts();
+          updatedata.tempView = filterview;
+          updatedata.userView = datapost.userView;
+          updatedata.userView.push(data.email.toString());
+          
+          await this.post2SS.update(datapost.postID, updatedata);
+        }
+      }
+    }
   }
 }

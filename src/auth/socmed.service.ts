@@ -1313,7 +1313,7 @@ export class SocmedService {
 
   async newsignupsosmed(req: any, headers:any) {
     var timestamps_start = await this.utilsService.getDateTimeString();
-    var fullurl = headers.host + '/api/user/signup/socmed';
+    var fullurl = headers.host + '/api/user/signup/socmed/v2';
     var reqbody = JSON.parse(JSON.stringify(req.body));
 
     this.logger.log("signupsosmedv2 >>> start: ");
@@ -2129,6 +2129,7 @@ export class SocmedService {
           else
           {
             await this.userbasicsnewService.updatebyEmail(user_email, data_CreateUserbasicDto);
+            this.authService.guestToreal(data_CreateUserbasicDto);
           }
 
         } catch (error) {

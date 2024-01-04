@@ -126,6 +126,12 @@ export class newPosts {
   //MEDIA
   @Prop()
   mediaSource: any[];
+
+  //Buat guest mode
+  @Prop()
+  tempView: any[];
+  @Prop()
+  tempLike: any[];
 }
 
 export const NewpostsSchema = SchemaFactory.createForClass(newPosts);

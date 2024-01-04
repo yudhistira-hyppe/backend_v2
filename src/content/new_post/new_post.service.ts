@@ -35,6 +35,14 @@ export class NewPostService {
     return createPostsDto;
   }
 
+  async update(id: string, inputdata: newPosts): Promise<newPosts> {
+        let data = await this.loaddata.findByIdAndUpdate(id, inputdata, { new: true });
+        if (!data) {
+            throw new Error('Data is not found!');
+        }
+        return data;
+  }
+
   async findOne(id: string) {
     var data = await this.loaddata.findOne({ postID: id }).exec();
     return data;
@@ -14083,5 +14091,82 @@ export class NewPostService {
     }
 
     return query;
+  }
+
+  async countTemppost(email:string, tipe:string)
+  {
+    var pipeline = [];
+    var firstmatch = [];
+    if(tipe == "like")
+    {
+      firstmatch.push(
+        {
+          "tempLike":email
+        }
+      ); 
+    }
+    else
+    {
+      firstmatch.push(
+        {
+          "tempView":email
+        }
+      );
+    }
+
+    firstmatch.push(
+      {
+        "active":true
+      }
+    );
+
+    pipeline.push(
+      {
+        "$unwind":
+        {
+          path:(tipe == "like" ? "$tempLike" : "$tempView")
+        }
+      },
+      {
+        "$match":
+        {
+          "$and":firstmatch
+        }
+      },
+      {
+        "$group":
+        {
+          _id:null,
+          total:
+          {
+            "$sum":1
+          },
+          data:
+          {
+            "$push":"$postID"
+          }
+        }
+      }
+    );
+
+    var data = await this.loaddata.aggregate(pipeline);
+    return data;
+  }
+  
+  async findById(list:any[])
+  {
+    var data = await this.loaddata.aggregate([
+      {
+        "$match":
+        {
+          "postID":
+          {
+            "$in":list
+          }
+        }
+      }
+    ]);
+
+    return data;
   }
 }
