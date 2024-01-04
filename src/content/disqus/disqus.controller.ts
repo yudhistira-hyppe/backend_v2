@@ -29,6 +29,8 @@ import { Model, Types } from 'mongoose';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { ConfigService } from '@nestjs/config';
+import { RequestSoctDto } from '../mediastreaming/dto/mediastreaming.dto';
 
 const Long = require('mongodb').Long;
 @Controller('api/')
@@ -45,6 +47,7 @@ export class DisqusController {
     private readonly contenteventsService: ContenteventsService,
     private readonly userauthsService: UserauthsService,
     private readonly errorHandler: ErrorHandler,
+    private readonly configService: ConfigService,
     private readonly logapiSS : LogapisService) { }
 
   @Post('disqus')
@@ -108,7 +111,16 @@ export class DisqusController {
           let xres = await this.buildDisqus(ContentDto_, true);
 
           console.log("processDisqus >>> receiver: ", xres.disqusLogs[0].receiver);
-          this.disqusService.sendDMNotif(String(xres.room), JSON.stringify(xres));
+
+          const STREAM_MODE = this.configService.get("STREAM_MODE");
+          if (STREAM_MODE == "1") {
+            this.disqusService.sendDMNotif(String(xres.room), JSON.stringify(xres));
+          } else {
+            let RequestSoctDto_ = new RequestSoctDto();
+            RequestSoctDto_.event = "STATUS_STREAM";
+            RequestSoctDto_.data = JSON.stringify(xres);
+            this.disqusService.socketRequest(RequestSoctDto_);
+          }
 
           var timestamps_end = await this.utilsService.getDateTimeString();
           var reqbody = JSON.parse(JSON.stringify(ContentDto_));
