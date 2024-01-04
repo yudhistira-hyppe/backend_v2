@@ -15076,10 +15076,10 @@ export class AuthService {
     {
       var listlike = getlisttemp[0].data;
       var pagelike = null;
-      var totalpage = totalpostlike / 3;
+      var totalpage = totalpostlike / 25;
       
       var tpage2 = (totalpage).toFixed(0);
-      var tpage = (totalpostlike % 3);
+      var tpage = (totalpostlike % 25);
       if (tpage > 0 && tpage < 5) {
         pagelike = parseInt(tpage2) + 1;
   
@@ -15124,10 +15124,10 @@ export class AuthService {
     {
       var listview = getlisttemp[0].data; 
       var pageview = null;
-      var totalpage = totalpostview / 3;
+      var totalpage = totalpostview / 25;
       
       var tpage2 = (totalpage).toFixed(0);
-      var tpage = (totalpostview % 3);
+      var tpage = (totalpostview % 25);
       if (tpage > 0 && tpage < 5) {
         pageview = parseInt(tpage2) + 1;
   
