@@ -12702,60 +12702,60 @@ export class NewPostService {
 
           }
         },
-        {
-          $lookup: {
-            from: 'mediapicts',
-            localField: 'idmedia',
-            foreignField: '_id',
-            as: 'mediaPict_data',
+        // {
+        //   $lookup: {
+        //     from: 'mediapicts',
+        //     localField: 'idmedia',
+        //     foreignField: '_id',
+        //     as: 'mediaPict_data',
 
-          },
+        //   },
 
-        },
-        {
-          $lookup: {
-            from: 'mediadiaries',
-            localField: 'idmedia',
-            foreignField: '_id',
-            as: 'mediadiaries_data',
+        // },
+        // {
+        //   $lookup: {
+        //     from: 'mediadiaries',
+        //     localField: 'idmedia',
+        //     foreignField: '_id',
+        //     as: 'mediadiaries_data',
 
-          },
+        //   },
 
-        },
-        {
-          $lookup: {
-            from: 'mediavideos',
-            localField: 'idmedia',
-            foreignField: '_id',
-            as: 'mediavideos_data',
+        // },
+        // {
+        //   $lookup: {
+        //     from: 'mediavideos',
+        //     localField: 'idmedia',
+        //     foreignField: '_id',
+        //     as: 'mediavideos_data',
 
-          },
+        //   },
 
-        },
-        {
-          $lookup: {
-            from: 'mediastories',
-            localField: 'idmedia',
-            foreignField: '_id',
-            as: 'mediastories_data',
+        // },
+        // {
+        //   $lookup: {
+        //     from: 'mediastories',
+        //     localField: 'idmedia',
+        //     foreignField: '_id',
+        //     as: 'mediastories_data',
 
-          },
+        //   },
 
-        },
+        // },
         {
           $project: {
-            mediapict: {
-              $arrayElemAt: ['$mediaPict_data', 0]
-            },
-            mediadiaries: {
-              $arrayElemAt: ['$mediadiaries_data', 0]
-            },
-            mediavideos: {
-              $arrayElemAt: ['$mediavideos_data', 0]
-            },
-            mediastories: {
-              $arrayElemAt: ['$mediastories_data', 0]
-            },
+            // mediapict: {
+            //   $arrayElemAt: ['$mediaPict_data', 0]
+            // },
+            // mediadiaries: {
+            //   $arrayElemAt: ['$mediadiaries_data', 0]
+            // },
+            // mediavideos: {
+            //   $arrayElemAt: ['$mediavideos_data', 0]
+            // },
+            // mediastories: {
+            //   $arrayElemAt: ['$mediastories_data', 0]
+            // },
             refs: 1,
             idmedia: 1,
             username: 1,
@@ -12784,48 +12784,48 @@ export class NewPostService {
             tags: 1,
           }
         },
-        {
-          $addFields: {
+        // {
+        //   $addFields: {
 
 
-            pict: {
-              $replaceOne: {
-                input: "$profilpict.mediaUri",
-                find: "_0001.jpeg",
-                replacement: ""
-              }
-            },
-            concatmediapict: '/pict',
-            media_pict: {
-              $replaceOne: {
-                input: "$mediapict.mediaUri",
-                find: "_0001.jpeg",
-                replacement: ""
-              }
-            },
-            concatmediadiari: '/stream',
-            concatthumbdiari: '/thumb',
-            media_diari: '$mediadiaries.mediaUri',
-            concatmediavideo: '/stream',
-            concatthumbvideo: '/thumb',
-            media_video: '$mediavideos.mediaUri',
-            concatmediastory:
-            {
-              $cond: {
-                if: {
+        //     pict: {
+        //       $replaceOne: {
+        //         input: "$profilpict.mediaUri",
+        //         find: "_0001.jpeg",
+        //         replacement: ""
+        //       }
+        //     },
+        //     concatmediapict: '/pict',
+        //     media_pict: {
+        //       $replaceOne: {
+        //         input: "$mediapict.mediaUri",
+        //         find: "_0001.jpeg",
+        //         replacement: ""
+        //       }
+        //     },
+        //     concatmediadiari: '/stream',
+        //     concatthumbdiari: '/thumb',
+        //     media_diari: '$mediadiaries.mediaUri',
+        //     concatmediavideo: '/stream',
+        //     concatthumbvideo: '/thumb',
+        //     media_video: '$mediavideos.mediaUri',
+        //     concatmediastory:
+        //     {
+        //       $cond: {
+        //         if: {
 
-                  $eq: ["$mediastories.mediaType", "image"]
-                },
-                then: '/pict',
-                else: '/stream',
+        //           $eq: ["$mediastories.mediaType", "image"]
+        //         },
+        //         then: '/pict',
+        //         else: '/stream',
 
-              }
-            },
-            concatthumbstory: '/thumb',
-            media_story: '$mediastories.mediaUri'
-          },
+        //       }
+        //     },
+        //     concatthumbstory: '/thumb',
+        //     media_story: '$mediastories.mediaUri'
+        //   },
 
-        },
+        // },
         {
           $project: {
 
@@ -12868,300 +12868,89 @@ export class NewPostService {
             shares: 1,
             comments: 1,
             tags: 1,
-            mediaBasePath: {
-              $switch: {
-                branches: [
+            mediaBasePath:
+            {
+              "$ifNull":
+                [
+                  "$mediaSource.mediaBasePath",
+                  null
+                ]
+            },
+            mediaUri:
+            {
+              "$ifNull":
+                [
+                  "$mediaSource.mediaUri",
+                  null
+                ]
+            },
+            mediaType:
+            {
+              "$ifNull":
+                [
+                  "$mediaSource.mediaType",
+                  null
+                ]
+            },
+            mediaThumbEndpoint:
+            {
+              "$ifNull":
+                [
+                  "$mediaSource.mediaThumbEndpoint",
                   {
-                    'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                    },
-                    'then': '$mediapict.mediaBasePath'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                    },
-                    'then': '$mediadiaries.mediaBasePath'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                    },
-                    'then': '$mediavideos.mediaBasePath'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediastories']
-                    },
-                    'then': '$mediastories.mediaBasePath'
+                    "$concat":
+                      [
+                        "/thumb/",
+                        "$postID"
+                      ]
                   }
-                ],
-                default: ''
-              }
+                ]
             },
-            mediaUri: {
-              $switch: {
-                branches: [
+            mediaEndpoint:
+            {
+              "$ifNull":
+                [
+                  "$mediaSource.mediaEndpoint",
                   {
-                    'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                    },
-                    'then': '$mediapict.mediaUri'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                    },
-                    'then': '$mediadiaries.mediaUri'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                    },
-                    'then': '$mediavideos.mediaUri'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediastories']
-                    },
-                    'then': '$mediastories.mediaUri'
+                    "$cond":
+                    {
+                      if:
+                      {
+                        "$eq":
+                          [
+                            "$postType", "pict"
+                          ]
+                      },
+                      then:
+                      {
+                        "$concat":
+                          [
+                            "/pict/",
+                            "$postID"
+                          ]
+                      },
+                      else:
+                      {
+                        "$concat":
+                          [
+                            "/stream/",
+                            "$postID"
+                          ]
+                      }
+                    }
                   }
-                ],
-                default: ''
-              }
+                ]
             },
-            mediaType: {
-              $switch: {
-                branches: [
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                    },
-                    'then': '$mediapict.mediaType'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                    },
-                    'then': '$mediadiaries.mediaType'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                    },
-                    'then': '$mediavideos.mediaType'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediastories']
-                    },
-                    'then': '$mediastories.mediaType'
-                  }
-                ],
-                default: ''
-              }
+            mediaThumbUri:
+            {
+              "$ifNull":
+                [
+                  "$mediaSource.mediaThumbUri",
+                  null
+                ]
             },
-            mediaThumbEndpoint: {
-              $switch: {
-                branches: [
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                    },
-                    'then': '$mediadiaries.mediaThumb'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                    },
-                    'then': {
-                      $concat: ["$concatthumbdiari", "/", "$postID"]
-                    },
-
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                    },
-                    'then': {
-                      $concat: ["$concatthumbvideo", "/", "$postID"]
-                    },
-
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediastories']
-                    },
-                    'then': {
-                      $concat: ["$concatthumbstory", "/", "$postID"]
-                    },
-
-                  },
-
-                ],
-                default: ''
-              }
-            },
-            mediaEndpoint: {
-              $switch: {
-                branches: [
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                    },
-                    'then': {
-                      $concat: ["$concatmediapict", "/", "$postID"]
-                    },
-
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                    },
-                    'then': {
-                      $concat: ["$concatmediadiari", "/", "$postID"]
-                    },
-
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                    },
-                    'then': {
-                      $concat: ["$concatmediavideo", "/", "$postID"]
-                    },
-
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediastories']
-                    },
-                    'then': {
-                      $concat: ["$concatmediastory", "/", "$postID"]
-                    },
-
-                  }
-                ],
-                default: ''
-              }
-            },
-            mediaThumbUri: {
-              $switch: {
-                branches: [
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                    },
-                    'then': '$mediadiaries.mediaThumb'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                    },
-                    'then': '$mediadiaries.mediaThumb'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                    },
-                    'then': '$mediavideos.mediaThumb'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediastories']
-                    },
-                    'then': '$mediastories.mediaThumb'
-                  }
-                ],
-                default: ''
-              }
-            },
-            apsaraId: {
-              $switch: {
-                branches: [
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediapicts"
-                      ]
-                    },
-                    then: "$mediapict.apsaraId"
-                  },
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediadiaries"
-                      ]
-                    },
-                    then: "$mediadiaries.apsaraId"
-                  },
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediavideos"
-                      ]
-                    },
-                    then: "$mediavideos.apsaraId"
-                  },
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediastories"
-                      ]
-                    },
-                    then: "$mediastories.apsaraId"
-                  }
-                ],
-                default: false
-              }
-            },
-            apsara: {
-              $switch: {
-                branches: [
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediapicts"
-                      ]
-                    },
-                    then: "$mediapict.apsara"
-                  },
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediadiaries"
-                      ]
-                    },
-                    then: "$mediadiaries.apsara"
-                  },
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediavideos"
-                      ]
-                    },
-                    then: "$mediavideos.apsara"
-                  },
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediastories"
-                      ]
-                    },
-                    then: "$mediastories.apsara"
-                  }
-                ],
-                default: false
-              }
-            },
+            apsaraId: "$mediaSource.apsaraId",
+            apsara: "$mediaSource.apsara"
 
           }
         },
@@ -13454,60 +13243,60 @@ export class NewPostService {
             tags: 1,
           }
         },
-        {
-          $lookup: {
-            from: 'mediapicts',
-            localField: 'idmedia',
-            foreignField: '_id',
-            as: 'mediaPict_data',
+        // {
+        //   $lookup: {
+        //     from: 'mediapicts',
+        //     localField: 'idmedia',
+        //     foreignField: '_id',
+        //     as: 'mediaPict_data',
 
-          },
+        //   },
 
-        },
-        {
-          $lookup: {
-            from: 'mediadiaries',
-            localField: 'idmedia',
-            foreignField: '_id',
-            as: 'mediadiaries_data',
+        // },
+        // {
+        //   $lookup: {
+        //     from: 'mediadiaries',
+        //     localField: 'idmedia',
+        //     foreignField: '_id',
+        //     as: 'mediadiaries_data',
 
-          },
+        //   },
 
-        },
-        {
-          $lookup: {
-            from: 'mediavideos',
-            localField: 'idmedia',
-            foreignField: '_id',
-            as: 'mediavideos_data',
+        // },
+        // {
+        //   $lookup: {
+        //     from: 'mediavideos',
+        //     localField: 'idmedia',
+        //     foreignField: '_id',
+        //     as: 'mediavideos_data',
 
-          },
+        //   },
 
-        },
-        {
-          $lookup: {
-            from: 'mediastories',
-            localField: 'idmedia',
-            foreignField: '_id',
-            as: 'mediastories_data',
+        // },
+        // {
+        //   $lookup: {
+        //     from: 'mediastories',
+        //     localField: 'idmedia',
+        //     foreignField: '_id',
+        //     as: 'mediastories_data',
 
-          },
+        //   },
 
-        },
+        // },
         {
           $project: {
-            mediapict: {
-              $arrayElemAt: ['$mediaPict_data', 0]
-            },
-            mediadiaries: {
-              $arrayElemAt: ['$mediadiaries_data', 0]
-            },
-            mediavideos: {
-              $arrayElemAt: ['$mediavideos_data', 0]
-            },
-            mediastories: {
-              $arrayElemAt: ['$mediastories_data', 0]
-            },
+            // mediapict: {
+            //   $arrayElemAt: ['$mediaPict_data', 0]
+            // },
+            // mediadiaries: {
+            //   $arrayElemAt: ['$mediadiaries_data', 0]
+            // },
+            // mediavideos: {
+            //   $arrayElemAt: ['$mediavideos_data', 0]
+            // },
+            // mediastories: {
+            //   $arrayElemAt: ['$mediastories_data', 0]
+            // },
             refs: 1,
             idmedia: 1,
             username: 1,
@@ -13534,48 +13323,48 @@ export class NewPostService {
             tags: 1,
           }
         },
-        {
-          $addFields: {
+        // {
+        //   $addFields: {
 
 
-            pict: {
-              $replaceOne: {
-                input: "$profilpict.mediaUri",
-                find: "_0001.jpeg",
-                replacement: ""
-              }
-            },
-            concatmediapict: '/pict',
-            media_pict: {
-              $replaceOne: {
-                input: "$mediapict.mediaUri",
-                find: "_0001.jpeg",
-                replacement: ""
-              }
-            },
-            concatmediadiari: '/stream',
-            concatthumbdiari: '/thumb',
-            media_diari: '$mediadiaries.mediaUri',
-            concatmediavideo: '/stream',
-            concatthumbvideo: '/thumb',
-            media_video: '$mediavideos.mediaUri',
-            concatmediastory:
-            {
-              $cond: {
-                if: {
+        //     pict: {
+        //       $replaceOne: {
+        //         input: "$profilpict.mediaUri",
+        //         find: "_0001.jpeg",
+        //         replacement: ""
+        //       }
+        //     },
+        //     concatmediapict: '/pict',
+        //     media_pict: {
+        //       $replaceOne: {
+        //         input: "$mediapict.mediaUri",
+        //         find: "_0001.jpeg",
+        //         replacement: ""
+        //       }
+        //     },
+        //     concatmediadiari: '/stream',
+        //     concatthumbdiari: '/thumb',
+        //     media_diari: '$mediadiaries.mediaUri',
+        //     concatmediavideo: '/stream',
+        //     concatthumbvideo: '/thumb',
+        //     media_video: '$mediavideos.mediaUri',
+        //     concatmediastory:
+        //     {
+        //       $cond: {
+        //         if: {
 
-                  $eq: ["$mediastories.mediaType", "image"]
-                },
-                then: '/pict',
-                else: '/stream',
+        //           $eq: ["$mediastories.mediaType", "image"]
+        //         },
+        //         then: '/pict',
+        //         else: '/stream',
 
-              }
-            },
-            concatthumbstory: '/thumb',
-            media_story: '$mediastories.mediaUri'
-          },
+        //       }
+        //     },
+        //     concatthumbstory: '/thumb',
+        //     media_story: '$mediastories.mediaUri'
+        //   },
 
-        },
+        // },
         {
           $project: {
 
@@ -13600,300 +13389,89 @@ export class NewPostService {
             shares: 1,
             comments: 1,
             tags: 1,
-            mediaBasePath: {
-              $switch: {
-                branches: [
+            mediaBasePath:
+            {
+              "$ifNull":
+                [
+                  "$mediaSource.mediaBasePath",
+                  null
+                ]
+            },
+            mediaUri:
+            {
+              "$ifNull":
+                [
+                  "$mediaSource.mediaUri",
+                  null
+                ]
+            },
+            mediaType:
+            {
+              "$ifNull":
+                [
+                  "$mediaSource.mediaType",
+                  null
+                ]
+            },
+            mediaThumbEndpoint:
+            {
+              "$ifNull":
+                [
+                  "$mediaSource.mediaThumbEndpoint",
                   {
-                    'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                    },
-                    'then': '$mediapict.mediaBasePath'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                    },
-                    'then': '$mediadiaries.mediaBasePath'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                    },
-                    'then': '$mediavideos.mediaBasePath'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediastories']
-                    },
-                    'then': '$mediastories.mediaBasePath'
+                    "$concat":
+                      [
+                        "/thumb/",
+                        "$postID"
+                      ]
                   }
-                ],
-                default: ''
-              }
+                ]
             },
-            mediaUri: {
-              $switch: {
-                branches: [
+            mediaEndpoint:
+            {
+              "$ifNull":
+                [
+                  "$mediaSource.mediaEndpoint",
                   {
-                    'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                    },
-                    'then': '$mediapict.mediaUri'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                    },
-                    'then': '$mediadiaries.mediaUri'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                    },
-                    'then': '$mediavideos.mediaUri'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediastories']
-                    },
-                    'then': '$mediastories.mediaUri'
+                    "$cond":
+                    {
+                      if:
+                      {
+                        "$eq":
+                          [
+                            "$postType", "pict"
+                          ]
+                      },
+                      then:
+                      {
+                        "$concat":
+                          [
+                            "/pict/",
+                            "$postID"
+                          ]
+                      },
+                      else:
+                      {
+                        "$concat":
+                          [
+                            "/stream/",
+                            "$postID"
+                          ]
+                      }
+                    }
                   }
-                ],
-                default: ''
-              }
+                ]
             },
-            mediaType: {
-              $switch: {
-                branches: [
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                    },
-                    'then': '$mediapict.mediaType'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                    },
-                    'then': '$mediadiaries.mediaType'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                    },
-                    'then': '$mediavideos.mediaType'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediastories']
-                    },
-                    'then': '$mediastories.mediaType'
-                  }
-                ],
-                default: ''
-              }
+            mediaThumbUri:
+            {
+              "$ifNull":
+                [
+                  "$mediaSource.mediaThumbUri",
+                  null
+                ]
             },
-            mediaThumbEndpoint: {
-              $switch: {
-                branches: [
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                    },
-                    'then': '$mediadiaries.mediaThumb'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                    },
-                    'then': {
-                      $concat: ["$concatthumbdiari", "/", "$postID"]
-                    },
-
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                    },
-                    'then': {
-                      $concat: ["$concatthumbvideo", "/", "$postID"]
-                    },
-
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediastories']
-                    },
-                    'then': {
-                      $concat: ["$concatthumbstory", "/", "$postID"]
-                    },
-
-                  },
-
-                ],
-                default: ''
-              }
-            },
-            mediaEndpoint: {
-              $switch: {
-                branches: [
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                    },
-                    'then': {
-                      $concat: ["$concatmediapict", "/", "$postID"]
-                    },
-
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                    },
-                    'then': {
-                      $concat: ["$concatmediadiari", "/", "$postID"]
-                    },
-
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                    },
-                    'then': {
-                      $concat: ["$concatmediavideo", "/", "$postID"]
-                    },
-
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediastories']
-                    },
-                    'then': {
-                      $concat: ["$concatmediastory", "/", "$postID"]
-                    },
-
-                  }
-                ],
-                default: ''
-              }
-            },
-            mediaThumbUri: {
-              $switch: {
-                branches: [
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediapicts']
-                    },
-                    'then': '$mediadiaries.mediaThumb'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediadiaries']
-                    },
-                    'then': '$mediadiaries.mediaThumb'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediavideos']
-                    },
-                    'then': '$mediavideos.mediaThumb'
-                  },
-                  {
-                    'case': {
-                      '$eq': ['$refs', 'mediastories']
-                    },
-                    'then': '$mediastories.mediaThumb'
-                  }
-                ],
-                default: ''
-              }
-            },
-            apsaraId: {
-              $switch: {
-                branches: [
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediapicts"
-                      ]
-                    },
-                    then: "$mediapict.apsaraId"
-                  },
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediadiaries"
-                      ]
-                    },
-                    then: "$mediadiaries.apsaraId"
-                  },
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediavideos"
-                      ]
-                    },
-                    then: "$mediavideos.apsaraId"
-                  },
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediastories"
-                      ]
-                    },
-                    then: "$mediastories.apsaraId"
-                  }
-                ],
-                default: false
-              }
-            },
-            apsara: {
-              $switch: {
-                branches: [
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediapicts"
-                      ]
-                    },
-                    then: "$mediapict.apsara"
-                  },
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediadiaries"
-                      ]
-                    },
-                    then: "$mediadiaries.apsara"
-                  },
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediavideos"
-                      ]
-                    },
-                    then: "$mediavideos.apsara"
-                  },
-                  {
-                    case: {
-                      $eq: [
-                        "$refs",
-                        "mediastories"
-                      ]
-                    },
-                    then: "$mediastories.apsara"
-                  }
-                ],
-                default: false
-              }
-            },
+            apsaraId: "$mediaSource.apsaraId",
+            apsara: "$mediaSource.apsara"
 
           }
         },
