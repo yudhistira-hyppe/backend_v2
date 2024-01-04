@@ -6,7 +6,7 @@ import { ErrorHandler } from '../../utils/error.handler';
 import { Long } from 'mongodb';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import mongoose from 'mongoose';
-import { CallbackModeration, MediastreamingDto, MediastreamingRequestDto } from './dto/mediastreaming.dto';
+import { CallbackModeration, MediastreamingDto, MediastreamingRequestDto, RequestSoctDto } from './dto/mediastreaming.dto';
 import { ConfigService } from '@nestjs/config';
 import { MediastreamingalicloudService } from './mediastreamingalicloud.service';
 import { AppGateway } from '../socket/socket.gateway';
@@ -171,7 +171,15 @@ export class MediastreamingController {
             totalViews: getDataStream[0].view_unique.length,
           }
         }
-        this.appGateway.eventStream("STATUS_STREAM", JSON.stringify(dataPause));
+        const STREAM_MODE = this.configService.get("STREAM_MODE");
+        if (STREAM_MODE == "1") {
+          this.appGateway.eventStream("STATUS_STREAM", JSON.stringify(dataPause));
+        }else{
+          let RequestSoctDto_ = new RequestSoctDto();
+          RequestSoctDto_.event = "STATUS_STREAM";
+          RequestSoctDto_.data = JSON.stringify(dataPause);
+          this.mediastreamingService.socketRequest(RequestSoctDto_);
+        }
       }
       //CECK TYPE STOP
       if (MediastreamingDto_.type == "PAUSE") {
@@ -190,7 +198,15 @@ export class MediastreamingController {
             pause: _MediastreamingDto_.pause
           }
         }
-        this.appGateway.eventStream("STATUS_STREAM", JSON.stringify(dataPause));
+        const STREAM_MODE = this.configService.get("STREAM_MODE");
+        if (STREAM_MODE == "1") {
+          this.appGateway.eventStream("STATUS_STREAM", JSON.stringify(dataPause));
+        } else {
+          let RequestSoctDto_ = new RequestSoctDto();
+          RequestSoctDto_.event = "STATUS_STREAM";
+          RequestSoctDto_.data = JSON.stringify(dataPause);
+          this.mediastreamingService.socketRequest(RequestSoctDto_);
+        }
       }
       //CECK TYPE OPEN_VIEW
       if (MediastreamingDto_.type == "OPEN_VIEW") {
@@ -226,7 +242,15 @@ export class MediastreamingController {
               viewCount: viewCount
             }
           }
-          this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
+          const STREAM_MODE = this.configService.get("STREAM_MODE");
+          if (STREAM_MODE == "1") {
+            this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
+          } else {
+            let RequestSoctDto_ = new RequestSoctDto();
+            RequestSoctDto_.event = "VIEW_STREAM";
+            RequestSoctDto_.data = JSON.stringify(dataStreamSend);
+            this.mediastreamingService.socketRequest(RequestSoctDto_);
+          }
           //SEND COMMENT SINGLE
           const getUser = await this.userbasicsService.getUser(profile._id.toString());
           getUser[0]["idStream"] = MediastreamingDto_._id.toString();
@@ -234,7 +258,14 @@ export class MediastreamingController {
           const singleSend = {
             data: getUser[0]
           }
-          this.appGateway.eventStream("COMMENT_STREAM_SINGLE", JSON.stringify(singleSend));
+          if (STREAM_MODE == "1") {
+            this.appGateway.eventStream("COMMENT_STREAM_SINGLE", JSON.stringify(singleSend));
+          } else {
+            let RequestSoctDto_ = new RequestSoctDto();
+            RequestSoctDto_.event = "COMMENT_STREAM_SINGLE";
+            RequestSoctDto_.data = JSON.stringify(singleSend);
+            this.mediastreamingService.socketRequest(RequestSoctDto_);
+          }
         } 
       }
       //CECK TYPE CLOSE_VIEW
@@ -264,7 +295,15 @@ export class MediastreamingController {
               viewCount: viewCount
             }
           }
-          this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
+          const STREAM_MODE = this.configService.get("STREAM_MODE");
+          if (STREAM_MODE == "1") {
+            this.appGateway.eventStream("VIEW_STREAM", JSON.stringify(dataStreamSend));
+          } else {
+            let RequestSoctDto_ = new RequestSoctDto();
+            RequestSoctDto_.event = "VIEW_STREAM";
+            RequestSoctDto_.data = JSON.stringify(dataStreamSend);
+            this.mediastreamingService.socketRequest(RequestSoctDto_);
+          }
           //SEND COMMENT SINGLE
           // const getUser = await this.userbasicsService.getUser(profile._id.toString());
           // getUser[0]["idStream"] = MediastreamingDto_._id.toString();
@@ -289,7 +328,15 @@ export class MediastreamingController {
               likeCount: MediastreamingDto_.like.length
             }
           }
-          this.appGateway.eventStream("LIKE_STREAM", JSON.stringify(dataStreamSend));
+          const STREAM_MODE = this.configService.get("STREAM_MODE");
+          if (STREAM_MODE == "1") {
+            this.appGateway.eventStream("LIKE_STREAM", JSON.stringify(dataStreamSend));
+          } else {
+            let RequestSoctDto_ = new RequestSoctDto();
+            RequestSoctDto_.event = "LIKE_STREAM";
+            RequestSoctDto_.data = JSON.stringify(dataStreamSend);
+            this.mediastreamingService.socketRequest(RequestSoctDto_);
+          }
         }
       }
       //CECK TYPE COMMENT
@@ -311,13 +358,28 @@ export class MediastreamingController {
           const singleSend = {
             data: getUser[0]
           }
-          this.appGateway.eventStream("COMMENT_STREAM_SINGLE", JSON.stringify(singleSend));
+          const STREAM_MODE = this.configService.get("STREAM_MODE");
+          if (STREAM_MODE == "1") {
+            this.appGateway.eventStream("COMMENT_STREAM_SINGLE", JSON.stringify(singleSend));
+          } else {
+            let RequestSoctDto_ = new RequestSoctDto();
+            RequestSoctDto_.event = "COMMENT_STREAM_SINGLE";
+            RequestSoctDto_.data = JSON.stringify(singleSend);
+            this.mediastreamingService.socketRequest(RequestSoctDto_);
+          }
           //SEND COMMENT ALL
           const getData = await this.mediastreamingService.getDataComment(MediastreamingDto_._id.toString())
           const allSend = {
             data: getData
           }
-          this.appGateway.eventStream("COMMENT_STREAM_ALL", JSON.stringify(allSend));
+          if (STREAM_MODE == "1") {
+            this.appGateway.eventStream("COMMENT_STREAM_ALL", JSON.stringify(allSend));
+          } else {
+            let RequestSoctDto_ = new RequestSoctDto();
+            RequestSoctDto_.event = "COMMENT_STREAM_ALL";
+            RequestSoctDto_.data = JSON.stringify(allSend);
+            this.mediastreamingService.socketRequest(RequestSoctDto_);
+          }
         }
       }
       //CECK TYPE COMMENT
@@ -331,7 +393,15 @@ export class MediastreamingController {
           }
           _MediastreamingDto_.commentDisabled = MediastreamingDto_.commentDisabled;
           await this.mediastreamingService.updateStreaming(MediastreamingDto_._id.toString(), _MediastreamingDto_);
-          this.appGateway.eventStream("COMMENT_STREAM_DISABLED", JSON.stringify(allSend));
+          const STREAM_MODE = this.configService.get("STREAM_MODE");
+          if (STREAM_MODE == "1") {
+            this.appGateway.eventStream("COMMENT_STREAM_DISABLED", JSON.stringify(allSend));
+          } else {
+            let RequestSoctDto_ = new RequestSoctDto();
+            RequestSoctDto_.event = "COMMENT_STREAM_DISABLED";
+            RequestSoctDto_.data = JSON.stringify(allSend);
+            this.mediastreamingService.socketRequest(RequestSoctDto_);
+          }
         }
       }
       //CECK TYPE COMMENT
