@@ -9343,7 +9343,7 @@ export class TransactionsService {
                             let CreateAccountbalancesDto_1 = new CreateAccountbalancesDto();
                             CreateAccountbalancesDto_1.iduser = getwithdraws[i].idUser;
                             CreateAccountbalancesDto_1.debet = 0;
-                            CreateAccountbalancesDto_1.kredit = (getwithdraws[i].amount)-6000;
+                            CreateAccountbalancesDto_1.kredit = getwithdraws[i].totalamount;
                             CreateAccountbalancesDto_1.type = "withdraw";
                             CreateAccountbalancesDto_1.timestamp = await this.utilsService.getDateTimeISOString();
                             CreateAccountbalancesDto_1.description = "FAILED TRANSACTION";
