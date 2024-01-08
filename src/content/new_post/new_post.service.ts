@@ -12332,35 +12332,35 @@ export class NewPostService {
 
         //   }
         // },
-        {
-          "$lookup": {
-            "from": "newUserBasics",
-            "as": "basicdata",
-            "let": {
-              "local_id": "$email",
+        // {
+        //   "$lookup": {
+        //     "from": "newUserBasics",
+        //     "as": "basicdata",
+        //     "let": {
+        //       "local_id": "$email",
 
-            },
-            "pipeline": [
-              {
-                $match:
-                {
-                  $expr: {
-                    $eq: ['$email', '$$local_id']
-                  }
-                }
-              },
-              {
-                $project: {
-                  iduser: "$_id",
+        //     },
+        //     "pipeline": [
+        //       {
+        //         $match:
+        //         {
+        //           $expr: {
+        //             $eq: ['$email', '$$local_id']
+        //           }
+        //         }
+        //       },
+        //       {
+        //         $project: {
+        //           iduser: "$_id",
 
-                }
-              },
+        //         }
+        //       },
 
-            ],
+        //     ],
 
-          },
+        //   },
 
-        },
+        // },
         {
           "$lookup": {
             "from": "transactions",
@@ -12489,9 +12489,7 @@ export class NewPostService {
             // 'auth': {
             //   $arrayElemAt: ['$authdata', 0]
             // },
-            'iduser': {
-              $arrayElemAt: ['$basicdata.iduser', 0]
-            },
+            'iduser': '$databasic.iduser'
 
           }
         },
