@@ -818,4 +818,35 @@ export class NewPostController {
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
         return { response_code: 202, data, messages };
     }
+
+    @Post('api/getusercontents/management/grouping/activitygraph/v2')
+    @UseGuards(JwtAuthGuard)
+    async contentmanagemengraphactivity(@Req() request: Request): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+
+        var data = null;
+        var email = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        data = await this.newPostService.getactivitygraphv2(email);
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        return { response_code: 202, data, messages };
+    }
 }

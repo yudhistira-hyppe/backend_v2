@@ -16709,4 +16709,316 @@ export class NewPostService {
 
     return obj;
   }
+
+  async getactivitygraphv2(email: string) {
+    var getdate = new Date();
+    var firsttanggal = [];
+    var lasttanggal = [];
+
+    for (var i = 5; i >= 0; i--) {
+      var temp = new Date(getdate.getFullYear(), getdate.getMonth() - i, getdate.getDate() + 1).toISOString().split('T')[0];
+      lasttanggal.push(temp.toString() + " 23:59:59");
+      var tambahbulan = i + 1;
+      var temp = new Date(getdate.getFullYear(), getdate.getMonth() - tambahbulan, getdate.getDate() + 1).toISOString().split('T')[0];
+      firsttanggal.push(temp.toString() + " 00:00:00");
+    }
+
+    const query = await this.loaddata.aggregate([
+      {
+        $facet:
+        {
+          "0":
+            [
+              {
+                $match:
+                {
+                  $and:
+                    [
+                      {
+                        email: email,
+                      },
+                      {
+                        $expr:
+                        {
+                          $gt: ["$views", 0,]
+                        },
+                      },
+                      {
+                        $expr:
+                        {
+                          $gte: ["$createdAt", firsttanggal[0],]
+                        },
+                      },
+                      {
+                        $expr:
+                        {
+                          $lt: ["$createdAt", lasttanggal[0],]
+                        },
+                      },
+                    ]
+                }
+              },
+              {
+                $group:
+                {
+                  "_id": lasttanggal[0],
+                  "count":
+                  {
+                    "$sum": 1
+                  }
+                }
+              },
+            ],
+          "1":
+            [
+              {
+                $match:
+                {
+                  $and:
+                    [
+                      {
+                        email: email,
+                      },
+                      {
+                        $expr:
+                        {
+                          $gt: ["$views", 0,]
+                        },
+                      },
+                      {
+                        $expr:
+                        {
+                          $gte: ["$createdAt", firsttanggal[1],]
+                        },
+                      },
+                      {
+                        $expr:
+                        {
+                          $lt: ["$createdAt", lasttanggal[1],]
+                        },
+                      },
+                    ]
+                }
+              },
+              {
+                $group:
+                {
+                  "_id": lasttanggal[1],
+                  "count":
+                  {
+                    "$sum": 1
+                  }
+                }
+              },
+            ],
+          "2":
+            [
+              {
+                $match:
+                {
+                  $and:
+                    [
+                      {
+                        email: email,
+                      },
+                      {
+                        $expr:
+                        {
+                          $gt: ["$views", 0,]
+                        },
+                      },
+                      {
+                        $expr:
+                        {
+                          $gte: ["$createdAt", firsttanggal[2],]
+                        },
+                      },
+                      {
+                        $expr:
+                        {
+                          $lt: ["$createdAt", lasttanggal[2],]
+                        },
+                      },
+                    ]
+                }
+              },
+              {
+                $group:
+                {
+                  "_id": lasttanggal[2],
+                  "count":
+                  {
+                    "$sum": 1
+                  }
+                }
+              },
+            ],
+          "3":
+            [
+              {
+                $match:
+                {
+                  $and:
+                    [
+                      {
+                        email: email,
+                      },
+                      {
+                        $expr:
+                        {
+                          $gt: ["$views", 0,]
+                        },
+                      },
+                      {
+                        $expr:
+                        {
+                          $gte: ["$createdAt", firsttanggal[3],]
+                        },
+                      },
+                      {
+                        $expr:
+                        {
+                          $lt: ["$createdAt", lasttanggal[3],]
+                        },
+                      },
+                    ]
+                }
+              },
+              {
+                $group:
+                {
+                  "_id": lasttanggal[3],
+                  "count":
+                  {
+                    "$sum": 1
+                  }
+                }
+              },
+            ],
+          "4":
+            [
+              {
+                $match:
+                {
+                  $and:
+                    [
+                      {
+                        email: email,
+                      },
+                      {
+                        $expr:
+                        {
+                          $gt: ["$views", 0,]
+                        },
+                      },
+                      {
+                        $expr:
+                        {
+                          $gte: ["$createdAt", firsttanggal[4],]
+                        },
+                      },
+                      {
+                        $expr:
+                        {
+                          $lt: ["$createdAt", lasttanggal[4],]
+                        },
+                      },
+                    ]
+                }
+              },
+              {
+                $group:
+                {
+                  "_id": lasttanggal[4],
+                  "count":
+                  {
+                    "$sum": 1
+                  }
+                }
+              },
+            ],
+          "5":
+            [
+              {
+                $match:
+                {
+                  $and:
+                    [
+                      {
+                        email: email,
+                      },
+                      {
+                        $expr:
+                        {
+                          $gt: ["$views", 0,]
+                        },
+                      },
+                      {
+                        $expr:
+                        {
+                          $gte: ["$createdAt", firsttanggal[5],]
+                        },
+                      },
+                      {
+                        $expr:
+                        {
+                          $lt: ["$createdAt", lasttanggal[5],]
+                        },
+                      },
+                    ]
+                }
+              },
+              {
+                $group:
+                {
+                  "_id": lasttanggal[5],
+                  "count":
+                  {
+                    "$sum": 1
+                  },
+                }
+              },
+            ],
+        },
+      },
+      {
+        $project:
+        {
+          arrayData:
+          {
+            $concatArrays:
+              [
+                "$0", "$1", "$2", "$3", "$4", "$5"
+              ]
+          }
+        }
+      }
+    ]);
+
+    //console.log(query[0].arrayData);
+
+    //cek apabila data kosong atau ada yang kosong di antara hasil result database
+    var tempobj = query[0].arrayData;
+    var newobject = [];
+    for (var i = 0; i < 6; i++) {
+      const cekexist = tempobj.find(({ _id }) => _id === lasttanggal[i]);
+      const temp = {};
+      Object.assign(temp, { _id: lasttanggal[i].toString() });
+      if (cekexist == undefined) {
+        Object.assign(temp, { count: 0 });
+      }
+      else {
+        Object.assign(temp, { count: cekexist.count });
+      }
+
+      var gettanggal = new Date(lasttanggal[i]);
+      Object.assign(temp, { bulan: gettanggal.toDateString().split(" ")[1] });
+
+      newobject.push(temp);
+    }
+
+    query[0].arrayData = newobject;
+
+    return query;
+  }
 }
