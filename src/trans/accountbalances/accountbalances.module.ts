@@ -8,9 +8,11 @@ import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { PostsModule } from '../../content/posts/posts.module';
 import { UtilsModule } from 'src/utils/utils.module'; 
 import { LogapisModule } from '../logapis/logapis.module';
+import { UserbasicnewModule } from '../userbasicnew/userbasicnew.module';
 
 @Module({
     imports: [
+        UserbasicnewModule,
         LogapisModule,
         UtilsModule,
         ConfigModule.forRoot(), UserbasicsModule, PostsModule,

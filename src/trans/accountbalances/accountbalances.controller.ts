@@ -6,10 +6,12 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserbasicsService } from '../userbasics/userbasics.service';
 import { LogapisService } from '../logapis/logapis.service';
 import { UtilsService } from 'src/utils/utils.service'; 
+import { UserbasicnewService } from '../userbasicnew/userbasicnew.service'; 
 @Controller('api/accountbalances')
 export class AccountbalancesController {
     constructor(private readonly accountbalancesService: AccountbalancesService, private readonly userbasicsService: UserbasicsService,
         private readonly utilsService: UtilsService,
+        private readonly basic2SS: UserbasicnewService,
         private readonly logapiSS: LogapisService) { }
 
     @Post()
@@ -24,6 +26,35 @@ export class AccountbalancesController {
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
             var ubasic = await this.userbasicsService.findOne(email);
+
+            var iduser = ubasic._id;
+            data = await this.accountbalancesService.findsaldo(iduser);
+        } else {
+            data = await this.accountbalancesService.findsaldoall();
+        }
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @Post('/v2')
+    @UseGuards(JwtAuthGuard)
+    async search2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/accountbalances/v2';
+
+        var email = null;
+        var data = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+            var ubasic = await this.basic2SS.findbyemail(email);
 
             var iduser = ubasic._id;
             data = await this.accountbalancesService.findsaldo(iduser);
