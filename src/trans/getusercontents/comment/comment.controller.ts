@@ -29,7 +29,30 @@ export class CommentController {
 
         let data = await this.getcommentService.findlastcomment(email);
         console.log(data.length);
-        var total_comment=data.length;
+        var total_comment = data.length;
+
+        return { response_code: 202, data, messages, total_comment };
+    }
+    @Post('v2')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallv2(@Req() request: Request): Promise<any> {
+
+        var email = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        let data = await this.getcommentService.findlastcommentv2(email);
+        console.log(data.length);
+        var total_comment = data.length;
 
         return { response_code: 202, data, messages, total_comment };
     }
