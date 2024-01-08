@@ -10839,6 +10839,381 @@ export class TransactionsController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Post('api/transactions/historys/voucher/v2')
+    async finddatav2(@Req() request: Request, @Headers() headers): Promise<any> {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/historys/voucher/v2';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var key = null;
+        var page = null;
+        var status = null;
+        var countrow = null;
+        var startdate = null;
+        var enddate = null;
+        var limit = null;
+        var iduser = null;
+        var totalpage = null;
+        var descending = null;
+        var startday = null;
+        var endday = null;
+        var used = null;
+        var expired = null;
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        descending = request_json["descending"];
+        key = request_json["key"];
+        status = request_json["status"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        iduser = request_json["iduser"];
+        startday = request_json["startday"];
+        endday = request_json["endday"];
+        used = request_json["used"];
+        expired = request_json["expired"];
+        var userid = null;
+        if (iduser !== undefined) {
+            userid = mongoose.Types.ObjectId(iduser);
+        } else {
+            userid = undefined;
+        }
+
+
+        if (iduser === undefined) {
+            var totalallrow = null;
+            let data = await this.transactionsService.findhistoryBuyVoucher(key, status, startdate, enddate, page, limit, descending, startday, endday, used, expired);
+            var total = data.length;
+            let datasearch = await this.transactionsService.findhistoryBuyVoucher(key, status, startdate, enddate, 0, 0, descending, startday, endday, used, expired);
+            var total = data.length;
+            var totalsearch = datasearch.length;
+            var allrow = await this.transactionsService.totalcountVoucher();
+
+            try {
+                totalallrow = allrow[0].countrow;
+            } catch (e) {
+                totalallrow = 0;
+            }
+            var tpage = null;
+            var tpage2 = null;
+            tpage2 = (totalsearch / limit).toFixed(0);
+            tpage = (totalsearch % limit);
+            if (tpage > 0 && tpage < 5) {
+                totalpage = parseInt(tpage2) + 1;
+
+            } else {
+                totalpage = parseInt(tpage2);
+            }
+
+            var datatrpending = null;
+            var datatrpendingjual = null;
+
+            try {
+
+                datatrpending = await this.transactionsService.findExpiredAll();
+
+
+            } catch (e) {
+                datatrpending = null;
+
+            }
+
+            if (datatrpending !== null && datatrpending.length > 0) {
+                var datenow = new Date(Date.now());
+
+                var callback = null;
+                var statuswaiting = null;
+                var lengdatatr = datatrpending.length;
+
+                for (var i = 0; i < lengdatatr; i++) {
+
+                    var idva = datatrpending[i].idva;
+                    var idtransaction = datatrpending[i]._id;
+                    statuswaiting = datatrpending[i].status;
+                    var expiredva = new Date(datatrpending[i].expiredtimeva);
+                    expiredva.setHours(expiredva.getHours() - 7);
+
+                    //if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        await this.transactionsService.updatestatuscancel(idtransaction);
+
+                    }
+                    else if (cekstatusva.va_status === "COMPLETE") {
+
+                        if (statuswaiting == "WAITING_PAYMENT") {
+                            var VaCallback_ = new VaCallback();
+                            VaCallback_.va_number = cekstatusva.va_number;
+                            VaCallback_.amount = cekstatusva.amount;
+                            VaCallback_.partner_user_id = cekstatusva.partner_user_id;
+                            VaCallback_.success = true;
+                            try {
+                                callback = await this.transactionsService.callbackVA(VaCallback_);
+                                console.log(callback)
+
+                            } catch (e) {
+                                e.toString()
+                            }
+                        }
+
+                    }
+
+                    //}
+
+
+                }
+
+            }
+
+            try {
+
+                datatrpendingjual = await this.transactionsService.findExpiredAll();
+
+
+            } catch (e) {
+                datatrpendingjual = null;
+
+            }
+
+            if (datatrpendingjual !== null && datatrpendingjual.length > 0) {
+                var datenow = new Date(Date.now());
+                var callback = null;
+                var statuswaiting = null;
+
+                var lengdatatr = datatrpendingjual.length;
+
+                for (var i = 0; i < lengdatatr; i++) {
+
+                    var idva = datatrpendingjual[i].idva;
+                    var idtransaction = datatrpendingjual[i]._id;
+                    statuswaiting = datatrpendingjual[i].status;
+                    var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
+                    expiredva.setHours(expiredva.getHours() - 7);
+
+                    //  if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        await this.transactionsService.updatestatuscancel(idtransaction);
+
+                    } else if (cekstatusva.va_status === "COMPLETE") {
+
+                        if (statuswaiting == "WAITING_PAYMENT") {
+                            var VaCallback_ = new VaCallback();
+                            VaCallback_.va_number = cekstatusva.va_number;
+                            VaCallback_.amount = cekstatusva.amount;
+                            VaCallback_.partner_user_id = cekstatusva.partner_user_id;
+                            VaCallback_.success = true;
+                            try {
+                                callback = await this.transactionsService.callbackVA(VaCallback_);
+                                console.log(callback)
+
+                            } catch (e) {
+                                e.toString()
+                            }
+                        }
+
+                    }
+
+
+                    // }
+
+
+                }
+
+            }
+
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };
+        } else {
+            var totalallrowuser = null;
+            let datauser = await this.transactionsService.findhistoryBuyVoucherByuserv2(userid, status, startdate, enddate, page, limit, descending);
+            var totaluser = datauser.length;
+            let datasearchuser = await this.transactionsService.findhistoryBuyVoucherByuserv2(userid, status, startdate, enddate, 0, 0, descending);
+            var totaluser = datauser.length;
+            var totalsearchuser = datasearchuser.length;
+            var allrowuser = await this.transactionsService.totalcountVoucherUser(userid);
+
+            try {
+                totalallrowuser = allrowuser[0].countrow;
+            } catch (e) {
+                totalallrowuser = 0;
+            }
+            var tpageuser = null;
+            var tpage2user = null;
+
+            tpage2user = (totalsearchuser / limit).toFixed(0);
+            tpageuser = (totalsearchuser % limit);
+            if (tpageuser > 0 && tpageuser < 5) {
+                totalpage = parseInt(tpage2user) + 1;
+
+            } else {
+                totalpage = parseInt(tpage2user);
+            }
+
+            var datatrpending = null;
+            var datatrpendingjual = null;
+
+            try {
+
+                datatrpending = await this.transactionsService.findExpirednew(userid);
+
+
+            } catch (e) {
+                datatrpending = null;
+
+            }
+
+            if (datatrpending !== null && datatrpending.length > 0) {
+                var datenow = new Date(Date.now());
+                var callback = null;
+                var statuswaiting = null;
+
+
+                var lengdatatr = datatrpending.length;
+
+                for (var i = 0; i < lengdatatr; i++) {
+
+                    var idva = datatrpending[i].idva;
+                    var idtransaction = datatrpending[i]._id;
+                    statuswaiting = datatrpending[i].status;
+                    var expiredva = new Date(datatrpending[i].expiredtimeva);
+                    expiredva.setHours(expiredva.getHours() - 7);
+
+                    // if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        await this.transactionsService.updatestatuscancel(idtransaction);
+
+                    } else if (cekstatusva.va_status === "COMPLETE") {
+
+                        if (statuswaiting == "WAITING_PAYMENT") {
+                            var VaCallback_ = new VaCallback();
+                            VaCallback_.va_number = cekstatusva.va_number;
+                            VaCallback_.amount = cekstatusva.amount;
+                            VaCallback_.partner_user_id = cekstatusva.partner_user_id;
+                            VaCallback_.success = true;
+                            try {
+                                callback = await this.transactionsService.callbackVA(VaCallback_);
+                                console.log(callback)
+
+                            } catch (e) {
+                                e.toString()
+                            }
+                        }
+
+                    }
+
+
+                    //}
+
+
+                }
+
+            }
+
+            try {
+
+                datatrpendingjual = await this.transactionsService.findExpiredSell(userid);
+
+
+            } catch (e) {
+                datatrpendingjual = null;
+
+            }
+
+            if (datatrpendingjual !== null && datatrpendingjual.length > 0) {
+                var datenow = new Date(Date.now());
+                var callback = null;
+                var statuswaiting = null;
+
+                var lengdatatr = datatrpendingjual.length;
+
+                for (var i = 0; i < lengdatatr; i++) {
+
+                    var idva = datatrpendingjual[i].idva;
+                    var idtransaction = datatrpendingjual[i]._id;
+                    statuswaiting = datatrpendingjual[i].status;
+                    var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
+                    expiredva.setHours(expiredva.getHours() - 7);
+
+                    // if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        await this.transactionsService.updatestatuscancel(idtransaction);
+
+                    } else if (cekstatusva.va_status === "COMPLETE") {
+
+                        if (statuswaiting == "WAITING_PAYMENT") {
+                            var VaCallback_ = new VaCallback();
+                            VaCallback_.va_number = cekstatusva.va_number;
+                            VaCallback_.amount = cekstatusva.amount;
+                            VaCallback_.partner_user_id = cekstatusva.partner_user_id;
+                            VaCallback_.success = true;
+                            try {
+                                callback = await this.transactionsService.callbackVA(VaCallback_);
+                                console.log(callback)
+
+                            } catch (e) {
+                                e.toString()
+                            }
+                        }
+
+                    }
+
+
+                    // }
+
+
+                }
+
+            }
+
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            return {
+                response_code: 202,
+                "data": datauser, "page": page, "limit": limit, "total": totaluser, "totalsearch": totalsearchuser, "totalallrow": totalallrowuser, "totalpage": totalpage, "messages": messages
+            };
+        }
+
+
+
+
+
+
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Post('api/transactions/historys/voucher/detail')
     async finddatadetail(@Req() request: Request, @Headers() headers): Promise<any> {
         var timestamps_start = await this.utilsService.getDateTimeString();
