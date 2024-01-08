@@ -66,12 +66,14 @@ export class PostsReadController {
 
         }
 
+        var tempapsaraMusicThumbId = [];
         var tempapsaraId = [];
         var tempapsaraThumbId = [];
         var tempdatapict = [];
 
         var tempdatapict = [];
 
+        var apsaraMusicThumbId = null;
         var boosted = null;
         var boostCount = null;
         var version = null;
@@ -84,7 +86,8 @@ export class PostsReadController {
         // console.log(lengpict);
         if (lengpict > 0) {
             var tempapsaraId_result = null;
-            var tempapsaraThumbId_result = null;
+            var tempapsaraThumbId_result = null; 
+            var tempapsaraMusicThumbId_result = null;
 
             var resultpictapsara = null;
             version = data[0].version;
@@ -102,6 +105,11 @@ export class PostsReadController {
                     } catch (e) {
                         apsaraThumbId = "";
                     }
+                    try {
+                        apsaraMusicThumbId = data[i].apsaraMusicThumnail;
+                    } catch (e) {
+                        apsaraMusicThumbId = "";
+                    }
 
                     if (apsaraId != "") {
                         tempapsaraId.push(data[i].apsaraId);
@@ -110,13 +118,19 @@ export class PostsReadController {
                     if (apsaraId != "") {
                         tempapsaraThumbId.push(data[i].apsaraThumbId);
                     }
+
+                    if (apsaraMusicThumbId != "") {
+                        tempapsaraMusicThumbId.push(data[i].apsaraMusicThumnail);
+                    }
                 }
                 console.log("");
                 tempapsaraId_result = await this.postContentService.getImageApsara(tempapsaraId);
                 tempapsaraThumbId_result = await this.postContentService.getImageApsara(tempapsaraThumbId);
+                tempapsaraMusicThumbId_result = await this.postContentService.getImageApsara(tempapsaraMusicThumbId);
 
                 let gettempresultpictapsara_tempapsaraId = tempapsaraId_result.ImageInfo;
                 let gettempresultpictapsara_tempapsaraThumbId = tempapsaraThumbId_result.ImageInfo;
+                let gettempresultpictapsara_tempapsaraMusicThumbId = tempapsaraMusicThumbId_result.ImageInfo;
                 // for (let i = 0; i < lengpict; i++) {
 
                 //     uploadSource = data[i].uploadSource;
@@ -171,6 +185,14 @@ export class PostsReadController {
                                 if (!dataUpsara) {
                                     data[i].mediaEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
                                 }
+                            }
+                        }
+                    }
+
+                    if (data[i].apsaraMusicThumnail) {
+                        for (var j = 0; j < gettempresultpictapsara_tempapsaraMusicThumbId.length; j++) {
+                            if (gettempresultpictapsara_tempapsaraMusicThumbId[j].ImageId == data[i].apsaraMusicThumnail) {
+                                data[i].mediaMusicThumbEndpoint = gettempresultpictapsara_tempapsaraMusicThumbId[j].URL;
                             }
                         }
                     }
@@ -440,12 +462,14 @@ export class PostsReadController {
             data.forEach(v => { v.following = getFollowing; });
         }
 
+        var tempapsaraMusicThumbId = [];
         var tempapsaraId = [];
         var tempapsaraThumbId = [];
         var tempdatapict = [];
 
         var tempdatapict = [];
 
+        var apsaraMusicThumbId = null;
         var boosted = null;
         var boostCount = null;
         var version = null;
@@ -459,6 +483,7 @@ export class PostsReadController {
         if (lengpict > 0) {
             var tempapsaraId_result = null;
             var tempapsaraThumbId_result = null;
+            var tempapsaraMusicThumbId_result = null;
 
             var resultpictapsara = null;
             version = data[0].version;
@@ -477,6 +502,11 @@ export class PostsReadController {
                     } catch (e) {
                         apsaraThumbId = "";
                     }
+                    try {
+                        apsaraMusicThumbId = data[i].apsaraMusicThumnail;
+                    } catch (e) {
+                        apsaraMusicThumbId = "";
+                    }
 
                     if (apsaraId != "") {
                         tempapsaraId.push(data[i].apsaraId);
@@ -485,13 +515,19 @@ export class PostsReadController {
                     if (apsaraId != "") {
                         tempapsaraThumbId.push(data[i].apsaraThumbId);
                     }
+
+                    if (apsaraMusicThumbId != "") {
+                        tempapsaraMusicThumbId.push(data[i].apsaraMusicThumnail);
+                    }
                 }
                 console.log("");
                 tempapsaraId_result = await this.postContentService.getImageApsara(tempapsaraId);
                 tempapsaraThumbId_result = await this.postContentService.getImageApsara(tempapsaraThumbId);
+                tempapsaraMusicThumbId_result = await this.postContentService.getImageApsara(tempapsaraMusicThumbId);
 
                 let gettempresultpictapsara_tempapsaraId = tempapsaraId_result.ImageInfo;
                 let gettempresultpictapsara_tempapsaraThumbId = tempapsaraThumbId_result.ImageInfo;
+                let gettempresultpictapsara_tempapsaraMusicThumbId = tempapsaraMusicThumbId_result.ImageInfo;
                 // for (let i = 0; i < lengpict; i++) {
 
                 //     uploadSource = data[i].uploadSource;
@@ -546,6 +582,14 @@ export class PostsReadController {
                                 if (!dataUpsara) {
                                     data[i].mediaEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
                                 }
+                            }
+                        }
+                    }
+
+                    if (data[i].apsaraMusicThumnail) {
+                        for (var j = 0; j < gettempresultpictapsara_tempapsaraMusicThumbId.length; j++) {
+                            if (gettempresultpictapsara_tempapsaraMusicThumbId[j].ImageId == data[i].apsaraMusicThumnail) {
+                                data[i].mediaMusicThumbEndpoint = gettempresultpictapsara_tempapsaraMusicThumbId[j].URL;
                             }
                         }
                     }
