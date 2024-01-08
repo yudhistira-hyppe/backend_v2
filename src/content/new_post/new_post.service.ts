@@ -36,11 +36,11 @@ export class NewPostService {
   }
 
   async update(id: string, inputdata: newPosts): Promise<newPosts> {
-        let data = await this.loaddata.findByIdAndUpdate(id, inputdata, { new: true });
-        if (!data) {
-            throw new Error('Data is not found!');
-        }
-        return data;
+    let data = await this.loaddata.findByIdAndUpdate(id, inputdata, { new: true });
+    if (!data) {
+      throw new Error('Data is not found!');
+    }
+    return data;
   }
 
   async findOne(id: string) {
@@ -12280,6 +12280,7 @@ export class NewPostService {
               {
                 $project: {
                   iduser: "$_id",
+                  username: 1
 
                 }
               },
@@ -12536,7 +12537,7 @@ export class NewPostService {
             refs: {
               $arrayElemAt: ['$contentMedias', 0]
             },
-            username: "$basicdata.username",
+            username: "$databasic.username",
             createdAt: 1,
             updatedAt: 1,
             postID: 1,
@@ -13671,30 +13672,27 @@ export class NewPostService {
     return query;
   }
 
-  async countTemppost(email:string, tipe:string)
-  {
+  async countTemppost(email: string, tipe: string) {
     var pipeline = [];
     var firstmatch = [];
-    if(tipe == "like")
-    {
+    if (tipe == "like") {
       firstmatch.push(
         {
-          "tempLike":email
+          "tempLike": email
         }
-      ); 
+      );
     }
-    else
-    {
+    else {
       firstmatch.push(
         {
-          "tempView":email
+          "tempView": email
         }
       );
     }
 
     firstmatch.push(
       {
-        "active":true
+        "active": true
       }
     );
 
@@ -13702,26 +13700,26 @@ export class NewPostService {
       {
         "$unwind":
         {
-          path:(tipe == "like" ? "$tempLike" : "$tempView")
+          path: (tipe == "like" ? "$tempLike" : "$tempView")
         }
       },
       {
         "$match":
         {
-          "$and":firstmatch
+          "$and": firstmatch
         }
       },
       {
         "$group":
         {
-          _id:null,
+          _id: null,
           total:
           {
-            "$sum":1
+            "$sum": 1
           },
           data:
           {
-            "$push":"$postID"
+            "$push": "$postID"
           }
         }
       }
@@ -13730,16 +13728,15 @@ export class NewPostService {
     var data = await this.loaddata.aggregate(pipeline);
     return data;
   }
-  
-  async findById(list:any[])
-  {
+
+  async findById(list: any[]) {
     var data = await this.loaddata.aggregate([
       {
         "$match":
         {
           "postID":
           {
-            "$in":list
+            "$in": list
           }
         }
       }
