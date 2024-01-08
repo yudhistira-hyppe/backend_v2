@@ -15132,16 +15132,16 @@ export class NewPostService {
 
               }
             },
-            {
-              $lookup: {
-                from: 'mediapicts',
-                localField: 'idmedia',
-                foreignField: '_id',
-                as: 'mediaPict_data',
+            // {
+            //   $lookup: {
+            //     from: 'mediapicts',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediaPict_data',
 
-              },
+            //   },
 
-            },
+            // },
             // {
             //   $lookup: {
             //     from: 'mediadiaries',
