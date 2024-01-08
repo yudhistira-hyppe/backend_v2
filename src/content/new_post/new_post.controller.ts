@@ -787,4 +787,35 @@ export class NewPostController {
 
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
+    @Post('api/getusercontents/management/grouping/v2')
+    @UseGuards(JwtAuthGuard)
+    async contentmanagemen2v2(@Req() request: Request): Promise<any> {
+        var fullurl = request.get("Host") + request.originalUrl;
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var data = null;
+        var email = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+        data = await this.newPostService.detaildasborv2(email);
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+
+        var fullurl = request.get("Host") + request.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+        return { response_code: 202, data, messages };
+    }
 }

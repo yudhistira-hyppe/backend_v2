@@ -12222,7 +12222,10 @@ export class NewPostService {
             contentModerationDate: 1,
             contentModerationResponse: 1,
             moderationReason: 1,
-            reportedStatus: 1
+            reportedStatus: 1,
+            mediaSource: {
+              $arrayElemAt: ['$mediaSource', 0]
+            }
           }
         }
       );
@@ -12611,6 +12614,7 @@ export class NewPostService {
                 else: "YA"
               }
             },
+            mediaSource: 1
 
           }
         },
@@ -12706,6 +12710,7 @@ export class NewPostService {
                 else: "YA"
               }
             },
+            mediaSource: 1
 
           }
         },
@@ -12789,6 +12794,7 @@ export class NewPostService {
             buy: 1,
             tr: 1,
             tags: 1,
+            mediaSource: 1
           }
         },
         // {
@@ -13167,6 +13173,7 @@ export class NewPostService {
               }
             },
             tags: 1,
+            mediaSource: 1
           }
         },
         {
@@ -13248,6 +13255,7 @@ export class NewPostService {
               }
             },
             tags: 1,
+            mediaSource: 1
           }
         },
         // {
@@ -13328,6 +13336,7 @@ export class NewPostService {
             shares: 1,
             comments: 1,
             tags: 1,
+            mediaSource: 1
           }
         },
         // {
@@ -13741,5 +13750,2963 @@ export class NewPostService {
     ]);
 
     return data;
+  }
+
+  async detaildasborv2(email: string) {
+    const query = await this.loaddata.aggregate([
+      {
+        $match: {
+          email: email
+        }
+      },
+      {
+        $addFields: {
+
+          salePrice: {
+            $cmp: ["$saleAmount", 0]
+          },
+          sLike: {
+            $cmp: ["$saleLike", 0]
+          },
+          sView: {
+            $cmp: ["$saleView", 0]
+          },
+          certi: {
+            $cmp: ["$certified", 0]
+          },
+          reportCount: {
+            $cmp: ["$reportedUserCount", 0]
+          },
+
+        }
+      },
+      {
+        $facet: {
+          "popular": [
+            {
+              $project: {
+                refs: {
+                  $arrayElemAt: ['$contentMedias', 0]
+                },
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                email: 1,
+                postType: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                jenis: "POPULAR",
+                countReport:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$reportCount", - 1]
+                      }, {
+                        $eq: ["$reportCount", 0]
+                      }]
+                    },
+                    then: 0,
+                    else: "$reportedUserCount"
+                  }
+                },
+                certified:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$certi", - 1]
+                      }, {
+                        $eq: ["$certi", 0]
+                      }]
+                    },
+                    then: false,
+                    else: "$certified"
+                  }
+                },
+                visibility: 1,
+                saleAmount: {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$salePrice", - 1]
+                      }, {
+                        $eq: ["$salePrice", 0]
+                      }]
+                    },
+                    then: 0,
+                    else: "$saleAmount"
+                  }
+                },
+                monetize: {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$salePrice", - 1]
+                      }, {
+                        $eq: ["$salePrice", 0]
+                      }]
+                    },
+                    then: false,
+                    else: true
+                  }
+                },
+                mediaSource: {
+                  $arrayElemAt: ['$mediaSource', 0]
+                }
+
+              }
+            },
+            {
+              $project: {
+                refs: '$refs.$ref',
+                idmedia: '$refs.$id',
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                type: {
+                  $switch: {
+                    branches: [
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'pict']
+                        },
+                        'then': "HyppePic"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'vid']
+                        },
+                        'then': "HyppeVid"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'diary']
+                        },
+                        'then': "HyppeDiary"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'story']
+                        },
+                        'then': "HyppeStory"
+                      },
+
+                    ],
+                    default: ''
+                  }
+                },
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$certified", false]
+                      }, {
+                        $eq: ["$certified", ""]
+                      }]
+                    },
+                    then: "TIDAK",
+                    else: "YA"
+                  }
+                },
+                visibility: 1,
+                saleAmount: 1,
+                statusJual:
+                {
+                  $cond: {
+                    if: {
+
+                      $eq: ["$monetize", false]
+                    },
+                    then: "TIDAK",
+                    else: "YA"
+                  }
+                },
+                mediaSource: 1
+
+              }
+            },
+            // {
+            //   $lookup: {
+            //     from: 'mediapicts',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediaPict_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediadiaries',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediadiaries_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediavideos',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediavideos_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediastories',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediastories_data',
+
+            //   },
+
+            // },
+            {
+              $project: {
+                // mediapict: {
+                //   $arrayElemAt: ['$mediaPict_data', 0]
+                // },
+                // mediadiaries: {
+                //   $arrayElemAt: ['$mediadiaries_data', 0]
+                // },
+                // mediavideos: {
+                //   $arrayElemAt: ['$mediavideos_data', 0]
+                // },
+                // mediastories: {
+                //   $arrayElemAt: ['$mediastories_data', 0]
+                // },
+                refs: 1,
+                idmedia: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                type: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan: 1,
+                visibility: 1,
+                saleAmount: 1,
+                statusJual: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                mediaSource: 1
+              }
+            },
+            // {
+            //   $addFields: {
+
+
+            //     concatmediapict: '/pict',
+            //     media_pict: {
+            //       $replaceOne: {
+            //         input: "$mediapict.mediaUri",
+            //         find: "_0001.jpeg",
+            //         replacement: ""
+            //       }
+            //     },
+            //     concatmediadiari: '/stream',
+            //     concatthumbdiari: '/thumb',
+            //     media_diari: '$mediadiaries.mediaUri',
+            //     concatmediavideo: '/stream',
+            //     concatthumbvideo: '/thumb',
+            //     media_video: '$mediavideos.mediaUri',
+            //     concatmediastory:
+            //     {
+            //       $cond: {
+            //         if: {
+
+            //           $eq: ["$mediastories.mediaType", "image"]
+            //         },
+            //         then: '/pict',
+            //         else: '/stream',
+
+            //       }
+            //     },
+            //     concatthumbstory: '/thumb',
+            //     media_story: '$mediastories.mediaUri'
+            //   },
+
+            // },
+            {
+              $project: {
+
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                type: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan: 1,
+                visibility: 1,
+                saleAmount: 1,
+                statusJual: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                mediaBasePath:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaBasePath",
+                      null
+                    ]
+                },
+                mediaUri:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaUri",
+                      null
+                    ]
+                },
+                mediaType:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaType",
+                      null
+                    ]
+                },
+                mediaThumbEndpoint:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaThumbEndpoint",
+                      {
+                        "$concat":
+                          [
+                            "/thumb/",
+                            "$postID"
+                          ]
+                      }
+                    ]
+                },
+                mediaEndpoint:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaEndpoint",
+                      {
+                        "$cond":
+                        {
+                          if:
+                          {
+                            "$eq":
+                              [
+                                "$postType", "pict"
+                              ]
+                          },
+                          then:
+                          {
+                            "$concat":
+                              [
+                                "/pict/",
+                                "$postID"
+                              ]
+                          },
+                          else:
+                          {
+                            "$concat":
+                              [
+                                "/stream/",
+                                "$postID"
+                              ]
+                          }
+                        }
+                      }
+                    ]
+                },
+                mediaThumbUri:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaThumbUri",
+                      null
+                    ]
+                },
+                apsaraId: "$mediaSource.apsaraId",
+                apsara: "$mediaSource.apsara"
+
+              }
+            },
+            {
+              $sort: {
+                views: - 1,
+                likes: - 1
+              },
+
+            },
+            {
+              $skip: 0
+            },
+            {
+              $limit: 1
+            },
+
+          ],
+          "likes": [
+            {
+              $project: {
+                refs: {
+                  $arrayElemAt: ['$contentMedias', 0]
+                },
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                email: 1,
+                postType: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                jenis: "MOSTLIKES",
+                countReport:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$reportCount", - 1]
+                      }, {
+                        $eq: ["$reportCount", 0]
+                      }]
+                    },
+                    then: 0,
+                    else: "$reportedUserCount"
+                  }
+                },
+                certified:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$certi", - 1]
+                      }, {
+                        $eq: ["$certi", 0]
+                      }]
+                    },
+                    then: false,
+                    else: "$certified"
+                  }
+                },
+                visibility: 1,
+                saleAmount: {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$salePrice", - 1]
+                      }, {
+                        $eq: ["$salePrice", 0]
+                      }]
+                    },
+                    then: 0,
+                    else: "$saleAmount"
+                  }
+                },
+                monetize: {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$salePrice", - 1]
+                      }, {
+                        $eq: ["$salePrice", 0]
+                      }]
+                    },
+                    then: false,
+                    else: true
+                  }
+                },
+                mediaSource: {
+                  $arrayElemAt: ['$mediaSource', 0]
+                }
+
+              }
+            },
+            {
+              $project: {
+                refs: '$refs.$ref',
+                idmedia: '$refs.$id',
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                type: {
+                  $switch: {
+                    branches: [
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'pict']
+                        },
+                        'then': "HyppePic"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'vid']
+                        },
+                        'then': "HyppeVid"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'diary']
+                        },
+                        'then': "HyppeDiary"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'story']
+                        },
+                        'then': "HyppeStory"
+                      },
+
+                    ],
+                    default: ''
+                  }
+                },
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$certified", false]
+                      }, {
+                        $eq: ["$certified", ""]
+                      }]
+                    },
+                    then: "TIDAK",
+                    else: "YA"
+                  }
+                },
+                visibility: 1,
+                saleAmount: 1,
+                statusJual:
+                {
+                  $cond: {
+                    if: {
+
+                      $eq: ["$monetize", false]
+                    },
+                    then: "TIDAK",
+                    else: "YA"
+                  }
+                },
+                mediaSource: 1
+
+              }
+            },
+            // {
+            //   $lookup: {
+            //     from: 'mediapicts',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediaPict_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediadiaries',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediadiaries_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediavideos',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediavideos_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediastories',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediastories_data',
+
+            //   },
+
+            // },
+            {
+              $project: {
+                // mediapict: {
+                //   $arrayElemAt: ['$mediaPict_data', 0]
+                // },
+                // mediadiaries: {
+                //   $arrayElemAt: ['$mediadiaries_data', 0]
+                // },
+                // mediavideos: {
+                //   $arrayElemAt: ['$mediavideos_data', 0]
+                // },
+                // mediastories: {
+                //   $arrayElemAt: ['$mediastories_data', 0]
+                // },
+                refs: 1,
+                idmedia: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                type: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan: 1,
+                visibility: 1,
+                saleAmount: 1,
+                statusJual: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                mediaSource: 1
+              }
+            },
+            // {
+            //   $addFields: {
+
+
+            //     concatmediapict: '/pict',
+            //     media_pict: {
+            //       $replaceOne: {
+            //         input: "$mediapict.mediaUri",
+            //         find: "_0001.jpeg",
+            //         replacement: ""
+            //       }
+            //     },
+            //     concatmediadiari: '/stream',
+            //     concatthumbdiari: '/thumb',
+            //     media_diari: '$mediadiaries.mediaUri',
+            //     concatmediavideo: '/stream',
+            //     concatthumbvideo: '/thumb',
+            //     media_video: '$mediavideos.mediaUri',
+            //     concatmediastory:
+            //     {
+            //       $cond: {
+            //         if: {
+
+            //           $eq: ["$mediastories.mediaType", "image"]
+            //         },
+            //         then: '/pict',
+            //         else: '/stream',
+
+            //       }
+            //     },
+            //     concatthumbstory: '/thumb',
+            //     media_story: '$mediastories.mediaUri'
+            //   },
+
+            // },
+            {
+              $project: {
+
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                type: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan: 1,
+                visibility: 1,
+                saleAmount: 1,
+                statusJual: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                mediaBasePath:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaBasePath",
+                      null
+                    ]
+                },
+                mediaUri:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaUri",
+                      null
+                    ]
+                },
+                mediaType:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaType",
+                      null
+                    ]
+                },
+                mediaThumbEndpoint:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaThumbEndpoint",
+                      {
+                        "$concat":
+                          [
+                            "/thumb/",
+                            "$postID"
+                          ]
+                      }
+                    ]
+                },
+                mediaEndpoint:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaEndpoint",
+                      {
+                        "$cond":
+                        {
+                          if:
+                          {
+                            "$eq":
+                              [
+                                "$postType", "pict"
+                              ]
+                          },
+                          then:
+                          {
+                            "$concat":
+                              [
+                                "/pict/",
+                                "$postID"
+                              ]
+                          },
+                          else:
+                          {
+                            "$concat":
+                              [
+                                "/stream/",
+                                "$postID"
+                              ]
+                          }
+                        }
+                      }
+                    ]
+                },
+                mediaThumbUri:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaThumbUri",
+                      null
+                    ]
+                },
+                apsaraId: "$mediaSource.apsaraId",
+                apsara: "$mediaSource.apsara"
+
+              }
+            },
+            {
+              $sort: {
+                likes: - 1
+              },
+
+            },
+            {
+              $skip: 0
+            },
+            {
+              $limit: 1
+            },
+
+          ],
+          "shares": [
+            {
+              $project: {
+                refs: {
+                  $arrayElemAt: ['$contentMedias', 0]
+                },
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                email: 1,
+                postType: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                jenis: "MOSTSHARES",
+                countReport:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$reportCount", - 1]
+                      }, {
+                        $eq: ["$reportCount", 0]
+                      }]
+                    },
+                    then: 0,
+                    else: "$reportedUserCount"
+                  }
+                },
+                certified:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$certi", - 1]
+                      }, {
+                        $eq: ["$certi", 0]
+                      }]
+                    },
+                    then: false,
+                    else: "$certified"
+                  }
+                },
+                visibility: 1,
+                saleAmount: {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$salePrice", - 1]
+                      }, {
+                        $eq: ["$salePrice", 0]
+                      }]
+                    },
+                    then: 0,
+                    else: "$saleAmount"
+                  }
+                },
+                monetize: {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$salePrice", - 1]
+                      }, {
+                        $eq: ["$salePrice", 0]
+                      }]
+                    },
+                    then: false,
+                    else: true
+                  }
+                },
+                mediaSource: {
+                  $arrayElemAt: ['$mediaSource', 0]
+                }
+
+              }
+            },
+            {
+              $project: {
+                refs: '$refs.$ref',
+                idmedia: '$refs.$id',
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                type: {
+                  $switch: {
+                    branches: [
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'pict']
+                        },
+                        'then': "HyppePic"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'vid']
+                        },
+                        'then': "HyppeVid"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'diary']
+                        },
+                        'then': "HyppeDiary"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'story']
+                        },
+                        'then': "HyppeStory"
+                      },
+
+                    ],
+                    default: ''
+                  }
+                },
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$certified", false]
+                      }, {
+                        $eq: ["$certified", ""]
+                      }]
+                    },
+                    then: "TIDAK",
+                    else: "YA"
+                  }
+                },
+                visibility: 1,
+                saleAmount: 1,
+                statusJual:
+                {
+                  $cond: {
+                    if: {
+
+                      $eq: ["$monetize", false]
+                    },
+                    then: "TIDAK",
+                    else: "YA"
+                  }
+                },
+                mediaSource: 1
+
+              }
+            },
+            // {
+            //   $lookup: {
+            //     from: 'mediapicts',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediaPict_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediadiaries',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediadiaries_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediavideos',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediavideos_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediastories',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediastories_data',
+
+            //   },
+
+            // },
+            {
+              $project: {
+                // mediapict: {
+                //   $arrayElemAt: ['$mediaPict_data', 0]
+                // },
+                // mediadiaries: {
+                //   $arrayElemAt: ['$mediadiaries_data', 0]
+                // },
+                // mediavideos: {
+                //   $arrayElemAt: ['$mediavideos_data', 0]
+                // },
+                // mediastories: {
+                //   $arrayElemAt: ['$mediastories_data', 0]
+                // },
+                refs: 1,
+                idmedia: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                type: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan: 1,
+                visibility: 1,
+                saleAmount: 1,
+                statusJual: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                mediaSource: 1
+              }
+            },
+            // {
+            //   $addFields: {
+
+
+            //     concatmediapict: '/pict',
+            //     media_pict: {
+            //       $replaceOne: {
+            //         input: "$mediapict.mediaUri",
+            //         find: "_0001.jpeg",
+            //         replacement: ""
+            //       }
+            //     },
+            //     concatmediadiari: '/stream',
+            //     concatthumbdiari: '/thumb',
+            //     media_diari: '$mediadiaries.mediaUri',
+            //     concatmediavideo: '/stream',
+            //     concatthumbvideo: '/thumb',
+            //     media_video: '$mediavideos.mediaUri',
+            //     concatmediastory:
+            //     {
+            //       $cond: {
+            //         if: {
+
+            //           $eq: ["$mediastories.mediaType", "image"]
+            //         },
+            //         then: '/pict',
+            //         else: '/stream',
+
+            //       }
+            //     },
+            //     concatthumbstory: '/thumb',
+            //     media_story: '$mediastories.mediaUri'
+            //   },
+
+            // },
+            {
+              $project: {
+
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                type: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan: 1,
+                visibility: 1,
+                saleAmount: 1,
+                statusJual: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                mediaBasePath:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaBasePath",
+                      null
+                    ]
+                },
+                mediaUri:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaUri",
+                      null
+                    ]
+                },
+                mediaType:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaType",
+                      null
+                    ]
+                },
+                mediaThumbEndpoint:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaThumbEndpoint",
+                      {
+                        "$concat":
+                          [
+                            "/thumb/",
+                            "$postID"
+                          ]
+                      }
+                    ]
+                },
+                mediaEndpoint:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaEndpoint",
+                      {
+                        "$cond":
+                        {
+                          if:
+                          {
+                            "$eq":
+                              [
+                                "$postType", "pict"
+                              ]
+                          },
+                          then:
+                          {
+                            "$concat":
+                              [
+                                "/pict/",
+                                "$postID"
+                              ]
+                          },
+                          else:
+                          {
+                            "$concat":
+                              [
+                                "/stream/",
+                                "$postID"
+                              ]
+                          }
+                        }
+                      }
+                    ]
+                },
+                mediaThumbUri:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaThumbUri",
+                      null
+                    ]
+                },
+                apsaraId: "$mediaSource.apsaraId",
+                apsara: "$mediaSource.apsara"
+
+              }
+            },
+            {
+              $sort: {
+                shares: - 1
+              },
+
+            },
+            {
+              $skip: 0
+            },
+            {
+              $limit: 1
+            },
+
+          ],
+          "lastPost": [
+            {
+              $project: {
+                refs: {
+                  $arrayElemAt: ['$contentMedias', 0]
+                },
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                email: 1,
+                postType: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                jenis: "LASTPOST",
+                countReport:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$reportCount", - 1]
+                      }, {
+                        $eq: ["$reportCount", 0]
+                      }]
+                    },
+                    then: 0,
+                    else: "$reportedUserCount"
+                  }
+                },
+                certified:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$certi", - 1]
+                      }, {
+                        $eq: ["$certi", 0]
+                      }]
+                    },
+                    then: false,
+                    else: "$certified"
+                  }
+                },
+                visibility: 1,
+                saleAmount: {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$salePrice", - 1]
+                      }, {
+                        $eq: ["$salePrice", 0]
+                      }]
+                    },
+                    then: 0,
+                    else: "$saleAmount"
+                  }
+                },
+                monetize: {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$salePrice", - 1]
+                      }, {
+                        $eq: ["$salePrice", 0]
+                      }]
+                    },
+                    then: false,
+                    else: true
+                  }
+                },
+                mediaSource: {
+                  $arrayElemAt: ['$mediaSource', 0]
+                }
+
+              }
+            },
+            {
+              $project: {
+                refs: '$refs.$ref',
+                idmedia: '$refs.$id',
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                type: {
+                  $switch: {
+                    branches: [
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'pict']
+                        },
+                        'then': "HyppePic"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'vid']
+                        },
+                        'then': "HyppeVid"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'diary']
+                        },
+                        'then': "HyppeDiary"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'story']
+                        },
+                        'then': "HyppeStory"
+                      },
+
+                    ],
+                    default: ''
+                  }
+                },
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$certified", false]
+                      }, {
+                        $eq: ["$certified", ""]
+                      }]
+                    },
+                    then: "TIDAK",
+                    else: "YA"
+                  }
+                },
+                visibility: 1,
+                saleAmount: 1,
+                statusJual:
+                {
+                  $cond: {
+                    if: {
+
+                      $eq: ["$monetize", false]
+                    },
+                    then: "TIDAK",
+                    else: "YA"
+                  }
+                },
+                mediaSource: 1
+
+              }
+            },
+            {
+              $lookup: {
+                from: 'mediapicts',
+                localField: 'idmedia',
+                foreignField: '_id',
+                as: 'mediaPict_data',
+
+              },
+
+            },
+            // {
+            //   $lookup: {
+            //     from: 'mediadiaries',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediadiaries_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediavideos',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediavideos_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediastories',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediastories_data',
+
+            //   },
+
+            // },
+            {
+              $project: {
+                // mediapict: {
+                //   $arrayElemAt: ['$mediaPict_data', 0]
+                // },
+                // mediadiaries: {
+                //   $arrayElemAt: ['$mediadiaries_data', 0]
+                // },
+                // mediavideos: {
+                //   $arrayElemAt: ['$mediavideos_data', 0]
+                // },
+                // mediastories: {
+                //   $arrayElemAt: ['$mediastories_data', 0]
+                // },
+                refs: 1,
+                idmedia: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                type: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan: 1,
+                visibility: 1,
+                saleAmount: 1,
+                statusJual: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                mediaSource: 1
+              }
+            },
+            // {
+            //   $addFields: {
+
+
+            //     concatmediapict: '/pict',
+            //     media_pict: {
+            //       $replaceOne: {
+            //         input: "$mediapict.mediaUri",
+            //         find: "_0001.jpeg",
+            //         replacement: ""
+            //       }
+            //     },
+            //     concatmediadiari: '/stream',
+            //     concatthumbdiari: '/thumb',
+            //     media_diari: '$mediadiaries.mediaUri',
+            //     concatmediavideo: '/stream',
+            //     concatthumbvideo: '/thumb',
+            //     media_video: '$mediavideos.mediaUri',
+            //     concatmediastory:
+            //     {
+            //       $cond: {
+            //         if: {
+
+            //           $eq: ["$mediastories.mediaType", "image"]
+            //         },
+            //         then: '/pict',
+            //         else: '/stream',
+
+            //       }
+            //     },
+            //     concatthumbstory: '/thumb',
+            //     media_story: '$mediastories.mediaUri'
+            //   },
+
+            // },
+            {
+              $project: {
+
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                type: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan: 1,
+                visibility: 1,
+                saleAmount: 1,
+                statusJual: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                mediaBasePath:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaBasePath",
+                      null
+                    ]
+                },
+                mediaUri:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaUri",
+                      null
+                    ]
+                },
+                mediaType:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaType",
+                      null
+                    ]
+                },
+                mediaThumbEndpoint:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaThumbEndpoint",
+                      {
+                        "$concat":
+                          [
+                            "/thumb/",
+                            "$postID"
+                          ]
+                      }
+                    ]
+                },
+                mediaEndpoint:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaEndpoint",
+                      {
+                        "$cond":
+                        {
+                          if:
+                          {
+                            "$eq":
+                              [
+                                "$postType", "pict"
+                              ]
+                          },
+                          then:
+                          {
+                            "$concat":
+                              [
+                                "/pict/",
+                                "$postID"
+                              ]
+                          },
+                          else:
+                          {
+                            "$concat":
+                              [
+                                "/stream/",
+                                "$postID"
+                              ]
+                          }
+                        }
+                      }
+                    ]
+                },
+                mediaThumbUri:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaThumbUri",
+                      null
+                    ]
+                },
+                apsaraId: "$mediaSource.apsaraId",
+                apsara: "$mediaSource.apsara"
+
+              }
+            },
+            {
+              $sort: {
+                createdAt: - 1
+              },
+
+            },
+            {
+              $skip: 0
+            },
+            {
+              $limit: 1
+            },
+
+          ],
+          "ownership": [
+            {
+              $project: {
+                refs: {
+                  $arrayElemAt: ['$contentMedias', 0]
+                },
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                email: 1,
+                postType: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                jenis: "OWNERSHIP",
+                countReport:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$reportCount", - 1]
+                      }, {
+                        $eq: ["$reportCount", 0]
+                      }]
+                    },
+                    then: 0,
+                    else: "$reportedUserCount"
+                  }
+                },
+                certified:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$certi", - 1]
+                      }, {
+                        $eq: ["$certi", 0]
+                      }]
+                    },
+                    then: false,
+                    else: "$certified"
+                  }
+                },
+                visibility: 1,
+                saleAmount: {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$salePrice", - 1]
+                      }, {
+                        $eq: ["$salePrice", 0]
+                      }]
+                    },
+                    then: 0,
+                    else: "$saleAmount"
+                  }
+                },
+                monetize: {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$salePrice", - 1]
+                      }, {
+                        $eq: ["$salePrice", 0]
+                      }]
+                    },
+                    then: false,
+                    else: true
+                  }
+                },
+                mediaSource: {
+                  $arrayElemAt: ['$mediaSource', 0]
+                }
+
+              }
+            },
+            {
+              $project: {
+                refs: '$refs.$ref',
+                idmedia: '$refs.$id',
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                type: {
+                  $switch: {
+                    branches: [
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'pict']
+                        },
+                        'then': "HyppePic"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'vid']
+                        },
+                        'then': "HyppeVid"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'diary']
+                        },
+                        'then': "HyppeDiary"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'story']
+                        },
+                        'then': "HyppeStory"
+                      },
+
+                    ],
+                    default: ''
+                  }
+                },
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$certified", false]
+                      }, {
+                        $eq: ["$certified", ""]
+                      }]
+                    },
+                    then: "TIDAK",
+                    else: "YA"
+                  }
+                },
+                visibility: 1,
+                saleAmount: 1,
+                statusJual:
+                {
+                  $cond: {
+                    if: {
+
+                      $eq: ["$monetize", false]
+                    },
+                    then: "TIDAK",
+                    else: "YA"
+                  }
+                },
+                mediaSource: 1
+
+              }
+            },
+            // {
+            //   $lookup: {
+            //     from: 'mediapicts',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediaPict_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediadiaries',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediadiaries_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediavideos',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediavideos_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediastories',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediastories_data',
+
+            //   },
+
+            // },
+            {
+              $project: {
+                // mediapict: {
+                //   $arrayElemAt: ['$mediaPict_data', 0]
+                // },
+                // mediadiaries: {
+                //   $arrayElemAt: ['$mediadiaries_data', 0]
+                // },
+                // mediavideos: {
+                //   $arrayElemAt: ['$mediavideos_data', 0]
+                // },
+                // mediastories: {
+                //   $arrayElemAt: ['$mediastories_data', 0]
+                // },
+                refs: 1,
+                idmedia: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                type: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan: 1,
+                visibility: 1,
+                saleAmount: 1,
+                statusJual: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                mediaSource: 1
+              }
+            },
+            // {
+            //   $addFields: {
+
+
+            //     concatmediapict: '/pict',
+            //     media_pict: {
+            //       $replaceOne: {
+            //         input: "$mediapict.mediaUri",
+            //         find: "_0001.jpeg",
+            //         replacement: ""
+            //       }
+            //     },
+            //     concatmediadiari: '/stream',
+            //     concatthumbdiari: '/thumb',
+            //     media_diari: '$mediadiaries.mediaUri',
+            //     concatmediavideo: '/stream',
+            //     concatthumbvideo: '/thumb',
+            //     media_video: '$mediavideos.mediaUri',
+            //     concatmediastory:
+            //     {
+            //       $cond: {
+            //         if: {
+
+            //           $eq: ["$mediastories.mediaType", "image"]
+            //         },
+            //         then: '/pict',
+            //         else: '/stream',
+
+            //       }
+            //     },
+            //     concatthumbstory: '/thumb',
+            //     media_story: '$mediastories.mediaUri'
+            //   },
+
+            // },
+            {
+              $project: {
+
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                type: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan: 1,
+                visibility: 1,
+                saleAmount: 1,
+                statusJual: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                mediaBasePath:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaBasePath",
+                      null
+                    ]
+                },
+                mediaUri:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaUri",
+                      null
+                    ]
+                },
+                mediaType:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaType",
+                      null
+                    ]
+                },
+                mediaThumbEndpoint:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaThumbEndpoint",
+                      {
+                        "$concat":
+                          [
+                            "/thumb/",
+                            "$postID"
+                          ]
+                      }
+                    ]
+                },
+                mediaEndpoint:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaEndpoint",
+                      {
+                        "$cond":
+                        {
+                          if:
+                          {
+                            "$eq":
+                              [
+                                "$postType", "pict"
+                              ]
+                          },
+                          then:
+                          {
+                            "$concat":
+                              [
+                                "/pict/",
+                                "$postID"
+                              ]
+                          },
+                          else:
+                          {
+                            "$concat":
+                              [
+                                "/stream/",
+                                "$postID"
+                              ]
+                          }
+                        }
+                      }
+                    ]
+                },
+                mediaThumbUri:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaThumbUri",
+                      null
+                    ]
+                },
+                apsaraId: "$mediaSource.apsaraId",
+                apsara: "$mediaSource.apsara"
+
+              }
+            },
+            {
+              $match: {
+                kepemilikan: "YA"
+              }
+            },
+            {
+              $sort: {
+                createdAt: - 1
+              },
+
+            },
+            {
+              $skip: 0
+            },
+            {
+              $limit: 1
+            },
+
+          ],
+          "monetize": [
+            {
+              $project: {
+                refs: {
+                  $arrayElemAt: ['$contentMedias', 0]
+                },
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                email: 1,
+                postType: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                jenis: "MONETIZE",
+                countReport:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$reportCount", - 1]
+                      }, {
+                        $eq: ["$reportCount", 0]
+                      }]
+                    },
+                    then: 0,
+                    else: "$reportedUserCount"
+                  }
+                },
+                certified:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$certi", - 1]
+                      }, {
+                        $eq: ["$certi", 0]
+                      }]
+                    },
+                    then: false,
+                    else: "$certified"
+                  }
+                },
+                visibility: 1,
+                saleAmount: {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$salePrice", - 1]
+                      }, {
+                        $eq: ["$salePrice", 0]
+                      }]
+                    },
+                    then: 0,
+                    else: "$saleAmount"
+                  }
+                },
+                monetize: {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$salePrice", - 1]
+                      }, {
+                        $eq: ["$salePrice", 0]
+                      }]
+                    },
+                    then: false,
+                    else: true
+                  }
+                },
+                mediaSource: {
+                  $arrayElemAt: ['$mediaSource', 0]
+                }
+
+              }
+            },
+            {
+              $project: {
+                refs: '$refs.$ref',
+                idmedia: '$refs.$id',
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                type: {
+                  $switch: {
+                    branches: [
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'pict']
+                        },
+                        'then': "HyppePic"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'vid']
+                        },
+                        'then': "HyppeVid"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'diary']
+                        },
+                        'then': "HyppeDiary"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'story']
+                        },
+                        'then': "HyppeStory"
+                      },
+
+                    ],
+                    default: ''
+                  }
+                },
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$certified", false]
+                      }, {
+                        $eq: ["$certified", ""]
+                      }]
+                    },
+                    then: "TIDAK",
+                    else: "YA"
+                  }
+                },
+                visibility: 1,
+                saleAmount: 1,
+                statusJual:
+                {
+                  $cond: {
+                    if: {
+
+                      $eq: ["$monetize", false]
+                    },
+                    then: "TIDAK",
+                    else: "YA"
+                  }
+                },
+                mediaSource: 1
+
+              }
+            },
+            // {
+            //   $lookup: {
+            //     from: 'mediapicts',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediaPict_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediadiaries',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediadiaries_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediavideos',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediavideos_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediastories',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediastories_data',
+
+            //   },
+
+            // },
+            {
+              $project: {
+                // mediapict: {
+                //   $arrayElemAt: ['$mediaPict_data', 0]
+                // },
+                // mediadiaries: {
+                //   $arrayElemAt: ['$mediadiaries_data', 0]
+                // },
+                // mediavideos: {
+                //   $arrayElemAt: ['$mediavideos_data', 0]
+                // },
+                // mediastories: {
+                //   $arrayElemAt: ['$mediastories_data', 0]
+                // },
+                refs: 1,
+                idmedia: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                type: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan: 1,
+                visibility: 1,
+                saleAmount: 1,
+                statusJual: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                mediaSource: 1
+              }
+            },
+            // {
+            //   $addFields: {
+
+
+            //     concatmediapict: '/pict',
+            //     media_pict: {
+            //       $replaceOne: {
+            //         input: "$mediapict.mediaUri",
+            //         find: "_0001.jpeg",
+            //         replacement: ""
+            //       }
+            //     },
+            //     concatmediadiari: '/stream',
+            //     concatthumbdiari: '/thumb',
+            //     media_diari: '$mediadiaries.mediaUri',
+            //     concatmediavideo: '/stream',
+            //     concatthumbvideo: '/thumb',
+            //     media_video: '$mediavideos.mediaUri',
+            //     concatmediastory:
+            //     {
+            //       $cond: {
+            //         if: {
+
+            //           $eq: ["$mediastories.mediaType", "image"]
+            //         },
+            //         then: '/pict',
+            //         else: '/stream',
+
+            //       }
+            //     },
+            //     concatthumbstory: '/thumb',
+            //     media_story: '$mediastories.mediaUri'
+            //   },
+
+            // },
+            {
+              $project: {
+
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                type: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan: 1,
+                visibility: 1,
+                saleAmount: 1,
+                statusJual: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                mediaBasePath:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaBasePath",
+                      null
+                    ]
+                },
+                mediaUri:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaUri",
+                      null
+                    ]
+                },
+                mediaType:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaType",
+                      null
+                    ]
+                },
+                mediaThumbEndpoint:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaThumbEndpoint",
+                      {
+                        "$concat":
+                          [
+                            "/thumb/",
+                            "$postID"
+                          ]
+                      }
+                    ]
+                },
+                mediaEndpoint:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaEndpoint",
+                      {
+                        "$cond":
+                        {
+                          if:
+                          {
+                            "$eq":
+                              [
+                                "$postType", "pict"
+                              ]
+                          },
+                          then:
+                          {
+                            "$concat":
+                              [
+                                "/pict/",
+                                "$postID"
+                              ]
+                          },
+                          else:
+                          {
+                            "$concat":
+                              [
+                                "/stream/",
+                                "$postID"
+                              ]
+                          }
+                        }
+                      }
+                    ]
+                },
+                mediaThumbUri:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaThumbUri",
+                      null
+                    ]
+                },
+                apsaraId: "$mediaSource.apsaraId",
+                apsara: "$mediaSource.apsara"
+
+              }
+            },
+            {
+              $match: {
+                statusJual: "YA"
+              }
+            },
+            {
+              $sort: {
+                createdAt: - 1
+              },
+
+            },
+            {
+              $skip: 0
+            },
+            {
+              $limit: 1
+            },
+
+          ],
+          "lastreportContent": [
+            {
+              $project: {
+                refs: {
+                  $arrayElemAt: ['$contentMedias', 0]
+                },
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                email: 1,
+                postType: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                jenis: "LASTREPORT",
+                countReport:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$reportCount", - 1]
+                      }, {
+                        $eq: ["$reportCount", 0]
+                      }]
+                    },
+                    then: 0,
+                    else: "$reportedUserCount"
+                  }
+                },
+                certified:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$certi", - 1]
+                      }, {
+                        $eq: ["$certi", 0]
+                      }]
+                    },
+                    then: false,
+                    else: "$certified"
+                  }
+                },
+                visibility: 1,
+                saleAmount: {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$salePrice", - 1]
+                      }, {
+                        $eq: ["$salePrice", 0]
+                      }]
+                    },
+                    then: 0,
+                    else: "$saleAmount"
+                  }
+                },
+                monetize: {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$salePrice", - 1]
+                      }, {
+                        $eq: ["$salePrice", 0]
+                      }]
+                    },
+                    then: false,
+                    else: true
+                  }
+                },
+                mediaSource: {
+                  $arrayElemAt: ['$mediaSource', 0]
+                }
+
+              }
+            },
+            {
+              $project: {
+                refs: '$refs.$ref',
+                idmedia: '$refs.$id',
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                type: {
+                  $switch: {
+                    branches: [
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'pict']
+                        },
+                        'then': "HyppePic"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'vid']
+                        },
+                        'then': "HyppeVid"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'diary']
+                        },
+                        'then': "HyppeDiary"
+                      },
+                      {
+                        'case': {
+                          '$eq': ['$postType', 'story']
+                        },
+                        'then': "HyppeStory"
+                      },
+
+                    ],
+                    default: ''
+                  }
+                },
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan:
+                {
+                  $cond: {
+                    if: {
+                      $or: [{
+                        $eq: ["$certified", false]
+                      }, {
+                        $eq: ["$certified", ""]
+                      }]
+                    },
+                    then: "TIDAK",
+                    else: "YA"
+                  }
+                },
+                visibility: 1,
+                saleAmount: 1,
+                statusJual:
+                {
+                  $cond: {
+                    if: {
+
+                      $eq: ["$monetize", false]
+                    },
+                    then: "TIDAK",
+                    else: "YA"
+                  }
+                },
+                mediaSource: 1
+
+              }
+            },
+            // {
+            //   $lookup: {
+            //     from: 'mediapicts',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediaPict_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediadiaries',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediadiaries_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediavideos',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediavideos_data',
+
+            //   },
+
+            // },
+            // {
+            //   $lookup: {
+            //     from: 'mediastories',
+            //     localField: 'idmedia',
+            //     foreignField: '_id',
+            //     as: 'mediastories_data',
+
+            //   },
+
+            // },
+            {
+              $project: {
+                // mediapict: {
+                //   $arrayElemAt: ['$mediaPict_data', 0]
+                // },
+                // mediadiaries: {
+                //   $arrayElemAt: ['$mediadiaries_data', 0]
+                // },
+                // mediavideos: {
+                //   $arrayElemAt: ['$mediavideos_data', 0]
+                // },
+                // mediastories: {
+                //   $arrayElemAt: ['$mediastories_data', 0]
+                // },
+                refs: 1,
+                idmedia: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                type: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan: 1,
+                visibility: 1,
+                saleAmount: 1,
+                statusJual: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                mediaSource: 1
+              }
+            },
+            // {
+            //   $addFields: {
+
+
+            //     concatmediapict: '/pict',
+            //     media_pict: {
+            //       $replaceOne: {
+            //         input: "$mediapict.mediaUri",
+            //         find: "_0001.jpeg",
+            //         replacement: ""
+            //       }
+            //     },
+            //     concatmediadiari: '/stream',
+            //     concatthumbdiari: '/thumb',
+            //     media_diari: '$mediadiaries.mediaUri',
+            //     concatmediavideo: '/stream',
+            //     concatthumbvideo: '/thumb',
+            //     media_video: '$mediavideos.mediaUri',
+            //     concatmediastory:
+            //     {
+            //       $cond: {
+            //         if: {
+
+            //           $eq: ["$mediastories.mediaType", "image"]
+            //         },
+            //         then: '/pict',
+            //         else: '/stream',
+
+            //       }
+            //     },
+            //     concatthumbstory: '/thumb',
+            //     media_story: '$mediastories.mediaUri'
+            //   },
+
+            // },
+            {
+              $project: {
+
+                createdAt: 1,
+                updatedAt: 1,
+                postID: 1,
+                postType: 1,
+                email: 1,
+                type: 1,
+                description: 1,
+                title: 1,
+                active: 1,
+                kepemilikan: 1,
+                visibility: 1,
+                saleAmount: 1,
+                statusJual: 1,
+                likes: 1,
+                views: 1,
+                shares: 1,
+                comments: 1,
+                countReport: 1,
+                jenis: 1,
+                mediaBasePath:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaBasePath",
+                      null
+                    ]
+                },
+                mediaUri:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaUri",
+                      null
+                    ]
+                },
+                mediaType:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaType",
+                      null
+                    ]
+                },
+                mediaThumbEndpoint:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaThumbEndpoint",
+                      {
+                        "$concat":
+                          [
+                            "/thumb/",
+                            "$postID"
+                          ]
+                      }
+                    ]
+                },
+                mediaEndpoint:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaEndpoint",
+                      {
+                        "$cond":
+                        {
+                          if:
+                          {
+                            "$eq":
+                              [
+                                "$postType", "pict"
+                              ]
+                          },
+                          then:
+                          {
+                            "$concat":
+                              [
+                                "/pict/",
+                                "$postID"
+                              ]
+                          },
+                          else:
+                          {
+                            "$concat":
+                              [
+                                "/stream/",
+                                "$postID"
+                              ]
+                          }
+                        }
+                      }
+                    ]
+                },
+                mediaThumbUri:
+                {
+                  "$ifNull":
+                    [
+                      "$mediaSource.mediaThumbUri",
+                      null
+                    ]
+                },
+                apsaraId: "$mediaSource.apsaraId",
+                apsara: "$mediaSource.apsara"
+
+              }
+            },
+            {
+              $match: {
+                countReport: {
+                  $ne: 0
+                }
+              }
+            },
+            {
+              $sort: {
+                createdAt: - 1
+              },
+
+            },
+            {
+              $skip: 0
+            },
+            {
+              $limit: 1
+            },
+
+          ],
+
+        }
+      },
+      {
+        $project: {
+
+          data: { $concatArrays: ["$popular", "$likes", "$shares", "$lastPost", "$ownership", "$monetize", "$lastreportContent"] }
+
+        }
+      }
+    ]);
+
+    var leng = null;
+    var arrayData = [];
+    leng = query[0].data.length;
+
+    for (let i = 0; i < leng; i++) {
+      let data = await this.getapsaraDatabase(query[0].data, i);
+      arrayData.push(data[i])
+    }
+
+    // persentase 
+    var genderChart = await this.contentEventService.genderChartbyEmail(email);
+    //OTHER -> FEMALE -> MALE
+    var arrGenderChart = [];
+    var total = parseInt('0');
+    genderChart.forEach(function (data) {
+      total = total + parseInt(data.count);
+    });
+
+    genderChart.forEach(function (data) {
+      var temparray = {};
+
+      temparray['gender'] = data._id;
+      temparray['total'] = data.count;
+      var temptotal = (parseInt(data.count) / total) * 100;
+      temparray['persentase'] = temptotal.toFixed(2);
+      arrGenderChart.push(temparray);
+    });
+    var data = [{
+      arrayData, "genderViewer": arrGenderChart
+
+    }];
+
+    return data;
+  }
+
+  async getapsaraDatabase(obj: object, n: number) {
+    let idapsara = null;
+    let apsara = null;
+    let apsaradefine = null;
+    let idapsaradefine = null;
+    let pict = null;
+    var mediaType = null;
+    try {
+      idapsara = obj[n].apsaraId;
+    } catch (e) {
+      idapsara = "";
+    }
+    try {
+      apsara = obj[n].apsara;
+    } catch (e) {
+      apsara = false;
+    }
+
+    if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+      apsaradefine = false;
+    } else {
+      apsaradefine = true;
+    }
+
+    if (idapsara === undefined || idapsara === "" || idapsara === null || idapsara === "other") {
+      idapsaradefine = "";
+    } else {
+      idapsaradefine = idapsara;
+    }
+    var type = obj[n].postType;
+    var mediaType = obj[n].mediaType;
+    pict = [idapsara];
+
+    if (idapsara === "") {
+
+    } else {
+      if (type === "pict") {
+
+        try {
+          obj[n].apsaraId = idapsaradefine;
+          obj[n].apsara = apsaradefine;
+          obj[n].media = await this.postContentService.getImageApsara(pict);
+        } catch (e) {
+          obj[n].media = {};
+        }
+      }
+      else if (type === "vid") {
+        try {
+          obj[n].apsaraId = idapsaradefine;
+          obj[n].apsara = apsaradefine;
+          obj[n].media = await this.postContentService.getVideoApsara(pict);
+        } catch (e) {
+          obj[n].media = {};
+        }
+
+      }
+      else if (type === "story") {
+        if (mediaType === "image") {
+
+          try {
+            obj[n].apsaraId = idapsaradefine;
+            obj[n].apsara = apsaradefine;
+            obj[n].media = await this.postContentService.getImageApsara(pict);
+          } catch (e) {
+            obj[n].media = {};
+          }
+        } else {
+          try {
+            obj[n].apsaraId = idapsaradefine;
+            obj[n].apsara = apsaradefine;
+            obj[n].media = await this.postContentService.getVideoApsara(pict);
+          } catch (e) {
+            obj[n].media = {};
+          }
+        }
+      }
+      else if (type === "diary") {
+        try {
+          obj[n].apsaraId = idapsaradefine;
+          obj[n].apsara = apsaradefine;
+          obj[n].media = await this.postContentService.getVideoApsara(pict);
+        } catch (e) {
+          obj[n].media = {};
+
+        }
+      }
+    }
+
+    return obj;
   }
 }
