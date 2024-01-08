@@ -6,11 +6,12 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserbasicsService } from '../userbasics/userbasics.service';
 import { VouchersService } from '../vouchers/vouchers.service';
 import { LogapisService } from '../logapis/logapis.service';
-import { UtilsService } from 'src/utils/utils.service'; 
+import { UtilsService } from 'src/utils/utils.service';
+import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
 
 @Controller('api/uservouchers')
 export class UservouchersController {
-    constructor(private readonly uservouchersService: UservouchersService, private readonly userbasicsService: UserbasicsService, private readonly vouchersService: VouchersService, private readonly logapiSS: LogapisService, private readonly utilsService: UtilsService) { }
+    constructor(private readonly uservouchersService: UservouchersService, private readonly userbasicsService: UserbasicsService, private readonly vouchersService: VouchersService, private readonly logapiSS: LogapisService, private readonly utilsService: UtilsService, private readonly newUserBasicsService: UserbasicnewService) { }
 
     @UseGuards(JwtAuthGuard)
     @Post()
@@ -140,6 +141,95 @@ export class UservouchersController {
 
         try {
             var ubasic = await this.userbasicsService.findOne(email);
+
+            iduser = ubasic._id;
+        } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("user not found");
+        }
+
+        var curdate = new Date(Date.now());
+        var beforedate = curdate.toISOString();
+
+        var substrtahun = beforedate.substring(0, 4);
+        var numtahun = parseInt(substrtahun);
+
+        var substrbulan = beforedate.substring(7, 5);
+        var numbulan = parseInt(substrbulan);
+        var substrtanggal = beforedate.substring(10, 8);
+        var numtanggal = parseInt(substrtanggal);
+        var date = substrtahun + "-" + substrbulan + "-" + substrtanggal;
+        var data = null;
+
+
+        data = await this.uservouchersService.findUserVoucher(iduser, key, startday, endday, startdate, enddate);
+
+        try {
+            datatrue = await this.uservouchersService.findUserVoucherTrue(iduser);
+            var datenow = new Date(Date.now());
+            var lenghttrue = datatrue.length;
+            for (let i = 0; i < lenghttrue; i++) {
+                let id = datatrue[i]._id;
+                let exp = datatrue[i].expiredAt;
+                let dtexp = new Date(exp);
+                dtexp.setHours(dtexp.getHours() + 24);
+                dtexp = new Date(dtexp);
+                if (datenow > dtexp) {
+                    var objid = mongoose.Types.ObjectId(id);
+                    await this.uservouchersService.updatefalse(objid);
+                }
+            }
+        } catch (e) {
+            datatrue = null;
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @Post('byuser/v2')
+    @UseGuards(JwtAuthGuard)
+    async voucheruserv2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        var fullurl = headers.host + '/api/uservouchers/byuser/v2';
+
+        var email = null;
+        var iduser = null;
+        var startdate = null;
+        var enddate = null;
+        var datatrue = null;
+        var startday = null;
+        var endday = null;
+        var key = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        key = request_json["key"];
+        startday = request_json["startday"];
+        startdate = request_json["startdate"];
+        endday = request_json["endday"];
+        enddate = request_json["enddate"];
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        try {
+            var ubasic = await this.newUserBasicsService.findbyemail(email);
 
             iduser = ubasic._id;
         } catch (e) {
