@@ -255,7 +255,7 @@ export class NewPostController {
         }
     }
 
-    @Post('api/posts/postbychart/v2')
+    @Post('posts/postbychart/v2')
     @UseGuards(JwtAuthGuard)
     async getPostChartBasedDate(@Req() request: Request, @Headers() headers): Promise<any> {
         var timestamps_start = await this.utilsService.getDateTimeString();
@@ -329,7 +329,7 @@ export class NewPostController {
         return { response_code: 202, messages, data };
     }
 
-    @Get('api/posts/showsertifikasistatbychart/v2')
+    @Get('posts/showsertifikasistatbychart/v2')
     @UseGuards(JwtAuthGuard)
     async getCertifiedStatByChart(@Req() request: Request, @Headers() headers): Promise<any> {
         var timestamps_start = await this.utilsService.getDateTimeString();
@@ -684,7 +684,7 @@ export class NewPostController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post('api/getusercontents/database/v2')
+    @Post('getusercontents/database/v2')
     async finddata2(@Req() request: Request, @Headers() headers): Promise<any> {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = request.get("Host") + request.originalUrl;
@@ -787,7 +787,7 @@ export class NewPostController {
 
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
-    @Post('api/getusercontents/management/grouping/v2')
+    @Post('getusercontents/management/grouping/v2')
     @UseGuards(JwtAuthGuard)
     async contentmanagemen2v2(@Req() request: Request): Promise<any> {
         var fullurl = request.get("Host") + request.originalUrl;
@@ -819,7 +819,7 @@ export class NewPostController {
         return { response_code: 202, data, messages };
     }
 
-    @Post('api/getusercontents/management/grouping/activitygraph/v2')
+    @Post('getusercontents/management/grouping/activitygraph/v2')
     @UseGuards(JwtAuthGuard)
     async contentmanagemengraphactivity(@Req() request: Request): Promise<any> {
         var timestamps_start = await this.utilsService.getDateTimeString();
