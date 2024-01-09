@@ -13983,44 +13983,44 @@ export class NewPostService {
             //   },
 
             // },
-            {
-              $project: {
-                // mediapict: {
-                //   $arrayElemAt: ['$mediaPict_data', 0]
-                // },
-                // mediadiaries: {
-                //   $arrayElemAt: ['$mediadiaries_data', 0]
-                // },
-                // mediavideos: {
-                //   $arrayElemAt: ['$mediavideos_data', 0]
-                // },
-                // mediastories: {
-                //   $arrayElemAt: ['$mediastories_data', 0]
-                // },
-                refs: 1,
-                idmedia: 1,
-                createdAt: 1,
-                updatedAt: 1,
-                postID: 1,
-                postType: 1,
-                email: 1,
-                type: 1,
-                description: 1,
-                title: 1,
-                active: 1,
-                kepemilikan: 1,
-                visibility: 1,
-                saleAmount: 1,
-                statusJual: 1,
-                likes: 1,
-                views: 1,
-                shares: 1,
-                comments: 1,
-                countReport: 1,
-                jenis: 1,
-                mediaSource: 1
-              }
-            },
+            // {
+            // $project: {
+            // mediapict: {
+            //   $arrayElemAt: ['$mediaPict_data', 0]
+            // },
+            // mediadiaries: {
+            //   $arrayElemAt: ['$mediadiaries_data', 0]
+            // },
+            // mediavideos: {
+            //   $arrayElemAt: ['$mediavideos_data', 0]
+            // },
+            // mediastories: {
+            //   $arrayElemAt: ['$mediastories_data', 0]
+            // },
+            //     refs: 1,
+            //     idmedia: 1,
+            //     createdAt: 1,
+            //     updatedAt: 1,
+            //     postID: 1,
+            //     postType: 1,
+            //     email: 1,
+            //     type: 1,
+            //     description: 1,
+            //     title: 1,
+            //     active: 1,
+            //     kepemilikan: 1,
+            //     visibility: 1,
+            //     saleAmount: 1,
+            //     statusJual: 1,
+            //     likes: 1,
+            //     views: 1,
+            //     shares: 1,
+            //     comments: 1,
+            //     countReport: 1,
+            //     jenis: 1,
+            //     mediaSource: 1
+            //   }
+            // },
             // {
             //   $addFields: {
 
@@ -14380,44 +14380,44 @@ export class NewPostService {
             //   },
 
             // },
-            {
-              $project: {
-                // mediapict: {
-                //   $arrayElemAt: ['$mediaPict_data', 0]
-                // },
-                // mediadiaries: {
-                //   $arrayElemAt: ['$mediadiaries_data', 0]
-                // },
-                // mediavideos: {
-                //   $arrayElemAt: ['$mediavideos_data', 0]
-                // },
-                // mediastories: {
-                //   $arrayElemAt: ['$mediastories_data', 0]
-                // },
-                refs: 1,
-                idmedia: 1,
-                createdAt: 1,
-                updatedAt: 1,
-                postID: 1,
-                postType: 1,
-                email: 1,
-                type: 1,
-                description: 1,
-                title: 1,
-                active: 1,
-                kepemilikan: 1,
-                visibility: 1,
-                saleAmount: 1,
-                statusJual: 1,
-                likes: 1,
-                views: 1,
-                shares: 1,
-                comments: 1,
-                countReport: 1,
-                jenis: 1,
-                mediaSource: 1
-              }
-            },
+            // {
+            //   $project: {
+            // mediapict: {
+            //   $arrayElemAt: ['$mediaPict_data', 0]
+            // },
+            // mediadiaries: {
+            //   $arrayElemAt: ['$mediadiaries_data', 0]
+            // },
+            // mediavideos: {
+            //   $arrayElemAt: ['$mediavideos_data', 0]
+            // },
+            // mediastories: {
+            //   $arrayElemAt: ['$mediastories_data', 0]
+            // },
+            //     refs: 1,
+            //     idmedia: 1,
+            //     createdAt: 1,
+            //     updatedAt: 1,
+            //     postID: 1,
+            //     postType: 1,
+            //     email: 1,
+            //     type: 1,
+            //     description: 1,
+            //     title: 1,
+            //     active: 1,
+            //     kepemilikan: 1,
+            //     visibility: 1,
+            //     saleAmount: 1,
+            //     statusJual: 1,
+            //     likes: 1,
+            //     views: 1,
+            //     shares: 1,
+            //     comments: 1,
+            //     countReport: 1,
+            //     jenis: 1,
+            //     mediaSource: 1
+            //   }
+            // },
             // {
             //   $addFields: {
 
@@ -14776,44 +14776,44 @@ export class NewPostService {
             //   },
 
             // },
-            {
-              $project: {
-                // mediapict: {
-                //   $arrayElemAt: ['$mediaPict_data', 0]
-                // },
-                // mediadiaries: {
-                //   $arrayElemAt: ['$mediadiaries_data', 0]
-                // },
-                // mediavideos: {
-                //   $arrayElemAt: ['$mediavideos_data', 0]
-                // },
-                // mediastories: {
-                //   $arrayElemAt: ['$mediastories_data', 0]
-                // },
-                refs: 1,
-                idmedia: 1,
-                createdAt: 1,
-                updatedAt: 1,
-                postID: 1,
-                postType: 1,
-                email: 1,
-                type: 1,
-                description: 1,
-                title: 1,
-                active: 1,
-                kepemilikan: 1,
-                visibility: 1,
-                saleAmount: 1,
-                statusJual: 1,
-                likes: 1,
-                views: 1,
-                shares: 1,
-                comments: 1,
-                countReport: 1,
-                jenis: 1,
-                mediaSource: 1
-              }
-            },
+            // {
+            //   $project: {
+            // mediapict: {
+            //   $arrayElemAt: ['$mediaPict_data', 0]
+            // },
+            // mediadiaries: {
+            //   $arrayElemAt: ['$mediadiaries_data', 0]
+            // },
+            // mediavideos: {
+            //   $arrayElemAt: ['$mediavideos_data', 0]
+            // },
+            // mediastories: {
+            //   $arrayElemAt: ['$mediastories_data', 0]
+            // },
+            //     refs: 1,
+            //     idmedia: 1,
+            //     createdAt: 1,
+            //     updatedAt: 1,
+            //     postID: 1,
+            //     postType: 1,
+            //     email: 1,
+            //     type: 1,
+            //     description: 1,
+            //     title: 1,
+            //     active: 1,
+            //     kepemilikan: 1,
+            //     visibility: 1,
+            //     saleAmount: 1,
+            //     statusJual: 1,
+            //     likes: 1,
+            //     views: 1,
+            //     shares: 1,
+            //     comments: 1,
+            //     countReport: 1,
+            //     jenis: 1,
+            //     mediaSource: 1
+            //   }
+            // },
             // {
             //   $addFields: {
 
@@ -15172,44 +15172,44 @@ export class NewPostService {
             //   },
 
             // },
-            {
-              $project: {
-                // mediapict: {
-                //   $arrayElemAt: ['$mediaPict_data', 0]
-                // },
-                // mediadiaries: {
-                //   $arrayElemAt: ['$mediadiaries_data', 0]
-                // },
-                // mediavideos: {
-                //   $arrayElemAt: ['$mediavideos_data', 0]
-                // },
-                // mediastories: {
-                //   $arrayElemAt: ['$mediastories_data', 0]
-                // },
-                refs: 1,
-                idmedia: 1,
-                createdAt: 1,
-                updatedAt: 1,
-                postID: 1,
-                postType: 1,
-                email: 1,
-                type: 1,
-                description: 1,
-                title: 1,
-                active: 1,
-                kepemilikan: 1,
-                visibility: 1,
-                saleAmount: 1,
-                statusJual: 1,
-                likes: 1,
-                views: 1,
-                shares: 1,
-                comments: 1,
-                countReport: 1,
-                jenis: 1,
-                mediaSource: 1
-              }
-            },
+            // {
+            //   $project: {
+            // mediapict: {
+            //   $arrayElemAt: ['$mediaPict_data', 0]
+            // },
+            // mediadiaries: {
+            //   $arrayElemAt: ['$mediadiaries_data', 0]
+            // },
+            // mediavideos: {
+            //   $arrayElemAt: ['$mediavideos_data', 0]
+            // },
+            // mediastories: {
+            //   $arrayElemAt: ['$mediastories_data', 0]
+            // },
+            //     refs: 1,
+            //     idmedia: 1,
+            //     createdAt: 1,
+            //     updatedAt: 1,
+            //     postID: 1,
+            //     postType: 1,
+            //     email: 1,
+            //     type: 1,
+            //     description: 1,
+            //     title: 1,
+            //     active: 1,
+            //     kepemilikan: 1,
+            //     visibility: 1,
+            //     saleAmount: 1,
+            //     statusJual: 1,
+            //     likes: 1,
+            //     views: 1,
+            //     shares: 1,
+            //     comments: 1,
+            //     countReport: 1,
+            //     jenis: 1,
+            //     mediaSource: 1
+            //   }
+            // },
             // {
             //   $addFields: {
 
@@ -15568,44 +15568,44 @@ export class NewPostService {
             //   },
 
             // },
-            {
-              $project: {
-                // mediapict: {
-                //   $arrayElemAt: ['$mediaPict_data', 0]
-                // },
-                // mediadiaries: {
-                //   $arrayElemAt: ['$mediadiaries_data', 0]
-                // },
-                // mediavideos: {
-                //   $arrayElemAt: ['$mediavideos_data', 0]
-                // },
-                // mediastories: {
-                //   $arrayElemAt: ['$mediastories_data', 0]
-                // },
-                refs: 1,
-                idmedia: 1,
-                createdAt: 1,
-                updatedAt: 1,
-                postID: 1,
-                postType: 1,
-                email: 1,
-                type: 1,
-                description: 1,
-                title: 1,
-                active: 1,
-                kepemilikan: 1,
-                visibility: 1,
-                saleAmount: 1,
-                statusJual: 1,
-                likes: 1,
-                views: 1,
-                shares: 1,
-                comments: 1,
-                countReport: 1,
-                jenis: 1,
-                mediaSource: 1
-              }
-            },
+            // {
+            //   $project: {
+            // mediapict: {
+            //   $arrayElemAt: ['$mediaPict_data', 0]
+            // },
+            // mediadiaries: {
+            //   $arrayElemAt: ['$mediadiaries_data', 0]
+            // },
+            // mediavideos: {
+            //   $arrayElemAt: ['$mediavideos_data', 0]
+            // },
+            // mediastories: {
+            //   $arrayElemAt: ['$mediastories_data', 0]
+            // },
+            //     refs: 1,
+            //     idmedia: 1,
+            //     createdAt: 1,
+            //     updatedAt: 1,
+            //     postID: 1,
+            //     postType: 1,
+            //     email: 1,
+            //     type: 1,
+            //     description: 1,
+            //     title: 1,
+            //     active: 1,
+            //     kepemilikan: 1,
+            //     visibility: 1,
+            //     saleAmount: 1,
+            //     statusJual: 1,
+            //     likes: 1,
+            //     views: 1,
+            //     shares: 1,
+            //     comments: 1,
+            //     countReport: 1,
+            //     jenis: 1,
+            //     mediaSource: 1
+            //   }
+            // },
             // {
             //   $addFields: {
 
@@ -15969,44 +15969,44 @@ export class NewPostService {
             //   },
 
             // },
-            {
-              $project: {
-                // mediapict: {
-                //   $arrayElemAt: ['$mediaPict_data', 0]
-                // },
-                // mediadiaries: {
-                //   $arrayElemAt: ['$mediadiaries_data', 0]
-                // },
-                // mediavideos: {
-                //   $arrayElemAt: ['$mediavideos_data', 0]
-                // },
-                // mediastories: {
-                //   $arrayElemAt: ['$mediastories_data', 0]
-                // },
-                refs: 1,
-                idmedia: 1,
-                createdAt: 1,
-                updatedAt: 1,
-                postID: 1,
-                postType: 1,
-                email: 1,
-                type: 1,
-                description: 1,
-                title: 1,
-                active: 1,
-                kepemilikan: 1,
-                visibility: 1,
-                saleAmount: 1,
-                statusJual: 1,
-                likes: 1,
-                views: 1,
-                shares: 1,
-                comments: 1,
-                countReport: 1,
-                jenis: 1,
-                mediaSource: 1
-              }
-            },
+            // {
+            //   $project: {
+            // mediapict: {
+            //   $arrayElemAt: ['$mediaPict_data', 0]
+            // },
+            // mediadiaries: {
+            //   $arrayElemAt: ['$mediadiaries_data', 0]
+            // },
+            // mediavideos: {
+            //   $arrayElemAt: ['$mediavideos_data', 0]
+            // },
+            // mediastories: {
+            //   $arrayElemAt: ['$mediastories_data', 0]
+            // },
+            //     refs: 1,
+            //     idmedia: 1,
+            //     createdAt: 1,
+            //     updatedAt: 1,
+            //     postID: 1,
+            //     postType: 1,
+            //     email: 1,
+            //     type: 1,
+            //     description: 1,
+            //     title: 1,
+            //     active: 1,
+            //     kepemilikan: 1,
+            //     visibility: 1,
+            //     saleAmount: 1,
+            //     statusJual: 1,
+            //     likes: 1,
+            //     views: 1,
+            //     shares: 1,
+            //     comments: 1,
+            //     countReport: 1,
+            //     jenis: 1,
+            //     mediaSource: 1
+            //   }
+            // },
             // {
             //   $addFields: {
 
@@ -16370,44 +16370,44 @@ export class NewPostService {
             //   },
 
             // },
-            {
-              $project: {
-                // mediapict: {
-                //   $arrayElemAt: ['$mediaPict_data', 0]
-                // },
-                // mediadiaries: {
-                //   $arrayElemAt: ['$mediadiaries_data', 0]
-                // },
-                // mediavideos: {
-                //   $arrayElemAt: ['$mediavideos_data', 0]
-                // },
-                // mediastories: {
-                //   $arrayElemAt: ['$mediastories_data', 0]
-                // },
-                refs: 1,
-                idmedia: 1,
-                createdAt: 1,
-                updatedAt: 1,
-                postID: 1,
-                postType: 1,
-                email: 1,
-                type: 1,
-                description: 1,
-                title: 1,
-                active: 1,
-                kepemilikan: 1,
-                visibility: 1,
-                saleAmount: 1,
-                statusJual: 1,
-                likes: 1,
-                views: 1,
-                shares: 1,
-                comments: 1,
-                countReport: 1,
-                jenis: 1,
-                mediaSource: 1
-              }
-            },
+            // {
+            //   $project: {
+            // mediapict: {
+            //   $arrayElemAt: ['$mediaPict_data', 0]
+            // },
+            // mediadiaries: {
+            //   $arrayElemAt: ['$mediadiaries_data', 0]
+            // },
+            // mediavideos: {
+            //   $arrayElemAt: ['$mediavideos_data', 0]
+            // },
+            // mediastories: {
+            //   $arrayElemAt: ['$mediastories_data', 0]
+            // },
+            //     refs: 1,
+            //     idmedia: 1,
+            //     createdAt: 1,
+            //     updatedAt: 1,
+            //     postID: 1,
+            //     postType: 1,
+            //     email: 1,
+            //     type: 1,
+            //     description: 1,
+            //     title: 1,
+            //     active: 1,
+            //     kepemilikan: 1,
+            //     visibility: 1,
+            //     saleAmount: 1,
+            //     statusJual: 1,
+            //     likes: 1,
+            //     views: 1,
+            //     shares: 1,
+            //     comments: 1,
+            //     countReport: 1,
+            //     jenis: 1,
+            //     mediaSource: 1
+            //   }
+            // },
             // {
             //   $addFields: {
 
