@@ -225,6 +225,89 @@ export class GetcontenteventsController {
     }
 
     //@UseGuards(JwtAuthGuard)
+    // @HttpCode(HttpStatus.ACCEPTED)
+    // @Post('api/post/viewlike')
+    // async getViewLike(
+    //     @Body() CreateGetcontenteventsDto_: CreateGetcontenteventsDto,
+    //     @Headers() headers
+    // ) {
+    //     if (!(await this.utilsService.validasiTokenEmail(headers))) {
+    //         await this.errorHandler.generateNotAcceptableException(
+    //             'Unabled to proceed token and email not match',
+    //         );
+    //     }
+
+    //     if (CreateGetcontenteventsDto_.postID == undefined) {
+    //         await this.errorHandler.generateNotAcceptableException(
+    //             'Unabled to proceed postID is required',
+    //         );
+    //     }
+
+    //     if (CreateGetcontenteventsDto_.eventType == undefined) {
+    //         await this.errorHandler.generateNotAcceptableException(
+    //             'Unabled to proceed eventType is required',
+    //         );
+    //     }
+
+    //     //Ceck POST ID
+    //     const datapostsService = await this.postsService.findid(
+    //         CreateGetcontenteventsDto_.postID.toString(),
+    //     );
+    //     if (await this.utilsService.ceckData(datapostsService)) {
+    //         CreateGetcontenteventsDto_.receiverParty = datapostsService.email;
+    //         CreateGetcontenteventsDto_.active = true;
+    //         var data_contentevents = await this.getcontenteventsService.getConteneventbyType(CreateGetcontenteventsDto_);
+    //         var data_response = [];
+    //         if (await this.utilsService.ceckData(data_contentevents)) {
+    //             if (data_contentevents.length > 0) {
+    //                 for (var i = 0; i < data_contentevents.length; i++) {
+    //                     const data_profile = await this.utilsService.generateProfile(data_contentevents[i].email, 'FULL');
+    //                     var ProfileDTO_ = new ProfileDTO();
+    //                     ProfileDTO_.fullName = data_profile.fullName;
+    //                     ProfileDTO_.email = data_profile.email;
+    //                     ProfileDTO_.username = data_profile.username;
+    //                     ProfileDTO_.urluserBadge = data_profile.urluserBadge;
+    //                     var AvatarDTO_ = new AvatarDTO();
+    //                     if (data_profile.avatar != undefined) {
+    //                         if (data_profile.avatar.mediaBasePath != undefined) {
+    //                             AvatarDTO_.mediaBasePath = data_profile.avatar.mediaBasePath;
+    //                         }
+    //                         if (data_profile.avatar.mediaUri != undefined) {
+    //                             AvatarDTO_.mediaUri = data_profile.avatar.mediaUri;
+    //                         }
+    //                         if (data_profile.avatar.mediaType != undefined) {
+    //                             AvatarDTO_.mediaType = data_profile.avatar.mediaType;
+    //                         }
+    //                         if (data_profile.avatar.mediaEndpoint != undefined) {
+    //                             AvatarDTO_.mediaEndpoint = data_profile.avatar.mediaEndpoint;
+    //                             var mediaEndpoint = data_profile.avatar.mediaEndpoint;
+    //                             AvatarDTO_.profilePict_id = mediaEndpoint.replace("/profilepict/", "");
+    //                         }
+    //                         ProfileDTO_.avatar = AvatarDTO_;
+    //                     } else {
+    //                         ProfileDTO_.avatar = null;
+    //                     }
+    //                     data_response.push(ProfileDTO_);
+    //                 }
+    //             }
+    //         }
+    //         var response = {
+    //             "response_code": 202,
+    //             "data": data_response,
+    //             "messages": {
+    //                 "info": [
+    //                     "successfully"
+    //                 ]
+    //             },
+    //         }
+    //         return response;
+    //     } else {
+    //         await this.errorHandler.generateNotAcceptableException(
+    //             'Unabled to proceed postID not found',
+    //         );
+    //     }
+    // }
+
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('api/post/viewlike')
     async getViewLike(
@@ -256,41 +339,7 @@ export class GetcontenteventsController {
         if (await this.utilsService.ceckData(datapostsService)) {
             CreateGetcontenteventsDto_.receiverParty = datapostsService.email;
             CreateGetcontenteventsDto_.active = true;
-            var data_contentevents = await this.getcontenteventsService.getConteneventbyType(CreateGetcontenteventsDto_);
-            var data_response = [];
-            if (await this.utilsService.ceckData(data_contentevents)) {
-                if (data_contentevents.length > 0) {
-                    for (var i = 0; i < data_contentevents.length; i++) {
-                        const data_profile = await this.utilsService.generateProfile(data_contentevents[i].email, 'FULL');
-                        var ProfileDTO_ = new ProfileDTO();
-                        ProfileDTO_.fullName = data_profile.fullName;
-                        ProfileDTO_.email = data_profile.email;
-                        ProfileDTO_.username = data_profile.username;
-                        ProfileDTO_.urluserBadge = data_profile.urluserBadge;
-                        var AvatarDTO_ = new AvatarDTO();
-                        if (data_profile.avatar != undefined) {
-                            if (data_profile.avatar.mediaBasePath != undefined) {
-                                AvatarDTO_.mediaBasePath = data_profile.avatar.mediaBasePath;
-                            }
-                            if (data_profile.avatar.mediaUri != undefined) {
-                                AvatarDTO_.mediaUri = data_profile.avatar.mediaUri;
-                            }
-                            if (data_profile.avatar.mediaType != undefined) {
-                                AvatarDTO_.mediaType = data_profile.avatar.mediaType;
-                            }
-                            if (data_profile.avatar.mediaEndpoint != undefined) {
-                                AvatarDTO_.mediaEndpoint = data_profile.avatar.mediaEndpoint;
-                                var mediaEndpoint = data_profile.avatar.mediaEndpoint;
-                                AvatarDTO_.profilePict_id = mediaEndpoint.replace("/profilepict/", "");
-                            }
-                            ProfileDTO_.avatar = AvatarDTO_;
-                        } else {
-                            ProfileDTO_.avatar = null;
-                        }
-                        data_response.push(ProfileDTO_);
-                    }
-                }
-            }
+            var data_response = await this.getcontenteventsService.getConteneventbyType2(CreateGetcontenteventsDto_);
             var response = {
                 "response_code": 202,
                 "data": data_response,

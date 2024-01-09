@@ -4,6 +4,9 @@ import { Model } from 'mongoose';
 import { CreateDisqusDto } from 'src/content/disqus/dto/create-disqus.dto';
 import { AppGateway } from 'src/content/socket/socket.gateway';
 import { Disqus, DisqusDocument } from '../../../content/disqus/schemas/disqus.schema';
+import { RequestSoctDto } from 'src/content/mediastreaming/dto/mediastreaming.dto';
+import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class DisqusContentEventService {
@@ -14,6 +17,8 @@ export class DisqusContentEventService {
     @InjectModel(Disqus.name, 'SERVER_FULL')
     private readonly DisqusModel: Model<DisqusDocument>,
     private gtw: AppGateway,
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
   ) { }
 
   async create(CreateDisqusDto_: CreateDisqusDto): Promise<Disqus> {
@@ -43,5 +48,12 @@ export class DisqusContentEventService {
         }
       },
     );
+  }
+
+  async socketRequest(RequestSoctDto_: RequestSoctDto) {
+    let config = { headers: { "Content-Type": "application/json" } };
+    const res = await this.httpService.post(this.configService.get("URL_CHALLENGE") + "api/send/socket/dm", RequestSoctDto_, config).toPromise();
+    const data = res.data;
+    return data;
   }
 }

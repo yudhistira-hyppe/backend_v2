@@ -32,6 +32,8 @@ import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { NewpostService } from './newpost/newpost.service';
 import { Newpost } from './newpost/schemas/newpost.schema';
+import { ConfigService } from '@nestjs/config';
+import { RequestSoctDto } from '../mediastreaming/dto/mediastreaming.dto';
 
 const Long = require('mongodb').Long;
 @Controller('api/')
@@ -50,7 +52,8 @@ export class DisqusController {
     private readonly errorHandler: ErrorHandler,
     private readonly UserbasicnewService: UserbasicnewService,
     private readonly logapiSS: LogapisService,
-    private readonly NewpostService: NewpostService) { }
+    private readonly NewpostService: NewpostService,
+    private readonly configService: ConfigService,) { }
 
   @Post('disqus')
   async create(@Body() CreateDisqusDto: CreateDisqusDto) {
@@ -113,8 +116,17 @@ export class DisqusController {
           let xres = await this.buildDisqus(ContentDto_, true);
 
           console.log("processDisqus >>> receiver: ", xres.disqusLogs[0].receiver);
-          var xc = this.disqusService.sendDMNotif(String(xres.room), JSON.stringify(xres));
-          console.log(xc)
+
+          const STREAM_MODE = this.configService.get("STREAM_MODE");
+          if (STREAM_MODE == "1") {
+            this.disqusService.sendDMNotif(String(xres.room), JSON.stringify(xres));
+          } else {
+            let RequestSoctDto_ = new RequestSoctDto();
+            RequestSoctDto_.event = "STATUS_STREAM";
+            RequestSoctDto_.data = JSON.stringify(xres);
+            this.disqusService.socketRequest(RequestSoctDto_);
+          }
+
           var timestamps_end = await this.utilsService.getDateTimeString();
           var reqbody = JSON.parse(JSON.stringify(ContentDto_));
           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email_header, null, null, reqbody);

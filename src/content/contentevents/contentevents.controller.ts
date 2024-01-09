@@ -35,6 +35,8 @@ import { logApis } from 'src/trans/logapis/schema/logapis.schema';
 import { subChallengeService } from 'src/trans/challenge/subChallenge.service';
 import { MediastreamingService } from '../mediastreaming/mediastreaming.service';
 import mongoose from 'mongoose';
+import { RequestSoctDto } from '../mediastreaming/dto/mediastreaming.dto';
+import { ConfigService } from '@nestjs/config';
 @Controller()
 export class ContenteventsController {
   private readonly logger = new Logger(ContenteventsController.name);
@@ -57,7 +59,8 @@ export class ContenteventsController {
     private readonly tagCountService: TagCountService,
     private readonly postchallengeService: PostchallengeService,
     private readonly errorHandler: ErrorHandler,
-    private readonly logapiSS: LogapisService, 
+    private readonly logapiSS: LogapisService,
+    private readonly configService: ConfigService,
     private readonly mediastreamingService: MediastreamingService,
     private readonly subChallengeService: subChallengeService) { }
 
@@ -1951,7 +1954,15 @@ export class ContenteventsController {
         }
 
         retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_, body_messages);
-        this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
+        const STREAM_MODE = this.configService.get("STREAM_MODE");
+        if (STREAM_MODE == "1") {
+          this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
+        } else {
+          let RequestSoctDto_ = new RequestSoctDto();
+          RequestSoctDto_.event = "STATUS_STREAM";
+          RequestSoctDto_.data = JSON.stringify(retVal);
+          this.disqusContentEventService.socketRequest(RequestSoctDto_);
+        }
       } else {
         id_discus = (JSON.parse(JSON.stringify(CeckDataDiscusContact[0].disqus))).$id;
         id_discus_log = await this.utilsService.generateId()
@@ -2030,8 +2041,15 @@ export class ContenteventsController {
         }
 
         retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_, body_messages);
-        this.logger.log("REVAL DATA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", JSON.stringify(retVal));
-        this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
+        const STREAM_MODE = this.configService.get("STREAM_MODE");
+        if (STREAM_MODE == "1") {
+          this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
+        } else {
+          let RequestSoctDto_ = new RequestSoctDto();
+          RequestSoctDto_.event = "STATUS_STREAM";
+          RequestSoctDto_.data = JSON.stringify(retVal);
+          this.disqusContentEventService.socketRequest(RequestSoctDto_);
+        }
       }
 
       console.log("retVal", retVal);

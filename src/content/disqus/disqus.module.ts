@@ -19,11 +19,13 @@ import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { UserbasicnewModule } from '../../trans/userbasicnew/userbasicnew.module';
 // import { NewpostService } from './newpost/newpost.service';
 import { NewpostModule } from './newpost/newpost.module';
+import { HttpModule } from '@nestjs/axios';
 @Module({
 
     imports: [
         NewpostModule,
         UserbasicnewModule,
+        HttpModule,
         ReactionsRepoModule,
         ContenteventsModule,
         InsightsModule,

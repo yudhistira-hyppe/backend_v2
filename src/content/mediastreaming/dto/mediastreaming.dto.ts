@@ -55,3 +55,7 @@ export class CallbackModerationResult {
   Rate: number; 
   Extent: String;
 }
+export class RequestSoctDto {
+  event: String;
+  data: String;
+}

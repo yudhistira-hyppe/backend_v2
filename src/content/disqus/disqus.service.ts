@@ -12,6 +12,9 @@ import { Disquscontacts } from '../disquscontacts/schemas/disquscontacts.schema'
 import { AppGateway } from '../socket/socket.gateway';
 import { ReactionsRepoService } from '../../infra/reactions_repo/reactions_repo.service';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
+import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
+import { RequestSoctDto } from '../mediastreaming/dto/mediastreaming.dto';
 
 @Injectable()
 export class DisqusService {
@@ -27,7 +30,9 @@ export class DisqusService {
         private userService: UserbasicsService,
         private reactionsRepoService: ReactionsRepoService,
         private gtw: AppGateway,
-        private readonly logapiSS: LogapisService
+        private readonly logapiSS: LogapisService,
+        private readonly httpService: HttpService,
+        private readonly configService: ConfigService
     ) { }
 
     async create(CreateDisqusDto: CreateDisqusDto): Promise<Disqus> {
@@ -3937,5 +3942,12 @@ export class DisqusService {
                 }
             }).clone().exec();
         return query;
+    }
+
+    async socketRequest(RequestSoctDto_: RequestSoctDto) {
+        let config = { headers: { "Content-Type": "application/json" } };
+        const res = await this.httpService.post(this.configService.get("URL_CHALLENGE") + "api/send/socket/dm", RequestSoctDto_, config).toPromise();
+        const data = res.data;
+        return data;
     }
 }

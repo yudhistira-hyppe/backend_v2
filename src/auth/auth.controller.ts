@@ -3506,7 +3506,7 @@ export class AuthController {
 
         var user_view = headers['x-auth-user'];
         await this.authService.viewProfile(SearchUserbasicDto_.search.toString(), user_view);
-        var Data = await this.utilsService.generateProfile(SearchUserbasicDto_.search.toString(), 'PROFILE');
+        var Data = await this.utilsService.generateProfile(SearchUserbasicDto_.search.toString(), 'PROFILE', user_view);
 
         var numPost = await this.postsService.findUserPost(SearchUserbasicDto_.search.toString());
         let aNumPost = <any>numPost;

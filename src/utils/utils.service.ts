@@ -1884,7 +1884,7 @@ export class UtilsService {
     return AvatarDTO_;
   }
 
-  async generateProfile(email: string, datafor: string): Promise<ProfileDTO> {
+  async generateProfile(email: string, datafor: string, email_view?: string): Promise<ProfileDTO> {
     var get_userbasic = await this.userbasicsService.findone_(email);
     // var get_userbasic = await this.userbasicsService.findOne(email);
     var get_userauth = await this.userauthsService.findOne(email);
@@ -2026,6 +2026,15 @@ export class UtilsService {
         //ProfileDTO_.imei = 
         //ProfileDTO_.referralCount =
         //ProfileDTO_.children = 
+      }
+    }
+
+    if (email_view!=undefined){
+      const contenteventsService_data_ = await this.getprofilecontenteventService.findByCriteriaWithUser(email_view, "FOLLOWING", email);
+      if (await this.ceckData(contenteventsService_data_)){
+        ProfileDTO_.following = true;
+      }else{
+        ProfileDTO_.following = false;
       }
     }
 
