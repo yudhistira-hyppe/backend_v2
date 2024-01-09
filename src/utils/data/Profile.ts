@@ -61,6 +61,7 @@ export class ProfileDTO {
     urluserBadge: any[];
     tutor: any[];
     creator: boolean;
+    following: boolean;
 }
 
 export class LocationDTO {
