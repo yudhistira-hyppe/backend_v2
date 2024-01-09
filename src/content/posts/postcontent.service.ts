@@ -2281,7 +2281,7 @@ export class PostContentService {
     let tag = Posts_.tagPeople;
     if (tag != undefined && tag.length > 0) {
       tag.forEach(el => {
-        let oid = el.oid;
+        let oid = el.$id.toString();
         this.userAuthService.findById(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
             this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString());
