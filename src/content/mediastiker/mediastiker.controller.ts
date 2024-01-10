@@ -104,7 +104,7 @@ export class MediastikerController {
 
         if (type !== "GIF") {
             try {
-                datastiker = await this.MediastikerService.findByname(name, type,kategori,nourut);
+                datastiker = await this.MediastikerService.findByname(name, type,kategori,Number(nourut));
 
             } catch (e) {
                 datastiker = null;
