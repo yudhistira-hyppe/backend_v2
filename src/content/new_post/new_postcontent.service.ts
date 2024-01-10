@@ -30,6 +30,7 @@ import { MediapictsService } from '../mediapicts/mediapicts.service';
 import { ContentModService } from '../posts/contentmod.service';
 import { TemplatesRepoService } from 'src/infra/templates_repo/templates_repo.service';
 import { NewPostService } from './new_post.service';
+import { CreateUserplaylistDto } from 'src/trans/userplaylist/dto/create-userplaylist.dto';
 
 const webp = require('webp-converter');
 const sharp = require('sharp');
@@ -657,6 +658,64 @@ export class NewPostContentService {
         });
       });
     }
+  }
+
+  async updatePost(body: any, headers: any, data_userbasics: Userbasicnew): Promise<CreatePostResponse> {
+    this.logger.log('updatePost >>> start: ' + JSON.stringify(body));
+    var res = new CreatePostResponse();
+    res.response_code = 204;
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.basic2SS.findOne(auth.email);
+    if (profile == undefined) {
+      let msg = new Messages();
+      msg.info = ["Email unknown"];
+      res.messages = msg;
+      return res;
+    }
+
+    let opost = await this.newPostService.findByPostId(body.postID);
+
+    if (body.certified && body.certified == "true") {
+      if (profile.isIdVerified != true) {
+        let msg = new Messages();
+        msg.info = ["The user ID has not been verified"];
+        res.messages = msg;
+        return res;
+      }
+    }
+
+
+
+    let post = await this.buildUpdatePost(body, headers);
+    let apost = await this.loaddata.create(post);
+
+    if (body.certified && body.certified == "true") {
+      console.log("post cert: " + opost.certified);
+      if (opost.certified == undefined || opost.certified == false) {
+        this.generateCertificate(String(post.postID), 'id', apost, data_userbasics);
+      }
+
+    }
+
+    let cm = post.contentMedias[0];
+
+    let updatePl = new CreateUserplaylistDto();
+    updatePl.userPostId = Object(profile._id);
+    updatePl.mediaId = Object(cm.oid);
+    updatePl.postType = apost.postType;
+    //this.postService.updateGenerateUserPlaylist_(updatePl);
+
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+
+    return res;
   }
 
   async getImageApsara(ids: String[]): Promise<ApsaraImageResponse> {
@@ -1567,5 +1626,229 @@ export class NewPostContentService {
       m > 9 ? m : (h ? '0' + m : m || '0'),
       s > 9 ? s : '0' + s
     ].filter(Boolean).join(':');
+  }
+
+  private async buildUpdatePost(body: any, headers: any): Promise<newPosts> {
+    this.logger.log('buildPost >>> start');
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.basic2SS.findOne(auth.email);
+    this.logger.log('buildPost >>> profile: ' + profile.email);
+
+    let post = await this.newPostService.findByPostId(body.postID);
+    post.updatedAt = await this.utilService.getDateTimeString();
+    let isShared = null;
+
+    if (body.description != undefined) {
+      post.description = body.description;
+    }
+
+    if (body.isShared != undefined) {
+      post.isShared = body.isShared;
+    } else {
+      post.isShared = true;
+    }
+
+    if (body.tags != undefined && (String(body.tags).length > 0)) {
+      var obj = body.tags;
+      //var tgs = obj.split(",");
+      post.tags = obj;
+    }
+
+
+
+    if (body.visibility != undefined) {
+      post.visibility = body.visibility;
+    } else {
+      post.visibility = 'PUBLIC';
+    }
+
+    if (body.location != undefined) {
+      post.location = body.location;
+    }
+
+    if (body.lat != undefined) {
+      post.lat = body.lat;
+    }
+
+    if (body.lon != undefined) {
+      post.lon = body.lon;
+    }
+
+    if (body.saleAmount != undefined) {
+      post.saleAmount = body.saleAmount;
+    } else {
+      post.saleAmount = null;
+    }
+
+    if (body.saleLike != undefined) {
+      post.saleLike = body.saleLike;
+    } else {
+      post.saleLike = false;
+    }
+
+    if (body.saleView != undefined) {
+      post.saleView = body.saleView;
+    } else {
+      post.saleView = false;
+    }
+
+    if (body.allowComments != undefined) {
+      post.allowComments = body.allowComments;
+    } else {
+      post.allowComments = true;
+    }
+
+    if (body.isSafe != undefined) {
+      post.isSafe = body.isSafe;
+    } else {
+      post.isSafe = false;
+    }
+
+    if (body.isOwned != undefined) {
+      post.isOwned = body.isOwned;
+    } else {
+      post.isOwned = false;
+    }
+
+    if (body.active != undefined) {
+      post.active = body.active;
+    }
+
+
+    if (body.cats != undefined && body.cats.length > 1) {
+      var obj = body.cats;
+      var cats = obj.split(",");
+
+      var pcats = [];
+      for (var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
+        // var cat = await this.interestService.findByName(tmp);
+        if (tmp != undefined) {
+          var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(tmp), "$db": "hyppe_infra_db" };
+          pcats.push(objintr);
+        }
+      }
+      post.category = pcats;
+    }
+
+    // if (body.tagPeople != undefined && body.tagPeople.length > 1) {
+    //   var obj = body.tagPeople;
+    //   var cats = obj.split(",");
+    //   var pcats = [];
+    //   for (var i = 0; i < cats.length; i++) {
+    //     var tmp = cats[i];
+    //     var tp = await this.userAuthService.findOneUsername(tmp);
+    //     if (await this.utilService.ceckData(tp)) {
+    //       if (tp != undefined) {
+    //         var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
+    //         pcats.push(objintr);
+    //       }
+    //     }
+    //   }
+    //   post.tagPeople = pcats;
+    // }
+
+    if (body.tagPeople != undefined && body.tagPeople.length > 1) {
+      var obj = body.tagPeople;
+      var cats = obj.split(",");
+      var pcats = [];
+      for (var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
+        var tp = await this.basic2SS.findOneUsername(tmp);
+        if (await this.utilService.ceckData(tp)) {
+          if (tp.username != undefined) {
+            var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
+            let em = String(tp.username);
+            let bodyi = em + ' Menandai kamu di ';
+            let bodye = em + ' Tagged you in ';
+            if (post.postType == 'pict') {
+              bodyi = bodyi + ' HyppePic';
+              bodye = bodye + ' HyppePic';
+            } else if (post.postType == 'vid') {
+              bodyi = bodyi + ' HyppeVideo';
+              bodye = bodye + ' HyppeVideo';
+            } else if (post.postType == 'diary') {
+              bodyi = bodyi + ' HyppeDiary';
+              bodye = bodye + ' HyppeDiary';
+            } else if (post.postType == 'story') {
+              bodyi = bodyi + ' HyppeStory';
+              bodye = bodye + ' HyppeStory';
+            }
+            console.log(tp.email.toString());
+            console.log(body.postID);
+            console.log(post.postType.toString());
+            this.utilService.sendFcmV2(tp.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID, post.postType.toString());
+            pcats.push(objintr);
+          }
+        }
+      }
+      post.tagPeople = pcats;
+    }
+
+    // if (body.tagDescription != undefined && body.tagDescription.length > 0) {
+    //   var obj = body.tagDescription;
+    //   var cats = obj.split(",");
+    //   var pcats = [];
+    //   for (var i = 0; i < cats.length; i++) {
+    //     var tmp = cats[i];
+    //     var tp = await this.userAuthService.findOneUsername(tmp);
+    //     if (await this.utilService.ceckData(tp)) {
+    //       if (tp != undefined) {
+    //         var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
+    //         pcats.push(objintrx);
+    //       }
+    //     }
+    //   }
+    //   post.tagDescription = pcats;
+    // }
+
+    if (body.tagDescription != undefined && body.tagDescription.length > 0) {
+      var obj = body.tagDescription;
+      var cats = obj.split(",");
+      var pcats = [];
+      for (var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
+        var tp = await this.basic2SS.findOneUsername(tmp);
+        if (await this.utilService.ceckData(tp)) {
+          if (tp != undefined || tp != null) {
+            var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
+            let em = String(tp.username);
+            let bodyi = em + ' Menandai kamu di ';
+            let bodye = em + ' Tagged you in ';
+            if (post.postType == 'pict') {
+              bodyi = bodyi + ' HyppePic';
+              bodye = bodye + ' HyppePic';
+            } else if (post.postType == 'vid') {
+              bodyi = bodyi + ' HyppeVideo';
+              bodye = bodye + ' HyppeVideo';
+            } else if (post.postType == 'diary') {
+              bodyi = bodyi + ' HyppeDiary';
+              bodye = bodye + ' HyppeDiary';
+            } else if (post.postType == 'story') {
+              bodyi = bodyi + ' HyppeStory';
+              bodye = bodye + ' HyppeStory';
+            }
+            console.log(tp.email.toString());
+            console.log(body.postID);
+            console.log(post.postType.toString());
+            this.utilService.sendFcmV2(tp.email.toString(), auth.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID, post.postType.toString())
+            pcats.push(objintrx);
+          }
+        }
+      }
+      post.tagDescription = pcats;
+    }
+
+    if (body.certified != undefined) {
+      post.certified = <boolean>body.certified;
+    } else {
+      post.certified = false;
+    }
+
+    return post;
   }
 }

@@ -1,6 +1,6 @@
 import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { newPosts, NewpostsDocument } from './schemas/newPost.schema';
 import { PostContentService } from '../posts/postcontent.service';
 import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema';
@@ -12,6 +12,9 @@ import { ContenteventsService } from '../contentevents/contentevents.service';
 import { ErrorHandler } from 'src/utils/error.handler';
 import { MediamusicService } from '../mediamusic/mediamusic.service';
 import { GetusercontentsService } from 'src/trans/getusercontents/getusercontents.service';
+import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
+import { UserchallengesService } from 'src/trans/userchallenges/userchallenges.service';
+import { Userchallenges } from 'src/trans/userchallenges/schemas/userchallenges.schema';
 
 @Injectable()
 export class NewPostService {
@@ -27,7 +30,10 @@ export class NewPostService {
     private readonly basic2SS: UserbasicnewService,
     private readonly contentEventService: ContenteventsService,
     private readonly musicSS: MediamusicService,
-    private readonly loadApsara: GetusercontentsService
+    private readonly loadApsara: GetusercontentsService,
+    private readonly postchallengeService: PostchallengeService,
+    private readonly userchallengesService: UserchallengesService,
+    private readonly utilsService: UtilsService,
   ) { }
 
   async create(CreatePostsDto: newPosts): Promise<newPosts> {
@@ -43,9 +49,17 @@ export class NewPostService {
     return data;
   }
 
+  async findByPostId(postID: string): Promise<newPosts> {
+    return this.loaddata.findOne({ postID: postID }).exec();
+  }
+
   async findOne(id: string) {
     var data = await this.loaddata.findOne({ postID: id }).exec();
     return data;
+  }
+
+  async findid(id: string): Promise<newPosts> {
+    return this.loaddata.findOne({ _id: id }).exec();
   }
 
   async findUserPost(email: string): Promise<number> {
@@ -17020,5 +17034,92 @@ export class NewPostService {
     query[0].arrayData = newobject;
 
     return query;
+  }
+
+  async deletePostChalenge(postId: string, idChallenge: string, idSubChallenge: string,) {
+    const postchallengeData = await this.postchallengeService.findBypostIDnew(postId, idChallenge, idSubChallenge);
+    if (await this.utilsService.ceckData(postchallengeData)) {
+      let postScore = 0;
+
+      if (postchallengeData.score != undefined) {
+        postScore = Number(postchallengeData.score);
+      }
+
+      var dt = new Date(Date.now());
+      dt.setHours(dt.getHours() + 7); // timestamp
+      dt = new Date(dt);
+
+      var strdate = dt.toISOString();
+      var repdate = strdate.replace('T', ' ');
+      var splitdate = repdate.split('.');
+      var timedate = splitdate[0];
+      var datauserchallengeNew = null;
+      var scorenegatif = null;
+      let userchallenges = new Userchallenges();
+      userchallenges.idUser = new mongoose.Types.ObjectId(postchallengeData.idUser.toString());
+      userchallenges.idChallenge = new mongoose.Types.ObjectId(idChallenge);
+      userchallenges.idSubChallenge = new mongoose.Types.ObjectId(idSubChallenge);
+      var UserchallengesData = await this.userchallengesService.findData(userchallenges);
+
+
+      if (UserchallengesData.length > 0) {
+
+        let score = 0;
+        let scrdata = 0;
+        try {
+          scrdata = Number(UserchallengesData[0].score);
+        } catch (e) {
+          scrdata = 0;
+        }
+
+        if (scrdata > 0) {
+          score = Number(UserchallengesData[0].score);
+          score = score - postScore;
+          let userchallenges_ = new Userchallenges();
+          userchallenges_.score = score;
+          await this.userchallengesService.updateByUSer(UserchallengesData[0]._id.toString(), UserchallengesData[0].idSubChallenge.toString(), userchallenges_);
+
+          //update score if negative
+          try {
+            datauserchallengeNew = await this.userchallengesService.findOneByid(UserchallengesData[0]._id.toString(), UserchallengesData[0].idSubChallenge.toString());
+          } catch (e) {
+            datauserchallengeNew = null;
+          }
+
+          if (datauserchallengeNew !== null && datauserchallengeNew !== undefined) {
+            scorenegatif = datauserchallengeNew.score;
+          } else {
+            scorenegatif = 0;
+          }
+
+          if (scorenegatif < 0) {
+            await this.userchallengesService.updateScoreNull(UserchallengesData[0]._id.toString(), timedate);
+          }
+
+        }
+        await this.postchallengeService.updateByUSer(postchallengeData._id.toString(), idSubChallenge.toString(), idChallenge.toString(), postId)
+        // var datauschall = await this.userchallengesService.datauserchallbyidchall(idChallenge, idSubChallenge);
+
+        // if (datauschall.length > 0) {
+        //   for (let x = 0; x < datauschall.length; x++) {
+
+        //     let iducall = datauschall[x]._id;
+        //     // let start = new Date(datauschall[x].startDatetime);
+        //     // let end = new Date(datauschall[x].endDatetime);
+        //     // let datenow = new Date(Date.now());
+        //     // let idChallenges2 = datauschall[x].idChallenge;
+        //     let rank = x + 1;
+        //     await this.userchallengesService.updateRangking(iducall.toString(), rank, timedate);
+
+
+        //   }
+        // }
+
+
+
+
+      }
+
+    }
   }
 }

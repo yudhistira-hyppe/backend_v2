@@ -23,11 +23,21 @@ import { MediastoriesModule } from '../mediastories/mediastories.module';
 import { MediadiariesModule } from '../mediadiaries/mediadiaries.module';
 import { MediapictsModule } from '../mediapicts/mediapicts.module';
 import { TemplatesRepoModule } from 'src/infra/templates_repo/templates_repo.module';
+import { TransactionsPostModule } from 'src/trans/transactionpost/transactionspost.module';
+import { PostchallengeModule } from 'src/trans/postchallenge/postchallenge.module';
+import { UserchallengesModule } from 'src/trans/userchallenges/userchallenges.module';
+import { InterestCountModule } from '../interest_count/interest_count.module';
+import { InterestdayModule } from '../interestday/interestday.module';
 @Module({
   imports: [
+    TransactionsPostModule,
     ConfigModule.forRoot(),
     MediastikerModule,
+    InterestCountModule,
+    InterestdayModule,
     UtilsModule,
+    PostchallengeModule,
+    UserchallengesModule,
     SettingsModule,
     ContenteventsModule,
     UserbasicnewModule,

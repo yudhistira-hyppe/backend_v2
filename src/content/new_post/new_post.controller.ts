@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req, HttpCode, HttpStatus, Post, Body, Headers, BadRequestException, Param, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, HttpCode, HttpStatus, Post, Body, Headers, BadRequestException, Param, Query, UseInterceptors, UploadedFile, Logger } from '@nestjs/common';
 import { NewPostService } from './new_post.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { CreatePostRequest, CreatePostResponse } from './dto/create-newPost.dto';
@@ -12,8 +12,18 @@ import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { SettingsService } from 'src/trans/settings/settings.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { Request } from 'express';
+import { TransactionsPostService } from 'src/trans/transactionpost/transactionspost.service';
+import { ErrorHandler } from 'src/utils/error.handler';
+import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
+import { TagCountService } from '../tag_count/tag_count.service';
+import { TagCountDto } from '../tag_count/dto/create-tag_count.dto';
+import { InterestCountService } from '../interest_count/interest_count.service';
+import { InterestCountDto } from '../interest_count/dto/create-interest_count.dto';
+import { InterestdayService } from '../interestday/interestday.service';
+import { InterestdayDto } from '../interestday/dto/create-interestday.dto';
 @Controller('api/')
 export class NewPostController {
+    private readonly logger = new Logger(NewPostController.name);
     constructor(
         private readonly newPostContentService: NewPostContentService,
         private readonly newPostService: NewPostService,
@@ -23,6 +33,12 @@ export class NewPostController {
         private readonly logapiSS: LogapisService,
         private readonly settingsService: SettingsService,
         private readonly utilsService: UtilsService,
+        private transactionsPostService: TransactionsPostService,
+        private readonly errorHandler: ErrorHandler,
+        private readonly postchallengeService: PostchallengeService,
+        private readonly tagCountService: TagCountService,
+        private readonly interestCountService: InterestCountService,
+        private readonly interestdayService: InterestdayService,
     ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -112,11 +128,898 @@ export class NewPostController {
             var iduser = null;
             if (databasic !== null) {
                 iduser = databasic._id;
-                //this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
-                //await this.contenteventsService.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
+                this.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
             }
         }
 
+        return data;
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('api/posts/updatepost/v2')
+    @UseInterceptors(FileInterceptor('postContent'))
+    async updatePostnew(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + "/api/posts/updatepost";
+        var reqbody = body;
+
+        this.logger.log("updatePost >>> start");
+        var email = headers['x-auth-user'];
+        var saleAmount = body.saleAmount;
+        var data = null;
+        var datapostchallenge = null;
+        var active = null;
+        var dataUser = await this.basic2SS.findBymail(email);
+        var posts = null;
+        var startDatetime = null;
+        var endDatetime = null;
+
+        try {
+            posts = await this.newPostService.findid(body.postID.toString());
+        } catch (e) {
+            posts = null;
+        }
+        var dataTransaction = await this.transactionsPostService.findpostid(body.postID.toString());
+        if (await this.utilsService.ceckData(dataTransaction)) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+            if (((dataUser.languagesLangIso != undefined ? dataUser.languagesLangIso:"id")) == "id") {
+                await this.errorHandler.generateNotAcceptableException(
+                    "Tidak bisa mengedit postingan karena sedang dalam proses pembayaran",
+                );
+            } else {
+                await this.errorHandler.generateNotAcceptableException(
+                    " Unable to edit the post because it is in the process of payment.",
+                );
+            }
+        }
+        try {
+            datapostchallenge = await this.postchallengeService.findBypostID2(body.postID.toString());
+        } catch (e) {
+            datapostchallenge = null;
+        }
+
+        if (body.active == 'false') {
+            let datapostawal = null;
+            let tags = [];
+            let cats = [];
+            //tags
+            try {
+                datapostawal = await this.newPostService.findByPostId(body.postID);
+                tags = datapostawal.tags;
+                cats = datapostawal.category;
+            } catch (e) {
+                datapostawal = null;
+                tags = [];
+                cats = [];
+            }
+
+            if (datapostchallenge == null) {
+                if (tags.length > 0) {
+                    const stringSet = new Set(tags);
+                    const uniqstring = [...stringSet];
+                    console.log(uniqstring)
+                    for (let i = 0; i < uniqstring.length; i++) {
+                        let id = uniqstring[i];
+
+                        let datatag2 = null;
+                        try {
+                            datatag2 = await this.tagCountService.findOneById(id);
+                        } catch (e) {
+                            datatag2 = null;
+                        }
+
+                        let total = 0;
+                        if (datatag2 !== null) {
+                            let postidlist = datatag2.listdata;
+                            total = datatag2.total;
+
+                            for (let i = 0; i < postidlist.length; i++) {
+                                if (postidlist[i].postID === body.postID) {
+                                    postidlist.splice(i, 1);
+                                }
+                            }
+                            let tagCountDto_ = new TagCountDto();
+                            tagCountDto_.total = total - 1;
+                            tagCountDto_.listdata = postidlist;
+                            await this.tagCountService.update(id, tagCountDto_);
+                        }
+                    }
+                }
+                //interest
+                if (cats.length > 0) {
+                    const stringSetin = new Set(cats);
+                    const uniqstringin = [...stringSetin];
+
+                    console.log(uniqstringin)
+
+                    for (let i = 0; i < uniqstringin.length; i++) {
+                        let idin = uniqstringin[i];
+
+                        let datain = null;
+                        try {
+                            datain = await this.interestCountService.findOneById(idin);
+                        } catch (e) {
+                            datain = null;
+                        }
+
+                        let totalin = 0;
+                        if (datain !== null) {
+                            let postidlistin = datain.listdata;
+                            totalin = datain.total;
+
+                            for (let i = 0; i < postidlistin.length; i++) {
+                                if (postidlistin[i].postID === body.postID) {
+                                    postidlistin.splice(i, 1);
+                                }
+                            }
+                            let tagCountDto_ = new TagCountDto();
+                            tagCountDto_.total = totalin - 1;
+                            tagCountDto_.listdata = postidlistin;
+                            await this.tagCountService.update(idin, tagCountDto_);
+                        }
+
+
+                    }
+                }
+                data = await this.newPostContentService.updatePost(body, headers, dataUser);
+                console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+                console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+                if (saleAmount > 0) {
+                    await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+                    //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+                }
+                return data;
+            } else {
+                var datenow = new Date(Date.now());
+                startDatetime = datapostchallenge.startDatetime;
+                endDatetime = datapostchallenge.endDatetime;
+                if (tags.length > 0) {
+                    const stringSet = new Set(tags);
+                    const uniqstring = [...stringSet];
+                    console.log(uniqstring)
+                    for (let i = 0; i < uniqstring.length; i++) {
+                        let id = uniqstring[i];
+                        let datatag2 = null;
+                        try {
+                            datatag2 = await this.tagCountService.findOneById(id);
+                        } catch (e) {
+                            datatag2 = null;
+                        }
+                        let total = 0;
+                        if (datatag2 !== null) {
+                            let postidlist = datatag2.listdata;
+                            total = datatag2.total;
+                            for (let i = 0; i < postidlist.length; i++) {
+                                if (postidlist[i].postID === body.postID) {
+                                    postidlist.splice(i, 1);
+                                }
+                            }
+                            let tagCountDto_ = new TagCountDto();
+                            tagCountDto_.total = total - 1;
+                            tagCountDto_.listdata = postidlist;
+                            await this.tagCountService.update(id, tagCountDto_);
+                        }
+                    }
+                }
+                //interest
+                if (cats.length > 0) {
+                    const stringSetin = new Set(cats);
+                    const uniqstringin = [...stringSetin];
+
+                    console.log(uniqstringin)
+
+                    for (let i = 0; i < uniqstringin.length; i++) {
+                        let idin = uniqstringin[i];
+
+                        let datain = null;
+                        try {
+                            datain = await this.interestCountService.findOneById(idin);
+                        } catch (e) {
+                            datain = null;
+                        }
+
+                        let totalin = 0;
+                        if (datain !== null) {
+                            let postidlistin = datain.listdata;
+                            totalin = datain.total;
+
+                            for (let i = 0; i < postidlistin.length; i++) {
+                                if (postidlistin[i].postID === body.postID) {
+                                    postidlistin.splice(i, 1);
+                                }
+                            }
+                            let tagCountDto_ = new TagCountDto();
+                            tagCountDto_.total = totalin - 1;
+                            tagCountDto_.listdata = postidlistin;
+                            await this.tagCountService.update(idin, tagCountDto_);
+                        }
+
+
+                    }
+                }
+                data = await this.newPostContentService.updatePost(body, headers, dataUser);
+                console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+                console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+                // if (saleAmount > 0) {
+                //   await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+                //   //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+                // }
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
+                let datapostchallenge2 = null;
+                try {
+                    datapostchallenge2 = await this.postchallengeService.findOneBypostid(body.postID.toString());
+                } catch (e) {
+                    datapostchallenge2 = null;
+                }
+
+                if (datapostchallenge2.length > 0) {
+
+                    for (let y = 0; y < datapostchallenge2.length; y++) {
+                        let postid = null;
+                        let idChallenge = null;
+                        let idSubChallenge = null;
+                        postid = datapostchallenge2[y].postID;
+                        idSubChallenge = datapostchallenge2[y].idSubChallenge;
+                        idChallenge = datapostchallenge2[y].idChallenge;
+                        await this.newPostService.deletePostChalenge(postid, idChallenge, idSubChallenge);
+                    }
+
+                }
+
+
+
+
+
+                return data;
+
+                //}
+            }
+        }else {
+            var datapostawal = null;
+            var tags = [];
+            var arrtag = [];
+            var datacats = null;
+            var arrcat = [];
+            var cats = [];
+            try {
+                datapostawal = await this.newPostService.findByPostId(body.postID);
+                tags = datapostawal.tags;
+                cats = datapostawal.category;
+            } catch (e) {
+                datapostawal = null;
+                tags = [];
+                cats = [];
+            }
+            var datatag = null;
+            if (datapostchallenge == null) {
+                if (tags.length > 0) {
+                    if (body.tags !== undefined && body.tags !== "") {
+                        var tag = body.tags;
+
+                        var splittag = tag.split(',');
+                        for (let x = 0; x < splittag.length; x++) {
+                            var tagkata = tags[x];
+                            var tagreq = splittag[x].replace(/"/g, "");
+                            arrtag.push(tagreq)
+                            if (tagreq !== undefined && tagreq !== tagkata) {
+                                try {
+                                    datatag = await this.tagCountService.findOneById(tagkata);
+                                } catch (e) {
+                                    datatag = null;
+                                }
+                                var total = 0;
+                                if (datatag !== null) {
+                                    var postidlist = datatag.listdata;
+                                    total = datatag.total;
+                                    for (var i = 0; i < postidlist.length; i++) {
+                                        if (postidlist[i].postID === body.postID) {
+                                            postidlist.splice(i, 1);
+                                        }
+                                    }
+                                    let tagCountDto_ = new TagCountDto();
+                                    tagCountDto_.total = total - 1;
+                                    tagCountDto_.listdata = postidlist;
+                                    await this.tagCountService.update(tagkata, tagCountDto_);
+                                }
+                            }
+                        }
+                        body.tags = arrtag;
+                    } else {
+                        body.tags = [];
+
+                    }
+
+                } else {
+                    body.tags = [];
+
+                }
+
+                //interest
+
+                if (cats.length > 0) {
+                    if (body.cats !== undefined && body.cats !== "") {
+                        var cat = body.cats;
+                        var splittcat = null;
+                        if (cat !== undefined && cat !== "") {
+                            splittcat = cat.split(',');
+                            for (let x = 0; x < splittcat.length; x++) {
+
+                                var tagcat = null;
+                                try {
+                                    tagcat = cats[x].oid.toString();
+                                } catch (e) {
+                                    tagcat = "";
+                                }
+                                var catreq = splittcat[x];
+
+                                if (catreq !== undefined && catreq !== tagcat) {
+
+                                    try {
+                                        datacats = await this.interestCountService.findOneById(tagcat);
+                                    } catch (e) {
+                                        datacats = null;
+                                    }
+                                    var total = 0;
+                                    if (datacats !== null) {
+                                        let postidlist = datacats.listdata;
+                                        total = datacats.total;
+
+                                        for (var i = 0; i < postidlist.length; i++) {
+                                            if (postidlist[i].postID === body.postID) {
+                                                postidlist.splice(i, 1);
+                                            }
+                                        }
+                                        let catCountDto_ = new InterestCountDto();
+                                        catCountDto_.total = total - 1;
+                                        catCountDto_.listdata = postidlist;
+                                        await this.interestCountService.update(tagcat, catCountDto_);
+                                    }
+                                }
+                            }
+                        }
+
+                    } else {
+                        body.cats = [];
+                    }
+
+                }
+                data = await this.newPostContentService.updatePost(body, headers, dataUser);
+                //tags
+                if (body.tags !== undefined && body.tags.length > 0) {
+                    var tag2 = body.tags;
+                    for (let i = 0; i < tag2.length; i++) {
+                        let id = tag2[i];
+                        var datatag2 = null;
+
+                        try {
+                            datatag2 = await this.tagCountService.findOneById(id);
+
+                        } catch (e) {
+                            datatag2 = null;
+
+                        }
+
+                        if (datatag2 === null) {
+
+                            let tagCountDto_ = new TagCountDto();
+                            tagCountDto_._id = id;
+                            tagCountDto_.total = 1;
+                            tagCountDto_.listdata = [{ "postID": body.postID }];
+                            await this.tagCountService.create(tagCountDto_);
+                        } else {
+
+                            var datatag3 = null;
+                            var lengdata3 = null;
+
+                            try {
+                                datatag3 = await this.tagCountService.finddatabypostid(id, body.postID);
+                                lengdata3 = datatag3.length;
+
+                            } catch (e) {
+                                datatag3 = null;
+                                lengdata3 = 0;
+                            }
+                            var datapost = null;
+                            var tagslast = [];
+                            try {
+                                datapost = await this.newPostService.findByPostId(body.postID);
+                                tagslast = datapost.tags;
+                            } catch (e) {
+                                datapost = null;
+                                tagslast = [];
+                            }
+                            let idnew = tagslast[i];
+                            var total2 = 0;
+                            var postidlist2 = [];
+                            let obj = { "postID": body.postID };
+                            total2 = datatag2.total;
+                            postidlist2 = datatag2.listdata;
+                            if (id === idnew) {
+                                if (lengdata3 == 0) {
+                                    postidlist2.push(obj);
+                                }
+                            }
+
+                            let tagCountDto_ = new TagCountDto();
+                            tagCountDto_._id = id;
+                            if (id === idnew) {
+
+                                if (lengdata3 == 0) {
+                                    tagCountDto_.total = total2 + 1;
+                                }
+                            }
+
+                            tagCountDto_.listdata = postidlist2;
+                            await this.tagCountService.update(id, tagCountDto_);
+                        }
+
+                    }
+                } else {
+
+                }
+
+                //Interest
+                const mongoose = require('mongoose');
+                var ObjectId = require('mongodb').ObjectId;
+
+                if (body.cats !== undefined) {
+                    let cats = body.cats;
+                    var splitcats = cats.split(',');
+                    for (let i = 0; i < splitcats.length; i++) {
+                        let id = splitcats[i];
+                        var datacats = null;
+                        var datacatsday = null;
+
+                        try {
+                            datacats = await this.interestCountService.findOneById(id);
+
+                        } catch (e) {
+                            datacats = null;
+
+                        }
+
+                        if (datacats === null) {
+
+
+                            let interestCountDto_ = new InterestCountDto();
+                            interestCountDto_._id = mongoose.Types.ObjectId(id);
+                            interestCountDto_.total = 1;
+                            interestCountDto_.listdata = [{ "postID": body.postID }];
+                            await this.interestCountService.create(interestCountDto_);
+
+
+                        }
+                        else {
+
+
+                            var catslast = [];
+                            var datapostawal = null;
+
+                            try {
+                                datapostawal = await this.newPostService.findByPostId(body.postID);
+                                catslast = datapostawal.category;
+                            } catch (e) {
+                                datapostawal = null;
+                                catslast = [];
+                            }
+                            let idnew = catslast[i].oid.toString();
+                            var totalcats = 0;
+                            var postidlistcats = [];
+                            let obj = { "postID": datapostawal.postID };
+                            totalcats = datacats.total;
+                            postidlistcats = datacats.listdata;
+                            if (id !== idnew) {
+                                postidlistcats.push(obj);
+                            }
+
+                            let interestCountDto_ = new InterestCountDto();
+                            interestCountDto_._id = mongoose.Types.ObjectId(id);
+                            if (id !== idnew) {
+                                interestCountDto_.total = totalcats + 1;
+                            }
+                            interestCountDto_.listdata = postidlistcats;
+                            await this.interestCountService.update(id, interestCountDto_);
+                        }
+
+                        var dt = new Date(Date.now());
+                        dt.setHours(dt.getHours() + 7); // timestamp
+                        dt = new Date(dt);
+                        var strdate = dt.toISOString();
+                        var repdate = strdate.replace('T', ' ');
+                        var splitdate = repdate.split('.');
+                        var stringdate = splitdate[0];
+                        var date = stringdate.substring(0, 10) + " " + "00:00:00";
+                        var cekdata = null;
+
+                        try {
+                            cekdata = await this.interestdayService.finddate(date);
+
+                        } catch (e) {
+                            cekdata = null;
+
+                        }
+
+                        try {
+                            datacatsday = await this.interestdayService.finddatabydate(date, id);
+
+                        } catch (e) {
+                            datacatsday = null;
+
+                        }
+
+                        if (cekdata.length == 0) {
+                            let interestdayDto_ = new InterestdayDto();
+                            interestdayDto_.date = date;
+                            interestdayDto_.listinterest = [{
+                                "_id": mongoose.Types.ObjectId(id),
+                                "total": 1,
+                                "createdAt": stringdate,
+                                "updatedAt": stringdate
+                            }];
+                            await this.interestdayService.create(interestdayDto_);
+                        } else {
+                            if (datacatsday.length > 0) {
+                                var idq = datacatsday[0]._id;
+                                var idint = datacatsday[0].listinterest._id;
+                                var totalint = datacatsday[0].listinterest.total;
+                                await this.interestdayService.updatefilter(idq.toString(), idint.toString(), totalint + 1, stringdate);
+                            } else {
+                                var idInt = cekdata[0]._id.toString();
+                                var list = cekdata[0].listinterest;
+                                var objin = {
+                                    "_id": mongoose.Types.ObjectId(id),
+                                    "total": 1,
+                                    "createdAt": stringdate,
+                                    "updatedAt": stringdate
+                                };
+                                list.push(objin);
+                                await this.interestdayService.updateInterestday(idInt, list);
+                            }
+                        }
+
+                    }
+                }
+
+                console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+                console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+                if (saleAmount > 0) {
+                    await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+                    //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+                }
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
+                return data;
+            }else {
+                var datenow = new Date(Date.now());
+                startDatetime = datapostchallenge.startDatetime;
+                endDatetime = datapostchallenge.endDatetime;
+
+                if (datenow >= new Date(startDatetime) && datenow <= new Date(endDatetime) && saleAmount > 0) {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed, content is participating in the challenge',
+                    );
+                }else {
+                    if (tags.length > 0) {
+                        if (body.tags !== undefined && body.tags !== "") {
+                            var tag = body.tags;
+                            var splittag = tag.split(',');
+                            for (let x = 0; x < splittag.length; x++) {
+                                var tagkata = tags[x];
+                                var tagreq = splittag[x].replace(/"/g, "");
+                                arrtag.push(tagreq)
+                                if (tagreq !== undefined && tagreq !== tagkata) {
+                                    try {
+                                        datatag = await this.tagCountService.findOneById(tagkata);
+                                    } catch (e) {
+                                        datatag = null;
+                                    }
+                                    var total = 0;
+                                    if (datatag !== null) {
+                                        var postidlist = datatag.listdata;
+                                        total = datatag.total;
+                                        for (var i = 0; i < postidlist.length; i++) {
+                                            if (postidlist[i].postID === body.postID) {
+                                                postidlist.splice(i, 1);
+                                            }
+                                        }
+                                        let tagCountDto_ = new TagCountDto();
+                                        tagCountDto_.total = total - 1;
+                                        tagCountDto_.listdata = postidlist;
+                                        await this.tagCountService.update(tagkata, tagCountDto_);
+                                    }
+                                }
+                            }
+                            body.tags = arrtag;
+                        } else {
+                            body.tags = [];
+
+                        }
+
+                    } else {
+                        body.tags = [];
+
+                    }
+
+                    //interest
+
+                    if (cats.length > 0) {
+                        if (body.cats !== undefined && body.cats !== "") {
+                            var cat = body.cats;
+                            var splittcat = null;
+                            if (cat !== undefined && cat !== "") {
+                                splittcat = cat.split(',');
+                                for (let x = 0; x < splittcat.length; x++) {
+
+                                    var tagcat = null;
+                                    try {
+                                        tagcat = cats[x].oid.toString();
+                                    } catch (e) {
+                                        tagcat = "";
+                                    }
+                                    var catreq = splittcat[x];
+
+                                    if (catreq !== undefined && catreq !== tagcat) {
+
+                                        try {
+                                            datacats = await this.interestCountService.findOneById(tagcat);
+                                        } catch (e) {
+                                            datacats = null;
+                                        }
+                                        var total = 0;
+                                        if (datacats !== null) {
+                                            let postidlist = datacats.listdata;
+                                            total = datacats.total;
+
+                                            for (var i = 0; i < postidlist.length; i++) {
+                                                if (postidlist[i].postID === body.postID) {
+                                                    postidlist.splice(i, 1);
+                                                }
+                                            }
+                                            let catCountDto_ = new InterestCountDto();
+                                            catCountDto_.total = total - 1;
+                                            catCountDto_.listdata = postidlist;
+                                            await this.interestCountService.update(tagcat, catCountDto_);
+                                        }
+                                    }
+                                }
+                            }
+
+                        } else {
+                            body.cats = [];
+                        }
+
+                    }
+                    data = await this.newPostContentService.updatePost(body, headers, dataUser);
+                    //tags
+                    if (body.tags !== undefined && body.tags.length > 0) {
+                        var tag2 = body.tags;
+                        for (let i = 0; i < tag2.length; i++) {
+                            let id = tag2[i];
+                            var datatag2 = null;
+
+                            try {
+                                datatag2 = await this.tagCountService.findOneById(id);
+
+                            } catch (e) {
+                                datatag2 = null;
+
+                            }
+
+                            if (datatag2 === null) {
+
+                                let tagCountDto_ = new TagCountDto();
+                                tagCountDto_._id = id;
+                                tagCountDto_.total = 1;
+                                tagCountDto_.listdata = [{ "postID": body.postID }];
+                                await this.tagCountService.create(tagCountDto_);
+                            } else {
+
+                                var datatag3 = null;
+                                var lengdata3 = null;
+
+                                try {
+                                    datatag3 = await this.tagCountService.finddatabypostid(id, body.postID);
+                                    lengdata3 = datatag3.length;
+
+                                } catch (e) {
+                                    datatag3 = null;
+                                    lengdata3 = 0;
+                                }
+                                var datapost = null;
+                                var tagslast = [];
+                                try {
+                                    datapost = await this.newPostService.findByPostId(body.postID);
+                                    tagslast = datapost.tags;
+                                } catch (e) {
+                                    datapost = null;
+                                    tagslast = [];
+                                }
+                                let idnew = tagslast[i];
+                                var total2 = 0;
+                                var postidlist2 = [];
+                                let obj = { "postID": body.postID };
+                                total2 = datatag2.total;
+                                postidlist2 = datatag2.listdata;
+                                if (id === idnew) {
+                                    if (lengdata3 == 0) {
+                                        postidlist2.push(obj);
+                                    }
+                                }
+
+                                let tagCountDto_ = new TagCountDto();
+                                tagCountDto_._id = id;
+                                if (id === idnew) {
+
+                                    if (lengdata3 == 0) {
+                                        tagCountDto_.total = total2 + 1;
+                                    }
+                                }
+
+                                tagCountDto_.listdata = postidlist2;
+                                await this.tagCountService.update(id, tagCountDto_);
+                            }
+
+                        }
+                    } else {
+
+                    }
+
+                    //Interest
+                    const mongoose = require('mongoose');
+                    var ObjectId = require('mongodb').ObjectId;
+
+                    if (body.cats !== undefined) {
+                        let cats = body.cats;
+                        var splitcats = cats.split(',');
+                        for (let i = 0; i < splitcats.length; i++) {
+                            let id = splitcats[i];
+                            var datacats = null;
+                            var datacatsday = null;
+
+                            try {
+                                datacats = await this.interestCountService.findOneById(id);
+
+                            } catch (e) {
+                                datacats = null;
+
+                            }
+
+                            if (datacats === null) {
+
+
+                                let interestCountDto_ = new InterestCountDto();
+                                interestCountDto_._id = mongoose.Types.ObjectId(id);
+                                interestCountDto_.total = 1;
+                                interestCountDto_.listdata = [{ "postID": body.postID }];
+                                await this.interestCountService.create(interestCountDto_);
+
+
+                            }
+                            else {
+
+
+                                var catslast = [];
+                                var datapostawal = null;
+
+                                try {
+                                    datapostawal = await this.newPostService.findByPostId(body.postID);
+                                    catslast = datapostawal.category;
+                                } catch (e) {
+                                    datapostawal = null;
+                                    catslast = [];
+                                }
+                                let idnew = catslast[i].oid.toString();
+                                var totalcats = 0;
+                                var postidlistcats = [];
+                                let obj = { "postID": datapostawal.postID };
+                                totalcats = datacats.total;
+                                postidlistcats = datacats.listdata;
+                                if (id !== idnew) {
+                                    postidlistcats.push(obj);
+                                }
+
+                                let interestCountDto_ = new InterestCountDto();
+                                interestCountDto_._id = mongoose.Types.ObjectId(id);
+                                if (id !== idnew) {
+                                    interestCountDto_.total = totalcats + 1;
+                                }
+                                interestCountDto_.listdata = postidlistcats;
+                                await this.interestCountService.update(id, interestCountDto_);
+                            }
+
+                            var dt = new Date(Date.now());
+                            dt.setHours(dt.getHours() + 7); // timestamp
+                            dt = new Date(dt);
+                            var strdate = dt.toISOString();
+                            var repdate = strdate.replace('T', ' ');
+                            var splitdate = repdate.split('.');
+                            var stringdate = splitdate[0];
+                            var date = stringdate.substring(0, 10) + " " + "00:00:00";
+                            var cekdata = null;
+
+                            try {
+                                cekdata = await this.interestdayService.finddate(date);
+
+                            } catch (e) {
+                                cekdata = null;
+
+                            }
+
+                            try {
+                                datacatsday = await this.interestdayService.finddatabydate(date, id);
+
+                            } catch (e) {
+                                datacatsday = null;
+
+                            }
+
+                            if (cekdata.length == 0) {
+                                let interestdayDto_ = new InterestdayDto();
+                                interestdayDto_.date = date;
+                                interestdayDto_.listinterest = [{
+                                    "_id": mongoose.Types.ObjectId(id),
+                                    "total": 1,
+                                    "createdAt": stringdate,
+                                    "updatedAt": stringdate
+                                }];
+                                await this.interestdayService.create(interestdayDto_);
+                            } else {
+                                if (datacatsday.length > 0) {
+                                    var idq = datacatsday[0]._id;
+                                    var idint = datacatsday[0].listinterest._id;
+                                    var totalint = datacatsday[0].listinterest.total;
+                                    await this.interestdayService.updatefilter(idq.toString(), idint.toString(), totalint + 1, stringdate);
+                                } else {
+                                    var idInt = cekdata[0]._id.toString();
+                                    var list = cekdata[0].listinterest;
+                                    var objin = {
+                                        "_id": mongoose.Types.ObjectId(id),
+                                        "total": 1,
+                                        "createdAt": stringdate,
+                                        "updatedAt": stringdate
+                                    };
+                                    list.push(objin);
+                                    await this.interestdayService.updateInterestday(idInt, list);
+                                }
+                            }
+
+                        }
+                    }
+
+                    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+                    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+                    if (saleAmount > 0) {
+                        await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+                        //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
+                    }
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
+
+                    return data;
+                }
+            }
+        }
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
+
+        if (saleAmount > 0) {
+            if (posts.saleAmount != saleAmount) {
+                await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+            }
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
         return data;
     }
 
@@ -848,5 +1751,9 @@ export class NewPostController {
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
+    }
+
+    async scorepostrequest(iduser: string, idevent: string, namatabel: string, event: string, postID: string) {
+        await this.contenteventsService.scorepostrequest(iduser, idevent, namatabel, event, postID);
     }
 }
