@@ -104,7 +104,7 @@ export class MediastikerController {
 
         if (type !== "GIF") {
             try {
-                datastiker = await this.MediastikerService.findByname(name, type);
+                datastiker = await this.MediastikerService.findByname(name, type,kategori);
 
             } catch (e) {
                 datastiker = null;
@@ -305,7 +305,7 @@ export class MediastikerController {
             name = request_json["name"];
 
             try {
-                datastiker = await this.MediastikerService.findByname(name, type);
+                datastiker = await this.MediastikerService.findByname(name, type,kategori);
 
             } catch (e) {
                 datastiker = null;
