@@ -9,10 +9,12 @@ import { DisquslogsModule } from '../../disquslogs/disquslogs.module';
 import { DisquscontactsModule } from '../../disquscontacts/disquscontacts.module';
 import { PostDisqusModule } from '../../../content/disqus/post/postdisqus.module';
 import { SocketModule } from '../../../content/socket/socket.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
 
     imports: [
+        HttpModule,
         SocketModule,
         UtilsModule,
         DisquslogsModule,

@@ -16,10 +16,12 @@ import { UserauthsModule } from '../../trans/userauths/userauths.module';
 import { SocketModule } from '../socket/socket.module';
 import { ReactionsRepoModule } from '../../infra/reactions_repo/reactions_repo.module';
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
 
     imports: [
+        HttpModule,
         ReactionsRepoModule,
         ContenteventsModule,
         InsightsModule,

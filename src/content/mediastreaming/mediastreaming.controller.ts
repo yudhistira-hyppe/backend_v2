@@ -325,7 +325,8 @@ export class MediastreamingController {
             data:{
               idStream: dataStream._id,
               userId: profile._id.toString(),
-              likeCount: MediastreamingDto_.like.length
+              likeCount: MediastreamingDto_.like.length,
+              likeCountTotal: dataStream.like.length
             }
           }
           const STREAM_MODE = this.configService.get("STREAM_MODE");

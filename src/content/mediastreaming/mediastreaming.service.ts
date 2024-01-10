@@ -1758,7 +1758,7 @@ export class MediastreamingService {
 
   async socketRequest(RequestSoctDto_: RequestSoctDto) {
     let config = { headers: { "Content-Type": "application/json" } };
-    const res = await this.httpService.post(this.configService.get("URL_CHALLENGE") + "api/live/socket", RequestSoctDto_, config).toPromise();
+    const res = await this.httpService.post(this.configService.get("URL_CHALLENGE") + "api/send/socket", RequestSoctDto_, config).toPromise();
     const data = res.data;
     return data;
   }
