@@ -104,7 +104,7 @@ export class MediastikerController {
 
         if (type !== "GIF") {
             try {
-                datastiker = await this.MediastikerService.findByname(name, type,kategori);
+                datastiker = await this.MediastikerService.findByname(name, type,kategori,nourut);
 
             } catch (e) {
                 datastiker = null;
@@ -304,22 +304,22 @@ export class MediastikerController {
         if (request_json["name"] !== undefined) {
             name = request_json["name"];
 
-            // try {
-            //     datastiker = await this.MediastikerService.findByname(name, type,kategori);
+            try {
+                datastiker = await this.MediastikerService.findByname(name, type,kategori,Number(nourut));
 
-            // } catch (e) {
-            //     datastiker = null;
+            } catch (e) {
+                datastiker = null;
 
-            // }
+            }
 
-            // if (datastiker !== null) {
-            //     await this.errorHandler.generateBadRequestException(
-            //         'Maaf Nama Stiker sudah ada',
-            //     );
-            // } else {
-            //     insertdata.name = name;
-            // }
-            insertdata.name = name;
+            if (datastiker !== null) {
+                await this.errorHandler.generateBadRequestException(
+                    'Maaf Nama Stiker sudah ada',
+                );
+            } else {
+                insertdata.name = name;
+            }
+           
         }
         
         var dt = new Date(Date.now());

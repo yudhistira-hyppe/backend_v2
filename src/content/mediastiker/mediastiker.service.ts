@@ -21,8 +21,8 @@ export class MediastikerService {
     async findOne(id: string): Promise<Mediastiker> {
         return this.MediastikerModel.findOne({ _id: new Types.ObjectId(id) }).exec();
     }
-    async findByname(name: string, type: string,kategori:string): Promise<Mediastiker> {
-        return this.MediastikerModel.findOne({ name: name, isDelete: false, type: type,kategori:kategori }).exec();
+    async findByname(name: string, type: string,kategori:string,index:number): Promise<Mediastiker> {
+        return this.MediastikerModel.findOne({ name: name, isDelete: false, type: type,kategori:kategori,index:index }).exec();
     }
     async findBynameTes(name: string): Promise<Mediastiker> {
         return this.MediastikerModel.findOne({ name: name, isDelete: true }).exec();
