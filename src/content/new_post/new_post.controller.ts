@@ -26,7 +26,7 @@ export class NewPostController {
     ) { }
 
     @UseGuards(JwtAuthGuard)
-    @Post('api/posts/createpost/v2')
+    @Post('posts/createpost/v2')
     @UseInterceptors(FileInterceptor('postContent'))
     async createPostV4new(@UploadedFile() file: Express.Multer.File, @Body() CreatePostRequest_: CreatePostRequest, @Headers() headers): Promise<CreatePostResponse> {
         console.log('============================================== CREATE POST HEADERS ==============================================', JSON.stringify(headers));
@@ -106,14 +106,14 @@ export class NewPostController {
 
             var email = data.data.email;
 
-            const databasic = await this.basic2SS.findOne(
+            const databasic = await this.basic2SS.findBymail(
                 email
             );
             var iduser = null;
             if (databasic !== null) {
                 iduser = databasic._id;
                 //this.userChallengePost(iduser.toString(), postID.toString(), "posts", "POST", postID);
-                await this.contenteventsService.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
+                //await this.contenteventsService.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
             }
         }
 

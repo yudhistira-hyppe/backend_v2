@@ -111,7 +111,7 @@ export class NewPostContentService {
     const email = JSON.parse(Buffer.from((headers['x-auth-token']).split('.')[1], 'base64').toString()).email;
 
     //Get userbasics
-    const data_userbasics = await this.basic2SS.findOne(email);
+    const data_userbasics = await this.basic2SS.findBymail(email);
     if (!(await this.utilService.ceckData(data_userbasics))) {
       var timestamps_end = await this.utilService.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, reqbody.email, null, null, reqbody);
@@ -152,6 +152,7 @@ export class NewPostContentService {
     let Posts_: newPosts = await this.buildPost_(body, data_userbasics);
     console.log('============================================== BUILD POST ' + Posts_._id + ' ==============================================', JSON.stringify(Posts_));
     let contentMedias_ = [];
+    let mediaSource_ = [];
     if (Posts_.postType == 'vid') {
       //Set Metadata
       let width_ = 0;
@@ -182,6 +183,7 @@ export class NewPostContentService {
 
       //Set contentMedias
       const vids = { "$ref": "mediavideos", "$id": Mediavideos_.mediaID, "$db": "hyppe_content_db" };
+      mediaSource_.push(Mediavideos_);
       contentMedias_.push(vids);
     } else if (Posts_.postType == 'story') {
       //Set Metadata
@@ -216,6 +218,7 @@ export class NewPostContentService {
 
       //Set contentMedias
       const stories = { "$ref": "mediastories", "$id": Mediastories_.mediaID, "$db": "hyppe_content_db" };
+      mediaSource_.push(Mediastories_);
       contentMedias_.push(stories);
     } else if (Posts_.postType == 'diary') {
       //Set Metadata
@@ -246,6 +249,7 @@ export class NewPostContentService {
       this.diaryService.create(Mediadiaries_);
 
       const diaries = { "$ref": "mediadiaries", "$id": Mediadiaries_.mediaID, "$db": "hyppe_content_db" };
+      mediaSource_.push(Mediadiaries_);
       contentMedias_.push(diaries);
     } else if (Posts_.postType == 'pict') {
       //Set Metadata
@@ -268,9 +272,11 @@ export class NewPostContentService {
       this.picService.create(Mediapicts_);
 
       const pict = { "$ref": "mediapicts", "$id": Mediapicts_.mediaID, "$db": "hyppe_content_db" };
+      mediaSource_.push(Mediapicts_);
       contentMedias_.push(pict);
     }
     Posts_.contentMedias = contentMedias_;
+    Posts_.mediaSource = mediaSource_;
 
     //Update Music
     if (body.musicId != undefined) {
@@ -355,6 +361,7 @@ export class NewPostContentService {
     let Posts_: newPosts = await this.buildPost_(body, data_userbasics);
 
     let contentMedias_ = [];
+    let mediaSource_ = [];
     if (Posts_.postType == 'pict') {
       //Set Mediapicts
       let Mediapicts_ = new Mediapicts();
@@ -382,6 +389,7 @@ export class NewPostContentService {
 
       var vids = { "$ref": "mediapicts", "$id": Mediapicts_.mediaID, "$db": "hyppe_content_db" };
       contentMedias_.push(vids);
+      mediaSource_.push(Mediapicts_);
     } else if (Posts_.postType == 'story') {
       //Set Metadata
       let metadata = { postType: 'story', duration: 0, postID: Posts_._id, email: data_userbasics.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
@@ -414,15 +422,17 @@ export class NewPostContentService {
 
       var stories = { "$ref": "mediastories", "$id": Mediastories_.mediaID, "$db": "hyppe_content_db" };
       contentMedias_.push(stories);
+      contentMedias_.push(stories);
     }
     Posts_.contentMedias = contentMedias_;
+    Posts_.mediaSource = mediaSource_;
     Posts_.active = true;
 
     //Send FCM Tag
     let tag = Posts_.tagPeople;
     if (tag != undefined && tag.length > 0) {
       tag.forEach(el => {
-        let oid = el.oid;
+        let oid = el.$id.toString();
         this.basic2SS.findOne(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
             this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString());
@@ -435,7 +445,7 @@ export class NewPostContentService {
     let tagdescription = Posts_.tagDescription;
     if (tagdescription != undefined && tagdescription.length > 0) {
       tagdescription.forEach(el => {
-        let oid = el.oid;
+        let oid = el.$id.toString();
         this.basic2SS.findOne(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
             this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString())
@@ -626,7 +636,7 @@ export class NewPostContentService {
     let tag = Posts_.tagPeople;
     if (tag != undefined && tag.length > 0) {
       tag.forEach(el => {
-        let oid = el.oid;
+        let oid = el.$id.toString();
         this.basic2SS.findOne(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
             this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString());
@@ -639,7 +649,7 @@ export class NewPostContentService {
     let tagdescription = Posts_.tagDescription;
     if (tagdescription != undefined && tagdescription.length > 0) {
       tagdescription.forEach(el => {
-        let oid = el.oid;
+        let oid = el.$id.toString();
         this.basic2SS.findOne(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
             this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString())
@@ -1211,11 +1221,15 @@ export class NewPostContentService {
 
   public async getProfileAvatar(profile: Userbasicnew) {
     let AvatarDTO_ = new Avatar();
-    AvatarDTO_.mediaBasePath = profile.mediaBasePath;
-    AvatarDTO_.mediaUri = profile.mediaUri;
-    AvatarDTO_.mediaType = profile.mediaType;
-    AvatarDTO_.mediaEndpoint = '/profilepict/' + profile.profilePict.toString();
-    return AvatarDTO_;
+    if (profile.profilePict != undefined) {
+      AvatarDTO_.mediaBasePath = profile.mediaBasePath;
+      AvatarDTO_.mediaUri = profile.mediaUri;
+      AvatarDTO_.mediaType = profile.mediaType;
+      AvatarDTO_.mediaEndpoint = '/profilepict/' + profile.profilePict.toString();
+      return AvatarDTO_;
+    } else {
+      return AvatarDTO_;
+    }
   }
 
   async uploadOss(buffer: Buffer, postId: string, filename: string, userId: string, mediaTipe: string) {
