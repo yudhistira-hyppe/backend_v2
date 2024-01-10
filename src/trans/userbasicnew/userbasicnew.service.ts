@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { Userbasicnew, UserbasicnewDocument } from './schemas/userbasicnew.schema';
 import { LogapisService } from '../logapis/logapis.service';
+import { CreateuserbasicnewDto } from './dto/Createuserbasicnew-dto';
 
 @Injectable()
 export class UserbasicnewService {
@@ -6959,5 +6960,177 @@ export class UserbasicnewService {
         var query = await this.UserbasicnewModel.aggregate(pipeline);
     
         return query;
+    }
+
+    /*
+        TAMBAHIN GET USER TARGET DATA!!
+    */
+
+    async updatefollowSystem(email_target:string, email_source:string, type:string)
+    {
+        var getdata = await this.UserbasicnewModel.findOne({ email:email_source });
+        var listpertemanan = null;
+
+        if(getdata != null)
+        {
+            try
+            {
+                listpertemanan = (type == "FOLLOWING" ? (getdata.guestMode == true ? getdata.tempfollowing : getdata.following) : getdata.follower);
+            }
+            catch(e)
+            {
+                listpertemanan = [];
+            }
+            listpertemanan.push(email_target);
+
+            var update = new CreateuserbasicnewDto();
+            if(type == "FOLLOWING")
+            {
+                if(getdata.guestMode == false)
+                {
+                    update.following = listpertemanan;
+                }
+                else
+                {
+                    update.tempfollowing = listpertemanan; 
+                }
+            }
+            else
+            {
+                update.follower = listpertemanan;
+            }
+            var result = await this.UserbasicnewModel.findByIdAndUpdate(getdata._id.toString(), update, { new: true });
+            if (!result) {
+                throw new Error('Data is not found!');
+            }
+        }
+
+        return true;
+    }
+
+    async updateunfollowSystem(email_target:string, email_source:string, type:string)
+    {
+        var getdata = await this.UserbasicnewModel.findOne({ email:email_source });
+        var listpertemanan = null;
+
+        if(getdata != null)
+        {
+            try
+            {
+                listpertemanan = (type == "FOLLOWING" ? (getdata.guestMode == true ? getdata.tempfollowing : getdata.following) : getdata.follower);
+            }
+            catch(e)
+            {
+                listpertemanan = [];
+            }
+            var filterpertemanan = listpertemanan.filter(emaildata => emaildata != email_target);
+
+            var update = new CreateuserbasicnewDto();
+            if(type == "FOLLOWING")
+            {
+                if(getdata.guestMode == false)
+                {
+                    update.following = filterpertemanan;
+                }
+                else
+                {
+                    update.tempfollowing = filterpertemanan; 
+                }
+            }
+            else
+            {
+                update.follower = filterpertemanan;
+            }
+            var result = await this.UserbasicnewModel.findByIdAndUpdate(getdata._id.toString(), update, { new: true });
+            if (!result) {
+                throw new Error('Data is not found!');
+            }
+        }
+
+        return true;
+    }
+
+    async addFriendList(email_target:string, email_source: string)
+    {
+        console.log(email_target);
+        console.log(email_source);
+        var getdata = null;
+        try
+        {
+            getdata = await this.UserbasicnewModel.findOne({email:email_source}).exec();
+        }
+        catch(e)
+        {
+            console.log(JSON.stringify(e));
+        }
+        console.log(getdata);
+
+        var updatedata = new Userbasicnew();
+        if(getdata.friend == null || getdata.friend == undefined || getdata.friend.length == 0)
+        {
+            updatedata.friend = [
+                {
+                    "email":email_target
+                }
+            ];
+        }
+        else
+        {
+            var getfriend = getdata.friend;
+            var checkdata = getfriend.find(getdata => getdata.email === email_target);
+            if(checkdata == undefined)
+            {
+                getfriend.push(
+                    {
+                        "email":email_target
+                    }
+                );
+            }
+
+            updatedata.friend = getfriend;
+        }
+
+        console.log(updatedata);
+        console.log('proses insert db');
+
+        var mongodb = require('mongoose');
+        await this.UserbasicnewModel.updateOne(
+            {
+                "_id":new mongodb.Types.ObjectId(getdata._id.toString())
+            },
+            {
+                "$set":updatedata
+            }
+        );
+
+        return true;
+    }
+
+    async deleteFriendList(email_target: string, email_source: string) 
+    {
+        var getdata = await this.UserbasicnewModel.findOne({ email:email_source }).exec();
+        if(getdata.friend == null || getdata.friend == undefined || getdata.friend.length == 0)
+        {
+            return false;
+        }
+        else
+        {
+            console.log('proses update db');
+            var updatedata = new Userbasicnew();
+            var listfriend = getdata.friend;
+            updatedata.friend = listfriend.filter((email) => email.email != email_target);
+            var mongodb = require('mongoose');
+
+            await this.UserbasicnewModel.updateOne(
+                {
+                    "_id":new mongodb.Types.ObjectId(getdata._id.toString())
+                },
+                {
+                    "$set":updatedata
+                }
+            );
+
+            return true;   
+        }
     }
 }

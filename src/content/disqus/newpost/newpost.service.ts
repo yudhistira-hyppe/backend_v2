@@ -282,5 +282,176 @@ export class NewpostService {
 
     }
 
+    async updatePostviewer(postid: string, email: string) {
+        return await this.PostsModel.updateOne({ postID: postid }, { $push: { viewer: email } }).exec();
+    }
+    
+    async updateView(email: string, email_target: string, postID: string, guestMode:boolean) {
+        var getdata = await this.PostsModel.findOne({ postID:postID }).exec();
+        var setinput = {};
+        if(guestMode == true)
+        {
+            var setguesttemp = getdata.tempView;
+            setguesttemp.push(email_target);
+            setinput["$set"] = 
+            {
+                "tempView":setguesttemp
+            } 
+        }
+        else
+        {
+            setinput['$inc'] = {
+                views:1
+            };
+            var setCEViewer = getdata.userView;
+            setCEViewer.push(email_target);
+            setinput["$set"] = {
+                "userView":setCEViewer
+            } 
+        }
+
+        this.PostsModel.updateOne(
+            {
+                email: email,
+                postID: postID,
+            },
+            setinput,
+            function (err, docs) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(docs);
+                }
+            },
+        );
+    }
+
+    async updateLike(email: string, email_target:string, postID: string, guestMode:boolean) {
+        var getdata = await this.PostsModel.findOne({ postID:postID }).exec();
+        var setinput = {};
+        if(guestMode == true)
+        {
+            var setguesttemp = getdata.tempLike;
+            setguesttemp.push(email_target);
+            setinput["$set"] = 
+            {
+                "tempLike":setguesttemp
+            } 
+        }
+        else
+        {
+            setinput['$inc'] = {
+                likes:1
+            };
+            var setCELike = getdata.userLike;
+            setCELike.push(email_target);
+            setinput["$set"] = {
+                "userLike":setCELike
+            } 
+        }
+        
+        this.PostsModel.updateOne(
+            {
+                email: email,
+                postID: postID,
+            },
+            setinput,
+            function (err, docs) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(docs);
+                }
+            },
+        );
+    }
+
+    async updateReaction(email: string, postID: string) {
+        this.PostsModel.updateOne(
+            {
+                email: email,
+                postID: postID,
+            },
+            { $inc: { reactions: 1 } },
+            function (err, docs) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(docs);
+                }
+            },
+        );
+    }
+
+    async updateUnLike(email: string, email_target:string, postID: string, guestMode:boolean) {
+        var getdata = await this.PostsModel.findOne({ postID:postID }).exec();
+        var setinput = {};
+        if(guestMode == true)
+        {
+            var setguesttemp = getdata.tempLike;
+            var filterdata = setguesttemp.filter(emaildata => emaildata != email_target);
+            setinput["$set"] = 
+            {
+                "tempLike":filterdata
+            } 
+        }
+        else
+        {
+            setinput['$inc'] = {
+                likes:-1
+            };
+            var setCELike = getdata.userLike;
+            var filterdata = setCELike.filter(emaildata => emaildata != email_target);
+            setinput["$set"] = {
+                "userLike":filterdata
+            } 
+        }
+        
+        this.PostsModel.updateOne(
+            {
+                email: email,
+                postID: postID,
+            },
+            setinput,
+            function (err, docs) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(docs);
+                }
+            },
+        );
+    }
+
+    async findOnepostID3(post: Newpost): Promise<Object> {
+        var datacontent = null;
+        if (post.postType == 'vid') {
+          datacontent = 'mediavideos';
+        } else if (post.postType == 'pict') {
+          datacontent = 'mediapicts';
+        } else if (post.postType == 'diary') {
+          datacontent = 'mediadiaries';
+        } else if (post.postType == 'story') {
+          datacontent = 'mediastories';
+        }
+    
+        const query = await this.PostsModel.aggregate([
+          {
+            $match: {
+              postID: post.postID
+            }
+          },
+          {
+            $lookup: {
+              from: datacontent,
+              localField: "postID",
+              foreignField: "postID",
+              as: "datacontent"
+            }
+          },
+        ]);
+        return query;
+      }
+
 
 }

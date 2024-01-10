@@ -24,6 +24,8 @@ import { PostchallengeModule } from 'src/trans/postchallenge/postchallenge.modul
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { HttpModule } from '@nestjs/axios';
 import { MediastreamingModule } from '../mediastreaming/mediastreaming.module';
+import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
+import { NewpostModule } from '../disqus/newpost/newpost.module';
 @Module({
     imports: [
         MediastreamingModule,
@@ -44,6 +46,8 @@ import { MediastreamingModule } from '../mediastreaming/mediastreaming.module';
         UserbasicsModule,
         FriendListModule,
         LogapisModule,
+        UserbasicnewModule,
+        NewpostModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Contentevents.name, schema: ContenteventsSchema }], 'SERVER_FULL')
     ],
