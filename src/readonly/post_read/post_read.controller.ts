@@ -1140,13 +1140,13 @@ export class PostsReadController {
 
                     if (boosted !== null || boosted.length > 0) {
                         console.log("boosted: " + data[i].postID);
-                        this.postsService.updateBoostViewer(data[i].postID, email);
+                        this.postsReadService.updateBoostViewer(data[i].postID, email);
                         //pd.boostJangkauan = this.countBoosted(obj, email);
                         if (boosted.length > 0) {
                             if (boosted[0] != undefined) {
                                 boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
                                 boosted = boosted;
-                                await this.postsService.updateBoostCount(data[i].postID, boostCount + 1);
+                                await this.postsReadService.updateBoostCount(data[i].postID, boostCount + 1);
                             } else {
                                 boostCount = 0;
                                 boosted = [];
