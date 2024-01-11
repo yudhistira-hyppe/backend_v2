@@ -15,7 +15,7 @@ import { LogapisModule } from 'src/trans/logapis/logapis.module';
     MongooseModule.forFeature([
       { name: ChallengeRead.name, schema: ChallengeReadSchema },
       { name: SubChallengeRead.name, schema: SubChallengeReadSchema },
-    ], 'SERVER_FULL_READ')
+    ], 'SERVER_FULL')
   ],
   controllers: [ChallengeReadController],
   providers: [ChallengeReadService, SubChallengeReadService],

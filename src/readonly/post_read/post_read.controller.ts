@@ -862,7 +862,7 @@ export class PostsReadController {
 
         try {
             // data = await this.postsService.landingpage(email, type, skip, limit);
-            data = await this.postsReadService.landingpage6(email, type, skip, limit);
+            data = await this.postsReadService.landingpage7(email, type, skip, limit);
             lengpict = data.length;
 
         } catch (e) {
@@ -882,10 +882,12 @@ export class PostsReadController {
         var apsaraThumbId = null;
         var isApsara = null;
         var postType = null;
+        var versionIos=null;
         // console.log(lengpict);
         if (lengpict > 0) {
             var resultpictapsara = null;
             version = data[0].version;
+            versionIos=data[0].versionIos;
             var tempapsaraId_result = null;
             var tempapsaraThumbId_result = null;
 
@@ -1211,7 +1213,7 @@ export class PostsReadController {
                                 boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
                                 boosted = boosted;
 
-                                await this.postsService.updateBoostCount(data[i].postID, boostCount + 1);
+                                await this.postsReadService.updateBoostCount(data[i].postID, boostCount + 1);
                             } else {
                                 boostCount = 0;
                                 boosted = [];
@@ -1233,12 +1235,13 @@ export class PostsReadController {
         } else {
             picts = [];
             version = "";
+            versionIos="";
         }
 
         var timestamps_end = await this.utilsService.getDateTimeString();
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
-        return { response_code: 202, data: picts, version: version.toString(), version_ios: (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString(), messages };
+        return { response_code: 202, data: picts, version: version.toString(), version_ios: versionIos.toString(), messages };
     }
 
     @UseGuards(JwtAuthGuard)

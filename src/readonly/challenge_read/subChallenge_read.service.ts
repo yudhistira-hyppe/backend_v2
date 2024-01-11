@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 @Injectable()
 export class SubChallengeReadService {
     constructor(
-        @InjectModel(SubChallengeRead.name, 'SERVER_FULL_READ')
+        @InjectModel(SubChallengeRead.name, 'SERVER_FULL')
         private readonly subChallengeReadModel: Model<SubChallengeReadDocument>,
     ) { }
 

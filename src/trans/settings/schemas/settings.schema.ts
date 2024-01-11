@@ -3,7 +3,7 @@ import mongoose, { Document } from 'mongoose';
 
 export type SettingsDocument = Settings & Document;
 
-@Schema()
+@Schema({ collection:'settings' })
 export class Settings {
     //@Prop({ type: mongoose.Schema.Types.ObjectId })
     _id: mongoose.Schema.Types.ObjectId

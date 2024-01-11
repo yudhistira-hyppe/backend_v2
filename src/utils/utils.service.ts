@@ -1333,7 +1333,15 @@ export class UtilsService {
       return null;
     }
   }
-
+  async getSetting2_(_id_setting: string) {
+    // var getSetting = await this.settingsService.findOne(_id_setting);
+    // if (getSetting != null) {
+    //   return getSetting.value;
+    // } else {
+    //   return null;
+    // }
+    return await this.settingsService.findOne(_id_setting);
+  }
   async getSetting_Mixed(_id_setting: string) {
     var getSetting = await this.settingMixes.findOne({ _id: new mongoose.Types.ObjectId(_id_setting) });
     if (getSetting != null) {

@@ -4,60 +4,154 @@ import { Long } from "mongodb";
 
 export type PostsReadDocument = PostsRead & Document;
 
-@Schema({ collection: 'posts' })
+// @Schema({ collection: 'posts' })
+// export class PostsRead {
+//   @Prop()
+//   _id: String;
+//   @Prop()
+//   postID: String
+//   @Prop()
+//   email: String
+//   @Prop()
+//   postType: String
+//   @Prop()
+//   description: String
+//   @Prop()
+//   active: boolean
+//   @Prop()
+//   createdAt: String
+//   @Prop()
+//   updatedAt: String
+//   @Prop()
+//   expiration: Long;
+//   @Prop()
+//   visibility: String
+//   @Prop()
+//   location: String
+//   @Prop()
+//   tags: any[]
+//   @Prop()
+//   allowComments: boolean
+//   @Prop()
+//   isSafe: boolean
+//   @Prop()
+//   isOwned: boolean
+//   @Prop()
+//   certified: boolean
+//   @Prop()
+//   saleAmount: number
+//   @Prop()
+//   saleLike: boolean
+//   @Prop()
+//   isShared: boolean
+//   @Prop()
+//   saleView: boolean
+//   @Prop({ type: Object })
+//   metadata: {
+//     duration: Number
+//     postRoll: Number
+//     postType: String
+//     preRoll: Number
+//     midRoll: Number
+//     postID: String
+//     email: String
+//     width: Number
+//     height: Number
+//   }
+//   @Prop()
+//   likes: Long;
+//   @Prop()
+//   views: Long;
+//   @Prop()
+//   shares: Long;
+//   @Prop()
+//   comments: Long;
+//   @Prop()
+//   reactions: Long;
+//   @Prop({ type: Object })
+//   userProfile: any;
+//   @Prop()
+//   contentMedias: any[];
+//   @Prop()
+//   _class: String
+//   @Prop()
+//   lat: number;
+//   @Prop()
+//   lon: number;
+//   @Prop()
+//   category: any[];
+//   @Prop()
+//   tagPeople: any[];
+//   @Prop()
+//   tagDescription: any[];
+//   @Prop()
+//   reportedStatus: string
+//   @Prop()
+//   reportedUserCount: number
+//   @Prop()
+//   reportedUser: any[];
+//   @Prop()
+//   contentModeration: boolean
+//   @Prop()
+//   contentModerationResponse: string
+//   @Prop()
+//   contentModerationDate: string
+//   @Prop()
+//   reportedUserHandle: any[];
+//   @Prop({ type: Object })
+//   musicId: mongoose.Types.ObjectId;
+//   @Prop()
+//   boosted: any[];
+//   @Prop()
+//   boostCount: number;
+//   @Prop()
+//   isBoost: number;
+//   @Prop()
+//   apsaraThumnail: string;
+//   @Prop()
+//   statusCB: string;
+//   @Prop()
+//   moderationReason: string;
+//   @Prop()
+//   viewer: any[];
+//   @Prop()
+//   stiker: any[];
+//   @Prop()
+//   text: any[];
+// }
+@Schema({ collection: 'newPosts' })
 export class PostsRead {
+  //POST
   @Prop()
   _id: String;
   @Prop()
-  postID: String
+  postID: String;
   @Prop()
-  email: String
+  email: String;
   @Prop()
-  postType: String
+  postType: String;
   @Prop()
-  description: String
+  description: String;
   @Prop()
-  active: boolean
+  active: boolean;
   @Prop()
-  createdAt: String
+  createdAt: String;
   @Prop()
-  updatedAt: String
+  updatedAt: String;
   @Prop()
   expiration: Long;
   @Prop()
-  visibility: String
+  visibility: String;
   @Prop()
-  location: String
+  location: String;
   @Prop()
-  tags: any[]
+  tags: any[];
   @Prop()
-  allowComments: boolean
+  allowComments: boolean;
   @Prop()
-  isSafe: boolean
+  isSafe: boolean;
   @Prop()
-  isOwned: boolean
-  @Prop()
-  certified: boolean
-  @Prop()
-  saleAmount: number
-  @Prop()
-  saleLike: boolean
-  @Prop()
-  isShared: boolean
-  @Prop()
-  saleView: boolean
-  @Prop({ type: Object })
-  metadata: {
-    duration: Number
-    postRoll: Number
-    postType: String
-    preRoll: Number
-    midRoll: Number
-    postID: String
-    email: String
-    width: Number
-    height: Number
-  }
+  isOwned: boolean;
   @Prop()
   likes: Long;
   @Prop()
@@ -73,51 +167,85 @@ export class PostsRead {
   @Prop()
   contentMedias: any[];
   @Prop()
-  _class: String
+  viewer: any[];
+  @Prop({ type: Object })
+  metadata: {
+    duration: Number
+    postRoll: Number
+    postType: String
+    preRoll: Number
+    midRoll: Number
+    postID: String
+    email: String
+    width: Number
+    height: Number
+  }
   @Prop()
-  lat: number;
+  isCertified: boolean;
   @Prop()
-  lon: number;
+  boosted: any[];
+  @Prop()
+  isShared: boolean
   @Prop()
   category: any[];
   @Prop()
-  tagPeople: any[];
+  certified: boolean
+  @Prop()
+  saleAmount: number;
+  @Prop()
+  saleLike: boolean;
+  @Prop()
+  saleView: boolean;
   @Prop()
   tagDescription: any[];
   @Prop()
-  reportedStatus: string
+  tagPeople: any[];
   @Prop()
-  reportedUserCount: number
+  contentModerationDate: string
   @Prop()
-  reportedUser: any[];
+  moderationReason: string;
+  @Prop()
+  statusCB: string;
+  @Prop()
+  isBoost: number;
   @Prop()
   contentModeration: boolean
   @Prop()
   contentModerationResponse: string
   @Prop()
-  contentModerationDate: string
+  reportedStatus: string
   @Prop()
   reportedUserHandle: any[];
   @Prop({ type: Object })
   musicId: mongoose.Types.ObjectId;
   @Prop()
-  boosted: any[];
+  reportedUser: any[];
   @Prop()
-  boostCount: number;
-  @Prop()
-  isBoost: number;
-  @Prop()
-  apsaraThumnail: string;
-  @Prop()
-  statusCB: string;
-  @Prop()
-  moderationReason: string;
-  @Prop()
-  viewer: any[];
+  reportedUserCount: number
   @Prop()
   stiker: any[];
   @Prop()
   text: any[];
-}
+  @Prop()
+  lat: number;
+  @Prop()
+  lon: number;
+  @Prop()
+  _class: String
 
+  //CONTENT EVENT
+  @Prop()
+  userView: any[];
+  @Prop()
+  userLike: any[];
+  //MEDIA
+  @Prop()
+  mediaSource: any[];
+
+  //Buat guest mode
+  @Prop()
+  tempView: any[];
+  @Prop()
+  tempLike: any[];
+}
 export const PostsReadSchema = SchemaFactory.createForClass(PostsRead);

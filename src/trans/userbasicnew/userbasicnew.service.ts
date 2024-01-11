@@ -7106,6 +7106,61 @@ export class UserbasicnewService {
         return true;
     }
 
+    async addFriendList2(email_target:string, email_source: string)
+    {
+        console.log(email_target);
+        console.log(email_source);
+        var getdata = null;
+        try
+        {
+            getdata = await this.UserbasicnewModel.findOne({email:email_source}).exec();
+        }
+        catch(e)
+        {
+            console.log(JSON.stringify(e));
+        }
+        console.log(getdata);
+
+        var updatedata = new Userbasicnew();
+        if(getdata.friend == null || getdata.friend == undefined || getdata.friend.length == 0)
+        {
+            updatedata.friend = [
+                {
+                    "email":email_target
+                }
+            ];
+        }
+        else
+        {
+            var getfriend = getdata.friend;
+            var checkdata = getfriend.find(getdata => getdata.email === email_target);
+            if(checkdata == undefined)
+            {
+                getfriend.push(
+                    {
+                        "email":email_target
+                    }
+                );
+            }
+
+            updatedata.friend = getfriend;
+        }
+
+        console.log(updatedata);
+        console.log('proses insert db');
+
+        var mongodb = require('mongoose');
+        await this.UserbasicnewModel.updateOne(
+            {
+                "_id":new mongodb.Types.ObjectId(getdata._id.toString())
+            },
+            {
+                "$set":updatedata
+            }
+        );
+
+        return true;
+    }
     async deleteFriendList(email_target: string, email_source: string) 
     {
         var getdata = await this.UserbasicnewModel.findOne({ email:email_source }).exec();

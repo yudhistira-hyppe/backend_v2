@@ -6,7 +6,7 @@ import { Model } from 'mongoose';
 @Injectable()
 export class NotificationReadService { 
     constructor(
-        @InjectModel(NotificationsRead.name, 'SERVER_FULL_READ')
+        @InjectModel(NotificationsRead.name, 'SERVER_FULL')
         private readonly NotificationsReadModel: Model<NotificationsReadDocument>,
     ) { }
 

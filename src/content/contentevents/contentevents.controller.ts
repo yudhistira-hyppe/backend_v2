@@ -3486,8 +3486,8 @@ export class ContenteventsController {
 
     if (checkexist == true) {
       if (jenisoperasi == 'create') {
-        await this.basic2SS.addFriendList(email1, email2);
-        await this.basic2SS.addFriendList(email2, email1);
+        await this.basic2SS.addFriendList2(email1, email2);
+        await this.basic2SS.addFriendList2(email2, email1);
       }
       else {
         await this.basic2SS.deleteFriendList(email1, email2);

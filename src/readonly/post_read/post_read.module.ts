@@ -24,7 +24,7 @@ import { NotificationsRead, NotificationsReadSchema } from './schema/notificatio
         MongooseModule.forFeature([
             { name: NotificationsRead.name, schema: NotificationsReadSchema },
             { name: PostsRead.name, schema: PostsReadSchema }
-        ], 'SERVER_FULL_READ')
+        ], 'SERVER_FULL')
     ],
     controllers: [PostsReadController],
     providers: [PostsReadService, NotificationReadService],

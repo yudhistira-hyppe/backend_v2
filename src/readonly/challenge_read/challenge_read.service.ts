@@ -6,7 +6,7 @@ import { ChallengeRead, ChallengeReadDocument } from './schema/challenge_read.sc
 @Injectable()
 export class ChallengeReadService {
   constructor(
-    @InjectModel(ChallengeRead.name, 'SERVER_FULL_READ')
+    @InjectModel(ChallengeRead.name, 'SERVER_FULL')
     private readonly challengeReadModel: Model<ChallengeReadDocument>,
   ) { }
 }

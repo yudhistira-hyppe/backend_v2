@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { CreateSettingsDto } from './dto/create-settings.dto';
 import { Settings, SettingsDocument } from './schemas/settings.schema';
 import { pipe } from 'rxjs';
@@ -29,7 +29,7 @@ export class SettingsService {
     }
 
     async findOne(id: string): Promise<Settings> {
-        return this.settingsModel.findOne({ _id: id }).exec();
+        return this.settingsModel.findOne({ _id:id }).exec();
     }
 
     async findOneByJenis(jenis: string): Promise<Settings> {
