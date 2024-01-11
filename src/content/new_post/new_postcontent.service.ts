@@ -433,7 +433,7 @@ export class NewPostContentService {
     let tag = Posts_.tagPeople;
     if (tag != undefined && tag.length > 0) {
       tag.forEach(el => {
-        let oid = el.$id.toString();
+        let oid = el.toString();
         this.basic2SS.findOne(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
             this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString());
@@ -446,7 +446,7 @@ export class NewPostContentService {
     let tagdescription = Posts_.tagDescription;
     if (tagdescription != undefined && tagdescription.length > 0) {
       tagdescription.forEach(el => {
-        let oid = el.$id.toString();
+        let oid = el.toString();
         this.basic2SS.findOne(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
             this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString())
@@ -632,12 +632,11 @@ export class NewPostContentService {
       //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
     }
 
-
     //Send FCM Tag
     let tag = Posts_.tagPeople;
     if (tag != undefined && tag.length > 0) {
       tag.forEach(el => {
-        let oid = el.$id.toString();
+        let oid = el.toString();
         this.basic2SS.findOne(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
             this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString());
@@ -650,7 +649,7 @@ export class NewPostContentService {
     let tagdescription = Posts_.tagDescription;
     if (tagdescription != undefined && tagdescription.length > 0) {
       tagdescription.forEach(el => {
-        let oid = el.$id.toString();
+        let oid = el.toString();
         this.basic2SS.findOne(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
             this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString())
@@ -1396,7 +1395,7 @@ export class NewPostContentService {
       for (var i = 0; i < tagPeopleSplit.length; i++) {
         let getUserauth = await this.basic2SS.findOneUsername(tagPeopleSplit[i].toString());
         if (await this.utilService.ceckData(getUserauth)) {
-          tagPeople_array.push({ "$ref": "userauths", "$id": new mongoose.Types.ObjectId(getUserauth._id.toString()), "$db": "hyppe_trans_db" });
+          tagPeople_array.push(new mongoose.Types.ObjectId(getUserauth._id.toString()));
         }
       }
       Posts_.tagPeople = tagPeople_array;
@@ -1407,7 +1406,7 @@ export class NewPostContentService {
       for (var i = 0; i < tagDescriptionSplit.length; i++) {
         let getUserauth = await this.basic2SS.findOneUsername(tagDescriptionSplit[i].toString());
         if (await this.utilService.ceckData(getUserauth)) {
-          tagDescription_array.push({ "$ref": "userauths", "$id": new mongoose.Types.ObjectId(getUserauth._id.toString()), "$db": "hyppe_trans_db" });
+          tagDescription_array.push(new mongoose.Types.ObjectId(getUserauth._id.toString()));
         }
       }
       Posts_.tagDescription = tagDescription_array;
