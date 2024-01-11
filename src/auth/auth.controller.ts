@@ -6845,10 +6845,50 @@ export class AuthController {
     const currentDate = await this.utilsService.getDateTimeString();
     const getUserBasic = await this.basic2SS.findbyemail(GuestRequest_.email.toLowerCase());
     const datasetting = await this.settingsService.findAll();
-    if (await this.utilsService.ceckData(getUserBasic)){
+    if (await this.utilsService.ceckData(getUserBasic)) {
+      //SET VARIABLE
+      let ID_device = null;
+
       //GEN TOKEN AND REFRESH TOKEN
       const refresh_token = await this.authService.updateRefreshToken2(GuestRequest_.email.toLowerCase());
       const token = (await this.utilsService.generateToken(GuestRequest_.email.toLowerCase(), GuestRequest_.deviceId)).toString();
+
+      //CREATE DEVICES
+      const datauserdevicesService = await this.userdevicesService.findOneEmail(GuestRequest_.email.toLowerCase(), GuestRequest_.deviceId);
+      if (await this.utilsService.ceckData(datauserdevicesService)) {
+        try {
+          await this.userdevicesService.updatebyEmail(
+            GuestRequest_.email.toLocaleLowerCase(),
+            GuestRequest_.deviceId,
+            {
+              active: true,
+            },
+          );
+          ID_device = datauserdevicesService._id;
+        } catch (error) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Get Userdevices. Error:' + error,
+          );
+        }
+      } else {
+        try {
+          var data_CreateUserdeviceDto = new CreateUserdeviceDto();
+          ID_device = (await this.utilsService.generateId()).toLowerCase();
+          data_CreateUserdeviceDto._id = ID_device;
+          data_CreateUserdeviceDto.deviceID = GuestRequest_.deviceId;
+          data_CreateUserdeviceDto.email = GuestRequest_.email.toLowerCase();
+          data_CreateUserdeviceDto.active = true;
+          data_CreateUserdeviceDto._class = 'io.melody.core.domain.UserDevices';
+          data_CreateUserdeviceDto.createdAt = currentDate;
+          data_CreateUserdeviceDto.updatedAt = currentDate;
+
+          await this.userdevicesService.create(data_CreateUserdeviceDto);
+        } catch (error) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Create Userdevices. Error:' + error,
+          );
+        }
+      }
 
       //GENERATE PROFILE
       let ProfileDTO_ = new ProfileDTO();
