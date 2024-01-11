@@ -25,6 +25,99 @@ export class PostsReadService {
       });
     return data;
   }
+  async updateBoostViewer(id: string, email: string) {
+    this.PostsReadModel.findOne({ _id: id }).exec().then((ps) => {
+      console.log("post boost: " + ps.postID);
+      let bs = ps.boosted;
+      if (bs != undefined) {
+        for (let i = 0; i < bs.length; i++) {
+          let bbs = bs[i];
+          if (bbs.boostSession != undefined) {
+            let bootSession = bbs.boostSession;
+            let today = new Date().getTime();
+            let st = new Date(String(bootSession.start)).getTime();
+            let ed = new Date(String(bootSession.end)).getTime();
+
+            if (st <= today && ed >= today) {
+              let interval = Number(bbs.boostInterval.value);
+              interval = interval * 60 * 1000;
+              let a = (today - st);
+              console.log("today: " + a + " interval: " + interval);
+              let c = Math.ceil(a / interval);
+              console.log("round today: " + c);
+              let d = st + (interval * c);
+
+              //let ted = d + (7 * 3600 * 1000);
+              let ted = d;
+
+              let td = new Date(ted);
+              let stoday = new Date(td.getTime() - (td.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+              stoday = stoday.substring(0, 19);
+              console.log(st + " " + d + " " + ted + " " + stoday);
+
+              let tdx = new Date(today);
+              let xtoday = new Date(tdx.getTime() - (tdx.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+              xtoday = xtoday.substring(0, 19);
+
+              let bv: any[] = bbs.boostViewer;
+              if (bv != undefined) {
+                if (bv.length > 0) {
+                  for (let x = 0; x < bv.length; x++) {
+                    let bbv = bv[x];
+                    if (String(bbv.email) == email) {
+                      if (bbv.isLast == true) {
+                        bbv.isLast = false;
+                      }
+                    }
+                  }
+
+                  let o = {
+                    email: email,
+                    createAt: xtoday,
+                    timeEnd: stoday,
+                    isLast: true
+                  };
+
+                  bv.push(o);
+                } else {
+                  let o = {
+                    email: email,
+                    createAt: xtoday,
+                    timeEnd: stoday,
+                    isLast: true
+                  };
+
+                  bv.push(o);
+                }
+              }
+            }
+          }
+
+        }
+
+        console.log(JSON.stringify(bs));
+
+        this.PostsReadModel.updateOne(
+          {
+            "_id": id,
+          },
+          {
+            $set: {
+              "boosted": bs
+            }
+          },
+          function (err, docs) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(docs);
+            }
+          }
+        );
+      }
+
+    });
+  }
 
 
   async landingpageMy2(email: string, type: string, skip: number, limit: number, emaillogin: string) {
