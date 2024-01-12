@@ -1325,7 +1325,6 @@ export class SocmedService {
     var user_referral = null;
     var user_devicetype = null;
     var user_imei = null;
-    var user_email_login = null;
 
     if (req.body.email == undefined) {
       
@@ -1349,19 +1348,6 @@ export class SocmedService {
       } else {
         user_email = req.body.email;
       }
-    }
-
-    if (req.body.emailLogin == undefined || req.body.emailLogin == '') {
-      
-      var timestamps_end = await this.utilsService.getDateTimeString();
-      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
-
-
-      await this.errorHandler.generateNotAcceptableException(
-        'Email is mandatory',
-      );
-    } else {
-      user_email_login = req.body.emailLogin;
     }
 
     if (req.body.socmedSource == undefined) {
@@ -1439,8 +1425,7 @@ export class SocmedService {
     //Ceck User Userdevices
     const datauserdevicesService = await this.userdevicesService.findOneEmail(user_email, user_deviceId);
 
-    if (await this.utilsService.ceckData(datauserbasicsService) && datauserbasicsService.guestMode == false){
-
+    if (await this.utilsService.ceckData(datauserbasicsService)){
       type = 'LOGIN';
       if (datauserbasicsService.isEmailVerified != undefined) {
         var updatedata = new CreateuserbasicnewDto();
@@ -1896,17 +1881,11 @@ export class SocmedService {
         dataactivityevents = await this.activityeventsService.findParentWitoutDevice(user_email, type, false,);
       }
 
-      var databyemaillogin = await this.userbasicsnewService.findbyemailLogin(user_email_login);
-      
-      var cekactivityevent = !(await this.utilsService.ceckData(dataactivityevents));
-      var cekemaillogin = !(await this.utilsService.ceckData(databyemaillogin));
-
-      if ((cekactivityevent == true && cekemaillogin == true) || (datauserbasicsService != null && datauserbasicsService.guestMode == true)) {
-        
+      if (!(await this.utilsService.ceckData(dataactivityevents))) {
         var user_interest = [];
         var ID_device = null;
         var ID_insights = null;
-        var username_ = await this.utilsService.generateUsername(user_email_login);
+        var username_ = await this.utilsService.generateUsername(user_email);
         var id_user_langIso = null;
 
         var mongoose_gen_id_user_basic = new mongoose.Types.ObjectId();
@@ -1935,41 +1914,38 @@ export class SocmedService {
           }
         }
 
-        if(datauserbasicsService == null)
-        {
-          //Create Insights
-          try {
-            var data_CreateInsightsDto = new CreateInsightsDto();
-            ID_insights = (await this.utilsService.generateId()).toLowerCase();
-            data_CreateInsightsDto._id = ID_insights;
-            data_CreateInsightsDto.insightID = ID_insights;
-            data_CreateInsightsDto.active = true;
-            data_CreateInsightsDto.createdAt = current_date;
-            data_CreateInsightsDto.updatedAt = current_date;
-            data_CreateInsightsDto.email = user_email;
-            data_CreateInsightsDto.followers = Long.fromString('0');
-            data_CreateInsightsDto.followings = Long.fromString('0');
-            data_CreateInsightsDto.unfollows = Long.fromString('0');
-            data_CreateInsightsDto.likes = Long.fromString('0');
-            data_CreateInsightsDto.views = Long.fromString('0');
-            data_CreateInsightsDto.comments = Long.fromString('0');
-            data_CreateInsightsDto.posts = Long.fromString('0');
-            data_CreateInsightsDto.shares = Long.fromString('0');
-            data_CreateInsightsDto.reactions = Long.fromString('0');
-            data_CreateInsightsDto._class =
-              'io.melody.hyppe.content.domain.Insight';
+        //Create Insights
+        try {
+          var data_CreateInsightsDto = new CreateInsightsDto();
+          ID_insights = (await this.utilsService.generateId()).toLowerCase();
+          data_CreateInsightsDto._id = ID_insights;
+          data_CreateInsightsDto.insightID = ID_insights;
+          data_CreateInsightsDto.active = true;
+          data_CreateInsightsDto.createdAt = current_date;
+          data_CreateInsightsDto.updatedAt = current_date;
+          data_CreateInsightsDto.email = user_email;
+          data_CreateInsightsDto.followers = Long.fromString('0');
+          data_CreateInsightsDto.followings = Long.fromString('0');
+          data_CreateInsightsDto.unfollows = Long.fromString('0');
+          data_CreateInsightsDto.likes = Long.fromString('0');
+          data_CreateInsightsDto.views = Long.fromString('0');
+          data_CreateInsightsDto.comments = Long.fromString('0');
+          data_CreateInsightsDto.posts = Long.fromString('0');
+          data_CreateInsightsDto.shares = Long.fromString('0');
+          data_CreateInsightsDto.reactions = Long.fromString('0');
+          data_CreateInsightsDto._class =
+            'io.melody.hyppe.content.domain.Insight';
 
-            //Insert Insights
-            await this.insightsService.create(data_CreateInsightsDto);
-          } catch (error) {
-            
-            var timestamps_end = await this.utilsService.getDateTimeString();
-            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+          //Insert Insights
+          await this.insightsService.create(data_CreateInsightsDto);
+        } catch (error) {
+          
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
 
-            await this.errorHandler.generateNotAcceptableException(
-              'Unabled to proceed Create Insights. Error: ' + error,
-            );
-          }
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Create Insights. Error: ' + error,
+          );
         }
 
         //Userdevices != null
@@ -2058,13 +2034,20 @@ export class SocmedService {
             status: false
           }
         ];
-        //NewUserBasic data process
+        //Create UserBasic
         try {
 
           var data_CreateUserbasicDto = new CreateuserbasicnewDto();
-          data_CreateUserbasicDto.emailLogin = user_email_login;
+          var pass_gen = await this.utilsService.generatePassword('HyppeNew');
+          var gen_profileID = (await this.utilsService.generateId()).toLowerCase();
+          var ID_user = (await this.utilsService.generateId()).toLowerCase();
+          data_CreateUserbasicDto._id = mongoose_gen_id_user_basic;
+          data_CreateUserbasicDto.profileID = gen_profileID;
+          data_CreateUserbasicDto.email = user_email;
           data_CreateUserbasicDto.fullName = username_;
           data_CreateUserbasicDto.username = username_;
+          data_CreateUserbasicDto.password = pass_gen;
+          data_CreateUserbasicDto.userID = ID_user;
           data_CreateUserbasicDto.status = CurrentStatus;
           data_CreateUserbasicDto.event = CurrentEvent;
           data_CreateUserbasicDto.regSrc = "IOS";
@@ -2078,7 +2061,6 @@ export class SocmedService {
           data_CreateUserbasicDto.isComplete = false;
           data_CreateUserbasicDto.loginSource = user_socmedSource;
           data_CreateUserbasicDto.loginSrc = user_socmedSource;
-          data_CreateUserbasicDto.guestMode = false;
           data_CreateUserbasicDto.authUsers = {
             "devices":[
               {
@@ -2097,6 +2079,11 @@ export class SocmedService {
           data_CreateUserbasicDto.updatedAt = current_date;
           data_CreateUserbasicDto.statusKyc = 'unverified';
           //data_CreateUserbasicDto.tutor = arrayTutor;
+          data_CreateUserbasicDto.insight = {
+            $ref: 'insights',
+            $id: ID_insights,
+            $db: 'hyppe_content_db',
+          };
           if (id_user_langIso != null) {
             data_CreateUserbasicDto.languages = {
               $ref: 'languages',
@@ -2106,32 +2093,8 @@ export class SocmedService {
           }
           data_CreateUserbasicDto._class = _class_UserProfile;
 
-          if(datauserbasicsService == null)
-          {
-            var pass_gen = await this.utilsService.generatePassword('HyppeNew');
-            var gen_profileID = (await this.utilsService.generateId()).toLowerCase();
-            var ID_user = (await this.utilsService.generateId()).toLowerCase();
-            data_CreateUserbasicDto.email = user_email;
-            data_CreateUserbasicDto._id = mongoose_gen_id_user_basic;
-            data_CreateUserbasicDto.profileID = gen_profileID;
-            data_CreateUserbasicDto.password = pass_gen;
-            data_CreateUserbasicDto.userID = ID_user;
-            data_CreateUserbasicDto.friend = [];
-            data_CreateUserbasicDto.insight = {
-              $ref: 'insights',
-              $id: ID_insights,
-              $db: 'hyppe_content_db',
-            };
-
-            //Insert UserBasic
-            await this.userbasicsnewService.create(data_CreateUserbasicDto);
-          }
-          else
-          {
-            await this.userbasicsnewService.updatebyEmail(user_email, data_CreateUserbasicDto);
-            this.authService.guestToreal(data_CreateUserbasicDto);
-          }
-
+          //Insert UserBasic
+          await this.userbasicsnewService.create(data_CreateUserbasicDto);
         } catch (error) {
           
           var timestamps_end = await this.utilsService.getDateTimeString();

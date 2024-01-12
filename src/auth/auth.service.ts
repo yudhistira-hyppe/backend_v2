@@ -11261,18 +11261,8 @@ export class AuthService {
       });
     }
 
-    if (!(await this.utilsService.validasiEmail(req.body.emailLogin))) {
-      throw new NotAcceptableException({
-        response_code: 406,
-        messages: {
-          info: ['Unabled to proceed, Invalid formal email format'],
-        },
-      });
-    }
-
     //CECk signup/verify
-    if (req.body.otp == undefined) {  
-
+    if (req.body.otp == undefined) {
       if (req.body.password == undefined) {
         throw new NotAcceptableException({
           response_code: 406,
@@ -11330,7 +11320,7 @@ export class AuthService {
         });
       }
       user_email = req.body.email;
-      emailLogin = req.body.emailLogin;
+      emailLogin = req.body.email;
       user_password = req.body.password;
       user_deviceId = req.body.deviceId;
       if (req.body.langIso != undefined) {
@@ -11610,36 +11600,27 @@ export class AuthService {
                 }
 
                 let mediaprofilepicts_res = {};
-                if (datauserbasicsService.mediaBasePath != null) {
-                  mediaprofilepicts_res["mediaBasePath"] = datauserbasicsService.mediaBasePath;
-                }
-                else
-                {
-                  mediaprofilepicts_res["mediaBasePath"] = null;
-                }
+                if (datauserbasicsService.profilePict != undefined) {
+                  if (datauserbasicsService.mediaBasePath != null) {
+                    mediaprofilepicts_res["mediaBasePath"] = datauserbasicsService.mediaBasePath;
+                  }
 
-                if (datauserbasicsService.mediaUri != null) {
-                  mediaprofilepicts_res["mediaUri"] = datauserbasicsService.mediaUri;
-                }
-                else
-                {
-                  mediaprofilepicts_res["mediaUri"] = null;
-                }
+                  if (datauserbasicsService.mediaUri != null) {
+                    mediaprofilepicts_res["mediaUri"] = datauserbasicsService.mediaUri;
+                  }
 
-                if (datauserbasicsService.mediaType != null) {
-                  mediaprofilepicts_res["mediaType"] = datauserbasicsService.mediaType;
-                }
-                else
-                {
-                  mediaprofilepicts_res["mediaType"] = null;
-                }
+                  if (datauserbasicsService.mediaType != null) {
+                    mediaprofilepicts_res["mediaType"] = datauserbasicsService.mediaType;
+                  }
 
-                if (datauserbasicsService.mediaEndpoint != null) {
-                  mediaprofilepicts_res["mediaEndpoint"] = datauserbasicsService.mediaEndpoint;
-                }
-                else
-                {
-                  mediaprofilepicts_res["mediaEndpoint"] = null;
+                  if (datauserbasicsService.mediaEndpoint != null) {
+                    mediaprofilepicts_res["mediaEndpoint"] = datauserbasicsService.mediaEndpoint;
+                  }
+                  else {
+                    if (datauserbasicsService.profilePict.$id != null && datauserbasicsService.profilePict.$id != undefined) {
+                      mediaprofilepicts_res["mediaEndpoint"] = "/profilepict/" + datauserbasicsService.profilePict.$id.toString();
+                    }
+                  }
                 }
 
                 let insights = null;
@@ -12170,13 +12151,8 @@ export class AuthService {
 
       //Ceck data newuserbasic
       const datauserbasicsService = await this.basic2SS.findbyemail(user_email);
-      let getdatabyemail = await this.basic2SS.findbyemailLogin(emailLogin);
-      
       user_exist = !(await this.utilsService.ceckData(datauserbasicsService));
-      var signupbyemail = !(await this.utilsService.ceckData(getdatabyemail));
-
-      if ((user_exist == true && signupbyemail == true) || (signupbyemail == true && user_exist == false && datauserbasicsService.guestMode == true)) {
-        
+      if (user_exist) {
         //Ceck User ActivityEvent Parent
         const dataactivityevents =
           await this.activityeventsService.findParentWitoutDevice(
@@ -12193,7 +12169,7 @@ export class AuthService {
         }
 
         if (
-          (user_exist || datauserbasicsService.guestMode == true) &&
+          user_exist &&
           CurrentStatus == 'INITIAL' &&
           CurrentEvent == 'SIGN_UP'
         ) {
@@ -12201,7 +12177,7 @@ export class AuthService {
           var data_interest_id = [];
           var OTP = await this.utilsService.generateOTP();
           var OTP_expires = await this.utilsService.generateOTPExpires();
-          var username_ = await this.utilsService.generateUsername(emailLogin);
+          var username_ = await this.utilsService.generateUsername(user_email);
           var id_user_langIso = null;
 
           var mongoose_gen_id_user_auth = new mongoose.Types.ObjectId();
@@ -12250,37 +12226,34 @@ export class AuthService {
             );
           }
 
-          if(user_exist == true && signupbyemail == true)
-          {
-            //Create Insights
-            try {
-              var data_CreateInsightsDto = new CreateInsightsDto();
-              var ID_insights = (await this.utilsService.generateId()).toLowerCase();
-              data_CreateInsightsDto._id = ID_insights;
-              data_CreateInsightsDto.insightID = ID_insights;
-              data_CreateInsightsDto.active = true;
-              data_CreateInsightsDto.email = emailLogin;
-              data_CreateInsightsDto.createdAt = current_date;
-              data_CreateInsightsDto.updatedAt = current_date;
-              data_CreateInsightsDto.followers = Long.fromString('0');
-              data_CreateInsightsDto.followings = Long.fromString('0');
-              data_CreateInsightsDto.unfollows = Long.fromString('0');
-              data_CreateInsightsDto.likes = Long.fromString('0');
-              data_CreateInsightsDto.views = Long.fromString('0');
-              data_CreateInsightsDto.comments = Long.fromString('0');
-              data_CreateInsightsDto.posts = Long.fromString('0');
-              data_CreateInsightsDto.shares = Long.fromString('0');
-              data_CreateInsightsDto.reactions = Long.fromString('0');
-              data_CreateInsightsDto._class =
-                'io.melody.hyppe.content.domain.Insight';
+          //Create Insights
+          try {
+            var data_CreateInsightsDto = new CreateInsightsDto();
+            var ID_insights = (await this.utilsService.generateId()).toLowerCase();
+            data_CreateInsightsDto._id = ID_insights;
+            data_CreateInsightsDto.insightID = ID_insights;
+            data_CreateInsightsDto.active = true;
+            data_CreateInsightsDto.createdAt = current_date;
+            data_CreateInsightsDto.updatedAt = current_date;
+            data_CreateInsightsDto.email = user_email;
+            data_CreateInsightsDto.followers = Long.fromString('0');
+            data_CreateInsightsDto.followings = Long.fromString('0');
+            data_CreateInsightsDto.unfollows = Long.fromString('0');
+            data_CreateInsightsDto.likes = Long.fromString('0');
+            data_CreateInsightsDto.views = Long.fromString('0');
+            data_CreateInsightsDto.comments = Long.fromString('0');
+            data_CreateInsightsDto.posts = Long.fromString('0');
+            data_CreateInsightsDto.shares = Long.fromString('0');
+            data_CreateInsightsDto.reactions = Long.fromString('0');
+            data_CreateInsightsDto._class =
+              'io.melody.hyppe.content.domain.Insight';
 
-              //Insert Insights
-              await this.insightsService.create(data_CreateInsightsDto); 
-            } catch (error) {
-              await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Create Insights. Error: ' + error,
-              );
-            }
+            //Insert Insights
+            await this.insightsService.create(data_CreateInsightsDto);
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Create Insights. Error: ' + error,
+            );
           }
 
           //Userdevices != null
@@ -12321,125 +12294,113 @@ export class AuthService {
             }
           }
 
-          var data_CreateUserbasicDto = new Userbasicnew();
-          var pass_gen = await this.utilsService.generatePassword(user_password);
-          data_CreateUserbasicDto.emailLogin = emailLogin;
-          data_CreateUserbasicDto.fullName = username_;
-          data_CreateUserbasicDto.gender = user_gender;
-          data_CreateUserbasicDto.status = 'NOTIFY';
-          data_CreateUserbasicDto.event = 'NOTIFY_OTP';
-          data_CreateUserbasicDto.userEvent = 'NOTIFY_OTP';
-          data_CreateUserbasicDto.isComplete = false;
-          data_CreateUserbasicDto.isCelebrity = false;
-          data_CreateUserbasicDto.isIdVerified = false;
-          data_CreateUserbasicDto.isPrivate = false;
-          data_CreateUserbasicDto.isFollowPrivate = false;
-          data_CreateUserbasicDto.isPostPrivate = false;
-          data_CreateUserbasicDto.updatedAt = current_date;
-          data_CreateUserbasicDto.statusKyc = 'unverified';
-          data_CreateUserbasicDto.tutor = [
-            {
-              key: "protection",
-              status: false
-            },
-            {
-              key: "sell",
-              status: false
-            },
-            {
-              key: "interest",
-              status: false
-            },
-            {
-              key: "ownership",
-              status: false
-            },
-            {
-              key: "boost",
-              status: false
-            },
-            {
-              key: "transaction",
-              status: false
-            },
-            {
-              key: "idRefferal",
-              status: false
-            },
-            {
-              key: "shareRefferal",
-              status: false
-            },
-            {
-              key: "codeRefferal",
-              status: false
-            }
-          ];
-          data_CreateUserbasicDto.userInterests = Object(data_interest_id);
-          if (id_user_langIso != null) {
-            data_CreateUserbasicDto.languages = {
-              $ref: 'languages',
-              $id: id_user_langIso,
-              $db: 'hyppe_infra_db',
-            };
-          }
-          data_CreateUserbasicDto._class = _class_UserProfile;
-          data_CreateUserbasicDto.username = username_;
-          data_CreateUserbasicDto.password = pass_gen;
-          data_CreateUserbasicDto.regSrc = user_regSrc;
-          data_CreateUserbasicDto.isExpiryPass = false;
-          data_CreateUserbasicDto.isEmailVerified = false;
-          data_CreateUserbasicDto.otpAttempt = Long.fromString('0');
-          data_CreateUserbasicDto.otpRequestTime = Long.fromString(OTP_expires.toString());
-          data_CreateUserbasicDto.isEnabled = true;
-          data_CreateUserbasicDto.otpNextAttemptAllow = Long.fromString('0');
-          data_CreateUserbasicDto.isAccountNonExpired = true;
-          data_CreateUserbasicDto.isAccountNonLocked = true;
-          data_CreateUserbasicDto.isCredentialsNonExpired = true;
-          data_CreateUserbasicDto.roles = ['ROLE_USER'];
-          data_CreateUserbasicDto.oneTimePassword = OTP.toString();
-          data_CreateUserbasicDto.guestMode = false;
-          data_CreateUserbasicDto.friend = [];
-          var authUsers = {
-            "devices": [
+          //Create UserBasic
+          try {
+            var data_CreateUserbasicDto = new Userbasicnew();
+            var pass_gen = await this.utilsService.generatePassword(user_password);
+            var gen_profileID = (await this.utilsService.generateId()).toLowerCase();
+            var ID_user = (await this.utilsService.generateId()).toLowerCase();
+            data_CreateUserbasicDto._id = mongoose_gen_id_user_basic;
+            data_CreateUserbasicDto.profileID = gen_profileID;
+            data_CreateUserbasicDto.email = user_email;
+            data_CreateUserbasicDto.fullName = username_;
+            data_CreateUserbasicDto.gender = user_gender;
+            data_CreateUserbasicDto.status = 'NOTIFY';
+            data_CreateUserbasicDto.event = 'NOTIFY_OTP';
+            data_CreateUserbasicDto.userEvent = 'NOTIFY_OTP';
+            data_CreateUserbasicDto.isComplete = false;
+            data_CreateUserbasicDto.isCelebrity = false;
+            data_CreateUserbasicDto.isIdVerified = false;
+            data_CreateUserbasicDto.isPrivate = false;
+            data_CreateUserbasicDto.isFollowPrivate = false;
+            data_CreateUserbasicDto.isPostPrivate = false;
+            data_CreateUserbasicDto.createdAt = current_date;
+            data_CreateUserbasicDto.updatedAt = current_date;
+            data_CreateUserbasicDto.statusKyc = 'unverified';
+            data_CreateUserbasicDto.tutor = [
               {
-                $ref: 'userdevices',
-                $id: ID_device,
-                $db: 'hyppe_trans_db',
+                key: "protection",
+                status: false
               },
-            ]
-          };
-          data_CreateUserbasicDto.authUsers = authUsers;
-
-          if(signupbyemail == true && datauserbasicsService != null && datauserbasicsService.guestMode == true)
-          {
-            await this.basic2SS.updatebyEmail(user_email, data_CreateUserbasicDto);
-            this.guestToreal(datauserbasicsService);
-          }
-          else
-          {
-            //Create UserBasic
-            try {
-              var gen_profileID = (await this.utilsService.generateId()).toLowerCase();
-              var ID_user = (await this.utilsService.generateId()).toLowerCase();
-              data_CreateUserbasicDto._id = mongoose_gen_id_user_basic;
-              data_CreateUserbasicDto.profileID = gen_profileID;
-              data_CreateUserbasicDto.email = emailLogin;
-              data_CreateUserbasicDto.createdAt = current_date;
-              data_CreateUserbasicDto.userID = ID_user;
-              data_CreateUserbasicDto.insight = {
-                $ref: 'insights',
-                $id: Object(ID_insights),
-                $db: 'hyppe_content_db',
+              {
+                key: "sell",
+                status: false
+              },
+              {
+                key: "interest",
+                status: false
+              },
+              {
+                key: "ownership",
+                status: false
+              },
+              {
+                key: "boost",
+                status: false
+              },
+              {
+                key: "transaction",
+                status: false
+              },
+              {
+                key: "idRefferal",
+                status: false
+              },
+              {
+                key: "shareRefferal",
+                status: false
+              },
+              {
+                key: "codeRefferal",
+                status: false
+              }
+            ];
+            data_CreateUserbasicDto.insight = {
+              $ref: 'insights',
+              $id: Object(ID_insights),
+              $db: 'hyppe_content_db',
+            };
+            data_CreateUserbasicDto.userInterests = Object(data_interest_id);
+            if (id_user_langIso != null) {
+              data_CreateUserbasicDto.languages = {
+                $ref: 'languages',
+                $id: id_user_langIso,
+                $db: 'hyppe_infra_db',
               };
+            }
+            data_CreateUserbasicDto._class = _class_UserProfile;
+            data_CreateUserbasicDto.username = username_;
+            data_CreateUserbasicDto.password = pass_gen;
+            data_CreateUserbasicDto.userID = ID_user;
+            data_CreateUserbasicDto.regSrc = user_regSrc;
+            data_CreateUserbasicDto.isExpiryPass = false;
+            data_CreateUserbasicDto.isEmailVerified = false;
+            data_CreateUserbasicDto.otpAttempt = Long.fromString('0');
+            data_CreateUserbasicDto.otpRequestTime = Long.fromString(OTP_expires.toString());
+            data_CreateUserbasicDto.isEnabled = true;
+            data_CreateUserbasicDto.otpNextAttemptAllow = Long.fromString('0');
+            data_CreateUserbasicDto.isAccountNonExpired = true;
+            data_CreateUserbasicDto.isAccountNonLocked = true;
+            data_CreateUserbasicDto.isCredentialsNonExpired = true;
+            data_CreateUserbasicDto.roles = ['ROLE_USER'];
+            data_CreateUserbasicDto.oneTimePassword = OTP.toString();
+            var authUsers = {
+              "devices": [
+                {
+                  $ref: 'userdevices',
+                  $id: ID_device,
+                  $db: 'hyppe_trans_db',
+                },
+              ]
+            };
+            data_CreateUserbasicDto.authUsers = authUsers
 
-              //Insert UserBasic
-              await this.basic2SS.create(data_CreateUserbasicDto);
-            } catch (error) {
-              await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Create UserBasic. Error: ' + error,
-              );
-            } 
+            //Insert UserBasic
+            await this.basic2SS.create(data_CreateUserbasicDto);
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Create UserBasic. Error: ' + error,
+            );
           }
 
           //Create ActivityEvent Parent SIGN_UP
@@ -12543,11 +12504,10 @@ export class AuthService {
           try {
             await this.sendemailOTP2(user_email, OTP.toString(), 'ENROL', "id");
           } catch (error) {
-            await this.sendemailOTP2(emailLogin, OTP.toString(), 'ENROL', "id");
-            // await this.errorHandler.generateNotAcceptableException(
-            //   'Unabled to proceed Failed Send Email. Error:' +
-            //   error,
-            // );
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Failed Send Email. Error:' +
+              error,
+            );
           }
 
           return {
@@ -12653,25 +12613,6 @@ export class AuthService {
           // }
         }
       } else {
-        var messages = '';
-        // if(datauserbasicsService.guestMode == false)
-        // {
-        //   messages = 'Maaf! Tidak bisa mendaftar melalui perangkat ini.';
-        //   if (lang == "en") {
-        //     messages = "Sorry! Can't register through The Device.";
-        //   } else {
-        //     messages = 'Maaf! Tidak bisa mendaftar melalui perangkat ini.';
-        //   }
-        // }
-        // else
-        // {
-        //   messages = 'Maaf! Email ini sudah terdaftar.';
-        //   if (lang == "en") {
-        //     messages = 'Sorry! This email already registered.';
-        //   } else {
-        //     messages = 'Maaf! Email ini sudah terdaftar.';
-        //   }
-        // }
         var messages = 'Maaf! Email ini sudah terdaftar.';
         if (lang == "en") {
           messages = 'Sorry! This email already registered.';
