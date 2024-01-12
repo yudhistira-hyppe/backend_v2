@@ -1693,6 +1693,7 @@ export class UtilsService {
 
   async validasiEmail(email: string): Promise<boolean> {
     var valid_email = false;
+    console.log(email);
     var atps = email.indexOf('@');
     var dots = email.lastIndexOf('.');
     if (atps < 1 || dots < atps + 2 || dots + 2 >= email.length) {

@@ -11252,6 +11252,8 @@ export class AuthService {
       });
     }
 
+    console.log(req.body.email);
+
     if (!(await this.utilsService.validasiEmail(req.body.email))) {
       throw new NotAcceptableException({
         response_code: 406,
