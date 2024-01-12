@@ -19329,10 +19329,10 @@ export class PostsReadService {
           }
       },
       {
-        $set: {
-            categoryInt: {$ifNull:["$category.$id",[]]}
-        }
-    },
+          $set: {
+              categoryInt: {$ifNull:["$category.$id",[]]}
+          }
+      },
       {
           $set: {
               intScore: 
@@ -19401,7 +19401,7 @@ export class PostsReadService {
               //
           }
       },
-     {
+      {
           "$lookup": {
               from: "newUserBasics",
               as: "userTag",
@@ -19412,7 +19412,7 @@ export class PostsReadService {
                   {
                       $match: 
                       {
-                          $or:[
+                          $or: [
                               {
                                   $expr: {
                                       $eq: ['$_id', "$$localID"]
@@ -19423,6 +19423,7 @@ export class PostsReadService {
                                       $eq: ['$_idAuth', "$$localID.$id"]
                                   }
                               },
+                              
                           ]
                       },
                       
@@ -19566,17 +19567,7 @@ export class PostsReadService {
                       else : false
                   }
               },
-              comment: {
-                  $cond: {
-                      if : {
-                          $eq: ["$comment", []]
-                      },
-                      then: 0,
-                      else : {
-                          $size: "$comment"
-                      }
-                  }
-              },
+              comment:"$comment",
               interest: "$categoryInt",
               friends: {
                   $arrayElemAt: ["$friend.friend", 0]
@@ -19621,9 +19612,9 @@ export class PostsReadService {
               "start": "$boosted.boostSession.start",
               "isBoost": "$isBoost",
               "boostViewer": "$boostViewer",
-             // "boostCount": "$boostCount",
+              "boostCount": "$boostCount",
               "boosted": 
-              [{
+              {
                   $cond: {
                       if : {
                           $gt: [{
@@ -19639,18 +19630,6 @@ export class PostsReadService {
                       else : "$boosted",
                       
                   }
-              }],
-              "boostCount": 
-                  {
-                  $cond: {
-                      if : {
-                          $gt: [{
-                              $size: "$boosted.boostSession"
-                          }, 0]
-                      },
-                      else : [],
-                      then: '$boosted'
-                  }
               },
               "contentModeration": "$contentModeration",
               "reportedStatus": "$reportedStatus",
@@ -19663,7 +19642,7 @@ export class PostsReadService {
                   $arrayElemAt: ["$mediaSource.apsaraId", 0]
               },
               "isApsara": {
-                  $arrayElemAt: ["$mediaSource.apsara", 0]
+                  $arrayElemAt: ["$mediaSource.isApsara", 0]
               },
               "apsaraThumbId": {
                   $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
@@ -19750,7 +19729,7 @@ export class PostsReadService {
                               }
                           }
                       },
-                      []
+                      null
                   ]
               },
               mailViewer: "$mailViewer",
@@ -19761,11 +19740,12 @@ export class PostsReadService {
                   $arrayElemAt: ["$userBasic.tutor", 0]
               },
               intScore: {
-                    $size:"$intScore"
+                  $size: "$intScore"
               },
               isLiked: {
                   $ifNull: ["$isLike", false]
               },
+              
           }
       },
       );
@@ -20277,9 +20257,14 @@ export class PostsReadService {
               //
           }
       },
+      //     {
+      //         $set: {
+      //             categoryInt: {$ifNull:["$category.$id",[]]}
+      //         }
+      //     },
       {
-          $set:{
-                categoryInt:"$category.$id"
+          $set: {
+              categoryInt: "$category.$id"
           }
       },
       {
@@ -20350,7 +20335,7 @@ export class PostsReadService {
               //
           }
       },
-     {
+      {
           "$lookup": {
               from: "newUserBasics",
               as: "userTag",
@@ -20361,7 +20346,7 @@ export class PostsReadService {
                   {
                       $match: 
                       {
-                          $or:[
+                          $or: [
                               {
                                   $expr: {
                                       $eq: ['$_id', "$$localID"]
@@ -20372,6 +20357,7 @@ export class PostsReadService {
                                       $eq: ['$_idAuth', "$$localID.$id"]
                                   }
                               },
+                              
                           ]
                       },
                       
@@ -20395,7 +20381,7 @@ export class PostsReadService {
                       $match: {
                           $or: [
                               {
-                                  "_id": new mongoose.Types.ObjectId("62bbdb4ba7520000050077a7")
+                                  "_id":new mongoose.Types.ObjectId("62bbdb4ba7520000050077a7")
                               },
                               {
                                   "_id": new mongoose.Types.ObjectId("64d06e5c451e0000bd006c62")
@@ -20515,17 +20501,7 @@ export class PostsReadService {
                       else : false
                   }
               },
-              comment: {
-                  $cond: {
-                      if : {
-                          $eq: ["$comment", []]
-                      },
-                      then: 0,
-                      else : {
-                          $size: "$comment"
-                      }
-                  }
-              },
+              comment: "$comment",
               interest: "$categoryInt",
               friends: {
                   $arrayElemAt: ["$friend.friend", 0]
@@ -20570,9 +20546,9 @@ export class PostsReadService {
               "start": "$boosted.boostSession.start",
               "isBoost": "$isBoost",
               "boostViewer": "$boostViewer",
-             // "boostCount": "$boostCount",
+              "boostCount": "$boostCount",
               "boosted": 
-              [{
+              {
                   $cond: {
                       if : {
                           $gt: [{
@@ -20588,18 +20564,6 @@ export class PostsReadService {
                       else : "$boosted",
                       
                   }
-              }],
-              "boostCount": 
-                  {
-                  $cond: {
-                      if : {
-                          $gt: [{
-                              $size: "$boosted.boostSession"
-                          }, 0]
-                      },
-                      else : [],
-                      then: '$boosted'
-                  }
               },
               "contentModeration": "$contentModeration",
               "reportedStatus": "$reportedStatus",
@@ -20612,7 +20576,7 @@ export class PostsReadService {
                   $arrayElemAt: ["$mediaSource.apsaraId", 0]
               },
               "isApsara": {
-                  $arrayElemAt: ["$mediaSource.apsara", 0]
+                  $arrayElemAt: ["$mediaSource.isApsara", 0]
               },
               "apsaraThumbId": {
                   $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
@@ -20699,7 +20663,7 @@ export class PostsReadService {
                               }
                           }
                       },
-                      []
+                      null
                   ]
               },
               mailViewer: "$mailViewer",
@@ -20710,11 +20674,12 @@ export class PostsReadService {
                   $arrayElemAt: ["$userBasic.tutor", 0]
               },
               intScore: {
-                    $size:"$intScore"
+                  $size: "$intScore"
               },
               isLiked: {
                   $ifNull: ["$isLike", false]
               },
+              
           }
       },
       );
@@ -20924,7 +20889,7 @@ export class PostsReadService {
                                   {
                                       "reportedUser.email": {
                                           $not: {
-                                              $regex: email,
+                                              $regex:email,
                                               
                                           }
                                       }
@@ -21225,9 +21190,14 @@ export class PostsReadService {
               //
           }
       },
+      //     {
+      //         $set: {
+      //             categoryInt: {$ifNull:["$category.$id",[]]}
+      //         }
+      //     },
       {
-          $set:{
-                categoryInt:"$category.$id"
+          $set: {
+              categoryInt: "$category.$id"
           }
       },
       {
@@ -21298,7 +21268,7 @@ export class PostsReadService {
               //
           }
       },
-     {
+      {
           "$lookup": {
               from: "newUserBasics",
               as: "userTag",
@@ -21309,7 +21279,7 @@ export class PostsReadService {
                   {
                       $match: 
                       {
-                          $or:[
+                          $or: [
                               {
                                   $expr: {
                                       $eq: ['$_id', "$$localID"]
@@ -21320,6 +21290,7 @@ export class PostsReadService {
                                       $eq: ['$_idAuth', "$$localID.$id"]
                                   }
                               },
+                              
                           ]
                       },
                       
@@ -21343,7 +21314,7 @@ export class PostsReadService {
                       $match: {
                           $or: [
                               {
-                                  "_id": new mongoose.Types.ObjectId("62bbdb4ba7520000050077a7")
+                                  "_id":new mongoose.Types.ObjectId("62bbdb4ba7520000050077a7")
                               },
                               {
                                   "_id": new mongoose.Types.ObjectId("64d06e5c451e0000bd006c62")
@@ -21463,17 +21434,7 @@ export class PostsReadService {
                       else : false
                   }
               },
-              comment: {
-                  $cond: {
-                      if : {
-                          $eq: ["$comment", []]
-                      },
-                      then: 0,
-                      else : {
-                          $size: "$comment"
-                      }
-                  }
-              },
+              comment: "$comment",
               interest: "$categoryInt",
               friends: {
                   $arrayElemAt: ["$friend.friend", 0]
@@ -21518,9 +21479,9 @@ export class PostsReadService {
               "start": "$boosted.boostSession.start",
               "isBoost": "$isBoost",
               "boostViewer": "$boostViewer",
-             // "boostCount": "$boostCount",
+              "boostCount": "$boostCount",
               "boosted": 
-              [{
+              {
                   $cond: {
                       if : {
                           $gt: [{
@@ -21536,18 +21497,6 @@ export class PostsReadService {
                       else : "$boosted",
                       
                   }
-              }],
-              "boostCount": 
-                  {
-                  $cond: {
-                      if : {
-                          $gt: [{
-                              $size: "$boosted.boostSession"
-                          }, 0]
-                      },
-                      else : [],
-                      then: '$boosted'
-                  }
               },
               "contentModeration": "$contentModeration",
               "reportedStatus": "$reportedStatus",
@@ -21560,7 +21509,7 @@ export class PostsReadService {
                   $arrayElemAt: ["$mediaSource.apsaraId", 0]
               },
               "isApsara": {
-                  $arrayElemAt: ["$mediaSource.apsara", 0]
+                  $arrayElemAt: ["$mediaSource.isApsara", 0]
               },
               "apsaraThumbId": {
                   $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
@@ -21647,7 +21596,7 @@ export class PostsReadService {
                               }
                           }
                       },
-                      []
+                      null
                   ]
               },
               mailViewer: "$mailViewer",
@@ -21658,11 +21607,12 @@ export class PostsReadService {
                   $arrayElemAt: ["$userBasic.tutor", 0]
               },
               intScore: {
-                    $size:"$intScore"
+                  $size: "$intScore"
               },
               isLiked: {
                   $ifNull: ["$isLike", false]
               },
+              
           }
       },
       );
