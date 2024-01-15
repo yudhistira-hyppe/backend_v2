@@ -19467,287 +19467,363 @@ export class PostsReadService {
           }
       },
       {
-          $project: {
-              _id: 1,
-              version: {
-                  $arrayElemAt: ["$setting.value", 0]
-              },
-              versionIos: {
-                  $arrayElemAt: ["$setting.value", 1]
-              },
-              limitLandingpage: {
-                  $arrayElemAt: ["$setting.value", 2]
-              },
-              "postID": 1,
-              musicTitle: {
-                  $arrayElemAt: ["$music.musicTitle", 0]
-              },
-              "artistName": {
-                  $arrayElemAt: ["$music.artistName", 0]
-              },
-              "albumName": {
-                  $arrayElemAt: ["$music.albumName", 0]
-              },
-              "apsaraMusic": {
-                  $arrayElemAt: ["$music.apsaraMusic", 0]
-              },
-              "apsaraThumnail": {
-                  $arrayElemAt: ["$music.apsaraThumnail", 0]
-              },
-              "genre": {
-                  $arrayElemAt: ["$music.genre", 0]
-              },
-              "theme": {
-                  $arrayElemAt: ["$music.theme", 0]
-              },
-              "mood": {
-                  $arrayElemAt: ["$music.mood", 0]
-              },
-              "tagPeople": "$userTag",
-              "mediaType": 1,
-              "postType": 1,
-              "description": 1,
-              "active": 1,
-              "createdAt": 1,
-              "updatedAt": 1,
-              "expiration": 1,
-              "visibility": 1,
-              "location": 1,
-              "tags": 1,
-              "allowComments": 1,
-              "isSafe": 1,
-              "isOwned": 1,
-              "certified": 1,
-              "saleAmount": 1,
-              "saleLike": 1,
-              "saleView": 1,
-              "isShared": 1,
-              "likes": 1,
-              "views": 1,
-              "shares": 1,
-              "userView": 1,
-              "userLike": 1,
-              "uploadSource": {
-                  $arrayElemAt: ["$uploadSource.uploadSource", 0]
-              },
-              comments: {
-                  $cond: {
-                      if : {
-                          $eq: ["$comment", []]
-                      },
-                      then: 0,
-                      else : {
-                          $size: "$comment"
-                      }
-                  }
-              },
-              email: 1,
-              viewer: 1,
-              viewerCount: 1,
-              oldDate: "$oldDate",
-              selfContent: 1,
-              official: 
-              {
-                  $cond: {
-                      if : {
-                          $eq: ["$email", "hyppers@hyppe.id"]
-                      },
-                      then: 1,
-                      else : 0
-                  }
-              },
-              musik: "$music",
-              isLike: 
-                  {
-                  $cond: {
-                      if : {
-                          $eq: ["$userLike", "hyppers@hyppe.id"]
-                      },
-                      then: true,
-                      else : false
-                  }
-              },
-              comment:"$comment",
-              interest: "$categoryInt",
-              friends: {
-                  $arrayElemAt: ["$friend.friend", 0]
-              },
-              "following": 
-              {
-                  $cond: 
-                  {
-                      if : {
-                          $eq: ["$userBasic.follower", []]
-                      },
-                      then: false,
-                      else : 
-                          {
-                          $cond: 
-                          {
-                              if : {
-                                  $in: [email, "$userBasic.follower"]
-                              },
-                              then: true,
-                              else : false
-                          }
-                      },
-                      
-                  }
-              },
-              "insight": 
-                  {
-                  "likes": "$likes",
-                  "views": "$views",
-                  "shares": "$shares",
-                  "comments": "$comments",
-                  
-              },
-              "userProfile": "$userProfile",
-              "contentMedias": "$contentMedias",
-              "cats": "$categories",
-              "tagDescription": "$tagDescription",
-              "metadata": "$metadata",
-              "boostDate": "$boostDate",
-              "end": "$boosted.boostSession.end",
-              "start": "$boosted.boostSession.start",
-              "isBoost": "$isBoost",
-              "boostViewer": "$boostViewer",
-              "boostCount": "$boostCount",
-              "boosted": 
-              {
-                  $cond: {
-                      if : {
-                          $gt: [{
-                              "$dateToString": {
-                                  "format": "%Y-%m-%d %H:%M:%S",
-                                  "date": {
-                                      $add: [new Date(), 25200000]
-                                  }
-                              }
-                          }, "$boosted.boostSession.end"]
-                      },
-                      then: "$ilang",
-                      else : "$boosted",
-                      
-                  }
-              },
-              "contentModeration": "$contentModeration",
-              "reportedStatus": "$reportedStatus",
-              "reportedUserCount": "$reportedUserCount",
-              "contentModerationResponse": "$contentModerationResponse",
-              "reportedUser": "$reportedUser",
-              "timeStart": "$timeStart",
-              "timeEnd": "$timeEnd",
-              "apsaraId": {
-                  $arrayElemAt: ["$mediaSource.apsaraId", 0]
-              },
-              "isApsara": {
-                  $arrayElemAt: ["$mediaSource.isApsara", 0]
-              },
-              "apsaraThumbId": {
-                  $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
-              },
-              "mediaEndpoint": {
-                  $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
-              },
-              "mediaUri": {
-                  $arrayElemAt: ["$mediaSource.mediaUri", 0]
-              },
-              "mediaThumbEndpoint": {
-                  $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
-              },
-              "mediaThumbUri": {
-                  $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
-              },
-              "fullName": {
-                  $arrayElemAt: ["$userBasic.fullName", 0]
-              },
-              "username": {
-                  $arrayElemAt: ["$userBasic.username", 0]
-              },
-              "avatar": "$avatar",
-              "privacy": {
-                  "isCelebrity": {
-                      $arrayElemAt: ["$userBasic.isCelebrity", 0]
-                  },
-                  "isIdVerified": {
-                      $arrayElemAt: ["$userBasic.isIdVerified", 0]
-                  },
-                  "isPrivate": {
-                      $arrayElemAt: ["$userBasic.isPrivate", 0]
-                  },
-                  "isFollowPrivate": {
-                      $arrayElemAt: ["$userBasic.isFollowPrivate", 0]
-                  },
-                  "isPostPrivate": {
-                      $arrayElemAt: ["$userBasic.isPostPrivate", 0]
-                  },
-                  
-              },
-              "verified": {
-                  $arrayElemAt: ["$userBasic.fullName", 0]
-              },
-              "urluserBadge": 
-              {
-                  "$ifNull": 
-                  [
-                      {
-                          "$filter": 
-                          {
-                              input: {
-                                  $arrayElemAt: ["$userBasic.userBadge", 0]
-                              },
-                              as: "listbadge",
-                              cond: 
-                              {
-                                  "$and": 
-                                  [
-                                      {
-                                          "$eq": 
-                                          [
-                                              "$$listbadge.isActive",
-                                              true
-                                          ]
-                                      },
-                                      {
-                                          "$lte": [
-                                              {
-                                                  "$dateToString": {
-                                                      "format": "%Y-%m-%d %H:%M:%S",
-                                                      "date": {
-                                                          "$add": [
-                                                              new Date(),
-                                                              25200000
-                                                          ]
-                                                      }
-                                                  }
-                                              },
-                                              "$$listbadge.endDatetime"
-                                          ]
-                                      }
-                                  ]
-                              }
-                          }
-                      },
-                      null
-                  ]
-              },
-              mailViewer: "$mailViewer",
-              userInterested: {
-                  $arrayElemAt: ["$userInt.userInterests", 0]
-              },
-              tutor: {
-                  $arrayElemAt: ["$userBasic.tutor", 0]
-              },
-              intScore: {
-                  $size: "$intScore"
-              },
-              isLiked: {
-                  $ifNull: ["$isLike", false]
-              },
-              
-          }
-      },
+        $project: {
+            _id: 1,
+            version: {
+                $arrayElemAt: ["$setting.value", 0]
+            },
+            versionIos: {
+                $arrayElemAt: ["$setting.value", 1]
+            },
+            limitLandingpage: {
+                $arrayElemAt: ["$setting.value", 2]
+            },
+            "postID": 1,
+            musicTitle: {
+                $arrayElemAt: ["$music.musicTitle", 0]
+            },
+            "artistName": {
+                $arrayElemAt: ["$music.artistName", 0]
+            },
+            "albumName": {
+                $arrayElemAt: ["$music.albumName", 0]
+            },
+            "apsaraMusic": {
+                $arrayElemAt: ["$music.apsaraMusic", 0]
+            },
+            "apsaraThumnail": {
+                $arrayElemAt: ["$music.apsaraThumnail", 0]
+            },
+            "genre": {
+                $arrayElemAt: ["$music.genre", 0]
+            },
+            "theme": {
+                $arrayElemAt: ["$music.theme", 0]
+            },
+            "mood": {
+                $arrayElemAt: ["$music.mood", 0]
+            },
+            "tagPeople": "$userTag",
+            "mediaType": 1,
+            "postType": 1,
+            "description": 1,
+            "active": 1,
+            "createdAt": 1,
+            "updatedAt": 1,
+            "expiration": 1,
+            "visibility": 1,
+            "location": 1,
+            "tags": 1,
+            "allowComments": 1,
+            "isSafe": 1,
+            "isOwned": 1,
+            "certified": 1,
+            "saleAmount": 1,
+            "saleLike": 1,
+            "saleView": 1,
+            "isShared": 1,
+            "likes": 1,
+            "views": 1,
+            "shares": 1,
+            "userView": 1,
+            "userLike": 1,
+            "uploadSource": {
+                $arrayElemAt: ["$uploadSource.uploadSource", 0]
+            },
+            comments: {
+                $cond: {
+                    if : {
+                        $eq: ["$comment", []]
+                    },
+                    then: 0,
+                    else : {
+                        $size: "$comment"
+                    }
+                }
+            },
+            email: 1,
+            viewer: 1,
+            viewerCount: 1,
+            oldDate: "$oldDate",
+            selfContent: 1,
+            official: 
+            {
+                $cond: {
+                    if : {
+                        $eq: ["$email", "hyppers@hyppe.id"]
+                    },
+                    then: 1,
+                    else : 0
+                }
+            },
+            musik: "$music",
+            isLike: 
+                {
+                $cond: {
+                    if : {
+                        $eq: ["$userLike", "hyppers@hyppe.id"]
+                    },
+                    then: true,
+                    else : false
+                }
+            },
+            comment: "$comment",
+            interest: "$categoryInt",
+            friends: {
+                $arrayElemAt: ["$friend.friend", 0]
+            },
+            "following": 
+            {
+                $cond: 
+                {
+                    if : {
+                        $eq: ["$userBasic.follower", []]
+                    },
+                    then: false,
+                    else : 
+                        {
+                        $cond: 
+                        {
+                            if : {
+                                $in: ["ahmad.taslim07@gmail.com", "$userBasic.follower"]
+                            },
+                            then: true,
+                            else : false
+                        }
+                    },
+                    
+                }
+            },
+            "insight": 
+                {
+                "likes": "$likes",
+                "views": "$views",
+                "shares": "$shares",
+                "comments": "$comments",
+                
+            },
+            "userProfile": "$userProfile",
+            "contentMedias": "$contentMedias",
+            "cats": "$categories",
+            "tagDescription": "$tagDescription",
+            "metadata": "$metadata",
+            "boostDate": "$boostDate",
+            "end": "$boosted.boostSession.end",
+            "start": "$boosted.boostSession.start",
+            "isBoost": "$isBoost",
+            "boostViewer": "$boostViewer",
+            "boostCount": "$boostCount",
+            "boosted": 
+            {
+                $cond: {
+                    if : {
+                        $gt: [{
+                            "$dateToString": {
+                                "format": "%Y-%m-%d %H:%M:%S",
+                                "date": {
+                                    $add: [new Date(), 25200000]
+                                }
+                            }
+                        }, "$boosted.boostSession.end"]
+                    },
+                    then: "$ilang",
+                    else : "$boosted",
+                    
+                }
+            },
+            "contentModeration": "$contentModeration",
+            "reportedStatus": "$reportedStatus",
+            "reportedUserCount": "$reportedUserCount",
+            "contentModerationResponse": "$contentModerationResponse",
+            "reportedUser": "$reportedUser",
+            "timeStart": "$timeStart",
+            "timeEnd": "$timeEnd",
+            "apsaraId": {
+                $arrayElemAt: ["$mediaSource.apsaraId", 0]
+            },
+            "isApsara": {
+                $arrayElemAt: ["$mediaSource.apsara", 0]
+            },
+            "apsaraThumbId": {
+                $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
+            },
+            //               "mediaEndpoint": {
+            //                   $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
+            //               },
+            mediaEndpoint: 
+            {
+                "$ifNull": 
+                [
+                    {
+                        $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
+                    },
+                    {
+                        "$cond": 
+                        {
+                            if : 
+                                {
+                                "$eq": 
+                                [
+                                    "$postType",
+                                    "pict"
+                                ]
+                            },
+                            then: 
+                            {
+                                "$concat": 
+                                [
+                                    "/pict/",
+                                    "$postID"
+                                ]
+                            },
+                            else : 
+                                {
+                                "$concat": 
+                                [
+                                    "/stream/",
+                                    "$postID"
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "mediaUri": {
+                $arrayElemAt: ["$mediaSource.mediaUri", 0]
+            },
+            //             "mediaThumbEndpoint": {
+            //                 $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
+            //             },
+            mediaThumbEndpoint: 
+            {
+                "$ifNull": 
+                [
+                    {
+                        $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
+                    },
+                    {
+                        "$cond": 
+                        {
+                            if : 
+                                {
+                                "$eq": 
+                                [
+                                    "$postType",
+                                    "pict"
+                                ]
+                            },
+                            then: 
+                            {
+                                "$concat": 
+                                [
+                                    "/pict/",
+                                    "$postID"
+                                ]
+                            },
+                            else : 
+                                {
+                                "$concat": 
+                                [
+                                    "/thumb/",
+                                    "$postID"
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "mediaThumbUri": {
+                $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
+            },
+            "fullName": {
+                $arrayElemAt: ["$userBasic.fullName", 0]
+            },
+            "username": {
+                $arrayElemAt: ["$userBasic.username", 0]
+            },
+            "avatar": "$avatar",
+            "privacy": {
+                "isCelebrity": {
+                    $arrayElemAt: ["$userBasic.isCelebrity", 0]
+                },
+                "isIdVerified": {
+                    $arrayElemAt: ["$userBasic.isIdVerified", 0]
+                },
+                "isPrivate": {
+                    $arrayElemAt: ["$userBasic.isPrivate", 0]
+                },
+                "isFollowPrivate": {
+                    $arrayElemAt: ["$userBasic.isFollowPrivate", 0]
+                },
+                "isPostPrivate": {
+                    $arrayElemAt: ["$userBasic.isPostPrivate", 0]
+                },
+                
+            },
+            "verified": {
+                $arrayElemAt: ["$userBasic.fullName", 0]
+            },
+            "urluserBadge": 
+            {
+                "$ifNull": 
+                [
+                    {
+                        "$filter": 
+                        {
+                            input: {
+                                $arrayElemAt: ["$userBasic.userBadge", 0]
+                            },
+                            as: "listbadge",
+                            cond: 
+                            {
+                                "$and": 
+                                [
+                                    {
+                                        "$eq": 
+                                        [
+                                            "$$listbadge.isActive",
+                                            true
+                                        ]
+                                    },
+                                    {
+                                        "$lte": [
+                                            {
+                                                "$dateToString": {
+                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                    "date": {
+                                                        "$add": [
+                                                            new Date(),
+                                                            25200000
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "$$listbadge.endDatetime"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    null
+                ]
+            },
+            mailViewer: "$mailViewer",
+            userInterested: {
+                $arrayElemAt: ["$userInt.userInterests", 0]
+            },
+            tutor: {
+                $arrayElemAt: ["$userBasic.tutor", 0]
+            },
+            intScore: {
+                $size: "$intScore"
+            },
+            isLiked: {
+                $ifNull: ["$isLike", false]
+            },
+            
+        }
+    },
       );
       pipeline.push(
         {
@@ -20401,287 +20477,363 @@ export class PostsReadService {
           }
       },
       {
-          $project: {
-              _id: 1,
-              version: {
-                  $arrayElemAt: ["$setting.value", 0]
-              },
-              versionIos: {
-                  $arrayElemAt: ["$setting.value", 1]
-              },
-              limitLandingpage: {
-                  $arrayElemAt: ["$setting.value", 2]
-              },
-              "postID": 1,
-              musicTitle: {
-                  $arrayElemAt: ["$music.musicTitle", 0]
-              },
-              "artistName": {
-                  $arrayElemAt: ["$music.artistName", 0]
-              },
-              "albumName": {
-                  $arrayElemAt: ["$music.albumName", 0]
-              },
-              "apsaraMusic": {
-                  $arrayElemAt: ["$music.apsaraMusic", 0]
-              },
-              "apsaraThumnail": {
-                  $arrayElemAt: ["$music.apsaraThumnail", 0]
-              },
-              "genre": {
-                  $arrayElemAt: ["$music.genre", 0]
-              },
-              "theme": {
-                  $arrayElemAt: ["$music.theme", 0]
-              },
-              "mood": {
-                  $arrayElemAt: ["$music.mood", 0]
-              },
-              "tagPeople": "$userTag",
-              "mediaType": 1,
-              "postType": 1,
-              "description": 1,
-              "active": 1,
-              "createdAt": 1,
-              "updatedAt": 1,
-              "expiration": 1,
-              "visibility": 1,
-              "location": 1,
-              "tags": 1,
-              "allowComments": 1,
-              "isSafe": 1,
-              "isOwned": 1,
-              "certified": 1,
-              "saleAmount": 1,
-              "saleLike": 1,
-              "saleView": 1,
-              "isShared": 1,
-              "likes": 1,
-              "views": 1,
-              "shares": 1,
-              "userView": 1,
-              "userLike": 1,
-              "uploadSource": {
-                  $arrayElemAt: ["$uploadSource.uploadSource", 0]
-              },
-              comments: {
-                  $cond: {
-                      if : {
-                          $eq: ["$comment", []]
-                      },
-                      then: 0,
-                      else : {
-                          $size: "$comment"
-                      }
-                  }
-              },
-              email: 1,
-              viewer: 1,
-              viewerCount: 1,
-              oldDate: "$oldDate",
-              selfContent: 1,
-              official: 
-              {
-                  $cond: {
-                      if : {
-                          $eq: ["$email", "hyppers@hyppe.id"]
-                      },
-                      then: 1,
-                      else : 0
-                  }
-              },
-              musik: "$music",
-              isLike: 
-                  {
-                  $cond: {
-                      if : {
-                          $eq: ["$userLike", "hyppers@hyppe.id"]
-                      },
-                      then: true,
-                      else : false
-                  }
-              },
-              comment: "$comment",
-              interest: "$categoryInt",
-              friends: {
-                  $arrayElemAt: ["$friend.friend", 0]
-              },
-              "following": 
-              {
-                  $cond: 
-                  {
-                      if : {
-                          $eq: ["$userBasic.follower", []]
-                      },
-                      then: false,
-                      else : 
-                          {
-                          $cond: 
-                          {
-                              if : {
-                                  $in: [email, "$userBasic.follower"]
-                              },
-                              then: true,
-                              else : false
-                          }
-                      },
-                      
-                  }
-              },
-              "insight": 
-                  {
-                  "likes": "$likes",
-                  "views": "$views",
-                  "shares": "$shares",
-                  "comments": "$comments",
-                  
-              },
-              "userProfile": "$userProfile",
-              "contentMedias": "$contentMedias",
-              "cats": "$categories",
-              "tagDescription": "$tagDescription",
-              "metadata": "$metadata",
-              "boostDate": "$boostDate",
-              "end": "$boosted.boostSession.end",
-              "start": "$boosted.boostSession.start",
-              "isBoost": "$isBoost",
-              "boostViewer": "$boostViewer",
-              "boostCount": "$boostCount",
-              "boosted": 
-              {
-                  $cond: {
-                      if : {
-                          $gt: [{
-                              "$dateToString": {
-                                  "format": "%Y-%m-%d %H:%M:%S",
-                                  "date": {
-                                      $add: [new Date(), 25200000]
-                                  }
-                              }
-                          }, "$boosted.boostSession.end"]
-                      },
-                      then: "$ilang",
-                      else : "$boosted",
-                      
-                  }
-              },
-              "contentModeration": "$contentModeration",
-              "reportedStatus": "$reportedStatus",
-              "reportedUserCount": "$reportedUserCount",
-              "contentModerationResponse": "$contentModerationResponse",
-              "reportedUser": "$reportedUser",
-              "timeStart": "$timeStart",
-              "timeEnd": "$timeEnd",
-              "apsaraId": {
-                  $arrayElemAt: ["$mediaSource.apsaraId", 0]
-              },
-              "isApsara": {
-                  $arrayElemAt: ["$mediaSource.isApsara", 0]
-              },
-              "apsaraThumbId": {
-                  $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
-              },
-              "mediaEndpoint": {
-                  $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
-              },
-              "mediaUri": {
-                  $arrayElemAt: ["$mediaSource.mediaUri", 0]
-              },
-              "mediaThumbEndpoint": {
-                  $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
-              },
-              "mediaThumbUri": {
-                  $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
-              },
-              "fullName": {
-                  $arrayElemAt: ["$userBasic.fullName", 0]
-              },
-              "username": {
-                  $arrayElemAt: ["$userBasic.username", 0]
-              },
-              "avatar": "$avatar",
-              "privacy": {
-                  "isCelebrity": {
-                      $arrayElemAt: ["$userBasic.isCelebrity", 0]
-                  },
-                  "isIdVerified": {
-                      $arrayElemAt: ["$userBasic.isIdVerified", 0]
-                  },
-                  "isPrivate": {
-                      $arrayElemAt: ["$userBasic.isPrivate", 0]
-                  },
-                  "isFollowPrivate": {
-                      $arrayElemAt: ["$userBasic.isFollowPrivate", 0]
-                  },
-                  "isPostPrivate": {
-                      $arrayElemAt: ["$userBasic.isPostPrivate", 0]
-                  },
-                  
-              },
-              "verified": {
-                  $arrayElemAt: ["$userBasic.fullName", 0]
-              },
-              "urluserBadge": 
-              {
-                  "$ifNull": 
-                  [
-                      {
-                          "$filter": 
-                          {
-                              input: {
-                                  $arrayElemAt: ["$userBasic.userBadge", 0]
-                              },
-                              as: "listbadge",
-                              cond: 
-                              {
-                                  "$and": 
-                                  [
-                                      {
-                                          "$eq": 
-                                          [
-                                              "$$listbadge.isActive",
-                                              true
-                                          ]
-                                      },
-                                      {
-                                          "$lte": [
-                                              {
-                                                  "$dateToString": {
-                                                      "format": "%Y-%m-%d %H:%M:%S",
-                                                      "date": {
-                                                          "$add": [
-                                                              new Date(),
-                                                              25200000
-                                                          ]
-                                                      }
-                                                  }
-                                              },
-                                              "$$listbadge.endDatetime"
-                                          ]
-                                      }
-                                  ]
-                              }
-                          }
-                      },
-                      null
-                  ]
-              },
-              mailViewer: "$mailViewer",
-              userInterested: {
-                  $arrayElemAt: ["$userInt.userInterests", 0]
-              },
-              tutor: {
-                  $arrayElemAt: ["$userBasic.tutor", 0]
-              },
-              intScore: {
-                  $size: "$intScore"
-              },
-              isLiked: {
-                  $ifNull: ["$isLike", false]
-              },
-              
-          }
-      },
+        $project: {
+            _id: 1,
+            version: {
+                $arrayElemAt: ["$setting.value", 0]
+            },
+            versionIos: {
+                $arrayElemAt: ["$setting.value", 1]
+            },
+            limitLandingpage: {
+                $arrayElemAt: ["$setting.value", 2]
+            },
+            "postID": 1,
+            musicTitle: {
+                $arrayElemAt: ["$music.musicTitle", 0]
+            },
+            "artistName": {
+                $arrayElemAt: ["$music.artistName", 0]
+            },
+            "albumName": {
+                $arrayElemAt: ["$music.albumName", 0]
+            },
+            "apsaraMusic": {
+                $arrayElemAt: ["$music.apsaraMusic", 0]
+            },
+            "apsaraThumnail": {
+                $arrayElemAt: ["$music.apsaraThumnail", 0]
+            },
+            "genre": {
+                $arrayElemAt: ["$music.genre", 0]
+            },
+            "theme": {
+                $arrayElemAt: ["$music.theme", 0]
+            },
+            "mood": {
+                $arrayElemAt: ["$music.mood", 0]
+            },
+            "tagPeople": "$userTag",
+            "mediaType": 1,
+            "postType": 1,
+            "description": 1,
+            "active": 1,
+            "createdAt": 1,
+            "updatedAt": 1,
+            "expiration": 1,
+            "visibility": 1,
+            "location": 1,
+            "tags": 1,
+            "allowComments": 1,
+            "isSafe": 1,
+            "isOwned": 1,
+            "certified": 1,
+            "saleAmount": 1,
+            "saleLike": 1,
+            "saleView": 1,
+            "isShared": 1,
+            "likes": 1,
+            "views": 1,
+            "shares": 1,
+            "userView": 1,
+            "userLike": 1,
+            "uploadSource": {
+                $arrayElemAt: ["$uploadSource.uploadSource", 0]
+            },
+            comments: {
+                $cond: {
+                    if : {
+                        $eq: ["$comment", []]
+                    },
+                    then: 0,
+                    else : {
+                        $size: "$comment"
+                    }
+                }
+            },
+            email: 1,
+            viewer: 1,
+            viewerCount: 1,
+            oldDate: "$oldDate",
+            selfContent: 1,
+            official: 
+            {
+                $cond: {
+                    if : {
+                        $eq: ["$email", "hyppers@hyppe.id"]
+                    },
+                    then: 1,
+                    else : 0
+                }
+            },
+            musik: "$music",
+            isLike: 
+                {
+                $cond: {
+                    if : {
+                        $eq: ["$userLike", "hyppers@hyppe.id"]
+                    },
+                    then: true,
+                    else : false
+                }
+            },
+            comment: "$comment",
+            interest: "$categoryInt",
+            friends: {
+                $arrayElemAt: ["$friend.friend", 0]
+            },
+            "following": 
+            {
+                $cond: 
+                {
+                    if : {
+                        $eq: ["$userBasic.follower", []]
+                    },
+                    then: false,
+                    else : 
+                        {
+                        $cond: 
+                        {
+                            if : {
+                                $in: ["ahmad.taslim07@gmail.com", "$userBasic.follower"]
+                            },
+                            then: true,
+                            else : false
+                        }
+                    },
+                    
+                }
+            },
+            "insight": 
+                {
+                "likes": "$likes",
+                "views": "$views",
+                "shares": "$shares",
+                "comments": "$comments",
+                
+            },
+            "userProfile": "$userProfile",
+            "contentMedias": "$contentMedias",
+            "cats": "$categories",
+            "tagDescription": "$tagDescription",
+            "metadata": "$metadata",
+            "boostDate": "$boostDate",
+            "end": "$boosted.boostSession.end",
+            "start": "$boosted.boostSession.start",
+            "isBoost": "$isBoost",
+            "boostViewer": "$boostViewer",
+            "boostCount": "$boostCount",
+            "boosted": 
+            {
+                $cond: {
+                    if : {
+                        $gt: [{
+                            "$dateToString": {
+                                "format": "%Y-%m-%d %H:%M:%S",
+                                "date": {
+                                    $add: [new Date(), 25200000]
+                                }
+                            }
+                        }, "$boosted.boostSession.end"]
+                    },
+                    then: "$ilang",
+                    else : "$boosted",
+                    
+                }
+            },
+            "contentModeration": "$contentModeration",
+            "reportedStatus": "$reportedStatus",
+            "reportedUserCount": "$reportedUserCount",
+            "contentModerationResponse": "$contentModerationResponse",
+            "reportedUser": "$reportedUser",
+            "timeStart": "$timeStart",
+            "timeEnd": "$timeEnd",
+            "apsaraId": {
+                $arrayElemAt: ["$mediaSource.apsaraId", 0]
+            },
+            "isApsara": {
+                $arrayElemAt: ["$mediaSource.apsara", 0]
+            },
+            "apsaraThumbId": {
+                $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
+            },
+            //               "mediaEndpoint": {
+            //                   $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
+            //               },
+            mediaEndpoint: 
+            {
+                "$ifNull": 
+                [
+                    {
+                        $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
+                    },
+                    {
+                        "$cond": 
+                        {
+                            if : 
+                                {
+                                "$eq": 
+                                [
+                                    "$postType",
+                                    "pict"
+                                ]
+                            },
+                            then: 
+                            {
+                                "$concat": 
+                                [
+                                    "/pict/",
+                                    "$postID"
+                                ]
+                            },
+                            else : 
+                                {
+                                "$concat": 
+                                [
+                                    "/stream/",
+                                    "$postID"
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "mediaUri": {
+                $arrayElemAt: ["$mediaSource.mediaUri", 0]
+            },
+            //             "mediaThumbEndpoint": {
+            //                 $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
+            //             },
+            mediaThumbEndpoint: 
+            {
+                "$ifNull": 
+                [
+                    {
+                        $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
+                    },
+                    {
+                        "$cond": 
+                        {
+                            if : 
+                                {
+                                "$eq": 
+                                [
+                                    "$postType",
+                                    "pict"
+                                ]
+                            },
+                            then: 
+                            {
+                                "$concat": 
+                                [
+                                    "/pict/",
+                                    "$postID"
+                                ]
+                            },
+                            else : 
+                                {
+                                "$concat": 
+                                [
+                                    "/thumb/",
+                                    "$postID"
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "mediaThumbUri": {
+                $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
+            },
+            "fullName": {
+                $arrayElemAt: ["$userBasic.fullName", 0]
+            },
+            "username": {
+                $arrayElemAt: ["$userBasic.username", 0]
+            },
+            "avatar": "$avatar",
+            "privacy": {
+                "isCelebrity": {
+                    $arrayElemAt: ["$userBasic.isCelebrity", 0]
+                },
+                "isIdVerified": {
+                    $arrayElemAt: ["$userBasic.isIdVerified", 0]
+                },
+                "isPrivate": {
+                    $arrayElemAt: ["$userBasic.isPrivate", 0]
+                },
+                "isFollowPrivate": {
+                    $arrayElemAt: ["$userBasic.isFollowPrivate", 0]
+                },
+                "isPostPrivate": {
+                    $arrayElemAt: ["$userBasic.isPostPrivate", 0]
+                },
+                
+            },
+            "verified": {
+                $arrayElemAt: ["$userBasic.fullName", 0]
+            },
+            "urluserBadge": 
+            {
+                "$ifNull": 
+                [
+                    {
+                        "$filter": 
+                        {
+                            input: {
+                                $arrayElemAt: ["$userBasic.userBadge", 0]
+                            },
+                            as: "listbadge",
+                            cond: 
+                            {
+                                "$and": 
+                                [
+                                    {
+                                        "$eq": 
+                                        [
+                                            "$$listbadge.isActive",
+                                            true
+                                        ]
+                                    },
+                                    {
+                                        "$lte": [
+                                            {
+                                                "$dateToString": {
+                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                    "date": {
+                                                        "$add": [
+                                                            new Date(),
+                                                            25200000
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "$$listbadge.endDatetime"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    null
+                ]
+            },
+            mailViewer: "$mailViewer",
+            userInterested: {
+                $arrayElemAt: ["$userInt.userInterests", 0]
+            },
+            tutor: {
+                $arrayElemAt: ["$userBasic.tutor", 0]
+            },
+            intScore: {
+                $size: "$intScore"
+            },
+            isLiked: {
+                $ifNull: ["$isLike", false]
+            },
+            
+        }
+    },
       );
       pipeline.push(
         {
@@ -21334,287 +21486,363 @@ export class PostsReadService {
           }
       },
       {
-          $project: {
-              _id: 1,
-              version: {
-                  $arrayElemAt: ["$setting.value", 0]
-              },
-              versionIos: {
-                  $arrayElemAt: ["$setting.value", 1]
-              },
-              limitLandingpage: {
-                  $arrayElemAt: ["$setting.value", 2]
-              },
-              "postID": 1,
-              musicTitle: {
-                  $arrayElemAt: ["$music.musicTitle", 0]
-              },
-              "artistName": {
-                  $arrayElemAt: ["$music.artistName", 0]
-              },
-              "albumName": {
-                  $arrayElemAt: ["$music.albumName", 0]
-              },
-              "apsaraMusic": {
-                  $arrayElemAt: ["$music.apsaraMusic", 0]
-              },
-              "apsaraThumnail": {
-                  $arrayElemAt: ["$music.apsaraThumnail", 0]
-              },
-              "genre": {
-                  $arrayElemAt: ["$music.genre", 0]
-              },
-              "theme": {
-                  $arrayElemAt: ["$music.theme", 0]
-              },
-              "mood": {
-                  $arrayElemAt: ["$music.mood", 0]
-              },
-              "tagPeople": "$userTag",
-              "mediaType": 1,
-              "postType": 1,
-              "description": 1,
-              "active": 1,
-              "createdAt": 1,
-              "updatedAt": 1,
-              "expiration": 1,
-              "visibility": 1,
-              "location": 1,
-              "tags": 1,
-              "allowComments": 1,
-              "isSafe": 1,
-              "isOwned": 1,
-              "certified": 1,
-              "saleAmount": 1,
-              "saleLike": 1,
-              "saleView": 1,
-              "isShared": 1,
-              "likes": 1,
-              "views": 1,
-              "shares": 1,
-              "userView": 1,
-              "userLike": 1,
-              "uploadSource": {
-                  $arrayElemAt: ["$uploadSource.uploadSource", 0]
-              },
-              comments: {
-                  $cond: {
-                      if : {
-                          $eq: ["$comment", []]
-                      },
-                      then: 0,
-                      else : {
-                          $size: "$comment"
-                      }
-                  }
-              },
-              email: 1,
-              viewer: 1,
-              viewerCount: 1,
-              oldDate: "$oldDate",
-              selfContent: 1,
-              official: 
-              {
-                  $cond: {
-                      if : {
-                          $eq: ["$email", "hyppers@hyppe.id"]
-                      },
-                      then: 1,
-                      else : 0
-                  }
-              },
-              musik: "$music",
-              isLike: 
-                  {
-                  $cond: {
-                      if : {
-                          $eq: ["$userLike", "hyppers@hyppe.id"]
-                      },
-                      then: true,
-                      else : false
-                  }
-              },
-              comment: "$comment",
-              interest: "$categoryInt",
-              friends: {
-                  $arrayElemAt: ["$friend.friend", 0]
-              },
-              "following": 
-              {
-                  $cond: 
-                  {
-                      if : {
-                          $eq: ["$userBasic.follower", []]
-                      },
-                      then: false,
-                      else : 
-                          {
-                          $cond: 
-                          {
-                              if : {
-                                  $in: [email, "$userBasic.follower"]
-                              },
-                              then: true,
-                              else : false
-                          }
-                      },
-                      
-                  }
-              },
-              "insight": 
-                  {
-                  "likes": "$likes",
-                  "views": "$views",
-                  "shares": "$shares",
-                  "comments": "$comments",
-                  
-              },
-              "userProfile": "$userProfile",
-              "contentMedias": "$contentMedias",
-              "cats": "$categories",
-              "tagDescription": "$tagDescription",
-              "metadata": "$metadata",
-              "boostDate": "$boostDate",
-              "end": "$boosted.boostSession.end",
-              "start": "$boosted.boostSession.start",
-              "isBoost": "$isBoost",
-              "boostViewer": "$boostViewer",
-              "boostCount": "$boostCount",
-              "boosted": 
-              {
-                  $cond: {
-                      if : {
-                          $gt: [{
-                              "$dateToString": {
-                                  "format": "%Y-%m-%d %H:%M:%S",
-                                  "date": {
-                                      $add: [new Date(), 25200000]
-                                  }
-                              }
-                          }, "$boosted.boostSession.end"]
-                      },
-                      then: "$ilang",
-                      else : "$boosted",
-                      
-                  }
-              },
-              "contentModeration": "$contentModeration",
-              "reportedStatus": "$reportedStatus",
-              "reportedUserCount": "$reportedUserCount",
-              "contentModerationResponse": "$contentModerationResponse",
-              "reportedUser": "$reportedUser",
-              "timeStart": "$timeStart",
-              "timeEnd": "$timeEnd",
-              "apsaraId": {
-                  $arrayElemAt: ["$mediaSource.apsaraId", 0]
-              },
-              "isApsara": {
-                  $arrayElemAt: ["$mediaSource.isApsara", 0]
-              },
-              "apsaraThumbId": {
-                  $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
-              },
-              "mediaEndpoint": {
-                  $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
-              },
-              "mediaUri": {
-                  $arrayElemAt: ["$mediaSource.mediaUri", 0]
-              },
-              "mediaThumbEndpoint": {
-                  $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
-              },
-              "mediaThumbUri": {
-                  $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
-              },
-              "fullName": {
-                  $arrayElemAt: ["$userBasic.fullName", 0]
-              },
-              "username": {
-                  $arrayElemAt: ["$userBasic.username", 0]
-              },
-              "avatar": "$avatar",
-              "privacy": {
-                  "isCelebrity": {
-                      $arrayElemAt: ["$userBasic.isCelebrity", 0]
-                  },
-                  "isIdVerified": {
-                      $arrayElemAt: ["$userBasic.isIdVerified", 0]
-                  },
-                  "isPrivate": {
-                      $arrayElemAt: ["$userBasic.isPrivate", 0]
-                  },
-                  "isFollowPrivate": {
-                      $arrayElemAt: ["$userBasic.isFollowPrivate", 0]
-                  },
-                  "isPostPrivate": {
-                      $arrayElemAt: ["$userBasic.isPostPrivate", 0]
-                  },
-                  
-              },
-              "verified": {
-                  $arrayElemAt: ["$userBasic.fullName", 0]
-              },
-              "urluserBadge": 
-              {
-                  "$ifNull": 
-                  [
-                      {
-                          "$filter": 
-                          {
-                              input: {
-                                  $arrayElemAt: ["$userBasic.userBadge", 0]
-                              },
-                              as: "listbadge",
-                              cond: 
-                              {
-                                  "$and": 
-                                  [
-                                      {
-                                          "$eq": 
-                                          [
-                                              "$$listbadge.isActive",
-                                              true
-                                          ]
-                                      },
-                                      {
-                                          "$lte": [
-                                              {
-                                                  "$dateToString": {
-                                                      "format": "%Y-%m-%d %H:%M:%S",
-                                                      "date": {
-                                                          "$add": [
-                                                              new Date(),
-                                                              25200000
-                                                          ]
-                                                      }
-                                                  }
-                                              },
-                                              "$$listbadge.endDatetime"
-                                          ]
-                                      }
-                                  ]
-                              }
-                          }
-                      },
-                      null
-                  ]
-              },
-              mailViewer: "$mailViewer",
-              userInterested: {
-                  $arrayElemAt: ["$userInt.userInterests", 0]
-              },
-              tutor: {
-                  $arrayElemAt: ["$userBasic.tutor", 0]
-              },
-              intScore: {
-                  $size: "$intScore"
-              },
-              isLiked: {
-                  $ifNull: ["$isLike", false]
-              },
-              
-          }
-      },
+        $project: {
+            _id: 1,
+            version: {
+                $arrayElemAt: ["$setting.value", 0]
+            },
+            versionIos: {
+                $arrayElemAt: ["$setting.value", 1]
+            },
+            limitLandingpage: {
+                $arrayElemAt: ["$setting.value", 2]
+            },
+            "postID": 1,
+            musicTitle: {
+                $arrayElemAt: ["$music.musicTitle", 0]
+            },
+            "artistName": {
+                $arrayElemAt: ["$music.artistName", 0]
+            },
+            "albumName": {
+                $arrayElemAt: ["$music.albumName", 0]
+            },
+            "apsaraMusic": {
+                $arrayElemAt: ["$music.apsaraMusic", 0]
+            },
+            "apsaraThumnail": {
+                $arrayElemAt: ["$music.apsaraThumnail", 0]
+            },
+            "genre": {
+                $arrayElemAt: ["$music.genre", 0]
+            },
+            "theme": {
+                $arrayElemAt: ["$music.theme", 0]
+            },
+            "mood": {
+                $arrayElemAt: ["$music.mood", 0]
+            },
+            "tagPeople": "$userTag",
+            "mediaType": 1,
+            "postType": 1,
+            "description": 1,
+            "active": 1,
+            "createdAt": 1,
+            "updatedAt": 1,
+            "expiration": 1,
+            "visibility": 1,
+            "location": 1,
+            "tags": 1,
+            "allowComments": 1,
+            "isSafe": 1,
+            "isOwned": 1,
+            "certified": 1,
+            "saleAmount": 1,
+            "saleLike": 1,
+            "saleView": 1,
+            "isShared": 1,
+            "likes": 1,
+            "views": 1,
+            "shares": 1,
+            "userView": 1,
+            "userLike": 1,
+            "uploadSource": {
+                $arrayElemAt: ["$uploadSource.uploadSource", 0]
+            },
+            comments: {
+                $cond: {
+                    if : {
+                        $eq: ["$comment", []]
+                    },
+                    then: 0,
+                    else : {
+                        $size: "$comment"
+                    }
+                }
+            },
+            email: 1,
+            viewer: 1,
+            viewerCount: 1,
+            oldDate: "$oldDate",
+            selfContent: 1,
+            official: 
+            {
+                $cond: {
+                    if : {
+                        $eq: ["$email", "hyppers@hyppe.id"]
+                    },
+                    then: 1,
+                    else : 0
+                }
+            },
+            musik: "$music",
+            isLike: 
+                {
+                $cond: {
+                    if : {
+                        $eq: ["$userLike", "hyppers@hyppe.id"]
+                    },
+                    then: true,
+                    else : false
+                }
+            },
+            comment: "$comment",
+            interest: "$categoryInt",
+            friends: {
+                $arrayElemAt: ["$friend.friend", 0]
+            },
+            "following": 
+            {
+                $cond: 
+                {
+                    if : {
+                        $eq: ["$userBasic.follower", []]
+                    },
+                    then: false,
+                    else : 
+                        {
+                        $cond: 
+                        {
+                            if : {
+                                $in: ["ahmad.taslim07@gmail.com", "$userBasic.follower"]
+                            },
+                            then: true,
+                            else : false
+                        }
+                    },
+                    
+                }
+            },
+            "insight": 
+                {
+                "likes": "$likes",
+                "views": "$views",
+                "shares": "$shares",
+                "comments": "$comments",
+                
+            },
+            "userProfile": "$userProfile",
+            "contentMedias": "$contentMedias",
+            "cats": "$categories",
+            "tagDescription": "$tagDescription",
+            "metadata": "$metadata",
+            "boostDate": "$boostDate",
+            "end": "$boosted.boostSession.end",
+            "start": "$boosted.boostSession.start",
+            "isBoost": "$isBoost",
+            "boostViewer": "$boostViewer",
+            "boostCount": "$boostCount",
+            "boosted": 
+            {
+                $cond: {
+                    if : {
+                        $gt: [{
+                            "$dateToString": {
+                                "format": "%Y-%m-%d %H:%M:%S",
+                                "date": {
+                                    $add: [new Date(), 25200000]
+                                }
+                            }
+                        }, "$boosted.boostSession.end"]
+                    },
+                    then: "$ilang",
+                    else : "$boosted",
+                    
+                }
+            },
+            "contentModeration": "$contentModeration",
+            "reportedStatus": "$reportedStatus",
+            "reportedUserCount": "$reportedUserCount",
+            "contentModerationResponse": "$contentModerationResponse",
+            "reportedUser": "$reportedUser",
+            "timeStart": "$timeStart",
+            "timeEnd": "$timeEnd",
+            "apsaraId": {
+                $arrayElemAt: ["$mediaSource.apsaraId", 0]
+            },
+            "isApsara": {
+                $arrayElemAt: ["$mediaSource.apsara", 0]
+            },
+            "apsaraThumbId": {
+                $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
+            },
+            //               "mediaEndpoint": {
+            //                   $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
+            //               },
+            mediaEndpoint: 
+            {
+                "$ifNull": 
+                [
+                    {
+                        $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
+                    },
+                    {
+                        "$cond": 
+                        {
+                            if : 
+                                {
+                                "$eq": 
+                                [
+                                    "$postType",
+                                    "pict"
+                                ]
+                            },
+                            then: 
+                            {
+                                "$concat": 
+                                [
+                                    "/pict/",
+                                    "$postID"
+                                ]
+                            },
+                            else : 
+                                {
+                                "$concat": 
+                                [
+                                    "/stream/",
+                                    "$postID"
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "mediaUri": {
+                $arrayElemAt: ["$mediaSource.mediaUri", 0]
+            },
+            //             "mediaThumbEndpoint": {
+            //                 $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
+            //             },
+            mediaThumbEndpoint: 
+            {
+                "$ifNull": 
+                [
+                    {
+                        $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
+                    },
+                    {
+                        "$cond": 
+                        {
+                            if : 
+                                {
+                                "$eq": 
+                                [
+                                    "$postType",
+                                    "pict"
+                                ]
+                            },
+                            then: 
+                            {
+                                "$concat": 
+                                [
+                                    "/pict/",
+                                    "$postID"
+                                ]
+                            },
+                            else : 
+                                {
+                                "$concat": 
+                                [
+                                    "/thumb/",
+                                    "$postID"
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "mediaThumbUri": {
+                $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
+            },
+            "fullName": {
+                $arrayElemAt: ["$userBasic.fullName", 0]
+            },
+            "username": {
+                $arrayElemAt: ["$userBasic.username", 0]
+            },
+            "avatar": "$avatar",
+            "privacy": {
+                "isCelebrity": {
+                    $arrayElemAt: ["$userBasic.isCelebrity", 0]
+                },
+                "isIdVerified": {
+                    $arrayElemAt: ["$userBasic.isIdVerified", 0]
+                },
+                "isPrivate": {
+                    $arrayElemAt: ["$userBasic.isPrivate", 0]
+                },
+                "isFollowPrivate": {
+                    $arrayElemAt: ["$userBasic.isFollowPrivate", 0]
+                },
+                "isPostPrivate": {
+                    $arrayElemAt: ["$userBasic.isPostPrivate", 0]
+                },
+                
+            },
+            "verified": {
+                $arrayElemAt: ["$userBasic.fullName", 0]
+            },
+            "urluserBadge": 
+            {
+                "$ifNull": 
+                [
+                    {
+                        "$filter": 
+                        {
+                            input: {
+                                $arrayElemAt: ["$userBasic.userBadge", 0]
+                            },
+                            as: "listbadge",
+                            cond: 
+                            {
+                                "$and": 
+                                [
+                                    {
+                                        "$eq": 
+                                        [
+                                            "$$listbadge.isActive",
+                                            true
+                                        ]
+                                    },
+                                    {
+                                        "$lte": [
+                                            {
+                                                "$dateToString": {
+                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                    "date": {
+                                                        "$add": [
+                                                            new Date(),
+                                                            25200000
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "$$listbadge.endDatetime"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    null
+                ]
+            },
+            mailViewer: "$mailViewer",
+            userInterested: {
+                $arrayElemAt: ["$userInt.userInterests", 0]
+            },
+            tutor: {
+                $arrayElemAt: ["$userBasic.tutor", 0]
+            },
+            intScore: {
+                $size: "$intScore"
+            },
+            isLiked: {
+                $ifNull: ["$isLike", false]
+            },
+            
+        }
+    },
       );
       pipeline.push(
         {
