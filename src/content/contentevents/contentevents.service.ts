@@ -4253,21 +4253,43 @@ export class ContenteventsService {
       {
         "$match":
         {
-          "$and":
-            [
-              {
-                "eventType": "FOLLOWING"
-              },
-              {
-                "email": email1
-              },
-              {
-                "receiverParty": email2
-              },
-              {
-                "active": true
-              },
-            ]
+          "$or":
+          [
+            {
+              "$and":
+              [
+                {
+                  "eventType": "FOLLOWING"
+                },
+                {
+                  "email": email1
+                },
+                {
+                  "senderParty": email2
+                },
+                {
+                  "active": true
+                },
+              ]
+            },
+            {
+              "$and":
+              [
+                {
+                  "eventType": "FOLLOWING"
+                },
+                {
+                  "email": email2
+                },
+                {
+                  "senderParty": email1
+                },
+                {
+                  "active": true
+                },
+              ]
+            },
+          ]
         }
       }
     ]);

@@ -3471,31 +3471,26 @@ export class ContenteventsController {
     // console.log(checkexist);
 
     // if (checklist1 == true && checklist2 == true) {
-    if (data !== null && data !==undefined) {
-        if(data.length>0){
-          try
-          {
-            if (jenisoperasi == 'create') {
-              // setTimeout(() => this.basic2SS.addFriendList(email1, email2), 2000);
-              // setTimeout(() => this.basic2SS.addFriendList(email2, email1), 4000);
-              console.log('proses1');
-              await this.basic2SS.addFriendList(email1, email2);
-              console.log('proses2');
-              await this.basic2SS.addFriendList(email2, email1);
-            }
-            else {
-              await this.basic2SS.deleteFriendList(email1, email2);
-              await this.basic2SS.deleteFriendList(email2, email1);
-            }
-          }
-          catch(e)
-          {
-            console.log(e);
-          }
-        }else{
-
+    if (checkexist == true && data.length == 2) {
+      try
+      {
+        if (jenisoperasi == 'create') {
+          // setTimeout(() => this.basic2SS.addFriendList(email1, email2), 2000);
+          // setTimeout(() => this.basic2SS.addFriendList(email2, email1), 4000);
+          console.log('proses1');
+          await this.basic2SS.addFriendList(email1, email2);
+          console.log('proses2');
+          await this.basic2SS.addFriendList(email2, email1);
         }
-     
+        else {
+          await this.basic2SS.deleteFriendList(email1, email2);
+          await this.basic2SS.deleteFriendList(email2, email1);
+        }
+      }
+      catch(e)
+      {
+        console.log(e);
+      }
     }
   }
 
