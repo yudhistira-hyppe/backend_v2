@@ -2965,7 +2965,7 @@ export class ContenteventsController {
            // this.scoreunfollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW")
           }
 
-          await this.checkFriendbasedString2(userbasic1, userbasic2, "delete");
+           this.checkFriendbasedString2(userbasic1, userbasic2, "delete");
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
