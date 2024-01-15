@@ -3081,6 +3081,79 @@ export class PostsController {
     }
   }
 
+  // @Get('pict/:id')
+  // @HttpCode(HttpStatus.OK)
+  // async pict(
+  //   @Param('id') id: string,
+  //   @Query('x-auth-token') token: string,
+  //   @Query('x-auth-user') email: string, @Res() response) {
+  //   if ((id != undefined) && (token != undefined) && (email != undefined)) {
+  //     if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+  //       var dataMedia = await this.PostsService.findOnepostID2(id);
+  //       if (await this.utilsService.ceckData(dataMedia)) {
+  //         if (dataMedia[0].datacontent[0].uploadSource != undefined) {
+  //           console.log("OSS");
+  //           if (dataMedia[0].datacontent[0].uploadSource == "OSS") {
+  //             var mediaMime = "";
+  //             if (dataMedia[0].datacontent[0].mediaMime != undefined) {
+  //               mediaMime = dataMedia[0].datacontent[0].mediaMime.toString();
+  //             } else {
+  //               mediaMime = "image/jpeg";
+  //             }
+
+  //             var path = "";
+  //             if (dataMedia[0].datacontent[0].mediaBasePath != undefined) {
+  //               path = dataMedia[0].datacontent[0].mediaBasePath.toString();
+  //             } else {
+  //               path = dataMedia[0].datacontent[0].mediaBasePath.toString();
+  //             }
+  //             console.log(path);
+
+  //             var data2 = await this.ossContentPictService.readFile(path);
+  //             console.log(data2);
+  //             if (data2 != null) {
+  //               response.set("Content-Type", "image/jpeg");
+  //               response.send(data2);
+  //             } else {
+  //               response.send(null);
+  //             }
+  //           } else {
+  //             response.send(null);
+  //           }
+  //         } else {
+  //           console.log("NON OSS");
+  //           var image_data = "";
+  //           var mediaMime = "";
+  //           if (dataMedia[0].datacontent[0].fsSourceUri != undefined) {
+  //             image_data = dataMedia[0].datacontent[0].fsSourceUri;
+  //           }
+  //           if (dataMedia[0].datacontent[0].mediaMime != undefined) {
+  //             mediaMime = dataMedia[0].datacontent[0].mediaMime;
+  //           } else {
+  //             mediaMime = "image/jpeg";
+  //           }
+  //           if (image_data != '') {
+  //             var data = await this.PostsService.pict(image_data);
+  //             if (data != null) {
+  //               response.set("Content-Type", "image/png");
+  //               response.send(data);
+  //             } else {
+  //               response.send(null);
+  //             }
+  //           } else {
+  //             response.send(null);
+  //           }
+  //         }
+  //       } else {
+  //         response.send(null);
+  //       }
+  //     } else {
+  //       response.send(null);
+  //     }
+  //   } else {
+  //     response.send(null);
+  //   }
+  // }
   @Get('pict/:id')
   @HttpCode(HttpStatus.OK)
   async pict(
@@ -3089,23 +3162,23 @@ export class PostsController {
     @Query('x-auth-user') email: string, @Res() response) {
     if ((id != undefined) && (token != undefined) && (email != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
-        var dataMedia = await this.PostsService.findOnepostID2(id);
+        var dataMedia = await this.NewPostService.findOnepostID2(id);
         if (await this.utilsService.ceckData(dataMedia)) {
-          if (dataMedia[0].datacontent[0].uploadSource != undefined) {
+          if (dataMedia[0].mediaSource[0].uploadSource != undefined) {
             console.log("OSS");
-            if (dataMedia[0].datacontent[0].uploadSource == "OSS") {
+            if (dataMedia[0].mediaSource[0].uploadSource == "OSS") {
               var mediaMime = "";
-              if (dataMedia[0].datacontent[0].mediaMime != undefined) {
-                mediaMime = dataMedia[0].datacontent[0].mediaMime.toString();
+              if (dataMedia[0].mediaSource[0].mediaMime != undefined) {
+                mediaMime = dataMedia[0].mediaSource[0].mediaMime.toString();
               } else {
                 mediaMime = "image/jpeg";
               }
 
               var path = "";
-              if (dataMedia[0].datacontent[0].mediaBasePath != undefined) {
-                path = dataMedia[0].datacontent[0].mediaBasePath.toString();
+              if (dataMedia[0].mediaSource[0].mediaBasePath != undefined) {
+                path = dataMedia[0].mediaSource[0].mediaBasePath.toString();
               } else {
-                path = dataMedia[0].datacontent[0].mediaBasePath.toString();
+                path = dataMedia[0].mediaSource[0].mediaBasePath.toString();
               }
               console.log(path);
 
@@ -3124,16 +3197,16 @@ export class PostsController {
             console.log("NON OSS");
             var image_data = "";
             var mediaMime = "";
-            if (dataMedia[0].datacontent[0].fsSourceUri != undefined) {
-              image_data = dataMedia[0].datacontent[0].fsSourceUri;
+            if (dataMedia[0].mediaSource[0].fsSourceUri != undefined) {
+              image_data = dataMedia[0].mediaSource[0].fsSourceUri;
             }
-            if (dataMedia[0].datacontent[0].mediaMime != undefined) {
-              mediaMime = dataMedia[0].datacontent[0].mediaMime;
+            if (dataMedia[0].mediaSource[0].mediaMime != undefined) {
+              mediaMime = dataMedia[0].mediaSource[0].mediaMime;
             } else {
               mediaMime = "image/jpeg";
             }
             if (image_data != '') {
-              var data = await this.PostsService.pict(image_data);
+              var data = await this.NewPostService.pict(image_data);
               if (data != null) {
                 response.set("Content-Type", "image/png");
                 response.send(data);
@@ -3154,7 +3227,6 @@ export class PostsController {
       response.send(null);
     }
   }
-
   @Get('stream/v2?')
   @HttpCode(HttpStatus.OK)
   async stream_v2(@Query('postid') postid: string) {

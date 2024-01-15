@@ -3,7 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Newpost, NewpostDocument } from '..//../disqus/newpost/schemas/newpost.schema';
 import { ConfigService } from '@nestjs/config';
-
+import { UtilsService } from '../../../utils/utils.service';
+import { SeaweedfsService } from '../../../stream/seaweedfs/seaweedfs.service';
 @Injectable()
 export class NewpostService {
     private readonly logger = new Logger(NewpostService.name);
@@ -11,8 +12,47 @@ export class NewpostService {
         @InjectModel(Newpost.name, 'SERVER_FULL')
         private readonly PostsModel: Model<NewpostDocument>,
         private readonly configService: ConfigService,
+        private readonly utilsService: UtilsService,
+        private readonly seaweedfsService: SeaweedfsService,
     ) { }
-
+    async pict(media: string): Promise<any> {
+        var data = await this.seaweedfsService.read(media.replace('/localrepo', ''));
+        return data;
+      }
+    async findOnepostID2(postID: string): Promise<Object> {
+        var datacontent = null;
+        var CreatePostsDto_ = await this.PostsModel.findOne({ postID: postID }).exec();
+        if (await this.utilsService.ceckData(CreatePostsDto_)) {
+        //   if (CreatePostsDto_.postType == 'vid' || CreatePostsDto_.postType == 'video') {
+        //     datacontent = 'mediavideos';
+        //   } else if (CreatePostsDto_.postType == 'pict') {
+        //     datacontent = 'mediapicts';
+        //   } else if (CreatePostsDto_.postType == 'diary') {
+        //     datacontent = 'mediadiaries';
+        //   } else if (CreatePostsDto_.postType == 'story') {
+        //     datacontent = 'mediastories';
+        //   }
+    
+          const query = await this.PostsModel.aggregate([
+            {
+              $match: {
+                postID: postID
+              }
+            },
+            // {
+            //   $lookup: {
+            //     from: datacontent,
+            //     localField: "postID",
+            //     foreignField: "postID",
+            //     as: "datacontent"
+            //   }
+            // },
+          ]);
+          return query;
+        } else {
+          return null;
+        }
+      }
     async findByPostId(postID: string): Promise<Newpost> {
         return this.PostsModel.findOne({ postID: postID }).exec();
     }
