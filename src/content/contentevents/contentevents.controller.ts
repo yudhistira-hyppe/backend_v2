@@ -3406,45 +3406,6 @@ export class ContenteventsController {
   }
 
   //
-  async checkFriendbasedString2(email1: Userbasicnew, email2: Userbasicnew, jenisoperasi: string) {
-    console.log('proses data friend');
-    // var databasic1 = await this.basic2SS.findOne(email1._id.toString());
-    // console.log(databasic1);
-    // var databasic2 = await this.basic2SS.findOne(email2._id.toString());
-    // console.log(databasic2);
-    // var checklist1 = databasic1.following.find(element => element.email === email2.email);
-    // var checklist2 = databasic2.following.find(element => element.email === email1.email);
-
-    var data = await this.contenteventsService.checkFriendListdata(email1.email.toString(), email2.email.toString());
-    var checkexist = await this.utilsService.ceckData(data);
-
-    console.log(data);
-    // console.log(checkexist);
-
-    // if (checklist1 == true && checklist2 == true) {
-    if (checkexist == true) {
-      try
-      {
-        if (jenisoperasi == 'create') {
-          // setTimeout(() => this.basic2SS.addFriendList(email1, email2), 2000);
-          // setTimeout(() => this.basic2SS.addFriendList(email2, email1), 4000);
-          console.log('proses1');
-          await this.basic2SS.addFriendList(email1, email2);
-          console.log('proses2');
-          await this.basic2SS.addFriendList(email2, email1);
-        }
-        else {
-          await this.basic2SS.deleteFriendList(email1, email2);
-          await this.basic2SS.deleteFriendList(email2, email1);
-        }
-      }
-      catch(e)
-      {
-        console.log(e);
-      }
-    }
-  }
-  
   // async checkFriendbasedString2(email1: Userbasicnew, email2: Userbasicnew, jenisoperasi: string) {
   //   console.log('proses data friend');
   //   // var databasic1 = await this.basic2SS.findOne(email1._id.toString());
@@ -3483,10 +3444,49 @@ export class ContenteventsController {
   //     }
   //   }
   // }
+  
+  async checkFriendbasedString2(email1: Userbasicnew, email2: Userbasicnew, jenisoperasi: string) {
+    console.log('proses data friend');
+    // var databasic1 = await this.basic2SS.findOne(email1._id.toString());
+    // console.log(databasic1);
+    // var databasic2 = await this.basic2SS.findOne(email2._id.toString());
+    // console.log(databasic2);
+    // var checklist1 = databasic1.following.find(element => element.email === email2.email);
+    // var checklist2 = databasic2.following.find(element => element.email === email1.email);
 
-  // async sleep(ms) {
-  //   return new Promise(resolve => setTimeout(resolve, ms));
-  // }
+    var data = await this.contenteventsService.checkFriendListdata(email1.email.toString(), email2.email.toString());
+    var checkexist = await this.utilsService.ceckData(data);
+
+    console.log(data);
+    // console.log(checkexist);
+
+    // if (checklist1 == true && checklist2 == true) {
+    if (checkexist == true) {
+      try
+      {
+        if (jenisoperasi == 'create') {
+          // setTimeout(() => this.basic2SS.addFriendList(email1, email2), 2000);
+          // setTimeout(() => this.basic2SS.addFriendList(email2, email1), 4000);
+          console.log('proses1');
+          await this.basic2SS.addFriendList(email1, email2);
+          console.log('proses2');
+          await this.basic2SS.addFriendList(email2, email1);
+        }
+        else {
+          await this.basic2SS.deleteFriendList(email1, email2);
+          await this.basic2SS.deleteFriendList(email2, email1);
+        }
+      }
+      catch(e)
+      {
+        console.log(e);
+      }
+    }
+  }
+
+  async sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
   async checkFriendbasedString(email1: string, email2: string, jenisoperasi: string) {
     var data = await this.contenteventsService.checkFriendListdata(email1, email2);
