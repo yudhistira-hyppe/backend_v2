@@ -3462,7 +3462,7 @@ export class ContenteventsController {
     var data=null;
     try{
      data = await this.contenteventsService.checkFriendListdata(em1,em2 );
-    //var checkexist = await this.utilsService.ceckData(data);
+    var checkexist = await this.utilsService.ceckData(data);
 
     console.log(data);
     }catch(e){
