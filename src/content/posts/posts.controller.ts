@@ -3227,16 +3227,65 @@ export class PostsController {
       response.send(null);
     }
   }
+  // @Get('stream/v2?')
+  // @HttpCode(HttpStatus.OK)
+  // async stream_v2(@Query('postid') postid: string) {
+  //   var dataMedia = await this.PostsService.findOnepostID2(postid);
+  //   console.log(dataMedia);
+  //   if (await this.utilsService.ceckData(dataMedia)) {
+  //     var fsSourceUri = "";
+  //     if (dataMedia != null) {
+  //       if (dataMedia[0].datacontent[0].mediaUri != undefined) {
+  //         fsSourceUri = dataMedia[0].datacontent[0].fsSourceUri;
+  //       }
+  //       if (fsSourceUri != "") {
+  //         return {
+  //           response_code: 202,
+  //           data: {
+  //             url: 'https://' + process.env.SEAWEEDFS_HOST + fsSourceUri
+  //           },
+  //           messages: {
+  //             info: ['successful'],
+  //           },
+  //         };
+  //       } else {
+  //         return {
+  //           response_code: 202,
+  //           data: [],
+  //           messages: {
+  //             info: ['successful'],
+  //           },
+  //         };
+  //       }
+  //     } else {
+  //       return {
+  //         response_code: 202,
+  //         data: [],
+  //         messages: {
+  //           info: ['Logout successful'],
+  //         },
+  //       };
+  //     }
+  //   } else {
+  //     return {
+  //       response_code: 202,
+  //       data: [],
+  //       messages: {
+  //         info: ['Logout successful'],
+  //       },
+  //     };
+  //   }
+  // }
   @Get('stream/v2?')
   @HttpCode(HttpStatus.OK)
   async stream_v2(@Query('postid') postid: string) {
-    var dataMedia = await this.PostsService.findOnepostID2(postid);
+    var dataMedia = await this.NewPostService.findOnepostID2(postid);
     console.log(dataMedia);
     if (await this.utilsService.ceckData(dataMedia)) {
       var fsSourceUri = "";
       if (dataMedia != null) {
-        if (dataMedia[0].datacontent[0].mediaUri != undefined) {
-          fsSourceUri = dataMedia[0].datacontent[0].fsSourceUri;
+        if (dataMedia[0].mediaSource[0].mediaUri != undefined) {
+          fsSourceUri = dataMedia[0].mediaSource[0].fsSourceUri;
         }
         if (fsSourceUri != "") {
           return {
@@ -3276,6 +3325,67 @@ export class PostsController {
       };
     }
   }
+  // @Get('stream/:id')
+  // @HttpCode(HttpStatus.OK)
+  // async stream(@Param('id') mediaFile: string, @Headers() headers, @Res() response) {
+  //   var timestamps_start = await this.utilsService.getDateTimeString();
+  //   var fullurl = headers.host + "/stream/" + mediaFile;
+
+  //   console.log(mediaFile);
+  //   if ((headers['x-auth-user'] != undefined) && (headers['x-auth-token'] != undefined) && (headers['post-id'] != undefined) && (mediaFile != undefined)) {
+  //     if (await this.utilsService.validasiTokenEmailParam(headers['x-auth-token'], headers['x-auth-user'])) {
+  //       var dataMedia = await this.PostsService.findOnepostID(headers['post-id']);
+  //       if (await this.utilsService.ceckData(dataMedia)) {
+  //         var mediaBasePath = "";
+  //         if (dataMedia != null) {
+  //           if (dataMedia[0].datacontent[0].mediaBasePath != undefined) {
+  //             mediaBasePath = dataMedia[0].datacontent[0].mediaBasePath;
+  //           }
+  //           if (mediaBasePath != "") {
+  //             var data = await this.PostsService.stream(mediaBasePath + mediaFile);
+  //             if (data != null) {
+  //               var timestamps_end = await this.utilsService.getDateTimeString();
+  //               this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+  //               response.set("Content-Type", "application/octet-stream");
+  //               response.send(data);
+  //             } else {
+  //               var timestamps_end = await this.utilsService.getDateTimeString();
+  //               this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+  //               response.send(null);
+  //             }
+  //           } else {
+  //             var timestamps_end = await this.utilsService.getDateTimeString();
+  //             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+  //             response.send(null);
+  //           }
+  //         } else {
+  //           var timestamps_end = await this.utilsService.getDateTimeString();
+  //           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+  //           response.send(null);
+  //         }
+  //       } else {
+  //         var timestamps_end = await this.utilsService.getDateTimeString();
+  //         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+  //         response.send(null);
+  //       }
+  //     } else {
+  //       var timestamps_end = await this.utilsService.getDateTimeString();
+  //       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, null);
+
+  //       response.send(null);
+  //     }
+  //   } else {
+  //     var timestamps_end = await this.utilsService.getDateTimeString();
+  //     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, null);
+
+  //     response.send(null);
+  //   }
+  // }
 
   @Get('stream/:id')
   @HttpCode(HttpStatus.OK)
