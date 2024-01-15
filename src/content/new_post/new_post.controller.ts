@@ -128,7 +128,7 @@ export class NewPostController {
             var iduser = null;
             if (databasic !== null) {
                 iduser = databasic._id;
-                this.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
+                //this.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
             }
         }
 
