@@ -39,6 +39,7 @@ import { RequestSoctDto } from '../mediastreaming/dto/mediastreaming.dto';
 import { ConfigService } from '@nestjs/config';
 import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 import { NewpostService } from '../disqus/newpost/newpost.service';
+import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema'; 
 @Controller()
 export class ContenteventsController {
   private readonly logger = new Logger(ContenteventsController.name);
@@ -2159,22 +2160,6 @@ export class ContenteventsController {
       );
     }
     iduser = userbasic1._id;
-    var checkguestmode = null;
-    try
-    {
-      if(userbasic1.guestMode != null && userbasic1.guestMode != undefined && userbasic1.guestMode == true)
-      {
-        checkguestmode = true;
-      }
-      else
-      {
-        checkguestmode = false;
-      }
-    }
-    catch(e)
-    {
-      checkguestmode = false;
-    }
 
     if (eventType == "FOLLOWING") {
       var ceck_data_FOLLOWER = await this.contenteventsService.ceckData(email_receiverParty, "FOLLOWER", "ACCEPT", email_user, "", "");
@@ -2210,56 +2195,53 @@ export class ContenteventsController {
         CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
         CreateContenteventsDto2.senderParty = email_receiverParty
 
-        if(checkguestmode == false)
-        {
-          if (await this.utilsService.ceckData(Insight_sender)) {
-            var _id_sender = (await this.utilsService.generateId());
-            var CreateInsightlogsDto_sender = new CreateInsightlogsDto()
-            CreateInsightlogsDto_sender._id = _id_sender;
-            CreateInsightlogsDto_sender.insightID = Insight_sender._id;
-            CreateInsightlogsDto_sender.createdAt = current_date;
-            CreateInsightlogsDto_sender.updatedAt = current_date;
-            CreateInsightlogsDto_sender.mate = email_receiverParty
-            CreateInsightlogsDto_sender.eventInsight = "FOLLOWING"
-            CreateInsightlogsDto_sender._class = "io.melody.hyppe.content.domain.InsightLog"
-            await this.insightlogsService.create(CreateInsightlogsDto_sender);
+        if (await this.utilsService.ceckData(Insight_sender)) {
+          var _id_sender = (await this.utilsService.generateId());
+          var CreateInsightlogsDto_sender = new CreateInsightlogsDto()
+          CreateInsightlogsDto_sender._id = _id_sender;
+          CreateInsightlogsDto_sender.insightID = Insight_sender._id;
+          CreateInsightlogsDto_sender.createdAt = current_date;
+          CreateInsightlogsDto_sender.updatedAt = current_date;
+          CreateInsightlogsDto_sender.mate = email_receiverParty
+          CreateInsightlogsDto_sender.eventInsight = "FOLLOWING"
+          CreateInsightlogsDto_sender._class = "io.melody.hyppe.content.domain.InsightLog"
+          await this.insightlogsService.create(CreateInsightlogsDto_sender);
 
-            var LogInsught_sensder = Insight_sender.insightLogs;
-            LogInsught_sensder.push({
-              $ref: 'insightlogs',
-              $id: _id_sender,
-              $db: 'hyppe_content_db',
-            });
+          var LogInsught_sensder = Insight_sender.insightLogs;
+          LogInsught_sensder.push({
+            $ref: 'insightlogs',
+            $id: _id_sender,
+            $db: 'hyppe_content_db',
+          });
 
-            var CreateInsightsDto_sender = new CreateInsightsDto()
-            CreateInsightsDto_sender.insightLogs = LogInsught_sensder;
-            await this.insightsService.updateone(email_user, CreateInsightsDto_sender)
+          var CreateInsightsDto_sender = new CreateInsightsDto()
+          CreateInsightsDto_sender.insightLogs = LogInsught_sensder;
+          await this.insightsService.updateone(email_user, CreateInsightsDto_sender)
 
-          }
-          if (await this.utilsService.ceckData(Insight_receiver)) {
-            var _id_receiver = (await this.utilsService.generateId());
-            var CreateInsightlogsDto_receiver = new CreateInsightlogsDto()
-            CreateInsightlogsDto_receiver._id = _id_receiver;
-            CreateInsightlogsDto_receiver.insightID = Insight_receiver._id;
-            CreateInsightlogsDto_receiver.createdAt = current_date;
-            CreateInsightlogsDto_receiver.updatedAt = current_date;
-            CreateInsightlogsDto_receiver.mate = email_user
-            CreateInsightlogsDto_receiver.eventInsight = "FOLLOWER"
-            CreateInsightlogsDto_receiver._class = "io.melody.hyppe.content.domain.InsightLog"
-            await this.insightlogsService.create(CreateInsightlogsDto_receiver);
+        }
+        if (await this.utilsService.ceckData(Insight_receiver)) {
+          var _id_receiver = (await this.utilsService.generateId());
+          var CreateInsightlogsDto_receiver = new CreateInsightlogsDto()
+          CreateInsightlogsDto_receiver._id = _id_receiver;
+          CreateInsightlogsDto_receiver.insightID = Insight_receiver._id;
+          CreateInsightlogsDto_receiver.createdAt = current_date;
+          CreateInsightlogsDto_receiver.updatedAt = current_date;
+          CreateInsightlogsDto_receiver.mate = email_user
+          CreateInsightlogsDto_receiver.eventInsight = "FOLLOWER"
+          CreateInsightlogsDto_receiver._class = "io.melody.hyppe.content.domain.InsightLog"
+          await this.insightlogsService.create(CreateInsightlogsDto_receiver);
 
-            var LogInsught_receiver = Insight_receiver.insightLogs;
-            LogInsught_receiver.push({
-              $ref: 'insightlogs',
-              $id: _id_receiver,
-              $db: 'hyppe_content_db',
-            });
+          var LogInsught_receiver = Insight_receiver.insightLogs;
+          LogInsught_receiver.push({
+            $ref: 'insightlogs',
+            $id: _id_receiver,
+            $db: 'hyppe_content_db',
+          });
 
-            var CreateInsightsDto_receiver = new CreateInsightsDto()
-            CreateInsightsDto_receiver.insightLogs = LogInsught_receiver;
-            await this.insightsService.updateone(email_receiverParty, CreateInsightsDto_receiver)
+          var CreateInsightsDto_receiver = new CreateInsightsDto()
+          CreateInsightsDto_receiver.insightLogs = LogInsught_receiver;
+          await this.insightsService.updateone(email_receiverParty, CreateInsightsDto_receiver)
 
-          }
         }
 
         //INSERt FOLOWING STREAM
@@ -2284,28 +2266,22 @@ export class ContenteventsController {
           let event1 = resultdata1.eventType.toString();
           // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
           await this.contenteventsService.create(CreateContenteventsDto2);
-          if(checkguestmode == false)
-          {
-            await this.insightsService.updateFollower(email_receiverParty);
-            await this.basic2SS.updatefollowSystem(email_user, email_receiverParty, "FOLLOWER");
-            await this.insightsService.updateFollowing(email_user);
-            this.sendInteractiveFCM2(email_receiverParty, "FOLLOWER", "", email_user);
-          }
+          await this.insightsService.updateFollower(email_receiverParty);
+          await this.basic2SS.updatefollowSystem(email_user, email_receiverParty, "FOLLOWER");
+          await this.insightsService.updateFollowing(email_user);
+          this.sendInteractiveFCM2(email_receiverParty, "FOLLOWER", "", email_user);
           await this.basic2SS.updatefollowSystem(email_receiverParty, email_user, "FOLLOWING");
           //  this.sendInteractiveFCM2(email_user, "FOLLOWING", "", email_receiverParty);
           
-          if(checkguestmode == false)
-          {
-            const databasic = await this.basic2SS.findbyemail(
-              email_user
-            );
-            var iduser = null;
-            if (databasic !== null) {
-              iduser = databasic._id;
-              // this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
-              this.scorefollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW")
-            }
-          }
+          const databasic = await this.basic2SS.findbyemail(
+            email_user
+          );
+          // var iduser = null;
+          // if (databasic !== null) {
+          //   iduser = databasic._id;
+          //   // this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
+          //   this.scorefollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW")
+          // }
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2321,13 +2297,10 @@ export class ContenteventsController {
         if (!ceck_data_FOLLOWER.active && !ceck_data_FOLLOWING.active) {
           await this.contenteventsService.updateFollowing(email_user, "FOLLOWING", email_receiverParty);
           await this.contenteventsService.updateFollower(email_receiverParty, "FOLLOWER", email_user);
-          if(checkguestmode == false)
-          {
-            await this.insightsService.updateFollower(email_receiverParty);
-            await this.insightsService.updateFollowing(email_user);
-            await this.basic2SS.updatefollowSystem(email_user, email_receiverParty, "FOLLOWER");
-            this.sendInteractiveFCM2(email_receiverParty, "FOLLOWER", "", email_user);
-          }
+          await this.insightsService.updateFollower(email_receiverParty);
+          await this.insightsService.updateFollowing(email_user);
+          await this.basic2SS.updatefollowSystem(email_user, email_receiverParty, "FOLLOWER");
+          this.sendInteractiveFCM2(email_receiverParty, "FOLLOWER", "", email_user);
           await this.basic2SS.updatefollowSystem(email_receiverParty, email_user, "FOLLOWING");
           let idevent1 = ceck_data_FOLLOWING._id;
           let event1 = ceck_data_FOLLOWING.eventType.toString();
@@ -2336,18 +2309,18 @@ export class ContenteventsController {
           const databasic = await this.basic2SS.findbyemail(
             email_user
           );
-          var iduser = null;
-          if (databasic !== null) {
-            iduser = databasic._id;
-            //this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
-            this.scorefollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW")
-          }
+          // var iduser = null;
+          // if (databasic !== null) {
+          //   iduser = databasic._id;
+          //   //this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
+          //   this.scorefollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW")
+          // }
 
 
         }
       }
 
-      await this.checkFriendbasedString2(email_user, email_receiverParty, "create");
+       this.checkFriendbasedString2(userbasic1, userbasic2, "create");
     }
     //  else if (eventType == "VIEW") {
 
@@ -2554,7 +2527,7 @@ export class ContenteventsController {
           CreateContenteventsDto2.senderParty = email_user
           CreateContenteventsDto2.postID = request.body.postID
 
-          if (await this.utilsService.ceckData(Insight_receiver) && checkguestmode == false) {
+          if (await this.utilsService.ceckData(Insight_receiver)) {
             var _id_receiver = (await this.utilsService.generateId());
             var CreateInsightlogsDto_receiver = new CreateInsightlogsDto()
             CreateInsightlogsDto_receiver._id = _id_receiver;
@@ -2586,11 +2559,8 @@ export class ContenteventsController {
             //await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
             var dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
 
-            await this.postDisqusSS.updateView(email_receiverParty, email_user, request.body.postID, checkguestmode);
-            if(checkguestmode == false)
-            {
-              await this.insightsService.updateViews(email_receiverParty);
-            }
+            await this.postDisqusSS.updateView(email_receiverParty, email_user, request.body.postID);
+            await this.insightsService.updateViews(email_receiverParty);
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
             var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2654,17 +2624,17 @@ export class ContenteventsController {
               idevent1 = resultdata1._id;
               let dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
 
-              if (idevent1 !== null) {
-                try {
-                  // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
-                  this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty)
-                  console.log("sukses hitung score")
-                } catch (e) {
-                  console.log("gagal ngitung skor" + e)
-                }
+              // if (idevent1 !== null) {
+              //   try {
+              //     // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+              //     this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty)
+              //     console.log("sukses hitung score")
+              //   } catch (e) {
+              //     console.log("gagal ngitung skor" + e)
+              //   }
 
 
-              }
+              // }
 
 
             } catch (error) {
@@ -2685,10 +2655,7 @@ export class ContenteventsController {
 
       }
 
-      if(checkguestmode == false)
-      {
-        var datapost = await this.postDisqusSS.updatePostviewer(request.body.postID, email_user);
-      }
+      var datapost = await this.postDisqusSS.updatePostviewer(request.body.postID, email_user);
     }
     else if (eventType == "LIKE") {
       var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "LIKE", "DONE", email_receiverParty, "", request.body.postID);
@@ -2726,7 +2693,7 @@ export class ContenteventsController {
         CreateContenteventsDto2.senderParty = email_user
         CreateContenteventsDto2.postID = request.body.postID
 
-        if (await this.utilsService.ceckData(Insight_receiver) && checkguestmode == false) {
+        if (await this.utilsService.ceckData(Insight_receiver)) {
           var _id_receiver = (await this.utilsService.generateId());
           var CreateInsightlogsDto_receiver = new CreateInsightlogsDto()
           CreateInsightlogsDto_receiver._id = _id_receiver;
@@ -2757,8 +2724,8 @@ export class ContenteventsController {
           let event1 = resultdata1.eventType.toString();
           // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
           await this.contenteventsService.create(CreateContenteventsDto2);
-          await this.postDisqusSS.updateLike(email_receiverParty, email_user, request.body.postID, checkguestmode);
-          if (await this.utilsService.ceckData(Insight_receiver) && checkguestmode == false) {
+          await this.postDisqusSS.updateLike(email_receiverParty, email_user, request.body.postID);
+          if (await this.utilsService.ceckData(Insight_receiver)) {
             await this.insightsService.updateLike(email_receiverParty);
             this.sendInteractiveFCM2(email_receiverParty, "LIKE", request.body.postID, email_user);
           }
@@ -2773,10 +2740,8 @@ export class ContenteventsController {
           //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
           //this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-          if(checkguestmode == false)
-          {
-            this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-          }
+        
+          // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
@@ -2794,11 +2759,8 @@ export class ContenteventsController {
           try {
             await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, false);
             await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, false);
-            if(checkguestmode == false)
-            {
-              await this.insightsService.updateUnlike(email_receiverParty);
-            }
-            await this.postDisqusSS.updateUnLike(email_receiverParty, email_user, request.body.postID, checkguestmode);
+            await this.insightsService.updateUnlike(email_receiverParty);
+            await this.postDisqusSS.updateUnLike(email_receiverParty, email_user, request.body.postID);
 
             let idevent1 = ceck_data_DONE._id;
             let event1 = ceck_data_DONE.eventType.toString();
@@ -2815,10 +2777,7 @@ export class ContenteventsController {
 
             // this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
 
-            if(checkguestmode == false)
-            {
-              this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
-            }
+           // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
             var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2834,11 +2793,8 @@ export class ContenteventsController {
           try {
             await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, true);
             await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, true);
-            if(checkguestmode == false)
-            {
-              await this.insightsService.updateLike(email_receiverParty);
-            }
-            await this.postDisqusSS.updateLike(email_receiverParty, email_user, request.body.postID, checkguestmode);
+            await this.insightsService.updateLike(email_receiverParty);
+            await this.postDisqusSS.updateLike(email_receiverParty, email_user, request.body.postID);
 
             let idevent1 = ceck_data_DONE._id;
             let event1 = ceck_data_DONE.eventType.toString();
@@ -2846,10 +2802,8 @@ export class ContenteventsController {
             // this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
             // this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-            if(checkguestmode == false)
-            {
-              this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-            }
+           
+           // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
@@ -2870,13 +2824,10 @@ export class ContenteventsController {
       var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "LIKE", "ACCEPT", "", email_user, request.body.postID);
       if ((await this.utilsService.ceckData(ceck_data_DONE)) && (await this.utilsService.ceckData(ceck_data_ACCEPT))) {
         try {
-          if(checkguestmode == false)
-          {
-            await this.insightsService.updateUnlike(email_receiverParty);
-          }
+          await this.insightsService.updateUnlike(email_receiverParty);
           await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, false);
           await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, false);
-          await this.postDisqusSS.updateUnLike(email_receiverParty, email_user, request.body.postID, checkguestmode);
+          await this.postDisqusSS.updateUnLike(email_receiverParty, email_user, request.body.postID);
 
           let idevent1 = ceck_data_DONE._id;
           // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
@@ -2892,10 +2843,8 @@ export class ContenteventsController {
           //this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
 
           //this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
-          if(checkguestmode == false)
-          {
-            this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
-          }
+          
+          //this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2914,11 +2863,8 @@ export class ContenteventsController {
             try {
               await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, false);
               await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, false);
-              if(checkguestmode == false)
-              {
-                await this.insightsService.updateUnlike(email_receiverParty);
-              }
-              await this.postDisqusSS.updateUnLike(email_receiverParty, email_user, request.body.postID, checkguestmode);
+              await this.insightsService.updateUnlike(email_receiverParty);
+              await this.postDisqusSS.updateUnLike(email_receiverParty, email_user, request.body.postID);
 
               let idevent1 = ceck_data_DONE._id;
               // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNLIKE", userbasic1._id);
@@ -2934,10 +2880,8 @@ export class ContenteventsController {
               //this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
 
               // this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
-              if(checkguestmode == false)
-              {
-                this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
-              }
+             
+             // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2953,11 +2897,8 @@ export class ContenteventsController {
             try {
               await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, true);
               await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, true);
-              if(checkguestmode == false)
-              {
-                await this.insightsService.updateLike(email_receiverParty);
-              }
-              await this.postDisqusSS.updateLike(email_receiverParty, email_user, request.body.postID, checkguestmode);
+              await this.insightsService.updateLike(email_receiverParty);
+              await this.postDisqusSS.updateLike(email_receiverParty, email_user, request.body.postID);
 
               let idevent1 = ceck_data_DONE._id;
               // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "LIKE", userbasic1._id);
@@ -2973,10 +2914,8 @@ export class ContenteventsController {
               //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
               //this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-              if(checkguestmode == false)
-              {
-                this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-              }
+              
+              //this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2998,13 +2937,10 @@ export class ContenteventsController {
         try {
           await this.contenteventsService.updateUnFollowing(email_user, "FOLLOWING", email_receiverParty);
           await this.contenteventsService.updateUnFollower(email_receiverParty, "FOLLOWER", email_user);
-          if(checkguestmode == false)
-          {
-            await this.insightsService.updateUnFollower(email_receiverParty);
-            await this.insightsService.updateUnFollowing(email_user);
-            await this.insightsService.updateUnFollow(email_user);
-            await this.basic2SS.updateunfollowSystem(email_user, email_receiverParty, "FOLLOWER");
-          }
+          await this.insightsService.updateUnFollower(email_receiverParty);
+          await this.insightsService.updateUnFollowing(email_user);
+          await this.insightsService.updateUnFollow(email_user);
+          await this.basic2SS.updateunfollowSystem(email_user, email_receiverParty, "FOLLOWER");
           await this.basic2SS.updateunfollowSystem(email_receiverParty, email_user, "FOLLOWING");
 
           //INSERt UNFOLLOW STREAM
@@ -3018,20 +2954,18 @@ export class ContenteventsController {
           let idevent1 = ceck_data_FOLLOWING._id;
           //await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, "UNFOLLOW", userbasic1._id);
 
-          if(checkguestmode == false)
-          {
-            const databasic = await this.basic2SS.findbyemail(
-              email_user
-            );
-            var iduser = null;
-            if (databasic !== null) {
-              iduser = databasic._id;
-              // this.userChallengeUnFollow(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW");
-              this.scoreunfollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW")
-            }
+          const databasic = await this.basic2SS.findbyemail(
+            email_user
+          );
+          var iduser = null;
+          if (databasic !== null) {
+            iduser = databasic._id;
+            // this.userChallengeUnFollow(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW");
+           
+           // this.scoreunfollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW")
           }
 
-          this.checkFriendbasedString2(email_user, email_receiverParty, "delete");
+          await this.checkFriendbasedString2(userbasic1, userbasic2, "delete");
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
@@ -3477,23 +3411,47 @@ export class ContenteventsController {
     }
   }
 
-  async checkFriendbasedString2(email1: string, email2: string, jenisoperasi: string) {
-    var data = await this.contenteventsService.checkFriendListdata(email1, email2);
+  async checkFriendbasedString2(email1: Userbasicnew, email2: Userbasicnew, jenisoperasi: string) {
+    console.log('proses data friend');
+    // var databasic1 = await this.basic2SS.findOne(email1._id.toString());
+    // console.log(databasic1);
+    // var databasic2 = await this.basic2SS.findOne(email2._id.toString());
+    // console.log(databasic2);
+    // var checklist1 = databasic1.following.find(element => element.email === email2.email);
+    // var checklist2 = databasic2.following.find(element => element.email === email1.email);
+
+    var data = await this.contenteventsService.checkFriendListdata(email1.email.toString(), email2.email.toString());
     var checkexist = await this.utilsService.ceckData(data);
 
     console.log(data);
     // console.log(checkexist);
 
-    if (checkexist == true) {
-      if (jenisoperasi == 'create') {
-        await this.basic2SS.addFriendList2(email1, email2);
-        await this.basic2SS.addFriendList2(email2, email1);
+    // if (checklist1 == true && checklist2 == true) {
+    if (checkexist == true && data.length==2) {
+      try
+      {
+        if (jenisoperasi == 'create') {
+          // setTimeout(() => this.basic2SS.addFriendList(email1, email2), 2000);
+          // setTimeout(() => this.basic2SS.addFriendList(email2, email1), 4000);
+          console.log('proses1');
+          await this.basic2SS.addFriendList(email1, email2);
+          console.log('proses2');
+          await this.basic2SS.addFriendList(email2, email1);
+        }
+        else {
+          await this.basic2SS.deleteFriendList(email1, email2);
+          await this.basic2SS.deleteFriendList(email2, email1);
+        }
       }
-      else {
-        await this.basic2SS.deleteFriendList(email1, email2);
-        await this.basic2SS.deleteFriendList(email2, email1);
+      catch(e)
+      {
+        console.log(e);
       }
     }
+  }
+
+  async sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   async checkFriendbasedString(email1: string, email2: string, jenisoperasi: string) {

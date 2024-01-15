@@ -326,29 +326,17 @@ export class NewpostService {
         return await this.PostsModel.updateOne({ postID: postid }, { $push: { viewer: email } }).exec();
     }
     
-    async updateView(email: string, email_target: string, postID: string, guestMode:boolean) {
+    async updateView(email: string, email_target: string, postID: string) {
         var getdata = await this.PostsModel.findOne({ postID:postID }).exec();
         var setinput = {};
-        if(guestMode == true)
-        {
-            var setguesttemp = getdata.tempView;
-            setguesttemp.push(email_target);
-            setinput["$set"] = 
-            {
-                "tempView":setguesttemp
-            } 
-        }
-        else
-        {
-            setinput['$inc'] = {
-                views:1
-            };
-            var setCEViewer = getdata.userView;
-            setCEViewer.push(email_target);
-            setinput["$set"] = {
-                "userView":setCEViewer
-            } 
-        }
+        setinput['$inc'] = {
+            views:1
+        };
+        var setCEViewer = getdata.userView;
+        setCEViewer.push(email_target);
+        setinput["$set"] = {
+            "userView":setCEViewer
+        } 
 
         this.PostsModel.updateOne(
             {
@@ -366,28 +354,16 @@ export class NewpostService {
         );
     }
 
-    async updateLike(email: string, email_target:string, postID: string, guestMode:boolean) {
+    async updateLike(email: string, email_target:string, postID: string) {
         var getdata = await this.PostsModel.findOne({ postID:postID }).exec();
         var setinput = {};
-        if(guestMode == true)
-        {
-            var setguesttemp = getdata.tempLike;
-            setguesttemp.push(email_target);
-            setinput["$set"] = 
-            {
-                "tempLike":setguesttemp
-            } 
-        }
-        else
-        {
-            setinput['$inc'] = {
-                likes:1
-            };
-            var setCELike = getdata.userLike;
-            setCELike.push(email_target);
-            setinput["$set"] = {
-                "userLike":setCELike
-            } 
+        setinput['$inc'] = {
+            likes:1
+        };
+        var setCELike = getdata.userLike;
+        setCELike.push(email_target);
+        setinput["$set"] = {
+            "userLike":setCELike
         }
         
         this.PostsModel.updateOne(
@@ -423,29 +399,17 @@ export class NewpostService {
         );
     }
 
-    async updateUnLike(email: string, email_target:string, postID: string, guestMode:boolean) {
+    async updateUnLike(email: string, email_target:string, postID: string) {
         var getdata = await this.PostsModel.findOne({ postID:postID }).exec();
         var setinput = {};
-        if(guestMode == true)
-        {
-            var setguesttemp = getdata.tempLike;
-            var filterdata = setguesttemp.filter(emaildata => emaildata != email_target);
-            setinput["$set"] = 
-            {
-                "tempLike":filterdata
-            } 
-        }
-        else
-        {
-            setinput['$inc'] = {
-                likes:-1
-            };
-            var setCELike = getdata.userLike;
-            var filterdata = setCELike.filter(emaildata => emaildata != email_target);
-            setinput["$set"] = {
-                "userLike":filterdata
-            } 
-        }
+        setinput['$inc'] = {
+            likes:-1
+        };
+        var setCELike = getdata.userLike;
+        var filterdata = setCELike.filter(emaildata => emaildata != email_target);
+        setinput["$set"] = {
+            "userLike":filterdata
+        } 
         
         this.PostsModel.updateOne(
             {
@@ -898,4 +862,7 @@ export class NewpostService {
     
         return query;
       }
+
+
+      
 }
