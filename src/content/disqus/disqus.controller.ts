@@ -1161,7 +1161,7 @@ export class DisqusController {
             if (inDto.tagComment != undefined) {
               var array_data = [];
               for (let i = 0; i < inDto.tagComment_.length; i++) {
-                var user = await this.userauthsService.findOneUsername(inDto.tagComment_[i]);
+                var user = await this.UserbasicnewService.findOneUsername(inDto.tagComment_[i]);
                 if (await this.utilsService.ceckData(user)) {
                   array_data.push({
                     $ref: 'userauths',
@@ -1173,7 +1173,8 @@ export class DisqusController {
               disqusLog_new.tags = Object(array_data);
             }
             disqusLog = disqusLog_new;
-          } else {
+          } 
+          else {
             console.log("not '' parentID");
             var disqusLog_new = new CreateDisquslogsDto();
             disqusLog_new._id = await this.utilsService.generateId();
@@ -1239,7 +1240,7 @@ export class DisqusController {
             if (inDto.tagComment != undefined) {
               var array_data = [];
               for (let i = 0; i < inDto.tagComment_.length; i++) {
-                var user = await this.userauthsService.findOneUsername(inDto.tagComment_[i]);
+                var user = await this.UserbasicnewService.findOneUsername(inDto.tagComment_[i]);
                 if (await this.utilsService.ceckData(user)) {
                   array_data.push({
                     $ref: 'userauths',
@@ -1320,7 +1321,7 @@ export class DisqusController {
           if (inDto.tagComment != undefined) {
             var array_data = [];
             for (let i = 0; i < inDto.tagComment_.length; i++) {
-              var user = await this.userauthsService.findOneUsername(inDto.tagComment_[i]);
+              var user = await this.UserbasicnewService.findOneUsername(inDto.tagComment_[i]);
               if (await this.utilsService.ceckData(user)) {
                 array_data.push({
                   $ref: 'userauths',
