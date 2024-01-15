@@ -3461,7 +3461,7 @@ export class ContenteventsController {
     // console.log(checkexist);
 
     // if (checklist1 == true && checklist2 == true) {
-    if (checkexist == true) {
+    if (checkexist == true && data.length == 2) {
       try
       {
         if (jenisoperasi == 'create') {
