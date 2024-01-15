@@ -7050,135 +7050,134 @@ export class UserbasicnewService {
         return true;
     }
 
-    async addFriendList(email_target:string, email_source: string)
+    async addFriendList(email_target:Userbasicnew, email_source: Userbasicnew)
     {
-        console.log(email_target);
         console.log(email_source);
-        var getdata = null;
+        var convertdata = JSON.parse(JSON.stringify(email_source));
+        var listarray = null;
         try
         {
-            getdata = await this.UserbasicnewModel.findOne({email:email_source}).exec();
+            //bermasalah disini
+            // if(convertdata.friend != null && convertdata.friend != undefined)
+            // {
+            //     listarray = convertdata.friend;
+            // }
+            // else
+            // {
+            //     listarray = [];
+            // }
+            for (const key in email_source) {
+                if(key == "friend")
+                {
+                    listarray = email_source[key];
+                }
+            }
+            if(listarray == null || listarray == undefined)
+            {
+                listarray = [];
+            }
         }
         catch(e)
         {
-            console.log(JSON.stringify(e));
+            listarray = [];
         }
-        console.log(getdata);
+        console.log('ready');
+        console.log(listarray);
+        console.log('go!!');
 
-        var updatedata = new Userbasicnew();
-        if(getdata.friend == null || getdata.friend == undefined || getdata.friend.length == 0)
+        var checkfriendexist = true;
+        if(listarray.length == 0)
         {
-            updatedata.friend = [
+            checkfriendexist = false;
+            listarray = [
                 {
-                    "email":email_target
+                    "email":email_target.email
                 }
             ];
         }
         else
         {
-            var getfriend = getdata.friend;
-            var checkdata = getfriend.find(getdata => getdata.email === email_target);
+            var checkdata = listarray.find(getdata => getdata.email === email_target.email);
             if(checkdata == undefined)
             {
-                getfriend.push(
+                checkfriendexist = false;
+                listarray.push({
+                    "email":email_target.email
+                });
+            }
+            else
+            {
+                checkfriendexist = true;
+            }
+        }
+        console.log(checkfriendexist);
+        console.log('update!!');
+        /*
+            kesimpulan : query was already executed!!
+
+            gak tau kenapa. tiap abis update, auto stop!!
+            klo pake await, auto berhenti disini.
+            klo gak pake await, auto berhenti ketika friend gak ketemu!!
+        */
+        if(checkfriendexist == false)
+        {
+            var mongo = require('mongoose');
+            try
+            {
+                await this.UserbasicnewModel.updateOne(
                     {
-                        "email":email_target
-                    }
+                        "_id":new mongo.Types.ObjectId(email_source._id.toString())
+                    },
+                    {
+                        "$push":
+                        {
+                            "friend":
+                            {
+                                "email":email_target.email.toString()
+                            }
+                        }
+                    },
+                    // {
+                    //     "$set":
+                    //     {
+                    //         "friend":listarray
+                    //     }
+                    // },
+                    function (err, docs) {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            console.log(docs);
+                        }
+                    },
                 );
             }
-
-            updatedata.friend = getfriend;
-        }
-
-        console.log(updatedata);
-        console.log('proses insert db');
-
-        var mongodb = require('mongoose');
-        await this.UserbasicnewModel.updateOne(
+            catch(e)
             {
-                "_id":new mongodb.Types.ObjectId(getdata._id.toString())
-            },
-            {
-                "$set":updatedata
+                console.log(e);
             }
-        );
-
-        return true;
+        }
+        console.log('update!!');
     }
 
-    async addFriendList2(email_target:string, email_source: string)
+    async deleteFriendList(email_target: Userbasicnew, email_source: Userbasicnew) 
     {
-        console.log(email_target);
-        console.log(email_source);
-        var getdata = null;
-        try
-        {
-            getdata = await this.UserbasicnewModel.findOne({email:email_source}).exec();
-        }
-        catch(e)
-        {
-            console.log(JSON.stringify(e));
-        }
-        console.log(getdata);
-
-        var updatedata = new Userbasicnew();
-        if(getdata.friend == null || getdata.friend == undefined || getdata.friend.length == 0)
-        {
-            updatedata.friend = [
-                {
-                    "email":email_target
-                }
-            ];
-        }
-        else
-        {
-            var getfriend = getdata.friend;
-            var checkdata = getfriend.find(getdata => getdata.email === email_target);
-            if(checkdata == undefined)
-            {
-                getfriend.push(
-                    {
-                        "email":email_target
-                    }
-                );
-            }
-
-            updatedata.friend = getfriend;
-        }
-
-        console.log(updatedata);
-        console.log('proses insert db');
-
-        var mongodb = require('mongoose');
-        await this.UserbasicnewModel.updateOne(
-            {
-                "_id":new mongodb.Types.ObjectId(getdata._id.toString())
-            },
-            {
-                "$set":updatedata
-            }
-        );
-
-        return true;
-    }
-    async deleteFriendList(email_target: string, email_source: string) 
-    {
-        var getdata = await this.UserbasicnewModel.findOne({ email:email_source }).exec();
-        if(getdata.friend == null || getdata.friend == undefined || getdata.friend.length == 0)
+        var convertdata = JSON.parse(JSON.stringify(email_source));
+        // var getdata = await this.UserbasicnewModel.findOne({ email:email_source }).exec();
+        if(convertdata.friend == null || convertdata.friend == undefined || convertdata.friend.length == 0)
         {
             return false;
         }
         else
         {
-            console.log('proses update db');
             var updatedata = new Userbasicnew();
-            var listfriend = getdata.friend;
-            updatedata.friend = listfriend.filter((email) => email.email != email_target);
+            var listfriend = convertdata.friend;
+            updatedata.friend = listfriend.filter((email) => email.email != email_target.email.toString());
             var mongodb = require('mongoose');
 
             await this.UserbasicnewModel.updateOne(
                 {
-                    "_id":new mongodb.Types.ObjectId(getdata._id.toString())
+                    "_id":new mongodb.Types.ObjectId(convertdata._id.toString())
                 },
                 {
                     "$set":updatedata
