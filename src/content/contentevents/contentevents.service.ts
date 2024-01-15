@@ -4256,7 +4256,7 @@ export class ContenteventsService {
           "$and":
             [
               {
-                "eventType": "FOLLOWER"
+                "eventType": "FOLLOWING"
               },
               {
                 "email": email1

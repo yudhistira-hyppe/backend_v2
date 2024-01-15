@@ -2319,8 +2319,12 @@ export class ContenteventsController {
 
         }
       }
+      
+      try{
+       this.checkFriendbasedString2(userbasic1, userbasic2, "create");
+      }catch(e){
 
-      await this.checkFriendbasedString2(userbasic1, userbasic2, "create");
+      }
     }
     //  else if (eventType == "VIEW") {
 
@@ -3453,34 +3457,45 @@ export class ContenteventsController {
     // console.log(databasic2);
     // var checklist1 = databasic1.following.find(element => element.email === email2.email);
     // var checklist2 = databasic2.following.find(element => element.email === email1.email);
-
-    var data = await this.contenteventsService.checkFriendListdata(email1.email.toString(), email2.email.toString());
-    var checkexist = await this.utilsService.ceckData(data);
+    var em1=email1.email.toString();
+    var em2=email2.email.toString()
+    var data=null;
+    try{
+     data = await this.contenteventsService.checkFriendListdata(em1,em2 );
+    //var checkexist = await this.utilsService.ceckData(data);
 
     console.log(data);
+    }catch(e){
+       data=null;
+    }
     // console.log(checkexist);
 
     // if (checklist1 == true && checklist2 == true) {
-    if (checkexist == true) {
-      try
-      {
-        if (jenisoperasi == 'create') {
-          // setTimeout(() => this.basic2SS.addFriendList(email1, email2), 2000);
-          // setTimeout(() => this.basic2SS.addFriendList(email2, email1), 4000);
-          console.log('proses1');
-          await this.basic2SS.addFriendList(email1, email2);
-          console.log('proses2');
-          await this.basic2SS.addFriendList(email2, email1);
+    if (data !== null && data !==undefined) {
+        if(data.length>0){
+          try
+          {
+            if (jenisoperasi == 'create') {
+              // setTimeout(() => this.basic2SS.addFriendList(email1, email2), 2000);
+              // setTimeout(() => this.basic2SS.addFriendList(email2, email1), 4000);
+              console.log('proses1');
+              await this.basic2SS.addFriendList(email1, email2);
+              console.log('proses2');
+              await this.basic2SS.addFriendList(email2, email1);
+            }
+            else {
+              await this.basic2SS.deleteFriendList(email1, email2);
+              await this.basic2SS.deleteFriendList(email2, email1);
+            }
+          }
+          catch(e)
+          {
+            console.log(e);
+          }
+        }else{
+
         }
-        else {
-          await this.basic2SS.deleteFriendList(email1, email2);
-          await this.basic2SS.deleteFriendList(email2, email1);
-        }
-      }
-      catch(e)
-      {
-        console.log(e);
-      }
+     
     }
   }
 
