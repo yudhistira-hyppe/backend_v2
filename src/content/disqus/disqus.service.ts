@@ -1268,29 +1268,29 @@ export class DisqusService {
         return await this.DisqusModel.aggregate(
             [
                 {
-                    $match:
+                    $match: 
                     {
                         $or: [
                             {
                                 $and: [
                                     {
                                         "postID": postId,
-
+                                        
                                     },
                                     {
                                         "eventType": eventType,
-
+                                        
                                     },
                                     {
                                         "active": true
                                     },
-
+                                    
                                 ]
                             },
-
+                            
                         ]
                     },
-
+                    
                 },
                 {
                     $lookup: {
@@ -1298,61 +1298,64 @@ export class DisqusService {
                         localField: 'email',
                         foreignField: 'email',
                         as: 'user',
-
+                        
                     },
-
+                    
                 },
                 {
-                    "$addFields":
+                    "$addFields": 
                     {
-                        "tempbadgeowner":
+                        "tempbadgeowner": 
                         {
-                            "$ifNull":
-                                [
+                            "$ifNull": 
+                            [
+                                {
+                                    "$filter": 
                                     {
-                                        "$filter":
+                                        input: 
                                         {
-                                            input:
-                                            {
-                                                "$arrayElemAt":
+                                            "$arrayElemAt": 
+                                            [
+                                                "$user.userBadge",
+                                                0
+                                            ]
+                                        },
+                                        as: "listbadge",
+                                        cond: 
+                                        {
+                                            "$and": 
+                                            [
+                                                {
+                                                    "$eq": 
                                                     [
-                                                        "$user.userBadge", 0
+                                                        "$$listbadge.isActive",
+                                                        true
                                                     ]
-                                            },
-                                            as: "listbadge",
-                                            cond:
-                                            {
-                                                "$and":
-                                                    [
+                                                },
+                                                {
+                                                    "$lte": [
                                                         {
-                                                            "$eq":
-                                                                [
-                                                                    "$$listbadge.isActive", true
-                                                                ]
+                                                            "$dateToString": {
+                                                                "format": "%Y-%m-%d %H:%M:%S",
+                                                                "date": {
+                                                                    "$add": [
+                                                                        new Date(),
+                                                                        25200000
+                                                                    ]
+                                                                }
+                                                            }
                                                         },
-                                                        {
-                                                            "$lte": [
-                                                                {
-                                                                    "$dateToString": {
-                                                                        "format": "%Y-%m-%d %H:%M:%S",
-                                                                        "date": {
-                                                                            "$add": [
-                                                                                new Date(),
-                                                                                25200000
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                },
-                                                                "$$listbadge.endDatetime"
-                                                            ]
-                                                        }
+                                                        "$$listbadge.endDatetime"
                                                     ]
-                                            }
+                                                }
+                                            ]
                                         }
-                                    },
-                                    []
-                                ]
+                                    }
+                                },
+                                []
+                            ]
                         },
+                        
                     }
                 },
                 {
@@ -1364,7 +1367,7 @@ export class DisqusService {
                         },
                         pipeline: [
                             {
-                                $match:
+                                $match: 
                                 {
                                     $or: [
                                         {
@@ -1382,10 +1385,10 @@ export class DisqusService {
                                                 }
                                             ]
                                         },
-
+                                        
                                     ]
                                 },
-
+                                
                             },
                             {
                                 "$lookup": {
@@ -1396,7 +1399,7 @@ export class DisqusService {
                                     },
                                     pipeline: [
                                         {
-                                            $match:
+                                            $match: 
                                             {
                                                 $or: [
                                                     {
@@ -1414,10 +1417,10 @@ export class DisqusService {
                                                             }
                                                         ]
                                                     },
-
+                                                    
                                                 ]
                                             },
-
+                                            
                                         },
                                         {
                                             $sort: {
@@ -1433,7 +1436,7 @@ export class DisqusService {
                                                 },
                                                 pipeline: [
                                                     {
-                                                        $match:
+                                                        $match: 
                                                         {
                                                             $or: [
                                                                 {
@@ -1441,15 +1444,15 @@ export class DisqusService {
                                                                         $eq: ['$URL', '$$localID']
                                                                     }
                                                                 },
-
+                                                                
                                                             ]
                                                         }
                                                     },
-
+                                                    
                                                 ],
-
+                                                
                                             },
-
+                                            
                                         },
                                         {
                                             $unwind: {
@@ -1463,61 +1466,64 @@ export class DisqusService {
                                                 localField: 'sender',
                                                 foreignField: 'email',
                                                 as: 'detailUserBasic',
-
+                                                
                                             },
-
+                                            
                                         },
                                         {
-                                            "$set":
+                                            "$set": 
                                             {
-                                                "tempbadge":
+                                                "tempbadge": 
                                                 {
-                                                    "$ifNull":
-                                                        [
+                                                    "$ifNull": 
+                                                    [
+                                                        {
+                                                            "$filter": 
                                                             {
-                                                                "$filter":
+                                                                input: 
                                                                 {
-                                                                    input:
-                                                                    {
-                                                                        "$arrayElemAt":
+                                                                    "$arrayElemAt": 
+                                                                    [
+                                                                        "$detailUserBasic.userBadge",
+                                                                        0
+                                                                    ]
+                                                                },
+                                                                as: "listbadge",
+                                                                cond: 
+                                                                {
+                                                                    "$and": 
+                                                                    [
+                                                                        {
+                                                                            "$eq": 
                                                                             [
-                                                                                "$detailUserBasic.userBadge", 0
+                                                                                "$$listbadge.isActive",
+                                                                                true
                                                                             ]
-                                                                    },
-                                                                    as: "listbadge",
-                                                                    cond:
-                                                                    {
-                                                                        "$and":
-                                                                            [
+                                                                        },
+                                                                        {
+                                                                            "$lte": [
                                                                                 {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$$listbadge.isActive", true
-                                                                                        ]
+                                                                                    "$dateToString": {
+                                                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                                                        "date": {
+                                                                                            "$add": [
+                                                                                                new Date(),
+                                                                                                25200000
+                                                                                            ]
+                                                                                        }
+                                                                                    }
                                                                                 },
-                                                                                {
-                                                                                    "$lte": [
-                                                                                        {
-                                                                                            "$dateToString": {
-                                                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                                                "date": {
-                                                                                                    "$add": [
-                                                                                                        new Date(),
-                                                                                                        25200000
-                                                                                                    ]
-                                                                                                }
-                                                                                            }
-                                                                                        },
-                                                                                        "$$listbadge.endDatetime"
-                                                                                    ]
-                                                                                }
+                                                                                "$$listbadge.endDatetime"
                                                                             ]
-                                                                    }
+                                                                        }
+                                                                    ]
                                                                 }
-                                                            },
-                                                            []
-                                                        ]
+                                                            }
+                                                        },
+                                                        []
+                                                    ]
                                                 },
+                                                
                                             }
                                         },
                                         {
@@ -1526,64 +1532,64 @@ export class DisqusService {
                                                 preserveNullAndEmptyArrays: true
                                             }
                                         },
-                                        //                                        {
-                                        //                                            $lookup: {
-                                        //                                                from: 'userauths',
-                                        //                                                localField: 'sender',
-                                        //                                                foreignField: 'email',
-                                        //                                                as: 'detailUserAuth',
-                                        //
-                                        //                                            },
-                                        //
-                                        //                                        },
-                                        //                                        {
-                                        //                                            $unwind: {
-                                        //                                                path: "$detailUserAuth",
-                                        //                                                preserveNullAndEmptyArrays: true
-                                        //                                            }
-                                        //                                        },
-                                        {
-                                            "$lookup": {
-                                                from: "mediaprofilepicts",
-                                                as: "detailAvatar",
-                                                let: {
-                                                    localID: '$detailUserBasic.profilePict.$id'
-                                                },
-                                                pipeline: [
-                                                    {
-                                                        $match:
-                                                        {
-                                                            $expr: {
-                                                                $in: ['$mediaID', {
-                                                                    $ifNull: ['$$localID', []]
-                                                                }]
-                                                            }
-                                                        }
-                                                    },
-                                                    {
-                                                        $project: {
-                                                            "mediaBasePath": 1,
-                                                            "mediaUri": 1,
-                                                            "originalName": 1,
-                                                            "fsSourceUri": 1,
-                                                            "fsSourceName": 1,
-                                                            "fsTargetUri": 1,
-                                                            "mediaType": 1,
-                                                            "mediaEndpoint": {
-                                                                "$concat": ["/profilepict/", "$mediaID"]
-                                                            }
-                                                        }
-                                                    }
-                                                ],
-
-                                            }
-                                        },
-                                        {
-                                            $unwind: {
-                                                path: "$detailAvatar",
-                                                preserveNullAndEmptyArrays: true
-                                            }
-                                        },
+                                       //{
+                                       //    $lookup: {
+                                       //        from: 'userauths',
+                                       //        localField: 'sender',
+                                       //        foreignField: 'email',
+                                       //        as: 'detailUserAuth',
+                                       //        
+                                       //    },
+                                       //    
+                                       //},
+                                       //{
+                                       //    $unwind: {
+                                       //        path: "$detailUserAuth",
+                                       //        preserveNullAndEmptyArrays: true
+                                       //    }
+                                       //},
+                                        //{
+                                        //    "$lookup": {
+                                        //        from: "mediaprofilepicts",
+                                        //        as: "detailAvatar",
+                                        //        let: {
+                                        //            localID: '$detailUserBasic.profilePict.$id'
+                                        //        },
+                                        //        pipeline: [
+                                        //            {
+                                        //                $match: 
+                                        //                {
+                                        //                    $expr: {
+                                        //                        $in: ['$mediaID', {
+                                        //                            $ifNull: ['$$localID', []]
+                                        //                        }]
+                                        //                    }
+                                        //                }
+                                        //            },
+                                        //            {
+                                        //                $project: {
+                                        //                    "mediaBasePath": 1,
+                                        //                    "mediaUri": 1,
+                                        //                    "originalName": 1,
+                                        //                    "fsSourceUri": 1,
+                                        //                    "fsSourceName": 1,
+                                        //                    "fsTargetUri": 1,
+                                        //                    "mediaType": 1,
+                                        //                    "mediaEndpoint": {
+                                        //                        "$concat": ["/profilepict/", "$mediaID"]
+                                        //                    }
+                                        //                }
+                                        //            }
+                                        //        ],
+                                        //        
+                                        //    }
+                                        //},
+                                        //{
+                                        //    $unwind: {
+                                        //        path: "$detailAvatar",
+                                        //        preserveNullAndEmptyArrays: true
+                                        //    }
+                                        //},
                                         {
                                             $project: {
                                                 "_id": "$_id",
@@ -1594,32 +1600,44 @@ export class DisqusService {
                                                     "fullName": {
                                                         $arrayElemAt: ["$detailUserBasic.fullName", 0]
                                                     },
-                                                    "username": "$detailUserbasic.username",
-                                                    "avatar": "$detailAvatar",
-                                                    "urluserBadge":
+                                                    "username": "$detailUserBasic.username",
+                                                    "avatar":
+                                                                                            {
+                                                           "mediaBasePath": "$detailUserBasic.mediaBasePath",
+                                                           "mediaUri": "$detailUserBasic.mediaUri",
+                                                           "originalName": "$detailUserBasic.originalName",
+                                                           "fsSourceUri": "$detailUserBasic.fsSourceUri",
+                                                           "fsSourceName": "$detailUserBasic.fsSourceName",
+                                                           "fsTargetUri": "$detailUserBasic.fsTargetUri",
+                                                           "mediaType": "$detailUserBasic.mediaType",
+                                                          //"mediaEndpoint": {
+                                                          //    "$concat": ["/profilepict/", "$detailUserBasic.mediaID"]}
+                                                   },
+                                                    "urluserBadge": 
                                                     {
-                                                        "$ifNull":
-                                                            [
-                                                                {
-                                                                    "$arrayElemAt":
-                                                                        [
-                                                                            "$tempbadge", 0
-                                                                        ]
-                                                                },
-                                                                null
-                                                            ]
+                                                        "$ifNull": 
+                                                        [
+                                                            {
+                                                                "$arrayElemAt": 
+                                                                [
+                                                                    "$tempbadge",
+                                                                    0
+                                                                ]
+                                                            },
+                                                            null
+                                                        ]
                                                     },
                                                     "isIdVerified": {
                                                         $arrayElemAt: ["$detailUserBasic.isIdVerified", 0]
                                                     },
-
+                                                    
                                                 },
                                                 "receiver": "$receiver",
                                                 "sender": "$sender",
                                                 "lineID": "$_id",
                                                 "active": "$active",
                                                 "updatedAt": "$updatedAt",
-
+                                                
                                             }
                                         },
                                         {
@@ -1628,9 +1646,9 @@ export class DisqusService {
                                             }
                                         }
                                     ],
-
+                                    
                                 },
-
+                                
                             },
                             {
                                 $lookup: {
@@ -1641,7 +1659,7 @@ export class DisqusService {
                                     },
                                     pipeline: [
                                         {
-                                            $match:
+                                            $match: 
                                             {
                                                 $or: [
                                                     {
@@ -1649,15 +1667,15 @@ export class DisqusService {
                                                             $eq: ['$URL', '$$localID']
                                                         }
                                                     },
-
+                                                    
                                                 ]
                                             }
                                         },
-
+                                        
                                     ],
-
+                                    
                                 },
-
+                                
                             },
                             {
                                 $unwind: {
@@ -1671,66 +1689,14 @@ export class DisqusService {
                                     localField: 'sender',
                                     foreignField: 'email',
                                     as: 'userBasic',
-
+                                    
                                 },
-
+                                
                             },
                             {
                                 $unwind: {
                                     path: "$userbasic",
                                     preserveNullAndEmptyArrays: true
-                                }
-                            },
-                            //                            {
-                            //                                $lookup: {
-                            //                                    from: 'userauths',
-                            //                                    localField: 'sender',
-                            //                                    foreignField: 'email',
-                            //                                    as: 'userAuth',
-                            //
-                            //                                },
-                            //
-                            //                            },
-                            //                            {
-                            //                                $unwind: {
-                            //                                    path: "$userAuth",
-                            //                                    preserveNullAndEmptyArrays: true
-                            //                                }
-                            //                            },
-                            {
-                                "$lookup": {
-                                    from: "mediaprofilepicts",
-                                    as: "avatar",
-                                    let: {
-                                        localID: '$userBasic.profilePict.$id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match:
-                                            {
-                                                $expr: {
-                                                    $in: ['$mediaID', {
-                                                        $ifNull: ['$$localID', []]
-                                                    }]
-                                                }
-                                            }
-                                        },
-                                        {
-                                            $project: {
-                                                "mediaBasePath": 1,
-                                                "mediaUri": 1,
-                                                "originalName": 1,
-                                                "fsSourceUri": 1,
-                                                "fsSourceName": 1,
-                                                "fsTargetUri": 1,
-                                                "mediaType": 1,
-                                                "mediaEndpoint": {
-                                                    "$concat": ["/profilepict/", "$mediaID"]
-                                                }
-                                            }
-                                        }
-                                    ],
-
                                 }
                             },
                             {
@@ -1745,62 +1711,65 @@ export class DisqusService {
                                 }
                             },
                             {
-                                $skip: 0
+                                $skip: skip
                             },
                             {
-                                $limit: 10
+                                $limit: row
                             },
                             {
-                                "$addFields":
+                                "$addFields": 
                                 {
-                                    "tempbadge":
+                                    "tempbadge": 
                                     {
-                                        "$ifNull":
-                                            [
+                                        "$ifNull": 
+                                        [
+                                            {
+                                                "$filter": 
                                                 {
-                                                    "$filter":
+                                                    input: 
                                                     {
-                                                        input:
-                                                        {
-                                                            "$arrayElemAt":
+                                                        "$arrayElemAt": 
+                                                        [
+                                                            "$userBasic.userBadge",
+                                                            0
+                                                        ]
+                                                    },
+                                                    as: "listbadge",
+                                                    cond: 
+                                                    {
+                                                        "$and": 
+                                                        [
+                                                            {
+                                                                "$eq": 
                                                                 [
-                                                                    "$userBasic.userBadge", 0
+                                                                    "$$listbadge.isActive",
+                                                                    true
                                                                 ]
-                                                        },
-                                                        as: "listbadge",
-                                                        cond:
-                                                        {
-                                                            "$and":
-                                                                [
+                                                            },
+                                                            {
+                                                                "$lte": [
                                                                     {
-                                                                        "$eq":
-                                                                            [
-                                                                                "$$listbadge.isActive", true
-                                                                            ]
+                                                                        "$dateToString": {
+                                                                            "format": "%Y-%m-%d %H:%M:%S",
+                                                                            "date": {
+                                                                                "$add": [
+                                                                                    new Date(),
+                                                                                    25200000
+                                                                                ]
+                                                                            }
+                                                                        }
                                                                     },
-                                                                    {
-                                                                        "$lte": [
-                                                                            {
-                                                                                "$dateToString": {
-                                                                                    "format": "%Y-%m-%d %H:%M:%S",
-                                                                                    "date": {
-                                                                                        "$add": [
-                                                                                            new Date(),
-                                                                                            25200000
-                                                                                        ]
-                                                                                    }
-                                                                                }
-                                                                            },
-                                                                            "$$listbadge.endDatetime"
-                                                                        ]
-                                                                    }
+                                                                    "$$listbadge.endDatetime"
                                                                 ]
-                                                        }
+                                                            }
+                                                        ]
                                                     }
-                                                },
-                                                []
-                                            ]
+                                                }
+                                            },
+                                            []
+                                        ]
                                     },
+                                    
                                 }
                             },
                             {
@@ -1814,25 +1783,36 @@ export class DisqusService {
                                             "fullName": {
                                                 $arrayElemAt: ["$userBasic.fullName", 0]
                                             },
-                                            "username": "$userbasic.username",
-                                            "avatar": "$avatar",
+                                            "username": "$userBasic.username",
+                                            "avatar": 
+                                                                                            {
+                                                           "mediaBasePath": "$userBasic.mediaBasePath",
+                                                           "mediaUri": "$userBasic.mediaUri",
+                                                           "originalName": "$userBasic.originalName",
+                                                           "fsSourceUri": "$userBasic.fsSourceUri",
+                                                           "fsSourceName": "$userBasic.fsSourceName",
+                                                           "fsTargetUri": "$userBasic.fsTargetUri",
+                                                           "mediaType": "$userBasic.mediaType",
+                                                          //"mediaEndpoint": {
+                                                          //    "$concat": ["/profilepict/", "$detailUserBasic.mediaID"]}
+                                                   },
                                             "isIdVerified": {
                                                 $arrayElemAt: ["$userBasic.isIdVerified", 0]
                                             },
-                                            "urluserBadge":
+                                            "urluserBadge": 
                                             {
-                                                "$ifNull":
-                                                    [
-                                                        {
-                                                            "$arrayElemAt":
-                                                                [
-                                                                    "$tempbadge", 0
-                                                                ]
-                                                        },
-                                                        null
-                                                    ]
+                                                "$ifNull": 
+                                                [
+                                                    {
+                                                        "$arrayElemAt": 
+                                                        [
+                                                            "$tempbadge",
+                                                            0
+                                                        ]
+                                                    },
+                                                    null
+                                                ]
                                             }
-
                                         },
                                         "receiver": "$receiver",
                                         "sender": "$sender",
@@ -1840,14 +1820,14 @@ export class DisqusService {
                                         "active": "$active",
                                         "updatedAt": "$updatedAt",
                                         detailDisquss: "$detailDisquss",
-
+                                        
                                     }]
                                 }
                             }
                         ],
-
+                        
                     },
-
+                    
                 },
                 {
                     "$lookup": {
@@ -1858,7 +1838,7 @@ export class DisqusService {
                         },
                         pipeline: [
                             {
-                                $match:
+                                $match: 
                                 {
                                     $and: [
                                         {
@@ -1868,19 +1848,22 @@ export class DisqusService {
                                         },
                                         {
                                             "active": true,
-
+                                            
                                         },
+                                        
                                     ]
                                 }
                             }
                         ]
                     },
-
+                    
                 },
                 {
                     $project: {
                         "_id": 1,
-                        "isIdVerified": { $arrayElemAt: ["$user.isIdVerified", 0] },
+                        "isIdVerified": {
+                            $arrayElemAt: ["$user.isIdVerified", 0]
+                        },
                         "user": 1,
                         "disqusID": 1,
                         "postID": 1,
@@ -1894,22 +1877,22 @@ export class DisqusService {
                         "comment": {
                             $size: "$countLogs"
                         },
-                        "urluserBadge":
+                        "urluserBadge": 
                         {
-                            "$ifNull":
-                                [
-                                    {
-                                        "$arrayElemAt":
-                                            [
-                                                "$tempbadgeowner", 0
-                                            ]
-                                    },
-                                    null
-                                ]
+                            "$ifNull": 
+                            [
+                                {
+                                    "$arrayElemAt": 
+                                    [
+                                        "$tempbadgeowner",
+                                        0
+                                    ]
+                                },
+                                null
+                            ]
                         }
                     }
-                }
-
+                },
             ]
         )
     }
@@ -2996,111 +2979,111 @@ export class DisqusService {
                         localField: 'email',
                         foreignField: 'email',
                         as: 'userUserBasic',
-
+                        
                     },
-
+                    
                 },
-                //                {
-                //                    $lookup: {
-                //                        from: 'userauths',
-                //                        localField: 'email',
-                //                        foreignField: 'email',
-                //                        as: 'userUserAuth',
-                //
-                //                    },
-                //
-                //                },
-                {
-                    "$lookup": {
-                        from: "mediaprofilepicts",
-                        as: "avatar",
-                        let: {
-                            localID: '$userUserBasic.profilePict.$id'
-                        },
-                        pipeline: [
-                            {
-                                $match:
-                                {
-
-
-                                    $expr: {
-                                        $in: ['$mediaID', '$$localID']
-                                    }
-                                }
-                            },
-                            {
-                                $project: {
-                                    "mediaBasePath": 1,
-                                    "mediaUri": 1,
-                                    "originalName": 1,
-                                    "fsSourceUri": 1,
-                                    "fsSourceName": 1,
-                                    "fsTargetUri": 1,
-                                    "mediaType": 1,
-                                    "mediaEndpoint": {
-                                        "$concat": ["/profilepict/", "$mediaID"]
-                                    }
-                                }
-                            }
-                        ],
-
-                    }
-                },
+                //                 {
+                //                     $lookup: {
+                //                         from: 'userauths',
+                //                         localField: 'email',
+                //                         foreignField: 'email',
+                //                         as: 'userUserAuth',
+                // 
+                //                     },
+                // 
+                //                 },
+                //                 {
+                //                     "$lookup": {
+                //                         from: "mediaprofilepicts",
+                //                         as: "avatar",
+                //                         let: {
+                //                             localID: '$userUserBasic.profilePict.$id'
+                //                         },
+                //                         pipeline: [
+                //                             {
+                //                                 $match:
+                //                                 {
+                // 
+                // 
+                //                                     $expr: {
+                //                                         $in: ['$mediaID', '$$localID']
+                //                                     }
+                //                                 }
+                //                             },
+                //                             {
+                //                                 $project: {
+                //                                     "mediaBasePath": 1,
+                //                                     "mediaUri": 1,
+                //                                     "originalName": 1,
+                //                                     "fsSourceUri": 1,
+                //                                     "fsSourceName": 1,
+                //                                     "fsTargetUri": 1,
+                //                                     "mediaType": 1,
+                //                                     "mediaEndpoint": {
+                //                                         "$concat": ["/profilepict/", "$mediaID"]
+                //                                     }
+                //                                 }
+                //                             }
+                //                         ],
+                // 
+                //                     }
+                //                 },
                 {
                     $lookup: {
                         from: 'newUserBasics',
                         localField: 'mate',
                         foreignField: 'email',
                         as: 'mateUserBasic',
-
+                        
                     },
-
+                    
                 },
-                //                {
-                //                    $lookup: {
-                //                        from: 'userauths',
-                //                        localField: 'mate',
-                //                        foreignField: 'email',
-                //                        as: 'mateUserAuth',
-                //
-                //                    },
-                //
-                //                },
-                {
-                    "$lookup": {
-                        from: "mediaprofilepicts",
-                        as: "mateAvatar",
-                        let: {
-                            localID: '$mateUserBasic.profilePict.$id'
-                        },
-                        pipeline: [
-                            {
-                                $match:
-                                {
-
-                                    $expr: {
-                                        $in: ['$mediaID', '$$localID']
-                                    }
-                                }
-                            },
-                            {
-                                $project: {
-                                    "mediaBasePath": 1,
-                                    "mediaUri": 1,
-                                    "originalName": 1,
-                                    "fsSourceUri": 1,
-                                    "fsSourceName": 1,
-                                    "fsTargetUri": 1,
-                                    "mediaType": 1,
-                                    "mediaEndpoint": {
-                                        "$concat": ["/profilepict/", "$mediaID"]
-                                    }
-                                }
-                            }
-                        ],
-
-                    }
-                },
+                //                 {
+                //                     $lookup: {
+                //                         from: 'userauths',
+                //                         localField: 'mate',
+                //                         foreignField: 'email',
+                //                         as: 'mateUserAuth',
+                // 
+                //                     },
+                // 
+                //                 },
+                //                 {
+                //                     "$lookup": {
+                //                         from: "mediaprofilepicts",
+                //                         as: "mateAvatar",
+                //                         let: {
+                //                             localID: '$mateUserBasic.profilePict.$id'
+                //                         },
+                //                         pipeline: [
+                //                             {
+                //                                 $match:
+                //                                 {
+                // 
+                //                                     $expr: {
+                //                                         $in: ['$mediaID', '$$localID']
+                //                                     }
+                //                                 }
+                //                             },
+                //                             {
+                //                                 $project: {
+                //                                     "mediaBasePath": 1,
+                //                                     "mediaUri": 1,
+                //                                     "originalName": 1,
+                //                                     "fsSourceUri": 1,
+                //                                     "fsSourceName": 1,
+                //                                     "fsTargetUri": 1,
+                //                                     "mediaType": 1,
+                //                                     "mediaEndpoint": {
+                //                                         "$concat": ["/profilepict/", "$mediaID"]
+                //                                     }
+                //                                 }
+                //                             }
+                //                         ],
+                // 
+                //                     }
+                //                 },
                 {
                     "$lookup": {
                         from: "disquslogs",
@@ -3110,7 +3093,7 @@ export class DisqusService {
                         },
                         pipeline: [
                             {
-                                $match:
+                                $match: 
                                 {
                                     $or: [
                                         {
@@ -3120,16 +3103,16 @@ export class DisqusService {
                                                         $in: ['$_id', '$$localID']
                                                     }
                                                 },
-
+                                                
                                             ]
                                         },
-
+                                        
                                     ]
                                 },
-
+                                
                             },
                             {
-                                $match:
+                                $match: 
                                 {
                                     $or: [
                                         {
@@ -3142,7 +3125,7 @@ export class DisqusService {
                                                         {
                                                             'senderActive': null
                                                         },
-
+                                                        
                                                     ]
                                                 },
                                                 {
@@ -3160,7 +3143,7 @@ export class DisqusService {
                                                         {
                                                             'receiverActive': null
                                                         },
-
+                                                        
                                                     ]
                                                 },
                                                 {
@@ -3168,21 +3151,21 @@ export class DisqusService {
                                                 }
                                             ]
                                         },
-
+                                        
                                     ]
                                 },
-
+                                
                             },
                             {
                                 $sort: {
                                     "createdAt": 1
                                 }
                             },
-
+                            
                         ],
-
+                        
                     },
-
+                    
                 },
                 {
                     $lookup: {
@@ -3193,7 +3176,7 @@ export class DisqusService {
                         },
                         pipeline: [
                             {
-                                $match:
+                                $match: 
                                 {
                                     $or: [
                                         {
@@ -3201,15 +3184,15 @@ export class DisqusService {
                                                 $in: ['$URL', '$$localID']
                                             }
                                         },
-
+                                        
                                     ]
                                 }
                             },
-
+                            
                         ],
-
+                        
                     },
-
+                    
                 },
                 {
                     $unwind: {
@@ -3217,130 +3200,155 @@ export class DisqusService {
                         preserveNullAndEmptyArrays: true
                     }
                 },
-                //                {
-                //                    $unwind: {
-                //                        path: "$userUserAuth",
-                //                        preserveNullAndEmptyArrays: true
-                //                    }
-                //                },
+                //                 {
+                //                     $unwind: {
+                //                         path: "$userUserAuth",
+                //                         preserveNullAndEmptyArrays: true
+                //                     }
+                //                 },
                 {
                     $unwind: {
                         path: "$mateUserBasic",
                         preserveNullAndEmptyArrays: true
                     }
                 },
-                //                {
-                //                    $unwind: {
-                //                        path: "$mateUserAuth",
-                //                        preserveNullAndEmptyArrays: true
-                //                    }
-                //                },
+                //                 {
+                //                     $unwind: {
+                //                         path: "$mateUserAuth",
+                //                         preserveNullAndEmptyArrays: true
+                //                     }
+                //                 },
+                //                 {
+                //                     $unwind: {
+                //                         path: "$avatar",
+                //                         preserveNullAndEmptyArrays: true
+                //                     }
+                //                 },
+                //                 {
+                //                     $unwind: {
+                //                         path: "$mateAvatar",
+                //                         preserveNullAndEmptyArrays: true
+                //                     }
+                //                 },
                 {
-                    $unwind: {
-                        path: "$avatar",
-                        preserveNullAndEmptyArrays: true
-                    }
-                },
-                {
-                    $unwind: {
-                        path: "$mateAvatar",
-                        preserveNullAndEmptyArrays: true
+                    $addFields: {
+                        avatar: {
+                            "mediaBasePath": '$userUserBasic.mediaBasePath',
+                            "mediaUri": '$userUserBasic.mediaUri',
+                            "originalName": '$userUserBasic.originalName',
+                            "fsSourceUri": '$userUserBasic.fsSourceUri',
+                            "fsSourceName": '$userUserBasic.fsSourceName',
+                            "fsTargetUri": '$userUserBasic.fsTargetUri',
+                            "mediaType": '$userUserBasic.mediaType',
+                            "mediaEndpoint": '$userUserBasic.mediaEndpoint',
+                            
+                        },
+                        mateAvatar: {
+                            "mediaBasePath": '$mateUserBasic.mediaBasePath',
+                            "mediaUri": '$mateUserBasic.mediaUri',
+                            "originalName": '$mateUserBasic.originalName',
+                            "fsSourceUri": '$mateUserBasic.fsSourceUri',
+                            "fsSourceName": '$mateUserBasic.fsSourceName',
+                            "fsTargetUri": '$mateUserBasic.fsTargetUri',
+                            "mediaType": '$mateUserBasic.mediaType',
+                            "mediaEndpoint": '$mateUserBasic.mediaEndpoint',
+                            
+                        }
                     }
                 },
                 {
                     $project: {
                         "diss": 1,
                         "emailActive": 1,
-                        "email":
+                        "email": 
                         {
                             $cond: {
-                                if: {
+                                if : {
                                     $eq: ["$email", email]
                                 },
                                 then: "$email",
-                                else: '$mate'
+                                else : '$mate'
                             }
                         },
-                        "username":
-                        {
+                        "username": 
+                            {
                             $cond: {
-                                if: {
+                                if : {
                                     $eq: ["$email", email]
                                 },
                                 then: "$userUserBasic.username",
-                                else: '$mateUserBasic.username'
+                                else : '$mateUserBasic.username'
                             }
                         },
-                        "fullName":
-                        {
+                        "fullName": 
+                            {
                             $cond: {
-                                if: {
+                                if : {
                                     $eq: ["$email", email]
                                 },
                                 then: "$userUserBasic.fullName",
-                                else: '$mateUserBasic.fullName'
+                                else : '$mateUserBasic.fullName'
                             }
                         },
-                        urluserBadge:
-                        {
-                            "$ifNull":
-                                [
+                        urluserBadge: 
+                            {
+                            "$ifNull": 
+                            [
+                                {
+                                    "$filter": 
                                     {
-                                        "$filter":
-                                        {
-                                            input: {
-                                                $cond: {
-                                                    if: {
-                                                        $eq: ["$email", email]
-                                                    },
-                                                    then: "$userUserBasic.userBadge",
-                                                    else: '$mateUserBasic.userBadge'
-                                                }
-                                            },
-
-                                            as: "listbadge",
-                                            cond:
-                                            {
-                                                "$and":
-                                                    [
-                                                        {
-                                                            "$eq":
-                                                                [
-                                                                    "$$listbadge.isActive",
-                                                                    true
-                                                                ]
-                                                        },
-                                                        {
-                                                            "$lte": [
-                                                                {
-                                                                    "$dateToString": {
-                                                                        "format": "%Y-%m-%d %H:%M:%S",
-                                                                        "date": {
-                                                                            "$add": [
-                                                                                new Date(),
-                                                                                25200000
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                },
-                                                                "$$listbadge.endDatetime"
-                                                            ]
-                                                        }
-                                                    ]
+                                        input: {
+                                            $cond: {
+                                                if : {
+                                                    $eq: ["$email", email]
+                                                },
+                                                then: "$userUserBasic.userBadge",
+                                                else : '$mateUserBasic.userBadge'
                                             }
+                                        },
+                                        as: "listbadge",
+                                        cond: 
+                                            {
+                                            "$and": 
+                                            [
+                                                {
+                                                    "$eq": 
+                                                    [
+                                                        "$$listbadge.isActive",
+                                                        true
+                                                    ]
+                                                },
+                                                {
+                                                    "$lte": [
+                                                        {
+                                                            "$dateToString": {
+                                                                "format": "%Y-%m-%d %H:%M:%S",
+                                                                "date": {
+                                                                    "$add": [
+                                                                        new Date(),
+                                                                        25200000
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "$$listbadge.endDatetime"
+                                                    ]
+                                                }
+                                            ]
                                         }
-                                    },
-                                    []
-                                ]
+                                    }
+                                },
+                                []
+                            ]
                         },
-                        "avatar":
+                        "avatar": 
                         {
                             $cond: {
-                                if: {
+                                if : {
                                     $eq: ["$email", email]
                                 },
                                 then: "$avatar",
-                                else: '$mateAvatar'
+                                else : '$mateAvatar'
                             }
                         },
                         "updatedAt": 1,
@@ -3353,111 +3361,109 @@ export class DisqusService {
                         "eventType": 1,
                         "emot": 1, //}],
                         "disqusLogs": "$disqusLogs",
-                        "senderOrReceiverInfo":
-                        {
-                            "email":
+                        "senderOrReceiverInfo": 
+                            {
+                            "email": 
                             {
                                 $cond: {
-                                    if: {
+                                    if : {
                                         $eq: ["$mate", email]
                                     },
                                     then: "$email",
-                                    else: '$mate'
+                                    else : '$mate'
                                 }
                             },
-                            "username":
-                            {
+                            "username": 
+                                {
                                 $cond: {
-                                    if: {
+                                    if : {
                                         $eq: ["$mate", email]
                                     },
                                     then: "$userUserBasic.username",
-                                    else: '$mateUserBasic.username'
+                                    else : '$mateUserBasic.username'
                                 }
                             },
-                            "fullName":
-                            {
+                            "fullName": 
+                                {
                                 $cond: {
-                                    if: {
+                                    if : {
                                         $eq: ["$mate", email]
                                     },
                                     then: "$userUserBasic.fullName",
-                                    else: '$mateUserBasic.fullName'
+                                    else : '$mateUserBasic.fullName'
                                 }
                             },
-                            urluserBadge:
-                            {
-                                "$ifNull":
-                                    [
+                            urluserBadge: 
+                                {
+                                "$ifNull": 
+                                [
+                                    {
+                                        "$filter": 
                                         {
-                                            "$filter":
-                                            {
-                                                input: {
-                                                    $cond: {
-                                                        if: {
-                                                            $eq: ["$mate", email]
-                                                        },
-                                                        then: "$userUserBasic.userBadge",
-                                                        else: '$mateUserBasic.userBadge'
-                                                    }
-                                                },
-
-                                                as: "listbadge",
-                                                cond:
-                                                {
-                                                    "$and":
-                                                        [
-                                                            {
-                                                                "$eq":
-                                                                    [
-                                                                        "$$listbadge.isActive",
-                                                                        true
-                                                                    ]
-                                                            },
-                                                            {
-                                                                "$lte": [
-                                                                    {
-                                                                        "$dateToString": {
-                                                                            "format": "%Y-%m-%d %H:%M:%S",
-                                                                            "date": {
-                                                                                "$add": [
-                                                                                    new Date(),
-                                                                                    25200000
-                                                                                ]
-                                                                            }
-                                                                        }
-                                                                    },
-                                                                    "$$listbadge.endDatetime"
-                                                                ]
-                                                            }
-                                                        ]
+                                            input: {
+                                                $cond: {
+                                                    if : {
+                                                        $eq: ["$mate", email]
+                                                    },
+                                                    then: "$userUserBasic.userBadge",
+                                                    else : '$mateUserBasic.userBadge'
                                                 }
+                                            },
+                                            as: "listbadge",
+                                            cond: 
+                                                {
+                                                "$and": 
+                                                [
+                                                    {
+                                                        "$eq": 
+                                                        [
+                                                            "$$listbadge.isActive",
+                                                            true
+                                                        ]
+                                                    },
+                                                    {
+                                                        "$lte": [
+                                                            {
+                                                                "$dateToString": {
+                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                    "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "$$listbadge.endDatetime"
+                                                        ]
+                                                    }
+                                                ]
                                             }
-                                        },
-                                        []
-                                    ]
+                                        }
+                                    },
+                                    []
+                                ]
                             },
-                            "avatar":
+                            "avatar": 
                             {
                                 $cond: {
-                                    if: {
+                                    if : {
                                         $eq: ["$mate", email]
                                     },
                                     then: "$avatar",
-                                    else: '$mateAvatar'
+                                    else : '$mateAvatar'
                                 }
                             },
-
+                            
                         },
-
+                        
                     }
                 },
                 {
                     $sort: {
                         "updatedAt": - 1
                     }
-                }
-
+                },
             ]
 
         ).exec();
@@ -3923,6 +3929,496 @@ export class DisqusService {
                         "createdAt": - 1
                     }
                 }
+
+            ]
+
+        ).exec();
+
+        return query;
+    }
+
+    async queryDiscussV2ByDisqusIsNewv2(id: string, email: string) {
+        let query = await this.DisqusModel.aggregate(
+
+            [
+                {
+                    $match:
+                    {
+                        disqusID: id
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: 'newUserBasics',
+                        localField: 'email',
+                        foreignField: 'email',
+                        as: 'userUserBasic',
+                        
+                    },
+                    
+                },
+                //                 {
+                //                     $lookup: {
+                //                         from: 'userauths',
+                //                         localField: 'email',
+                //                         foreignField: 'email',
+                //                         as: 'userUserAuth',
+                // 
+                //                     },
+                // 
+                //                 },
+                //                 {
+                //                     "$lookup": {
+                //                         from: "mediaprofilepicts",
+                //                         as: "avatar",
+                //                         let: {
+                //                             localID: '$userUserBasic.profilePict.$id'
+                //                         },
+                //                         pipeline: [
+                //                             {
+                //                                 $match:
+                //                                 {
+                // 
+                // 
+                //                                     $expr: {
+                //                                         $in: ['$mediaID', '$$localID']
+                //                                     }
+                //                                 }
+                //                             },
+                //                             {
+                //                                 $project: {
+                //                                     "mediaBasePath": 1,
+                //                                     "mediaUri": 1,
+                //                                     "originalName": 1,
+                //                                     "fsSourceUri": 1,
+                //                                     "fsSourceName": 1,
+                //                                     "fsTargetUri": 1,
+                //                                     "mediaType": 1,
+                //                                     "mediaEndpoint": {
+                //                                         "$concat": ["/profilepict/", "$mediaID"]
+                //                                     }
+                //                                 }
+                //                             }
+                //                         ],
+                // 
+                //                     }
+                //                 },
+                {
+                    $lookup: {
+                        from: 'newUserBasics',
+                        localField: 'mate',
+                        foreignField: 'email',
+                        as: 'mateUserBasic',
+                        
+                    },
+                    
+                },
+                //                 {
+                //                     $lookup: {
+                //                         from: 'userauths',
+                //                         localField: 'mate',
+                //                         foreignField: 'email',
+                //                         as: 'mateUserAuth',
+                // 
+                //                     },
+                // 
+                //                 },
+                //                 {
+                //                     "$lookup": {
+                //                         from: "mediaprofilepicts",
+                //                         as: "mateAvatar",
+                //                         let: {
+                //                             localID: '$mateUserBasic.profilePict.$id'
+                //                         },
+                //                         pipeline: [
+                //                             {
+                //                                 $match:
+                //                                 {
+                // 
+                //                                     $expr: {
+                //                                         $in: ['$mediaID', '$$localID']
+                //                                     }
+                //                                 }
+                //                             },
+                //                             {
+                //                                 $project: {
+                //                                     "mediaBasePath": 1,
+                //                                     "mediaUri": 1,
+                //                                     "originalName": 1,
+                //                                     "fsSourceUri": 1,
+                //                                     "fsSourceName": 1,
+                //                                     "fsTargetUri": 1,
+                //                                     "mediaType": 1,
+                //                                     "mediaEndpoint": {
+                //                                         "$concat": ["/profilepict/", "$mediaID"]
+                //                                     }
+                //                                 }
+                //                             }
+                //                         ],
+                // 
+                //                     }
+                //                 },
+                {
+                    "$lookup": {
+                        from: "disquslogs",
+                        as: "disqusLogs",
+                        let: {
+                            localID: '$disqusLogs.$id'
+                        },
+                        pipeline: [
+                            {
+                                $match: 
+                                {
+                                    $or: [
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $in: ['$_id', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "senderActive": {
+                                                        $ne: false
+                                                    }
+                                                },
+                                                {
+                                                    "recieverActive": {
+                                                        $ne: false
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        
+                                    ]
+                                },
+                                
+                            },
+                            {
+                                $project: {
+                                    "createdAt": 1,
+                                    "reactionUri": 1,
+                                    "txtMessages": 1,
+                                    "receiver": 1,
+                                    "postType": 1,
+                                    "sender": 1,
+                                    "lineID": 1,
+                                    "active": 1,
+                                    "disqusID": 1,
+                                    "updatedAt": 1,
+                                    "reaction_icon": "$emot.icon",
+                                    "content": "$medias",
+                                    
+                                }
+                            },
+                            {
+                                $sort: {
+                                    "createdAt": 1
+                                }
+                            },
+                            
+                        ],
+                        
+                    },
+                    
+                },
+                {
+                    $lookup: {
+                        from: 'reactions_repo',
+                        as: 'emot',
+                        let: {
+                            localID: '$disqusLogs.reactionUri'
+                        },
+                        pipeline: [
+                            {
+                                $match: 
+                                {
+                                    $or: [
+                                        {
+                                            $expr: {
+                                                $in: ['$URL', '$$localID']
+                                            }
+                                        },
+                                        
+                                    ]
+                                }
+                            },
+                            
+                        ],
+                        
+                    },
+                    
+                },
+                {
+                    $unwind: {
+                        path: "$userUserBasic",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                //                 {
+                //                     $unwind: {
+                //                         path: "$userUserAuth",
+                //                         preserveNullAndEmptyArrays: true
+                //                     }
+                //                 },
+                {
+                    $unwind: {
+                        path: "$mateUserBasic",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                //                 {
+                //                     $unwind: {
+                //                         path: "$mateUserAuth",
+                //                         preserveNullAndEmptyArrays: true
+                //                     }
+                //                 },
+                //                 {
+                //                     $unwind: {
+                //                         path: "$avatar",
+                //                         preserveNullAndEmptyArrays: true
+                //                     }
+                //                 },
+                //                 {
+                //                     $unwind: {
+                //                         path: "$mateAvatar",
+                //                         preserveNullAndEmptyArrays: true
+                //                     }
+                //                 },
+                {
+                    $addFields: {
+                        avatar: {
+                            "mediaBasePath": '$userUserBasic.mediaBasePath',
+                            "mediaUri": '$userUserBasic.mediaUri',
+                            "originalName": '$userUserBasic.originalName',
+                            "fsSourceUri": '$userUserBasic.fsSourceUri',
+                            "fsSourceName": '$userUserBasic.fsSourceName',
+                            "fsTargetUri": '$userUserBasic.fsTargetUri',
+                            "mediaType": '$userUserBasic.mediaType',
+                            "mediaEndpoint": '$userUserBasic.mediaEndpoint',
+                            
+                        },
+                        mateAvatar: {
+                            "mediaBasePath": '$mateUserBasic.mediaBasePath',
+                            "mediaUri": '$mateUserBasic.mediaUri',
+                            "originalName": '$mateUserBasic.originalName',
+                            "fsSourceUri": '$mateUserBasic.fsSourceUri',
+                            "fsSourceName": '$mateUserBasic.fsSourceName',
+                            "fsTargetUri": '$mateUserBasic.fsTargetUri',
+                            "mediaType": '$mateUserBasic.mediaType',
+                            "mediaEndpoint": '$mateUserBasic.mediaEndpoint',
+                            
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        "emailActive": 1,
+                        "email": 
+                        {
+                            $cond: {
+                                if : {
+                                    $eq: ["$email", email]
+                                },
+                                then: "$email",
+                                else : '$mate'
+                            }
+                        },
+                        "username": 
+                            {
+                            $cond: {
+                                if : {
+                                    $eq: ["$email", email]
+                                },
+                                then: "$userUserBasic.username",
+                                else : '$mateUserBasic.username'
+                            }
+                        },
+                        "fullName": 
+                            {
+                            $cond: {
+                                if : {
+                                    $eq: ["$email", email]
+                                },
+                                then: "$userUserBasic.fullName",
+                                else : '$mateUserBasic.fullName'
+                            }
+                        },
+                        urluserBadge: 
+                            {
+                            "$ifNull": 
+                            [
+                                {
+                                    "$filter": 
+                                    {
+                                        input: {
+                                            $cond: {
+                                                if : {
+                                                    $eq: ["$email", email]
+                                                },
+                                                then: "$userUserBasic.userBadge",
+                                                else : '$mateUserBasic.userBadge'
+                                            }
+                                        },
+                                        as: "listbadge",
+                                        cond: 
+                                            {
+                                            "$and": 
+                                            [
+                                                {
+                                                    "$eq": 
+                                                    [
+                                                        "$$listbadge.isActive",
+                                                        true
+                                                    ]
+                                                },
+                                                {
+                                                    "$lte": [
+                                                        {
+                                                            "$dateToString": {
+                                                                "format": "%Y-%m-%d %H:%M:%S",
+                                                                "date": {
+                                                                    "$add": [
+                                                                        new Date(),
+                                                                        25200000
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "$$listbadge.endDatetime"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                []
+                            ]
+                        },
+                        "avatar": 
+                        {
+                            $cond: {
+                                if : {
+                                    $eq: ["$email", email]
+                                },
+                                then: "$avatar",
+                                else : '$mateAvatar'
+                            }
+                        },
+                        "updatedAt": 1,
+                        "lastestMessage": 1,
+                        "disqusID": 1,
+                        "room": 1,
+                        "mateActive": 1,
+                        "createdAt": 1,
+                        "active": 1,
+                        "eventType": 1,
+                        "emot": 1,
+                        "disqusLogs": "$disqusLogs",
+                        "senderOrReceiverInfo": 
+                            {
+                            "email": 
+                            {
+                                $cond: {
+                                    if : {
+                                        $eq: ["$mate", email]
+                                    },
+                                    then: "$email",
+                                    else : '$mate'
+                                }
+                            },
+                            "username": 
+                                {
+                                $cond: {
+                                    if : {
+                                        $eq: ["$mate", email]
+                                    },
+                                    then: "$userUserBasic.username",
+                                    else : '$mateUserBasic.username'
+                                }
+                            },
+                            "fullName": 
+                                {
+                                $cond: {
+                                    if : {
+                                        $eq: ["$mate", email]
+                                    },
+                                    then: "$userUserBasic.fullName",
+                                    else : '$mateUserBasic.fullName'
+                                }
+                            },
+                            urluserBadge: 
+                                {
+                                "$ifNull": 
+                                [
+                                    {
+                                        "$filter": 
+                                        {
+                                            input: {
+                                                $cond: {
+                                                    if : {
+                                                        $eq: ["$mate", email]
+                                                    },
+                                                    then: "$userUserBasic.userBadge",
+                                                    else : '$mateUserBasic.userBadge'
+                                                }
+                                            },
+                                            as: "listbadge",
+                                            cond: 
+                                                {
+                                                "$and": 
+                                                [
+                                                    {
+                                                        "$eq": 
+                                                        [
+                                                            "$$listbadge.isActive",
+                                                            true
+                                                        ]
+                                                    },
+                                                    {
+                                                        "$lte": [
+                                                            {
+                                                                "$dateToString": {
+                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                    "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "$$listbadge.endDatetime"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    []
+                                ]
+                            },
+                            "avatar": 
+                            {
+                                $cond: {
+                                    if : {
+                                        $eq: ["$mate", email]
+                                    },
+                                    then: "$avatar",
+                                    else : '$mateAvatar'
+                                }
+                            },
+                            
+                        },
+                        
+                    }
+                },
+                {
+                    $sort: {
+                        "createdAt": - 1
+                    }
+                },
 
             ]
 

@@ -428,16 +428,7 @@ export class NewpostService {
     }
 
     async findOnepostID3(post: Newpost): Promise<Object> {
-        var datacontent = null;
-        if (post.postType == 'vid') {
-          datacontent = 'mediavideos';
-        } else if (post.postType == 'pict') {
-          datacontent = 'mediapicts';
-        } else if (post.postType == 'diary') {
-          datacontent = 'mediadiaries';
-        } else if (post.postType == 'story') {
-          datacontent = 'mediastories';
-        }
+      
     
         const query = await this.PostsModel.aggregate([
           {
@@ -445,14 +436,7 @@ export class NewpostService {
               postID: post.postID
             }
           },
-          {
-            $lookup: {
-              from: datacontent,
-              localField: "postID",
-              foreignField: "postID",
-              as: "datacontent"
-            }
-          },
+          
         ]);
         return query;
       }

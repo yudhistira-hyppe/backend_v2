@@ -595,7 +595,7 @@ export class DisqusController {
       if (isQuery == undefined || isQuery == 'false') {
         if (type == "DIRECT_MSG") {
 
-          let xres = await this.buildDisqus(ContentDto_, true);
+          let xres = await this.buildDisqusv2(ContentDto_, true);
 
           console.log("processDisqus >>> receiver: ", xres.disqusLogs[0].receiver);
           var xc = this.disqusService.sendDMNotif(String(xres.room), JSON.stringify(xres));
@@ -637,7 +637,7 @@ export class DisqusController {
               return n.toString();
             });
           }
-          let xres = await this.buildComments(ContentDto_, true);
+          let xres = await this.buildComments2(ContentDto_, true);
           if (ContentDto_.tagComment != undefined) {
             console.log("TAG COMMAND =============================================> ", ContentDto_.tagComment_);
             if (ContentDto_.tagComment_.length > 0) {
@@ -688,7 +688,7 @@ export class DisqusController {
 
           let dm = [];
           if (ContentDto_.disqusID != undefined) {
-            dm = await this.disqusService.queryDiscussV2ByDisqusIsNew(String(ContentDto_.disqusID), String(ContentDto_.email));
+            dm = await this.disqusService.queryDiscussV2ByDisqusIsNewv2(String(ContentDto_.disqusID), String(ContentDto_.email));
           } else {
             dm = await this.disqusService.queryDiscussV2New(String(ContentDto_.email));
           }
@@ -1391,7 +1391,362 @@ export class DisqusController {
     }
     return retVal;
   }
+  private async buildComments2(inDto: ContentDto, buildInteractive: boolean) {
+    console.log("buildComments start");
+    var retVal = new DisqusResDto();
+    var current_date = await this.utilsService.getDateTimeString();
+    var Posts_ = new Newpost();
+    Posts_ = await this.NewpostService.findid(inDto.postID.toString());
+    if ((await this.utilsService.ceckData(Posts_))) {
+      if (Posts_.active && Posts_.allowComments) {
+        var disqus = new CreateDisqusDto();
+        var disqus_ = new CreateDisqusDto();
+        disqus_ = await this.disqusService.findDisqusByPost_(Posts_.postID.toString(), "COMMENT");
+        console.log("findDisqusByPost_ start");
+        if (!(await this.utilsService.ceckData(disqus_))) {
+          var data_id = await this.utilsService.generateId();
+          disqus._id = data_id;
+          disqus.disqusID = data_id;
+          disqus.room = data_id;
+          disqus.eventType = inDto.eventType;
+          disqus.email = inDto.receiverParty;
+          disqus.mate = inDto.email;
+          disqus.active = true;
+          disqus.createdAt = current_date;
+          disqus.updatedAt = current_date;
+          disqus._class = "io.melody.hyppe.content.domain.Disqus";
+          if (disqus.email != undefined) {
+            if (disqus.email == "") {
+              disqus.email = Posts_.email;
+            }
+          }
+        } else {
+          disqus = disqus_;
+        }
 
+        inDto.postContent = Posts_;
+        inDto.postID = Posts_.postID;
+        disqus.postID = Posts_.postID;
+        disqus.mate = null;
+        if (buildInteractive) {
+          var contentDto = new ContentDto();
+          contentDto.eventType = "COMMENT";
+          contentDto.postType = Posts_.postType;
+          contentDto.receiverParty = Posts_.email;
+
+          var InsightDto_ = new CreateInsightsDto();
+          // InsightDto_ = this.validationEvent(contentDto);
+          this.processInsightEvent(InsightDto_);
+        }
+
+        var parentLog = new CreateDisquslogsDto();
+        if (inDto.parentID != undefined) {
+          if (inDto.parentID != "") {
+            parentLog = await this.disqusLogService.findDisqusLogByParentID(inDto.parentID.toString());
+          }
+        }
+
+        var disqusLog = new CreateDisquslogsDto();
+        if (inDto.parentID != undefined) {
+          console.log("undefined parentID");
+          if (inDto.parentID != "") {
+            console.log("'' parentID");
+            var disqusLog_new = new CreateDisquslogsDto();
+            disqusLog_new._id = await this.utilsService.generateId();
+            disqusLog_new.disqusID = disqus.disqusID;
+            disqusLog_new.sequenceNumber = Number(parentLog.sequenceNumber) + 1;
+            disqusLog_new.active = true;
+            disqusLog_new.createdAt = current_date;
+            disqusLog_new.updatedAt = current_date;
+            disqusLog_new.parentID = inDto.parentID;
+            disqusLog_new.sender = inDto.email;
+            disqusLog_new.receiver = inDto.receiverParty;
+            disqusLog_new.postType = inDto.postType;
+            disqusLog_new.txtMessages = inDto.txtMessages;
+            disqusLog_new.reactionUri = inDto.reactionUri;
+            disqusLog_new._class = "io.melody.hyppe.content.domain.DisqusLog";
+            if (await this.utilsService.ceckData(inDto.postContent)) {
+              disqusLog_new.postID = inDto.postContent.postID;
+              console.log("findOnepostID start");
+              var media = await this.NewpostService.findOnepostID2(inDto.postContent.postID.toString());
+              console.log("findOnepostID end");
+              var media_ = {}
+              if (await this.utilsService.ceckData(media)) {
+                if (inDto.postContent.createdAt != undefined) {
+                  media_["createdAt"] = inDto.postContent.createdAt;
+                }
+                if (media[0].mediaSource[0].mediaBasePath != undefined) {
+                  media_["mediaBasePath"] = media[0].mediaSource[0].mediaBasePath;
+                }
+                if (inDto.postContent.postType != undefined) {
+                  media_["postType"] = inDto.postContent.postType;
+                }
+                if (media[0].mediaSource[0].mediaUri != undefined) {
+                  media_["mediaUri"] = media[0].mediaSource[0].mediaUri;
+                }
+                if (media[0].mediaSource[0].mediaUri != undefined) {
+                  media_["mediaThumbUri"] = media[0].mediaSource[0].mediaThumb;
+                }
+                if (inDto.postContent.description != undefined) {
+                  media_["description"] = inDto.postContent.description;
+                }
+                if (inDto.postContent.active != undefined) {
+                  media_["active"] = inDto.postContent.active;
+                }
+                if (media[0].mediaSource[0].mediaType != undefined) {
+                  media_["mediaType"] = media[0].mediaSource[0].mediaType;
+                }
+                if (media[0].mediaSource[0].mediaType != undefined) {
+                  media_["mediaThumbEndpoint"] = "/thumb/" + inDto.postContent.postID;
+                }
+                if (inDto.postContent.postID != undefined) {
+                  media_["postID"] = inDto.postContent.postID;
+                }
+                if (media[0].mediaSource[0].mediaUri != undefined) {
+                  media_["mediaEndpoint"] = "/stream/" + media[0].mediaSource[0].mediaUri;
+                }
+                if (media[0].mediaSource[0].apsara != undefined) {
+                  media_["apsara"] = media[0].mediaSource[0].apsara
+                }
+                if (media[0].mediaSource[0].apsaraId != undefined) {
+                  media_["apsaraId"] = media[0].mediaSource[0].apsaraId
+                }
+              }
+              disqusLog_new.medias = [media_];
+            }
+            if (inDto.tagComment != undefined) {
+              var array_data = [];
+              for (let i = 0; i < inDto.tagComment_.length; i++) {
+                var user = await this.UserbasicnewService.findOneUsername(inDto.tagComment_[i]);
+                if (await this.utilsService.ceckData(user)) {
+                  array_data.push({
+                    $ref: 'userauths',
+                    $id: new ObjectId(user._id.toString()),
+                    $db: 'hyppe_content_db',
+                  });
+                }
+              }
+              disqusLog_new.tags = Object(array_data);
+            }
+            disqusLog = disqusLog_new;
+          } 
+          else {
+            console.log("not '' parentID");
+            var disqusLog_new = new CreateDisquslogsDto();
+            disqusLog_new._id = await this.utilsService.generateId();
+            disqusLog_new.disqusID = disqus.disqusID;
+            disqusLog_new.sender = inDto.email;
+            disqusLog_new.sequenceNumber = 0;
+            disqusLog_new.active = true;
+            disqusLog_new.receiver = inDto.receiverParty;
+            disqusLog_new.postType = inDto.postType;
+            disqusLog_new.txtMessages = inDto.txtMessages;
+            disqusLog_new.reactionUri = inDto.reactionUri;
+            disqusLog_new.updatedAt = current_date;
+            disqusLog_new.createdAt = current_date;
+            disqusLog_new._class = "io.melody.hyppe.content.domain.DisqusLog";
+
+            if (await this.utilsService.ceckData(inDto.postContent)) {
+              disqusLog_new.postID = inDto.postContent.postID;
+              var media = await this.NewpostService.findOnepostID2(inDto.postContent.postID.toString());
+              var media_ = {}
+              if (await this.utilsService.ceckData(media)) {
+                if (inDto.postContent.createdAt != undefined) {
+                  media_["createdAt"] = inDto.postContent.createdAt;
+                }
+                if (media[0].mediaSource[0].mediaBasePath != undefined) {
+                  media_["mediaBasePath"] = media[0].mediaSource[0].mediaBasePath;
+                }
+                if (inDto.postContent.postType != undefined) {
+                  media_["postType"] = inDto.postContent.postType;
+                }
+                if (media[0].mediaSource[0].mediaUri != undefined) {
+                  media_["mediaUri"] = media[0].mediaSource[0].mediaUri;
+                }
+                if (media[0].mediaSource[0].mediaUri != undefined) {
+                  media_["mediaThumbUri"] = media[0].mediaSource[0].mediaThumb;
+                }
+                if (inDto.postContent.description != undefined) {
+                  media_["description"] = inDto.postContent.description;
+                }
+                if (inDto.postContent.active != undefined) {
+                  media_["active"] = inDto.postContent.active;
+                }
+                if (media[0].mediaSource[0].mediaType != undefined) {
+                  media_["mediaType"] = media[0].mediaSource[0].mediaType;
+                }
+                if (media[0].mediaSource[0].mediaType != undefined) {
+                  media_["mediaThumbEndpoint"] = "/thumb/" + inDto.postContent.postID;
+                }
+                if (inDto.postContent.postID != undefined) {
+                  media_["postID"] = inDto.postContent.postID;
+                }
+                if (media[0].mediaSource[0].mediaUri != undefined) {
+                  media_["mediaEndpoint"] = "/stream/" + media[0].mediaSource[0].mediaUri;
+                }
+                if (media[0].mediaSource[0].apsara != undefined) {
+                  media_["apsara"] = media[0].mediaSource[0].apsara
+                }
+                if (media[0].mediaSource[0].apsaraId != undefined) {
+                  media_["apsaraId"] = media[0].mediaSource[0].apsaraId
+                }
+              }
+              disqusLog_new.medias = [media_];
+            }
+            if (inDto.tagComment != undefined) {
+              var array_data = [];
+              for (let i = 0; i < inDto.tagComment_.length; i++) {
+                var user = await this.UserbasicnewService.findOneUsername(inDto.tagComment_[i]);
+                if (await this.utilsService.ceckData(user)) {
+                  array_data.push({
+                    $ref: 'userauths',
+                    $id: new ObjectId(user._id.toString()),
+                    $db: 'hyppe_trans_db',
+                  });
+                }
+              }
+              disqusLog_new.tags = Object(array_data);
+            }
+            disqusLog = disqusLog_new;
+          }
+        } else {
+          console.log("not undefined parentID");
+          var disqusLog_new = new CreateDisquslogsDto();
+          disqusLog_new._id = await this.utilsService.generateId();
+          disqusLog_new.disqusID = disqus.disqusID;
+          disqusLog_new.sender = inDto.email;
+          disqusLog_new.sequenceNumber = 0;
+          disqusLog_new.active = true;
+          disqusLog_new.postType = inDto.postType
+          disqusLog_new.updatedAt = current_date;
+          disqusLog_new.createdAt = current_date;
+          disqusLog_new.sender = inDto.email;
+          disqusLog_new.receiver = inDto.receiverParty;
+          disqusLog_new.postType = inDto.postType;
+          disqusLog_new.txtMessages = inDto.txtMessages;
+          disqusLog_new.reactionUri = inDto.reactionUri;
+          disqusLog_new._class = "io.melody.hyppe.content.domain.DisqusLog";
+
+          if (await this.utilsService.ceckData(inDto.postContent)) {
+            disqusLog_new.postID = inDto.postContent.postID;
+            var media = await this.NewpostService.findOnepostID2(inDto.postContent.postID.toString());
+            var media_ = {}
+            if (await this.utilsService.ceckData(media)) {
+              if (inDto.postContent.createdAt != undefined) {
+                media_["createdAt"] = inDto.postContent.createdAt;
+              }
+              if (media[0].mediaSource[0].mediaBasePath != undefined) {
+                media_["mediaBasePath"] = media[0].mediaSource[0].mediaBasePath;
+              }
+              if (inDto.postContent.postType != undefined) {
+                media_["postType"] = inDto.postContent.postType;
+              }
+              if (media[0].mediaSource[0].mediaUri != undefined) {
+                media_["mediaUri"] = media[0].mediaSource[0].mediaUri;
+              }
+              if (media[0].mediaSource[0].mediaUri != undefined) {
+                media_["mediaThumbUri"] = media[0].mediaSource[0].mediaThumb;
+              }
+              if (inDto.postContent.description != undefined) {
+                media_["description"] = inDto.postContent.description;
+              }
+              if (inDto.postContent.active != undefined) {
+                media_["active"] = inDto.postContent.active;
+              }
+              if (media[0].mediaSource[0].mediaType != undefined) {
+                media_["mediaType"] = media[0].mediaSource[0].mediaType;
+              }
+              if (media[0].mediaSource[0].mediaType != undefined) {
+                media_["mediaThumbEndpoint"] = "/thumb/" + inDto.postContent.postID;
+              }
+              if (inDto.postContent.postID != undefined) {
+                media_["postID"] = inDto.postContent.postID;
+              }
+              if (media[0].mediaSource[0].mediaUri != undefined) {
+                media_["mediaEndpoint"] = "/stream/" + media[0].mediaSource[0].mediaUri;
+              }
+              if (media[0].mediaSource[0].apsara != undefined) {
+                media_["apsara"] = media[0].mediaSource[0].apsara
+              }
+              if (media[0].mediaSource[0].apsaraId != undefined) {
+                media_["apsaraId"] = media[0].mediaSource[0].apsaraId
+              }
+            }
+            disqusLog_new.medias = [media_];
+          }
+          if (inDto.tagComment != undefined) {
+            var array_data = [];
+            for (let i = 0; i < inDto.tagComment_.length; i++) {
+              var user = await this.UserbasicnewService.findOneUsername(inDto.tagComment_[i]);
+              if (await this.utilsService.ceckData(user)) {
+                array_data.push({
+                  $ref: 'userauths',
+                  $id: new ObjectId(user._id.toString()),
+                  $db: 'hyppe_trans_db',
+                });
+              }
+            }
+            disqusLog_new.tags = Object(array_data);
+          }
+          disqusLog = disqusLog_new;
+        }
+
+        if (parentLog._id != undefined) {
+          var createDisquslogsDto_ = new CreateDisquslogsDto();
+          if (parentLog.replyLogs != undefined) {
+            if (parentLog.replyLogs != null) {
+              var data_replyLogs = parentLog.replyLogs;
+              data_replyLogs.push({
+                $ref: 'disquslogs',
+                $id: disqusLog._id,
+                $db: 'hyppe_content_db',
+              });
+              createDisquslogsDto_.replyLogs = data_replyLogs;
+            } else {
+              createDisquslogsDto_.replyLogs = [
+                {
+                  $ref: 'disquslogs',
+                  $id: disqusLog._id,
+                  $db: 'hyppe_content_db',
+                }
+              ]
+            }
+          } else {
+            createDisquslogsDto_.replyLogs = [
+              {
+                $ref: 'disquslogs',
+                $id: disqusLog._id,
+                $db: 'hyppe_content_db',
+              }
+            ]
+          }
+          await this.disqusLogService.update(parentLog._id.toString(), createDisquslogsDto_);
+        }
+
+        if (disqus.disqusLogs != undefined) {
+          const data_disqusLogs = disqus.disqusLogs;
+          data_disqusLogs.push({
+            $ref: 'disquslogs',
+            $id: disqusLog._id.toString(),
+            $db: 'hyppe_content_db',
+          });
+        } else {
+          disqus.disqusLogs = [{
+            $ref: 'disquslogs',
+            $id: disqusLog._id.toString(),
+            $db: 'hyppe_content_db',
+          }]
+        }
+
+        await this.disqusLogService.create(disqusLog);
+        await this.disqusService.create(disqus);
+        console.log("buildComments end");
+        retVal = await this.aggrDetailDisqusLogv2(disqus, disqusLog);
+        console.log("aggrDetailDisqusLog end");
+      }
+    }
+    return retVal;
+  }
   private async aggrDetailDisqusLog(disqus: CreateDisqusDto, disqusLog: CreateDisquslogsDto) {
     var retVal = new DisqusResDto();
     let retLineVal: DisquslogsDto[] = [];
@@ -1470,7 +1825,84 @@ export class DisqusController {
     retVal.disqusLogs = retLineVal;
     return retVal;
   }
+  private async aggrDetailDisqusLogv2(disqus: CreateDisqusDto, disqusLog: CreateDisquslogsDto) {
+    var retVal = new DisqusResDto();
+    let retLineVal: DisquslogsDto[] = [];
+    if (disqus.eventType == "COMMENT") {
+      retVal["postID"] = disqus.postID;
+    } else {
+      retVal["room"] = disqus.room;
+    }
+    //var profile = await this.utilsService.generateProfile(disqus.email.toString(), "FULL");
+    var username_ = await this.UserbasicnewService.findBymail(disqus.email.toString());
+    var fullName_ = await this.utilsService.getUserBasic2(disqus.email.toString());
+    var avatar_ = await this.utilsService.getAvatarUser2(disqus.email.toString());
+    if (username_ != null && fullName_ != null) {
+      retVal["username"] = username_.username;
+      retVal["fullName"] = fullName_.fullName;
+      retVal["isIdVerified"] = fullName_.isIdVerified;
+      if (avatar_ != null) {
+        retVal["avatar"] = avatar_;
+      }
+    }
+    retVal["email"] = disqus.email;
+    if (disqus.mate != undefined) {
+      if (disqus.mate != "") {
+        var mateInfo = {};
+        // var mateProfile = await this.utilsService.generateProfile(disqus.mate.toString(), "FULL");
+        var username_mate =await this.UserbasicnewService.findBymail(disqus.mate.toString());
+        var fullName_mate = await this.utilsService.getUserBasic2(disqus.mate.toString());
+        var avatar_mate = await this.utilsService.getAvatarUser2(disqus.mate.toString());
+        if (username_mate != null && fullName_mate != null) {
+          mateInfo['username'] = username_mate.username;
+          mateInfo['fullName'] = fullName_mate.fullName;
+          mateInfo["isIdVerified"] = fullName_mate.isIdVerified;
+          if (avatar_mate != null) {
+            mateInfo['avatar'] = avatar_mate;
+          }
+        }
+        mateInfo['email'] = username_mate.email;
+        retVal["mate"] = mateInfo;
+      }
+    }
 
+    var line = new DisquslogsDto();
+    line["disqusID"] = disqusLog.disqusID;
+    line["postType"] = disqusLog.postType;
+    if (disqusLog.postID != undefined) {
+      if (disqusLog.postID != "") {
+        var Posts_ = new Newpost();
+        Posts_ = await this.NewpostService.findid(disqusLog.postID.toString());
+        line["content"] = Posts_;
+      }
+    }
+    line["lineID"] = disqusLog._id;
+    line["sequenceNumber"] = disqusLog.sequenceNumber;
+    line["sender"] = disqusLog.sender;
+    //var mateProfile = await this.utilsService.generateProfile(disqusLog.sender.toString(), "FULL");
+    var username_mate2 = await this.UserbasicnewService.findBymail(disqusLog.sender.toString());
+    var fullName_mate2 = await this.utilsService.getUserBasic2(disqusLog.sender.toString());
+    var avatar_mate2 = await this.utilsService.getAvatarUser2(disqusLog.sender.toString());
+    var mateInfo = {};
+    if (username_mate2 != null && fullName_mate2 != null) {
+      mateInfo["username"] = username_mate2.username;
+      mateInfo["fullName"] = fullName_mate2.fullName;
+      mateInfo["isIdVerified"] = fullName_mate2.isIdVerified;
+      if (avatar_mate2 != null) {
+        mateInfo['avatar'] = avatar_mate2;
+      }
+      line["senderInfo"] = mateInfo;
+    }
+    line["receiver"] = disqusLog.receiver;
+    line["active"] = disqusLog.active;
+    line["createdAt"] = disqusLog.createdAt;
+    line["updatedAt"] = disqusLog.updatedAt;
+    line["txtMessages"] = disqusLog.txtMessages;
+    retLineVal.push(line);
+    //retVal["disqusLogs"] = retLineVal;
+    retVal.disqusLogs = retLineVal;
+    return retVal;
+  }
   private async validationEvent(contentDto: ContentDto): Promise<CreateInsightsDto> {
     var Insights_ = new CreateInsightsDto();
     return Insights_;
@@ -1528,7 +1960,7 @@ export class DisqusController {
     retVal.postType = DisqusLog.postType;
 
     if ((DisqusLog.postID != undefined) && (eventType == "DIRECT_MSG")) {
-      var post = this.postDisqusService.findOnepostID(DisqusLog.postID.toString());
+      var post = this.NewpostService.findOnepostID2(DisqusLog.postID.toString());
       //retVal.content = post;
     }
     //retVal.lineID = DisqusLog._id;
@@ -1536,7 +1968,7 @@ export class DisqusController {
 
     if (eventType == "COMMENT") {
       var mateInfo = {};
-      var profile_mate = await this.utilsService.generateProfile(DisqusLog.sender.toString(), 'PROFILE');
+      var profile_mate = await this.utilsService.generateProfile2(DisqusLog.sender.toString(), 'PROFILE');
       if ((profile_mate != null)) {
         mateInfo['email'] = profile_mate.fullName;
         mateInfo['username'] = profile_mate.username;
@@ -1547,7 +1979,7 @@ export class DisqusController {
         //retVal.senderInfo = mateInfo;
       }
     } else {
-      var profile_mate = await this.utilsService.generateProfile(DisqusLog.sender.toString(), 'PROFILE');
+      var profile_mate = await this.utilsService.generateProfile2(DisqusLog.sender.toString(), 'PROFILE');
       if ((profile_mate != null)) {
         retVal.username = profile_mate.username;
       }
@@ -1830,24 +2262,24 @@ export class DisqusController {
     if (dto.postID != undefined) {
       dl.postID = dto.postID;
 
-      var post = await this.postDisqusService.findByPostId(dto.postID.toString());
-      var media = await this.postDisqusService.findOnepostID3(post);
+      var post = await this.NewpostService.findByPostId(dto.postID.toString());
+      var media = await this.NewpostService.findOnepostID3(post);
       var media_ = {}
       if (await this.utilsService.ceckData(media)) {
         if (post.createdAt != undefined) {
           media_["createdAt"] = post.createdAt;
         }
-        if (media[0].datacontent[0].mediaBasePath != undefined) {
-          media_["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
+        if (media[0].mediaSource[0].mediaBasePath != undefined) {
+          media_["mediaBasePath"] = media[0].mediaSource[0].mediaBasePath;
         }
         if (post.postType != undefined) {
           media_["postType"] = post.postType;
         }
-        if (media[0].datacontent[0].mediaUri != undefined) {
-          media_["mediaUri"] = media[0].datacontent[0].mediaUri;
+        if (media[0].mediaSource[0].mediaUri != undefined) {
+          media_["mediaUri"] = media[0].mediaSource[0].mediaUri;
         }
-        if (media[0].datacontent[0].mediaUri != undefined) {
-          media_["mediaThumbUri"] = media[0].datacontent[0].mediaThumb;
+        if (media[0].mediaSource[0].mediaUri != undefined) {
+          media_["mediaThumbUri"] = media[0].mediaSource[0].mediaThumb;
         }
         if (post.description != undefined) {
           media_["description"] = post.description;
@@ -1855,23 +2287,23 @@ export class DisqusController {
         if (post.active != undefined) {
           media_["active"] = post.active;
         }
-        if (media[0].datacontent[0].mediaType != undefined) {
-          media_["mediaType"] = media[0].datacontent[0].mediaType;
+        if (media[0].mediaSource[0].mediaType != undefined) {
+          media_["mediaType"] = media[0].mediaSource[0].mediaType;
         }
-        if (media[0].datacontent[0].mediaType != undefined) {
+        if (media[0].mediaSource[0].mediaType != undefined) {
           media_["mediaThumbEndpoint"] = "/thumb/" + post.postID;
         }
         if (post.postID != undefined) {
           media_["postID"] = post.postID;
         }
-        if (media[0].datacontent[0].mediaUri != undefined) {
-          media_["mediaEndpoint"] = "/stream/" + media[0].datacontent[0].mediaUri;
+        if (media[0].mediaSource[0].mediaUri != undefined) {
+          media_["mediaEndpoint"] = "/stream/" + media[0].mediaSource[0].mediaUri;
         }
-        if (media[0].datacontent[0].apsara != undefined) {
-          media_["apsara"] = media[0].datacontent[0].apsara
+        if (media[0].mediaSource[0].apsara != undefined) {
+          media_["apsara"] = media[0].mediaSource[0].apsara
         }
-        if (media[0].datacontent[0].apsaraId != undefined) {
-          media_["apsaraId"] = media[0].datacontent[0].apsaraId
+        if (media[0].mediaSource[0].apsaraId != undefined) {
+          media_["apsaraId"] = media[0].mediaSource[0].apsaraId
         }
         dl.medias = [media_];
       }
@@ -1930,7 +2362,7 @@ export class DisqusController {
     retVal.updatedAt = dis.updatedAt;
     retVal.lastestMessage = dis.lastestMessage;
 
-    var profile = await this.utilsService.generateProfile(String(dis.email), 'PROFILE');
+    var profile = await this.utilsService.generateProfile2(String(dis.email), 'PROFILE');
     if (profile.username != undefined) {
       retVal.username = profile.username;
     }
@@ -1947,7 +2379,7 @@ export class DisqusController {
     }
 
 
-    var profile_mate = await this.utilsService.generateProfile(String(dis.mate), 'PROFILE');
+    var profile_mate = await this.utilsService.generateProfile2(String(dis.mate), 'PROFILE');
     var mateInfo = {};
     if (profile_mate.username != undefined) {
       mateInfo['username'] = profile_mate.username;
