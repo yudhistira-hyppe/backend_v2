@@ -6255,7 +6255,7 @@ export class AuthController {
     }
 
     //Get User Userbasics
-    const datauserbasicsService = await this.basic2SS.findOne(
+    const datauserbasicsService = await this.basic2SS.findBymail(
       headers['x-auth-user'],
     );
 
