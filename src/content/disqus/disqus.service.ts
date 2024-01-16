@@ -1600,18 +1600,35 @@ export class DisqusService {
                                                     "fullName": {
                                                         $arrayElemAt: ["$detailUserBasic.fullName", 0]
                                                     },
-                                                    "username": "$detailUserBasic.username",
+                                                    "username": {
+                                                        $arrayElemAt: ["$detailUserBasic.username", 0]
+                                                    },
                                                     "avatar":
                                                                                             {
-                                                           "mediaBasePath": "$detailUserBasic.mediaBasePath",
-                                                           "mediaUri": "$detailUserBasic.mediaUri",
-                                                           "originalName": "$detailUserBasic.originalName",
-                                                           "fsSourceUri": "$detailUserBasic.fsSourceUri",
-                                                           "fsSourceName": "$detailUserBasic.fsSourceName",
-                                                           "fsTargetUri": "$detailUserBasic.fsTargetUri",
-                                                           "mediaType": "$detailUserBasic.mediaType",
-                                                          //"mediaEndpoint": {
-                                                          //    "$concat": ["/profilepict/", "$detailUserBasic.mediaID"]}
+                                                           "mediaBasePath":  {
+                                                            $arrayElemAt: ["$detailUserBasic.mediaBasePath", 0]
+                                                        },
+                                                           "mediaUri":  {
+                                                            $arrayElemAt: ["$detailUserBasic.mediaUri", 0]
+                                                        },
+                                                           "originalName":  {
+                                                            $arrayElemAt: ["$detailUserBasic.originalName", 0]
+                                                        },
+                                                           "fsSourceUri":  {
+                                                            $arrayElemAt: ["$detailUserBasic.fsSourceUri", 0]
+                                                        },
+                                                           "fsSourceName":  {
+                                                            $arrayElemAt: ["$detailUserBasic.fsSourceName", 0]
+                                                        },
+                                                           "fsTargetUri":  {
+                                                            $arrayElemAt: ["$detailUserBasic.fsTargetUri", 0]
+                                                        },
+                                                           "mediaType":  {
+                                                            $arrayElemAt: ["$detailUserBasic.mediaType", 0]
+                                                        },
+                                                          "mediaEndpoint":  {
+                                                            $arrayElemAt: ["$detailUserBasic.mediaEndpoint", 0]
+                                                        },
                                                    },
                                                     "urluserBadge": 
                                                     {
