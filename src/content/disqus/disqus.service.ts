@@ -1783,18 +1783,35 @@ export class DisqusService {
                                             "fullName": {
                                                 $arrayElemAt: ["$userBasic.fullName", 0]
                                             },
-                                            "username": "$userBasic.username",
+                                            "username": {
+                                                $arrayElemAt: ["$userBasic.username", 0]
+                                            },
                                             "avatar": 
                                                                                             {
-                                                           "mediaBasePath": "$userBasic.mediaBasePath",
-                                                           "mediaUri": "$userBasic.mediaUri",
-                                                           "originalName": "$userBasic.originalName",
-                                                           "fsSourceUri": "$userBasic.fsSourceUri",
-                                                           "fsSourceName": "$userBasic.fsSourceName",
-                                                           "fsTargetUri": "$userBasic.fsTargetUri",
-                                                           "mediaType": "$userBasic.mediaType",
-                                                          //"mediaEndpoint": {
-                                                          //    "$concat": ["/profilepict/", "$detailUserBasic.mediaID"]}
+                                                           "mediaBasePath": {
+                                                            $arrayElemAt: ["$userBasic.mediaBasePath", 0]
+                                                        },
+                                                           "mediaUri": {
+                                                            $arrayElemAt: ["$userBasic.mediaUri", 0]
+                                                        },
+                                                           "originalName":{
+                                                            $arrayElemAt: ["$userBasic.originalName", 0]
+                                                        },
+                                                           "fsSourceUri": {
+                                                            $arrayElemAt: ["$userBasic.fsSourceUri", 0]
+                                                        },
+                                                           "fsSourceName":{
+                                                            $arrayElemAt: ["$userBasic.fsSourceName", 0]
+                                                        },
+                                                           "fsTargetUri": {
+                                                            $arrayElemAt: ["$userBasic.fsTargetUri", 0]
+                                                        },
+                                                           "mediaType": {
+                                                            $arrayElemAt: ["$userBasic.mediaType", 0]
+                                                        },
+                                                          "mediaEndpoint":{
+                                                            $arrayElemAt: ["$userBasic.mediaEndpoint", 0]
+                                                        },
                                                    },
                                             "isIdVerified": {
                                                 $arrayElemAt: ["$userBasic.isIdVerified", 0]
