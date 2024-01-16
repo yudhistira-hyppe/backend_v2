@@ -128,6 +128,7 @@ export class CreateuserbasicnewDto {
   kyc: any[];
   guestMode: boolean;
   friend: any[];
+  creator: boolean
 }
 
 export class SearchUserbasicDto {
