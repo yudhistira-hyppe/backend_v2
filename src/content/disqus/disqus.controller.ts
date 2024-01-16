@@ -620,7 +620,8 @@ export class DisqusController {
           // String roomName = AppUtils.getAsStr(it, QueryEnum.ROOM_FLD.getName());
           //var roomName = retVal[retValCount].room;
           //}
-        } else if ((type == "COMMENT") && (ContentDto_.postID != undefined)) {
+        } 
+        else if ((type == "COMMENT") && (ContentDto_.postID != undefined)) {
           console.log("Payload Insert Comment >>>>>> : ", ContentDto_);
           if (ContentDto_.email == undefined) {
             ContentDto_.email = email_header;
