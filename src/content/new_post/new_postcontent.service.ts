@@ -423,7 +423,7 @@ export class NewPostContentService {
 
       var stories = { "$ref": "mediastories", "$id": Mediastories_.mediaID, "$db": "hyppe_content_db" };
       contentMedias_.push(stories);
-      contentMedias_.push(stories);
+      mediaSource_.push(Mediastories_);
     }
     Posts_.contentMedias = contentMedias_;
     Posts_.mediaSource = mediaSource_;
