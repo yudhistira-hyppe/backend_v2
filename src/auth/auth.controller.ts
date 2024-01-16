@@ -1977,12 +1977,10 @@ export class AuthController {
     if (await this.utilsService.ceckData(user_userbasics)) {
       var statuscreator = false;
 
-      if(user_userbasics.creator != undefined)
-      {
+      if (user_userbasics.creator != undefined) {
         statuscreator = user_userbasics.creator;
       }
-      else
-      {
+      else {
         statuscreator = false;
       }
 
@@ -2035,6 +2033,212 @@ export class AuthController {
           data_CreateActivityeventsDto_child.parentActivityEventID =
             user_activityevents[0].activityEventID;
           data_CreateActivityeventsDto_child.userbasic = user_userbasics._id;
+
+          //Insert ActivityEvent Child
+
+
+          const event = await this.activityeventsService.create(
+            data_CreateActivityeventsDto_child,
+          );
+          let idevent = event._id;
+          let eventType = event.event.toString();
+
+          //await this.utilsService.counscore("AE", "prodAll", "activityevents", idevent, eventType, user_userbasics._id);
+        } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(DeviceActivityRequest_));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_header, null, null, reqbody);
+
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Create Activity Event Child. Error:' + error,
+          );
+        }
+
+        //Update ActivityEvent Parent
+        try {
+          const data_transitions = user_activityevents[0].transitions;
+          data_transitions.push({
+            $ref: 'activityevents',
+            $id: new Object(ID_child_ActivityEvent),
+            $db: 'hyppe_trans_db',
+          });
+          await this.activityeventsService.update(
+            {
+              _id: user_activityevents[0]._id,
+            },
+            {
+              flowIsDone: false,
+              transitions: data_transitions,
+            },
+          );
+        } catch (error) {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          var reqbody = JSON.parse(JSON.stringify(DeviceActivityRequest_));
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_header, null, null, reqbody);
+
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Update Activity Event Parent. Error:' +
+            error,
+          );
+        }
+
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(DeviceActivityRequest_));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_header, null, null, reqbody);
+
+        return {
+          response_code: 202,
+          data: getDeviceAr,
+          messages: {
+            info: ['Device activity logging successful'],
+          },
+          version: getSetting.toString(),
+          version_ios: getSetting_ios.toString(),
+          creator: statuscreator
+        };
+      } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(DeviceActivityRequest_));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_header, null, null, reqbody);
+
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed ',
+        );
+      }
+    } else {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(DeviceActivityRequest_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_header, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException('User not found');
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/user/deviceactivity/v2')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async deviceactivityv2(@Body() DeviceActivityRequest_: DeviceActivityRequest, @Headers() headers, @Req() req) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var getDeviceAr = await this.utilsService.getDeepAr("63a3ff2cd42900004b003ec2");
+    var getSetting = await this.utilsService.getSetting_("62bbdb4ba7520000050077a7");
+    var getSetting_ios = await this.utilsService.getSetting_("645da79c295b0000520048c2");
+    var user_email_header = headers['x-auth-user'];
+    var user_email = DeviceActivityRequest_.email;
+    var user_deviceId = DeviceActivityRequest_.deviceId;
+    var user_event = DeviceActivityRequest_.event;
+    var user_status = DeviceActivityRequest_.status;
+    var current_date = await this.utilsService.getDateTimeString();
+    var mongo = require('mongoose');
+
+    var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
+
+    var ID_child_ActivityEvent = (
+      await this.utilsService.generateId()
+    ).toLowerCase();
+
+    var id_Activityevents_child = new mongoose.Types.ObjectId();
+
+    if (user_email_header != user_email) {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(DeviceActivityRequest_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_header, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    if (
+      !(
+        (user_event == 'AWAKE' && user_status == 'INITIAL') ||
+        (user_event == 'SLEEP' && user_status == 'ACTIVE')
+      )
+    ) {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(DeviceActivityRequest_));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_header, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+
+    var target_ = null;
+    if (user_event == 'AWAKE') {
+      target_ = 'ACTIVE';
+    } else if (user_event == 'SLEEP') {
+      target_ = 'INACTIVE';
+    }
+
+    //Ceck User basics
+    // const user_userbasics = await this.userbasicsService.findOne(user_email);
+    const user_userbasics = await this.basic2SS.findBymail(user_email)
+
+    if (await this.utilsService.ceckData(user_userbasics)) {
+      var statuscreator = false;
+
+      if (user_userbasics.creator != undefined) {
+        statuscreator = user_userbasics.creator;
+      }
+      else {
+        statuscreator = false;
+      }
+
+      //Ceck User ActivityEvent Parent
+      const user_activityevents = await this.activityeventsService.findParent(
+        user_email,
+        user_deviceId,
+        'LOGIN',
+        false,
+      );
+
+      if (Object.keys(user_activityevents).length > 0) {
+        var latitude_ = undefined;
+        var longitude_ = undefined;
+        if (user_activityevents[0].payload.login_location != undefined) {
+          if (user_activityevents[0].payload.login_location.latitude != undefined) {
+            latitude_ = user_activityevents[0].payload.login_location.latitude;
+          }
+          if (user_activityevents[0].payload.login_location.longitude != undefined) {
+            longitude_ = user_activityevents[0].payload.login_location.longitude;
+          }
+        }
+        //Create ActivityEvent Child
+        try {
+          data_CreateActivityeventsDto_child._id = id_Activityevents_child;
+          data_CreateActivityeventsDto_child.activityEventID =
+            ID_child_ActivityEvent;
+          data_CreateActivityeventsDto_child.activityType = 'DEVICE_ACTIVITY';
+          data_CreateActivityeventsDto_child.active = true;
+          data_CreateActivityeventsDto_child.status = user_status;
+          data_CreateActivityeventsDto_child.target = target_;
+          data_CreateActivityeventsDto_child.event = user_event;
+          data_CreateActivityeventsDto_child._class =
+            'io.melody.hyppe.trans.domain.ActivityEvent';
+          data_CreateActivityeventsDto_child.payload = {
+            login_location: {
+              latitude: latitude_,
+              longitude: longitude_,
+            },
+            logout_date: current_date,
+            login_date: user_activityevents[0].payload.login_date,
+            login_device: user_deviceId,
+            email: user_email,
+          };
+          data_CreateActivityeventsDto_child.createdAt = current_date;
+          data_CreateActivityeventsDto_child.updatedAt = current_date;
+          data_CreateActivityeventsDto_child.sequenceNumber = new Int32(1);
+          data_CreateActivityeventsDto_child.flowIsDone = false;
+          data_CreateActivityeventsDto_child.__v = undefined;
+          data_CreateActivityeventsDto_child.parentActivityEventID =
+            user_activityevents[0].activityEventID;
+          data_CreateActivityeventsDto_child.userbasic = new mongo.Types.ObjectId(user_userbasics._id);
 
           //Insert ActivityEvent Child
 
@@ -2174,7 +2378,7 @@ export class AuthController {
   async verifyaccount(@Req() request: any) {
     return await this.authService.signup(request);
   }
-  
+
   @Post('api/user/verifyaccount/v2')
   @HttpCode(HttpStatus.ACCEPTED)
   async verifyaccount2(@Req() request: any) {
@@ -3007,13 +3211,11 @@ export class AuthController {
     var fullurl = request.get("Host") + request.originalUrl;
 
     var request_json = JSON.parse(JSON.stringify(request.body));
-    if(request_json.creator == null || request_json.creator == undefined)
-    {
+    if (request_json.creator == null || request_json.creator == undefined) {
       await this.errorHandler.generateNotAcceptableException("Unable to proceed. creator field is required");
     }
-    
-    if(request_json.idUser == null || request_json.idUser == undefined)
-    {
+
+    if (request_json.idUser == null || request_json.idUser == undefined) {
       await this.errorHandler.generateNotAcceptableException("Unable to proceed. idUser field is required");
     }
 
@@ -3180,7 +3382,7 @@ export class AuthController {
         // await this.userbasicsService.updateNoneActive(request.body.email);
         await this.basic2SS.updateNoneActive(request.body.email, user_userbasics.emailLogin.toString());
         await this.userdevicesService.updateNoneActive(request.body.email);
-        
+
         //await this.postsService.updateNoneActive(request.body.email);
         await this.NewPostService.updateNoneActive(request.body.email);
         await this.contenteventsService.updateNoneActive(request.body.email);
@@ -6457,8 +6659,7 @@ export class AuthController {
             if (result.res.statusCode != undefined) {
               if (result.res.statusCode == 200) {
                 try {
-                  if(datauserbasicsService.mediaBasePath == null || datauserbasicsService.mediaBasePath == undefined)
-                  {
+                  if (datauserbasicsService.mediaBasePath == null || datauserbasicsService.mediaBasePath == undefined) {
                     datauserbasicsService.postType = 'profilepict';
                     datauserbasicsService.mediaType = 'image';
                     datauserbasicsService.mediaMime = mimetype;
@@ -6836,7 +7037,7 @@ export class AuthController {
   @Post('api/user/guest')
   @HttpCode(HttpStatus.ACCEPTED)
   async guest(@Body() GuestRequest_: GuestRequest) {
-    if (GuestRequest_.email==undefined){
+    if (GuestRequest_.email == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed email is required',
       );
@@ -6930,7 +7131,7 @@ export class AuthController {
               ID_langIso = data_language._id;
               Name_langIso = data_language.lang;
             }
-          }else{
+          } else {
             const data_language = await this.languagesService.findOneLangiso("en");
             if (await this.utilsService.ceckData(data_language)) {
               ID_langIso = data_language._id;
@@ -6982,7 +7183,7 @@ export class AuthController {
         CreateuserbasicnewDto_.isCredentialsNonExpired = true;
         CreateuserbasicnewDto_.roles = ['ROLE_USER'];
         CreateuserbasicnewDto_.statusKyc = 'unverified';
-        if (GuestRequest_.location!=undefined){
+        if (GuestRequest_.location != undefined) {
           CreateuserbasicnewDto_.location = GuestRequest_.location;
         }
         CreateuserbasicnewDto_.tutor = [
@@ -7040,6 +7241,7 @@ export class AuthController {
             },
           ]
         }
+        CreateuserbasicnewDto_.creator = false;
 
         await this.basic2SS.create(CreateuserbasicnewDto_);
       } catch (error) {
@@ -7194,7 +7396,7 @@ export class AuthController {
       //GEN TOKEN AND REFRESH TOKEN
       const refresh_token = await this.authService.updateRefreshToken2(GuestRequest_.email.toLowerCase());
       const token = (await this.utilsService.generateToken(GuestRequest_.email.toLowerCase(), GuestRequest_.deviceId)).toString();
-    
+
       //GENERATE PROFILE
       let ProfileDTO_ = new ProfileDTO();
       ProfileDTO_ = await this.utilsService.generateProfile2(GuestRequest_.email.toLowerCase(), 'LOGIN');
