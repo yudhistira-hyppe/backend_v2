@@ -1873,7 +1873,7 @@ export class DisqusService {
                         "room": 1,
                         "createdAt": 1,
                         "updatedAt": 1,
-                        "disqusLogs": {$arrayElemAt:["$disqusLogs.disqusLogs",0]},
+                        "disqusLogs": "$disqusLogs.disqusLogs",
                         "comment": {
                             $size: "$countLogs"
                         },
