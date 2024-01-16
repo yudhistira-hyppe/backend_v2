@@ -314,6 +314,7 @@ export class GetcontenteventsController {
         @Body() CreateGetcontenteventsDto_: CreateGetcontenteventsDto,
         @Headers() headers
     ) {
+        console.log(headers);
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed token and email not match',
