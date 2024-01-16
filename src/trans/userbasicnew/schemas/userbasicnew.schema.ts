@@ -243,6 +243,8 @@ export class Userbasicnew {
     mediaThumUri: string;
     @Prop()
     postType: string;
+    @Prop()
+    creator: boolean;
 }
 
 export const UserbasicnewSchema = SchemaFactory.createForClass(Userbasicnew);
