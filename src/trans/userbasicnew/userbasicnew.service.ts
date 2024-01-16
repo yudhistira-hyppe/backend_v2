@@ -1252,6 +1252,22 @@ export class UserbasicnewService {
         return data;
     }
 
+    async updatebyEmailV2(email: string, dto: Userbasicnew) {
+        this.UserbasicnewModel.updateOne(
+            {
+                email: email,
+            },
+            dto,
+            function (err, docs) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(docs);
+                }
+            },
+        ).clone().exec();
+    }
+
     async updatebyemail(email: string, Userbasicnew_: Userbasicnew) {
         let data = await this.UserbasicnewModel.updateOne(
             {

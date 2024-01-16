@@ -251,7 +251,9 @@ export class PostsReadController {
 
                     if (boosted !== null || boosted.length > 0) {
                         console.log("boosted: " + data[i].postID);
-                        this.postsService.updateBoostViewer(data[i].postID, email);
+                        if (data[i].postID != undefined) {
+                            this.postsService.updateBoostViewer(data[i].postID, email);
+                        }
                         //pd.boostJangkauan = this.countBoosted(obj, email);
                         if (boosted.length > 0) {
                             if (boosted[0] != undefined) {
@@ -370,7 +372,9 @@ export class PostsReadController {
                     }
                     if (boosted !== null || boosted.length > 0) {
                         console.log("boosted: " + data[i].postID);
-                        this.postsService.updateBoostViewer(data[i].postID, email);
+                        if (data[i].postID != undefined) {
+                            this.postsService.updateBoostViewer(data[i].postID, email);
+                        }
                         //pd.boostJangkauan = this.countBoosted(obj, email);
                         if (boosted.length > 0) {
                             if (boosted[0] != undefined) {
@@ -648,7 +652,9 @@ export class PostsReadController {
 
                     if (boosted !== null || boosted.length > 0) {
                         console.log("boosted: " + data[i].postID);
-                        this.postsService.updateBoostViewer(data[i].postID, email);
+                        if (data[i].postID != undefined) {
+                            this.postsService.updateBoostViewer(data[i].postID, email);
+                        }
                         //pd.boostJangkauan = this.countBoosted(obj, email);
                         if (boosted.length > 0) {
                             if (boosted[0] != undefined) {
@@ -766,7 +772,9 @@ export class PostsReadController {
                     }
                     if (boosted !== null || boosted.length > 0) {
                         console.log("boosted: " + data[i].postID);
-                        this.postsService.updateBoostViewer(data[i].postID, email);
+                        if (data[i].postID != undefined) {
+                            this.postsService.updateBoostViewer(data[i].postID, email);
+                        }
                         //pd.boostJangkauan = this.countBoosted(obj, email);
                         if (boosted.length > 0) {
                             if (boosted[0] != undefined) {
