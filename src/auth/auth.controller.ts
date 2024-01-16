@@ -6255,7 +6255,7 @@ export class AuthController {
     }
 
     //Get User Userbasics
-    const datauserbasicsService = await this.userbasicsService.findOne(
+    const datauserbasicsService = await this.basic2SS.findOne(
       headers['x-auth-user'],
     );
 
@@ -6426,7 +6426,7 @@ export class AuthController {
 
                   var json_mediaprofilepicts = { "$ref": "mediaprofilepicts", "$id": id_mediaprofilepicts, "$db": "hyppe_content_db" };
                   datauserbasicsService.profilePict = json_mediaprofilepicts;
-                  await this.userbasicsService.updatebyEmailV2(request.email, datauserbasicsService);
+                  await this.basic2SS.updatebyEmailV2(request.email, datauserbasicsService);
 
                   var fullurl = headers.host + '/api/posts/profilepicture';
                   var timestamps_end = await this.utilsService.getDateTimeString();
