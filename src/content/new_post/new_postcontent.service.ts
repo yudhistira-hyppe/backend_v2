@@ -523,6 +523,8 @@ export class NewPostContentService {
       let meta = Posts_.metadata;
       let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: Posts_._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: body.width, height: body.height };
       Posts_.metadata = metadata;
+      Posts_.mediaSource[0].apsaraId = body.videoId;
+      Posts_.mediaSource[0].active = true;
       Posts_.active = true;
       console.log('============================================== UPDATE POST MEDIAVIDEOS ' + Posts_._id + ' ==============================================', JSON.stringify(Posts_));
       await this.newPostService.create(Posts_);
@@ -606,6 +608,8 @@ export class NewPostContentService {
       let meta = Posts_.metadata;
       let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: Posts_._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: meta.width, height: meta.height };
       Posts_.metadata = metadata;
+      Posts_.mediaSource[0].apsaraId = body.videoId;
+      Posts_.mediaSource[0].active = true;
       Posts_.active = true;
       console.log('============================================== UPDATE POST MEDIADIARIES ' + Posts_._id + ' ==============================================', JSON.stringify(Posts_));
       await this.newPostService.create(Posts_);
