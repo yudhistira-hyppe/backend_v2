@@ -18,7 +18,7 @@ export class Newpost {
     @Prop()
     description: String;
     @Prop()
-    active: Boolean;
+    active: boolean;
     @Prop()
     createdAt: String;
     @Prop()
@@ -32,11 +32,11 @@ export class Newpost {
     @Prop()
     tags: any[];
     @Prop()
-    allowComments: Boolean;
+    allowComments: boolean;
     @Prop()
-    isSafe: Boolean;
+    isSafe: boolean;
     @Prop()
-    isOwned: Boolean;
+    isOwned: boolean;
     @Prop()
     likes: Long;
     @Prop()
@@ -66,7 +66,7 @@ export class Newpost {
         height: Number
     }
     @Prop()
-    isCertified: Boolean;
+    isCertified: boolean;
     @Prop()
     boosted: any[];
     @Prop()
@@ -132,6 +132,9 @@ export class Newpost {
     tempView: any[];
     @Prop()
     tempLike: any[];
+    @Prop()
+    boostCount: number;
+  
 }
 
 export const NewpostSchema = SchemaFactory.createForClass(Newpost);

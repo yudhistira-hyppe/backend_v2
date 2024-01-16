@@ -1891,7 +1891,21 @@ export class UtilsService {
     }
     return AvatarDTO_;
   }
+  async getAvatarUser2(email: string) {
+    var AvatarDTO_ = new AvatarDTO();
+    var get_userbasic = await this.basic2SS.findBymail(email);
+    if (await this.ceckData(get_userbasic)) {
+     
 
+      
+        AvatarDTO_.mediaBasePath = get_userbasic.mediaBasePath;
+        AvatarDTO_.mediaUri = get_userbasic.mediaUri;
+        AvatarDTO_.mediaType = get_userbasic.mediaType;
+        AvatarDTO_.mediaEndpoint = get_userbasic.mediaEndpoint;
+      
+    }
+    return AvatarDTO_;
+  }
   async generateProfile(email: string, datafor: string, email_view?: string): Promise<ProfileDTO> {
     var get_userbasic = await this.userbasicsService.findone_(email);
     // var get_userbasic = await this.userbasicsService.findOne(email);
@@ -2492,7 +2506,9 @@ export class UtilsService {
   async getUserBasic(email: string) {
     return await this.userbasicsService.findOne(email);
   }
-
+  async getUserBasic2(email: string) {
+    return await this.basic2SS.findBymail(email);
+  }
   async getDayName(lang: string, dateString: string) {
     var day_list = [];
     if (lang == "en") {
