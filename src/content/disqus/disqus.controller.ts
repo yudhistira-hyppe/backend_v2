@@ -2496,7 +2496,7 @@ export class DisqusController {
     // var bodyen = "";
 
 
-    var posts = await this.postDisqusService.findid(postID);
+    var posts = await this.NewpostService.findid(postID);
     // var bodyin_get = Templates_.body_detail_id.toString();
     // var bodyen_get = Templates_.body_detail.toString();
 
@@ -2514,6 +2514,7 @@ export class DisqusController {
     // var eventType = type.toString();
     // var event = "ACCEPT";
     // await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event, postID, post_type);
+
     await this.utilsService.sendFcmV2(email, receiverParty, type.toString(), "ACCEPT", type, postID, post_type)
   }
 
