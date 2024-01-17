@@ -16,10 +16,12 @@ import { VouchersModule } from '../vouchers/vouchers.module';
 import { AdsplacesModule } from '../adsplaces/adsplaces.module';
 import { PostsModule } from '../../content/posts/posts.module';
 import { LogapisModule } from '../logapis/logapis.module';
+import { UserbasicnewModule } from '../userbasicnew/userbasicnew.module';
 //import { UserAdsModule } from '../userads/userads.module';
 @Module({
 
     imports: [
+        UserbasicnewModule,
         AdsplacesModule,
         LogapisModule,
         ConfigModule.forRoot(), UservouchersModule, UserbasicsModule, AdstypesModule, SeaweedfsModule, MediaimageadsModule, UtilsModule, MediavideosadsModule,
