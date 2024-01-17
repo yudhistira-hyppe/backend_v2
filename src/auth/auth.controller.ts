@@ -2191,13 +2191,16 @@ export class AuthController {
       }
 
       var activityevent_process = null;
+      var flowIsDone_process = null;
       if(user_userbasics.guestMode == true)
       {
         activityevent_process = 'ENROL_GUEST';
+        flowIsDone_process = true;
       }
       else
       {
         activityevent_process = 'LOGIN';
+        flowIsDone_process = false;
       }
       
       //Ceck User ActivityEvent Parent
@@ -2205,7 +2208,7 @@ export class AuthController {
         user_email,
         user_deviceId,
         activityevent_process,
-        false,
+        flowIsDone_process,
       );
 
       if (Object.keys(user_activityevents).length > 0) {
