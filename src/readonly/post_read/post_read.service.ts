@@ -19741,7 +19741,17 @@ export class PostsReadService {
             "username": {
                 $arrayElemAt: ["$userBasic.username", 0]
             },
-            "avatar": "$avatar",
+            "avatar": 
+            {
+                "mediaBasePath": {$arrayElemAt: [ "$userBasic.mediaBasePath", 0]},
+                "mediaUri":{$arrayElemAt: [ "$userBasic.mediaUri", 0]},
+                "originalName": {$arrayElemAt: ["$userBasic.originalName", 0]},
+                "fsSourceUri": {$arrayElemAt: ["$userBasic.fsSourceUri", 0]},
+                "fsSourceName":{$arrayElemAt: [ "$userBasic.fsSourceName", 0]},
+                "fsTargetUri": {$arrayElemAt: ["$userBasic.fsTargetUri", 0]},
+                "mediaType":{$arrayElemAt: [ "$userBasic.mediaType", 0]},
+                "mediaEndpoint": {$arrayElemAt: [ "$userBasic.mediaEndpoint", 0]},
+            },
             "privacy": {
                 "isCelebrity": {
                     $arrayElemAt: ["$userBasic.isCelebrity", 0]
@@ -20751,7 +20761,17 @@ export class PostsReadService {
             "username": {
                 $arrayElemAt: ["$userBasic.username", 0]
             },
-            "avatar": "$avatar",
+            "avatar": 
+            {
+                "mediaBasePath": {$arrayElemAt: [ "$userBasic.mediaBasePath", 0]},
+                "mediaUri":{$arrayElemAt: [ "$userBasic.mediaUri", 0]},
+                "originalName": {$arrayElemAt: ["$userBasic.originalName", 0]},
+                "fsSourceUri": {$arrayElemAt: ["$userBasic.fsSourceUri", 0]},
+                "fsSourceName":{$arrayElemAt: [ "$userBasic.fsSourceName", 0]},
+                "fsTargetUri": {$arrayElemAt: ["$userBasic.fsTargetUri", 0]},
+                "mediaType":{$arrayElemAt: [ "$userBasic.mediaType", 0]},
+                "mediaEndpoint": {$arrayElemAt: [ "$userBasic.mediaEndpoint", 0]},
+            },
             "privacy": {
                 "isCelebrity": {
                     $arrayElemAt: ["$userBasic.isCelebrity", 0]
@@ -21760,7 +21780,17 @@ export class PostsReadService {
             "username": {
                 $arrayElemAt: ["$userBasic.username", 0]
             },
-            "avatar": "$avatar",
+            "avatar": 
+            {
+                "mediaBasePath": {$arrayElemAt: [ "$userBasic.mediaBasePath", 0]},
+                "mediaUri":{$arrayElemAt: [ "$userBasic.mediaUri", 0]},
+                "originalName": {$arrayElemAt: ["$userBasic.originalName", 0]},
+                "fsSourceUri": {$arrayElemAt: ["$userBasic.fsSourceUri", 0]},
+                "fsSourceName":{$arrayElemAt: [ "$userBasic.fsSourceName", 0]},
+                "fsTargetUri": {$arrayElemAt: ["$userBasic.fsTargetUri", 0]},
+                "mediaType":{$arrayElemAt: [ "$userBasic.mediaType", 0]},
+                "mediaEndpoint": {$arrayElemAt: [ "$userBasic.mediaEndpoint", 0]},
+            },
             "privacy": {
                 "isCelebrity": {
                     $arrayElemAt: ["$userBasic.isCelebrity", 0]
