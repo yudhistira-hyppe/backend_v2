@@ -4819,7 +4819,7 @@ export class AuthController {
         fileselfiepict = "/" + datauserdetail[0].dokument[0].mediaSelfiepicts.mediaEndpoint;
 
         if (datauserdetail[0].dokument[0].mediaSelfiepicts.mediaEndpoint != null) {
-          arrsuport.push(fileproofpict);
+          arrsuport.push(fileselfiepict);
         }
 
       } catch (e) {
