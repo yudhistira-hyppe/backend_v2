@@ -7203,4 +7203,63 @@ export class UserbasicnewService {
             return true;   
         }
     }
+
+    async countuserchart() {
+        var getmaledata = await this.UserbasicnewModel.find({
+          $or: [
+            { gender: "MALE" },
+            { gender: " MALE" },
+            { gender: "Male" },
+            { gender: "LAKI-LAKI" },
+            { gender: "Laki-laki" },
+            { gender: "Pria" },
+          ]
+        }).count();
+    
+        var getfemaledata = await this.UserbasicnewModel.find({
+          $or: [
+            { gender: "FEMALE" },
+            { gender: " FEMALE" },
+            { gender: "Female" },
+            { gender: "Perempuan" },
+            { gender: " Perempuan" },
+            { gender: "PEREMPUAN" },
+            { gender: "Wanita" },
+          ]
+        }).count();
+    
+        var getotherdata = await this.UserbasicnewModel.find({
+          $or: [
+            { gender: "" },
+            { gender: null }
+          ]
+        }).count();
+    
+        var totaldata = await this.UserbasicnewModel.aggregate([
+          { $count: "myCount" }
+        ]);
+    
+        var data = [
+          {
+            gender:
+              [
+                {
+                  "_id": "MALE",
+                  "count": getmaledata,
+                },
+                {
+                  "_id": "FEMALE",
+                  "count": getfemaledata,
+                },
+                {
+                  "_id": "OTHER",
+                  "count": getotherdata,
+                },
+              ],
+            userActive: totaldata[0].myCount
+          }
+        ];
+    
+        return data;
+    }
 }

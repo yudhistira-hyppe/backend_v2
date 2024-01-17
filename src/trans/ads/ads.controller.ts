@@ -18,6 +18,7 @@ import { VouchersService } from '../vouchers/vouchers.service';
 import { AdsplacesService } from '../adsplaces/adsplaces.service';
 //import { UserAdsService } from '../userads/userads.service';
 import { LogapisService } from '../logapis/logapis.service';
+import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
 import { diskStorage } from 'multer';
@@ -79,6 +80,7 @@ export class AdsController {
         private readonly settingsService: SettingsService,
         private readonly adsplacesService: AdsplacesService,
         private readonly vouchersService: VouchersService,
+        private readonly basic2SS: UserbasicnewService,
         private readonly logAPISS: LogapisService) { }
 
 
@@ -845,6 +847,91 @@ export class AdsController {
         var data = null;
         try {
             datacount = await this.userbasicsService.countuserchart();
+            datacount[0].ads = await this.adsService.totalads();
+            lengdata = datacount.length;
+        } catch (e) {
+            datacount = [];
+            lengdata = 0;
+        }
+
+
+        if (lengdata > 0) {
+            try {
+                datagender = datacount[0].gender;
+                lenggender = datagender.length;
+            } catch (e) {
+                lenggender = 0;
+            }
+            if (lenggender > 0) {
+
+                for (let i = 0; i < lenggender; i++) {
+                    sumgender += datagender[i].count;
+
+                }
+
+            } else {
+                sumgender = 0;
+            }
+
+            if (lenggender > 0) {
+
+                for (let i = 0; i < lenggender; i++) {
+                    let count = datagender[i].count;
+                    let id = datagender[i]._id;
+
+                    let persen = count * 100 / sumgender;
+                    objgender = {
+                        _id: id,
+                        count: count,
+                        persen: persen.toFixed(2)
+                    }
+                    dataSumGender.push(objgender);
+                }
+
+            } else {
+                dataSumGender = [];
+            }
+
+        }
+
+        data = [
+
+            {
+                "gender": dataSumGender,
+                "userActive": datacount[0].userActive,
+                "ads": datacount[0].ads
+            }
+        ];
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logAPISS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @Post('management/adscenter/v2')
+    @UseGuards(JwtAuthGuard)
+    async adscenter2(@Req() request: Request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/ads/management/adscenter/v2';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var datacount = null;
+        var lengdata = null;
+        var datagender = null;
+        var lenggender = null;
+        var sumgender = null;
+        var objgender = {};
+        var dataSumGender = [];
+        var data = null;
+        try {
+            datacount = await this.basic2SS.countuserchart();
             datacount[0].ads = await this.adsService.totalads();
             lengdata = datacount.length;
         } catch (e) {
