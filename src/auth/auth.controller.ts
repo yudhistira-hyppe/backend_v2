@@ -3973,6 +3973,143 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/user/profileinterest/v2')
+  async profileinterest2(@Req() request: any, @Headers() headers) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var user_email = null;
+    var user_interest = null;
+    var user_langIso = null;
+    var data_interest_id = [];
+    var get_languages = null;
+
+    if (headers['x-auth-user'] == undefined) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed Unauthorized email header dan token not match',
+      );
+    }
+    if (request.body.email == undefined || request.body.interest == undefined) {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    } else {
+      user_email = request.body.email;
+      user_interest = request.body.interest;
+    }
+
+    //Ceck User Userbasics
+    const datauserbasicsService = await this.basic2SS.findBymail(
+      user_email,
+    );
+
+    if (await this.utilsService.ceckData(datauserbasicsService)) {
+
+      //Get Id Language
+      try {
+        if (datauserbasicsService.languages != undefined) {
+          var languages_json = JSON.parse(JSON.stringify(datauserbasicsService.languages));
+          get_languages = await this.languagesService.findOne(languages_json.$id);
+        }
+      } catch (error) {
+        var fullurl = request.get("Host") + request.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(request.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed Get Id Language. Error: ' + error,
+        );
+      }
+
+      if (get_languages != null) {
+        user_langIso = get_languages.langIso;
+      }
+
+      //Get Id Interest
+      try {
+        if (user_interest != undefined) {
+          if (user_interest.length > 0) {
+            for (var i = 0; i < user_interest.length; i++) {
+              var id_interest = user_interest[i];
+              // await this.interestsRepoService.findOneByInterestNameLangIso(
+              //   user_interest[i], user_langIso
+              // );
+              if (id_interest != undefined) {
+                data_interest_id.push({
+                  $ref: 'interests_repo',
+                  $id: new Types.ObjectId(id_interest),
+                  $db: 'hyppe_infra_db',
+                });
+              }
+            }
+          }
+        }
+      } catch (error) {
+        var fullurl = request.get("Host") + request.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        var reqbody = JSON.parse(JSON.stringify(request.body));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed Get Id Interest. Error: ' + error,
+        );
+      }
+
+      var data_update = new Userbasicnew();
+      data_update.userInterests = data_interest_id;
+      // var data_update = {
+      //   userInterests: data_interest_id
+      // }
+      if (data_interest_id.length > 0) {
+        await this.basic2SS.update(datauserbasicsService._id.toString(), data_update);
+      }
+
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+      return {
+        "response_code": 202,
+        "messages": {
+          "info": [
+            "Update Profile interest successful"
+          ]
+        }
+      };
+    } else {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      var reqbody = JSON.parse(JSON.stringify(request.body));
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed User nor found',
+      );
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/user/pin/')
   async createorupdatdePin(@Body() body_, @Headers() headers, @Req() request) {
     var timestamps_start = await this.utilsService.getDateTimeString();
