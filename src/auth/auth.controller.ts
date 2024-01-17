@@ -7148,13 +7148,14 @@ export class AuthController {
       //CREATE USERBASIC
       try {
         ID_user = new mongoose.Types.ObjectId();
-        const generateUsername = await this.utilsService.generateGuestUsername();
+        const generateFullname = await this.utilsService.generateGuestUsername();
+        const generateUsername = GuestRequest_.email.toLocaleLowerCase().replace("@hyppeguest.com", "");
         let CreateuserbasicnewDto_ = new CreateuserbasicnewDto();
         CreateuserbasicnewDto_._id = ID_user;
         CreateuserbasicnewDto_.profileID = (await this.utilsService.generateId()).toLowerCase();
         CreateuserbasicnewDto_.email = GuestRequest_.email.toLocaleLowerCase();
         CreateuserbasicnewDto_.regSrc = GuestRequest_.regSrc;
-        CreateuserbasicnewDto_.fullName = generateUsername;
+        CreateuserbasicnewDto_.fullName = generateFullname;
         CreateuserbasicnewDto_.username = generateUsername;
         CreateuserbasicnewDto_.isExpiryPass = false;
         CreateuserbasicnewDto_.isEmailVerified = false;
@@ -7238,10 +7239,11 @@ export class AuthController {
               $ref: 'userdevices',
               $id: ID_device,
               $db: 'hyppe_trans_db',
-            },
+            }
           ]
         }
         CreateuserbasicnewDto_.creator = false;
+        CreateuserbasicnewDto_.emailLogin = GuestRequest_.email.toLocaleLowerCase();
 
         await this.basic2SS.create(CreateuserbasicnewDto_);
       } catch (error) {

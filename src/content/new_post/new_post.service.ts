@@ -7,7 +7,7 @@ import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema
 import { UtilsService } from 'src/utils/utils.service';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
-import { CreateNewPostDTO, PostResponseApps, PostData, Avatar, Metadata, TagPeople, Cat, Privacy } from './dto/create-newPost.dto';
+import { CreateNewPostDTO, PostResponseApps, PostData, Avatar, Metadata, TagPeople, Cat, Privacy, GetcontenteventsDto } from './dto/create-newPost.dto';
 import { ContenteventsService } from '../contentevents/contentevents.service';
 import { ErrorHandler } from 'src/utils/error.handler';
 import { MediamusicService } from '../mediamusic/mediamusic.service';
@@ -15,6 +15,7 @@ import { GetusercontentsService } from 'src/trans/getusercontents/getusercontent
 import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
 import { UserchallengesService } from 'src/trans/userchallenges/userchallenges.service';
 import { Userchallenges } from 'src/trans/userchallenges/schemas/userchallenges.schema';
+import { pipeline } from 'stream';
 
 @Injectable()
 export class NewPostService {
@@ -17121,5 +17122,348 @@ export class NewPostService {
       }
 
     }
+  }
+
+  async getUserEvent(CreateGetcontenteventsDto_: GetcontenteventsDto){
+    let pipeline = [];
+    pipeline.push(
+      {
+        "$match":
+        {
+          "postID": CreateGetcontenteventsDto_.postID
+        }
+      },
+    )
+    if(CreateGetcontenteventsDto_.eventType=="VIEW"){
+      pipeline.push(
+        {
+          "$lookup":
+          {
+            from: "newUserBasics",
+            as: "basic_data",
+            let:
+            {
+              email_fk: "$userView"
+            },
+            pipeline:
+              [
+                {
+                  "$match":
+                  {
+                    "$expr": { '$in': ['$email', '$$email_fk'] },
+                  }
+                },
+                {
+                  "$project":
+                  {
+                    "_id": 1,
+                    "email": 1,
+                    "fullName": 1,
+                    "username": 1,
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                        [
+                          {
+                            "$arrayElemAt":
+                              [
+                                {
+                                  "$filter":
+                                  {
+                                    input: "$userBadge",
+                                    as: "listbadge",
+                                    cond:
+                                    {
+                                      "$and":
+                                        [
+                                          {
+                                            "$eq":
+                                              [
+                                                "$$listbadge.isActive", true
+                                              ]
+                                          },
+                                          {
+                                            "$lte":
+                                              [
+                                                {
+                                                  "$dateToString": {
+                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                    "date": {
+                                                      "$add": [
+                                                        new Date(),
+                                                        25200000
+                                                      ]
+                                                    }
+                                                  }
+                                                },
+                                                "$$listbadge.endDatetime"
+                                              ]
+                                          }
+                                        ]
+                                    }
+                                  }
+                                }, 0
+                              ]
+                          },
+                          []
+                        ]
+                    },
+                    "avatar": {
+                      "$cond":
+                      {
+                        if:
+                        {
+                          "$eq":
+                            [
+                              "$_idAvatar",
+                              null
+                            ]
+                        },
+                        then: null,
+                        else:
+                        {
+                          "mediaBasePath": "$mediaBasePath",
+                          "mediaUri": "$mediaUri",
+                          "mediaType": "$mediaType",
+                          "mediaEndpoint": "$mediaEndpoint"
+                        }
+                      }
+                    },
+                    "following": {
+                      "$ifNull":
+                        [
+                          {
+                            "$cond":
+                            {
+                              if:
+                              {
+                                "$eq":
+                                  [
+                                    {
+                                      "$size": "$follower"
+                                    },
+                                    0
+                                  ]
+                              },
+                              then: false,
+                              else:
+                              {
+                                "$in": [
+                                  CreateGetcontenteventsDto_.emailView,
+                                  "$follower"
+                                ]
+                              }
+                            }
+                          },
+                          false
+                        ]
+                    },
+                    "guest": {
+                      "$ifNull":
+                        [
+                          "$guestMode",
+                          false
+                        ]
+                    }
+                  }
+                }
+              ]
+          }
+        }, 
+      )
+    }
+    if (CreateGetcontenteventsDto_.eventType == "LIKE") {
+      pipeline.push(
+        {
+          "$lookup":
+          {
+            from: "newUserBasics",
+            as: "basic_data",
+            let:
+            {
+              email_fk: "$userLike"
+            },
+            pipeline:
+              [
+                {
+                  "$match":
+                  {
+                    "$expr": { '$in': ['$email', '$$email_fk'] },
+                  }
+                },
+                {
+                  "$project":
+                  {
+                    "_id": 1,
+                    "email": 1,
+                    "fullName": 1,
+                    "username": 1,
+                    "urluserBadge":
+                    {
+                      "$ifNull":
+                        [
+                          {
+                            "$arrayElemAt":
+                              [
+                                {
+                                  "$filter":
+                                  {
+                                    input: "$userBadge",
+                                    as: "listbadge",
+                                    cond:
+                                    {
+                                      "$and":
+                                        [
+                                          {
+                                            "$eq":
+                                              [
+                                                "$$listbadge.isActive", true
+                                              ]
+                                          },
+                                          {
+                                            "$lte":
+                                              [
+                                                {
+                                                  "$dateToString": {
+                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                    "date": {
+                                                      "$add": [
+                                                        new Date(),
+                                                        25200000
+                                                      ]
+                                                    }
+                                                  }
+                                                },
+                                                "$$listbadge.endDatetime"
+                                              ]
+                                          }
+                                        ]
+                                    }
+                                  }
+                                }, 0
+                              ]
+                          },
+                          []
+                        ]
+                    },
+                    "avatar": {
+                      "$cond":
+                      {
+                        if:
+                        {
+                          "$eq":
+                            [
+                              "$_idAvatar",
+                              null
+                            ]
+                        },
+                        then: null,
+                        else:
+                        {
+                          "mediaBasePath": "$mediaBasePath",
+                          "mediaUri": "$mediaUri",
+                          "mediaType": "$mediaType",
+                          "mediaEndpoint": "$mediaEndpoint"
+                        }
+                      }
+                    },
+                    "following": {
+                      "$ifNull":
+                        [
+                          {
+                            "$cond":
+                            {
+                              if:
+                              {
+                                "$eq":
+                                  [
+                                    {
+                                      "$size": "$follower"
+                                    },
+                                    0
+                                  ]
+                              },
+                              then: false,
+                              else:
+                              {
+                                "$in": [
+                                  CreateGetcontenteventsDto_.emailView,
+                                  "$follower"
+                                ]
+                              }
+                            }
+                          },
+                          false
+                        ]
+                    },
+                    "guest": {
+                      "$ifNull":
+                        [
+                          "$guestMode",
+                          false
+                        ]
+                    }
+                  }
+                }
+              ]
+          }
+        },
+      )
+    }
+    pipeline.push(
+      {
+        $unwind: {
+          path: "$basic_data",
+          preserveNullAndEmptyArrays: false
+        }
+      },
+      {
+        $project:{
+          _id: "$basic_data._id",
+          email: "$basic_data.email",
+          fullName: "$basic_data.fullName",
+          username: "$basic_data.username",
+          urluserBadge: "$basic_data.urluserBadge",
+          avatar: "$basic_data.avatar",
+          following: "$basic_data.following",
+          guest: "$basic_data.guest"
+        }
+      },
+      {
+        $facet:
+        {
+          user: [
+            {
+              "$match":
+              {
+                "guest": false
+              }
+            },
+            {
+              "$skip": (CreateGetcontenteventsDto_.skip * CreateGetcontenteventsDto_.limit)
+            },
+            {
+              "$limit": CreateGetcontenteventsDto_.limit
+            },
+          ],
+          guest: [
+            {
+              "$match":
+              {
+                "guest": true
+              }
+            },
+          ],
+        }
+      },
+      {
+        $project: {
+          user: 1,
+          guest: { "$size": "$guest" }
+        }
+      },
+    );
+    const getData = await this.loaddata.aggregate(pipeline);
+    return getData;
   }
 }

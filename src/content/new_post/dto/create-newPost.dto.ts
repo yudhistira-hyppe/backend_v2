@@ -315,3 +315,24 @@ export class CreatePostRequest {
   tagDescription: string;
   isShared: boolean;
 } 
+
+export class GetcontenteventsDto {
+  _id: String;
+  contentEventID: String;
+  email: String;
+  eventType: String;
+  active: boolean;
+  event: String;
+  createdAt: String;
+  updatedAt: String;
+  postID: String;
+  senderParty: String;
+  sequenceNumber: Number;
+  flowIsDone: boolean;
+  _class: String;
+  receiverParty: String;
+  skip: number;
+  limit: number;
+  lang: String;
+  emailView: String;
+}

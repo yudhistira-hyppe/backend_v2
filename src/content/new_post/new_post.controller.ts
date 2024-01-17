@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards, Req, HttpCode, HttpStatus, Post, Body, Headers, BadRequestException, Param, Query, UseInterceptors, UploadedFile, Logger } from '@nestjs/common';
 import { NewPostService } from './new_post.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-import { CreatePostRequest, CreatePostResponse } from './dto/create-newPost.dto';
+import { CreatePostRequest, CreatePostResponse, GetcontenteventsDto } from './dto/create-newPost.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import mongoose from 'mongoose';
 import { MediastikerService } from '../mediastiker/mediastiker.service';
@@ -1755,5 +1755,57 @@ export class NewPostController {
 
     async scorepostrequest(iduser: string, idevent: string, namatabel: string, event: string, postID: string) {
         await this.contenteventsService.scorepostrequest(iduser, idevent, namatabel, event, postID);
+    }
+
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Post('post/viewlike/v2')
+    async getViewLike(
+        @Body() CreateGetcontenteventsDto_: GetcontenteventsDto,
+        @Headers() headers
+    ) {
+        console.log(headers);
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed token and email not match',
+            );
+        }
+
+        if (CreateGetcontenteventsDto_.postID == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed postID is required',
+            );
+        }
+
+        if (CreateGetcontenteventsDto_.eventType == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed eventType is required',
+            );
+        }
+
+        //Ceck POST ID
+        const datapostsService = await this.newPostService.findid(
+            CreateGetcontenteventsDto_.postID.toString(),
+        );
+        
+        if (await this.utilsService.ceckData(datapostsService)) {
+            CreateGetcontenteventsDto_.receiverParty = datapostsService.email;
+            CreateGetcontenteventsDto_.active = true;
+            CreateGetcontenteventsDto_.emailView = headers['x-auth-user'];
+            var data_response = await this.newPostService.getUserEvent(CreateGetcontenteventsDto_);
+            var response = {
+                "response_code": 202,
+                "data": data_response,
+                "messages": {
+                    "info": [
+                        "successfully"
+                    ]
+                },
+            }
+            return response;
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed postID not found',
+            );
+        }
     }
 }
