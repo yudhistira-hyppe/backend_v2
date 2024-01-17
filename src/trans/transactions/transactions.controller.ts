@@ -2245,7 +2245,7 @@ export class TransactionsController {
                         datawithdraw.responOy = datadisbursemen;
                         datawithdraw.statusCode = statusdisb;
                         var datatr = await this.withdrawsService.create(datawithdraw);
-                        await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
+                       
                         var timestamps_end = await this.utilsService.getDateTimeString();
                         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
 
@@ -2278,7 +2278,7 @@ export class TransactionsController {
                     datawithdraw.responOy = datadisbursemen;
                     datawithdraw.statusCode = statusdisb;
                     var datatr = await this.withdrawsService.create(datawithdraw);
-                    await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
+                   
                     var timestamps_end = await this.utilsService.getDateTimeString();
                     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
 
