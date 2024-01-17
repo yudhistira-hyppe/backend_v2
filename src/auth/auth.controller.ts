@@ -2191,16 +2191,13 @@ export class AuthController {
       }
 
       var activityevent_process = null;
-      var flowIsDone_process = null;
       if(user_userbasics.guestMode == true)
       {
         activityevent_process = 'ENROL_GUEST';
-        flowIsDone_process = true;
       }
       else
       {
         activityevent_process = 'LOGIN';
-        flowIsDone_process = false;
       }
       
       //Ceck User ActivityEvent Parent
@@ -2208,7 +2205,7 @@ export class AuthController {
         user_email,
         user_deviceId,
         activityevent_process,
-        flowIsDone_process,
+        false,
       );
 
       if (Object.keys(user_activityevents).length > 0) {
@@ -7298,14 +7295,13 @@ export class AuthController {
       //CREATE USERBASIC
       try {
         ID_user = new mongoose.Types.ObjectId();
-        const generateFullname = await this.utilsService.generateGuestUsername();
-        const generateUsername = GuestRequest_.email.toLocaleLowerCase().replace("@hyppeguest.com", "");
+        const generateUsername = await this.utilsService.generateGuestUsername();
         let CreateuserbasicnewDto_ = new CreateuserbasicnewDto();
         CreateuserbasicnewDto_._id = ID_user;
         CreateuserbasicnewDto_.profileID = (await this.utilsService.generateId()).toLowerCase();
         CreateuserbasicnewDto_.email = GuestRequest_.email.toLocaleLowerCase();
         CreateuserbasicnewDto_.regSrc = GuestRequest_.regSrc;
-        CreateuserbasicnewDto_.fullName = generateFullname;
+        CreateuserbasicnewDto_.fullName = generateUsername;
         CreateuserbasicnewDto_.username = generateUsername;
         CreateuserbasicnewDto_.isExpiryPass = false;
         CreateuserbasicnewDto_.isEmailVerified = false;
@@ -7389,11 +7385,10 @@ export class AuthController {
               $ref: 'userdevices',
               $id: ID_device,
               $db: 'hyppe_trans_db',
-            }
+            },
           ]
         }
         CreateuserbasicnewDto_.creator = false;
-        CreateuserbasicnewDto_.emailLogin = GuestRequest_.email.toLocaleLowerCase();
 
         await this.basic2SS.create(CreateuserbasicnewDto_);
       } catch (error) {
