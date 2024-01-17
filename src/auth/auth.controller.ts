@@ -2190,11 +2190,21 @@ export class AuthController {
         statuscreator = false;
       }
 
+      var activityevent_process = null;
+      if(user_userbasics.guestMode == true)
+      {
+        activityevent_process = 'ENROL_GUEST';
+      }
+      else
+      {
+        activityevent_process = 'LOGIN';
+      }
+      
       //Ceck User ActivityEvent Parent
       const user_activityevents = await this.activityeventsService.findParent(
         user_email,
         user_deviceId,
-        'LOGIN',
+        activityevent_process,
         false,
       );
 
