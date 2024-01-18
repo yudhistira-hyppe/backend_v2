@@ -17868,6 +17868,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource":1
 
                         }
                       },

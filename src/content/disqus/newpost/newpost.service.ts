@@ -18,41 +18,41 @@ export class NewpostService {
     async pict(media: string): Promise<any> {
         var data = await this.seaweedfsService.read(media.replace('/localrepo', ''));
         return data;
-      }
+    }
     async findOnepostID2(postID: string): Promise<Object> {
         var datacontent = null;
         var CreatePostsDto_ = await this.PostsModel.findOne({ postID: postID }).exec();
         if (await this.utilsService.ceckData(CreatePostsDto_)) {
-        //   if (CreatePostsDto_.postType == 'vid' || CreatePostsDto_.postType == 'video') {
-        //     datacontent = 'mediavideos';
-        //   } else if (CreatePostsDto_.postType == 'pict') {
-        //     datacontent = 'mediapicts';
-        //   } else if (CreatePostsDto_.postType == 'diary') {
-        //     datacontent = 'mediadiaries';
-        //   } else if (CreatePostsDto_.postType == 'story') {
-        //     datacontent = 'mediastories';
-        //   }
-    
-          const query = await this.PostsModel.aggregate([
-            {
-              $match: {
-                postID: postID
-              }
-            },
-            // {
-            //   $lookup: {
-            //     from: datacontent,
-            //     localField: "postID",
-            //     foreignField: "postID",
-            //     as: "datacontent"
+            //   if (CreatePostsDto_.postType == 'vid' || CreatePostsDto_.postType == 'video') {
+            //     datacontent = 'mediavideos';
+            //   } else if (CreatePostsDto_.postType == 'pict') {
+            //     datacontent = 'mediapicts';
+            //   } else if (CreatePostsDto_.postType == 'diary') {
+            //     datacontent = 'mediadiaries';
+            //   } else if (CreatePostsDto_.postType == 'story') {
+            //     datacontent = 'mediastories';
             //   }
-            // },
-          ]);
-          return query;
+
+            const query = await this.PostsModel.aggregate([
+                {
+                    $match: {
+                        postID: postID
+                    }
+                },
+                // {
+                //   $lookup: {
+                //     from: datacontent,
+                //     localField: "postID",
+                //     foreignField: "postID",
+                //     as: "datacontent"
+                //   }
+                // },
+            ]);
+            return query;
         } else {
-          return null;
+            return null;
         }
-      }
+    }
     async findByPostId(postID: string): Promise<Newpost> {
         return this.PostsModel.findOne({ postID: postID }).exec();
     }
@@ -325,18 +325,18 @@ export class NewpostService {
     async updatePostviewer(postid: string, email: string) {
         return await this.PostsModel.updateOne({ postID: postid }, { $push: { viewer: email } }).exec();
     }
-    
+
     async updateView(email: string, email_target: string, postID: string) {
-        var getdata = await this.PostsModel.findOne({ postID:postID }).exec();
+        var getdata = await this.PostsModel.findOne({ postID: postID }).exec();
         var setinput = {};
         setinput['$inc'] = {
-            views:1
+            views: 1
         };
         var setCEViewer = getdata.userView;
         setCEViewer.push(email_target);
         setinput["$set"] = {
-            "userView":setCEViewer
-        } 
+            "userView": setCEViewer
+        }
 
         this.PostsModel.updateOne(
             {
@@ -354,18 +354,18 @@ export class NewpostService {
         );
     }
 
-    async updateLike(email: string, email_target:string, postID: string) {
-        var getdata = await this.PostsModel.findOne({ postID:postID }).exec();
+    async updateLike(email: string, email_target: string, postID: string) {
+        var getdata = await this.PostsModel.findOne({ postID: postID }).exec();
         var setinput = {};
         setinput['$inc'] = {
-            likes:1
+            likes: 1
         };
         var setCELike = getdata.userLike;
         setCELike.push(email_target);
         setinput["$set"] = {
-            "userLike":setCELike
+            "userLike": setCELike
         }
-        
+
         this.PostsModel.updateOne(
             {
                 email: email,
@@ -399,18 +399,18 @@ export class NewpostService {
         );
     }
 
-    async updateUnLike(email: string, email_target:string, postID: string) {
-        var getdata = await this.PostsModel.findOne({ postID:postID }).exec();
+    async updateUnLike(email: string, email_target: string, postID: string) {
+        var getdata = await this.PostsModel.findOne({ postID: postID }).exec();
         var setinput = {};
         setinput['$inc'] = {
-            likes:-1
+            likes: -1
         };
         var setCELike = getdata.userLike;
         var filterdata = setCELike.filter(emaildata => emaildata != email_target);
         setinput["$set"] = {
-            "userLike":filterdata
-        } 
-        
+            "userLike": filterdata
+        }
+
         this.PostsModel.updateOne(
             {
                 email: email,
@@ -428,25 +428,25 @@ export class NewpostService {
     }
 
     async findOnepostID3(post: Newpost): Promise<Object> {
-      
-    
+
+
         const query = await this.PostsModel.aggregate([
-          {
-            $match: {
-              postID: post.postID
-            }
-          },
-          
+            {
+                $match: {
+                    postID: post.postID
+                }
+            },
+
         ]);
         return query;
-      }
+    }
 
-      async getRecentStory3(email: string, page: number, limit: number) {
+    async getRecentStory3(email: string, page: number, limit: number) {
         var query = await this.PostsModel.aggregate([
-    
+
             {
                 "$set": {
-                    "settimeStart": 
+                    "settimeStart":
                     {
                         "$dateToString": {
                             "format": "%Y-%m-%d %H:%M:%S",
@@ -455,13 +455,13 @@ export class NewpostService {
                             }
                         }
                     },
-                    
+
                 },
-                
+
             },
             {
                 "$set": {
-                    "settimeEnd": 
+                    "settimeEnd":
                     {
                         "$dateToString": {
                             "format": "%Y-%m-%d %H:%M:%S",
@@ -473,11 +473,11 @@ export class NewpostService {
                 }
             },
             {
-                "$match": 
+                "$match":
                 {
                     $and: [
                         {
-                            "$expr": 
+                            "$expr":
                             {
                                 "$eq": ["$postType", "story"]
                             }
@@ -498,15 +498,15 @@ export class NewpostService {
                                 $ne: email
                             }
                         },
-                                        {
-                                                "$expr": 
-                                                {
-                                                        "$gte": ["$createdAt", '$settimeStart']
-                                                },
-                                                
-                                        },
                         {
-                            "$expr": 
+                            "$expr":
+                            {
+                                "$gte": ["$createdAt", '$settimeStart']
+                            },
+
+                        },
+                        {
+                            "$expr":
                             {
                                 "$lte": ["$createdAt", '$settimeEnd']
                             }
@@ -518,7 +518,7 @@ export class NewpostService {
                                         "$elemMatch": {
                                             "email": email,
                                             "active": false,
-                                            
+
                                         }
                                     }
                                 },
@@ -529,13 +529,13 @@ export class NewpostService {
                                         }
                                     }
                                 },
-                                
+
                             ]
                         },
-                        
+
                     ]
                 },
-                
+
             },
             {
                 $sort: {
@@ -543,7 +543,7 @@ export class NewpostService {
                 }
             },
             {
-                $skip: (page*limit)
+                $skip: (page * limit)
             },
             {
                 $limit: limit
@@ -554,9 +554,9 @@ export class NewpostService {
                     localField: 'email',
                     foreignField: 'email',
                     as: 'userBasic',
-                    
+
                 },
-                
+
             },
             {
                 $lookup: {
@@ -564,51 +564,51 @@ export class NewpostService {
                     localField: 'musicId',
                     foreignField: '_id',
                     as: 'music',
-                    
+
                 },
-                
+
             },
-                {
-                     $set:{
-                                "urluserBadges": 
-                                {
-                                    "$filter": 
-                                    {
-                                        input: {$arrayElemAt:["$userBasic.userBadge",0]},
-                                        as: "listuserbadge",
-                                        cond: 
+            {
+                $set: {
+                    "urluserBadges":
+                    {
+                        "$filter":
+                        {
+                            input: { $arrayElemAt: ["$userBasic.userBadge", 0] },
+                            as: "listuserbadge",
+                            cond:
+                            {
+                                "$and":
+                                    [
                                         {
-                                            "$and": 
-                                            [
-                                                {
-                                                    "$eq": 
-                                                    [
-                                                        "$$listuserbadge.isActive",
-                                                        true
-                                                    ]
-                                                },
-                                                {
-                                                    "$lte": 
-                                                    [
-                                                        {
-                                                            "$dateToString": {
-                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                "date": {
-                                                                    $add: [new Date(), 25200000]
-                                                                }
-                                                            }
-                                                        },
-                                                        "$$listuserbadge.endDatetime",
-                                                        
-                                                    ]
-                                                }
-                                            ]
+                                            "$eq":
+                                                [
+                                                    "$$listuserbadge.isActive",
+                                                    true
+                                                ]
                                         },
-                                        
-                                    }
-                                }			 
-                     }
-                },
+                                        {
+                                            "$lte":
+                                                [
+                                                    {
+                                                        "$dateToString": {
+                                                            "format": "%Y-%m-%d %H:%M:%S",
+                                                            "date": {
+                                                                $add: [new Date(), 25200000]
+                                                            }
+                                                        }
+                                                    },
+                                                    "$$listuserbadge.endDatetime",
+
+                                                ]
+                                        }
+                                    ]
+                            },
+
+                        }
+                    }
+                }
+            },
             {
                 $project: {
                     "storyDate": 1,
@@ -619,38 +619,38 @@ export class NewpostService {
                     "musicTitle": {
                         "$arrayElemAt": ['$music.musicTitle', 0]
                     },
-                    "artistName": 
+                    "artistName":
                     {
                         "$arrayElemAt": ["$music.artistName", 0]
                     },
-                    "albumName": 
+                    "albumName":
                     {
                         "$arrayElemAt": ["$music.albumName", 0]
                     },
-                    "apsaraMusic": 
+                    "apsaraMusic":
                     {
                         "$arrayElemAt": ["$music.apsaraMusic", 0]
                     },
-                    "apsaraThumnail": 
+                    "apsaraThumnail":
                     {
                         "$arrayElemAt": ["$music.apsaraThumnail", 0]
                     },
-                    "genre": 
+                    "genre":
                     {
                         "$arrayElemAt": ["$music.genre.name", 0]
                     },
-                    "theme": 
+                    "theme":
                     {
                         "$arrayElemAt": ["$music.theme.name", 0]
                     },
-                    "mood": 
+                    "mood":
                     {
                         "$arrayElemAt": ["$music.mood.name", 0]
                     },
                     "testDate": 1,
-                    "mediaType": 
+                    "mediaType":
                     {
-                        "$arrayElemAt": ["$media.mediaType", 0]
+                        "$arrayElemAt": ["$mediaSource.mediaType", 0]
                     },
                     "stiker": 1,
                     "email": 1,
@@ -687,13 +687,13 @@ export class NewpostService {
                     "apsaraThumbId": {
                         "$arrayElemAt": ["$mediaSource.apsaraThumbId", 0]
                     },
-                    "insight": 
+                    "insight":
                     {
                         "likes": "$likes",
                         "views": "$views",
                         "shares": "$shares",
                         "comments": "$comments",
-                        
+
                     }
                     ,
                     "fullName": {
@@ -712,141 +712,141 @@ export class NewpostService {
                             }]
                         }
                     },
-                    "urluserBadge": 
+                    "urluserBadge":
                     {
-                        "$ifNull": 
-                        [
-                           "$urluserBadges",
-                            null
-                        ]
+                        "$ifNull":
+                            [
+                                "$urluserBadges",
+                                null
+                            ]
                     },
                     "statusCB": 1,
-                    "mediaEndpoint": 
+                    "mediaEndpoint":
                     {
                         "$arrayElemAt": ["$userBasic.mediaEndpoint", 0]
                     },
                     "privacy": {
-                        "isCelebrity": 
+                        "isCelebrity":
                         {
                             "$arrayElemAt": ["$userBasic.isCelebrity", 0]
                         },
-                        "isIdVerified": 
+                        "isIdVerified":
                         {
                             "$arrayElemAt": ["$userBasic.isIdVerified", 0]
                         },
-                        "isPrivate": 
+                        "isPrivate":
                         {
                             "$arrayElemAt": ["$userBasic.isPrivate", 0]
                         }
                     },
-                    
+
                 }
             },
             {
                 "$group":
                 {
-                  _id: {
-                    email: "$email",
-                    username: "$username"
-                  },
-                  story:
-                  {
-                    "$push":
+                    _id: {
+                        email: "$email",
+                        username: "$username"
+                    },
+                    story:
                     {
-                      "mediaEndpoint": "$mediaEndpoint",
-                      "postID": "$postID",
-                      "stiker": "$stiker",
-                      "musicTitle": "$musicTitle",
-                      "artistName": "$artistName",
-                      "albumName": "$albumName",
-                      "apsaraMusic": "$apsaraMusic",
-                      "apsaraThumnail": "$apsaraThumnail",
-                      "genre": "$genre",
-                      "theme": "$theme",
-                      "mood": "$mood",
-                      "mediaType": "$mediaType",
-                      "email": "$email",
-                      "postType": "$postType",
-                      "description": "$description",
-                      "active": "$active",
-                      "createdAt": "$createdAt",
-                      "updatedAt": "$updatedAt",
-                      "expiration": "$expiration",
-                      "visibility": "$visibility",
-                      "location": "$location",
-                      "allowComments": "$allowComments",
-                      "isSafe": "$isSafe",
-                      "isOwned": "$isOwned",
-                      "metadata": "$metadata",
-                      "contentModeration": "$contentModeration",
-                      "reportedStatus": "$reportedStatus",
-                      "reportedUserCount": "$reportedUserCount",
-                      "contentModerationResponse": "$contentModerationResponse",
-                      "reportedUser": "$reportedUser",
-                      "apsara": "$apsara",
-                      "apsaraId": "$apsaraId",
-                      "apsaraThumbId": "$apsaraThumbId",
-                      "insight": "$insight",
-                      "fullName": "$fullName",
-                      "username": "$username",
-                                    "music": {
-                                        "_id": "$musicId",
-                                        "musicTitle": "$musicTitle",
-                                        "artistName": "$artistName",
-                                        "albumName": "$albumName",
-                                        "apsaraMusic": "$apsaraMusic",
-                                        "apsaraThumnail": "$apsaraThumnail",
-        
+                        "$push":
+                        {
+                            "mediaEndpoint": "$mediaEndpoint",
+                            "postID": "$postID",
+                            "stiker": "$stiker",
+                            "musicTitle": "$musicTitle",
+                            "artistName": "$artistName",
+                            "albumName": "$albumName",
+                            "apsaraMusic": "$apsaraMusic",
+                            "apsaraThumnail": "$apsaraThumnail",
+                            "genre": "$genre",
+                            "theme": "$theme",
+                            "mood": "$mood",
+                            "mediaType": "$mediaType",
+                            "email": "$email",
+                            "postType": "$postType",
+                            "description": "$description",
+                            "active": "$active",
+                            "createdAt": "$createdAt",
+                            "updatedAt": "$updatedAt",
+                            "expiration": "$expiration",
+                            "visibility": "$visibility",
+                            "location": "$location",
+                            "allowComments": "$allowComments",
+                            "isSafe": "$isSafe",
+                            "isOwned": "$isOwned",
+                            "metadata": "$metadata",
+                            "contentModeration": "$contentModeration",
+                            "reportedStatus": "$reportedStatus",
+                            "reportedUserCount": "$reportedUserCount",
+                            "contentModerationResponse": "$contentModerationResponse",
+                            "reportedUser": "$reportedUser",
+                            "apsara": "$apsara",
+                            "apsaraId": "$apsaraId",
+                            "apsaraThumbId": "$apsaraThumbId",
+                            "insight": "$insight",
+                            "fullName": "$fullName",
+                            "username": "$username",
+                            "music": {
+                                "_id": "$musicId",
+                                "musicTitle": "$musicTitle",
+                                "artistName": "$artistName",
+                                "albumName": "$albumName",
+                                "apsaraMusic": "$apsaraMusic",
+                                "apsaraThumnail": "$apsaraThumnail",
+
+                            },
+                            "avatar":
+                            {
+                                $cond: {
+                                    if: {
+                                        $eq: ["$avatar", {}]
                                     },
-                      "avatar":
-                      {
-                        $cond: {
-                          if: {
-                            $eq: ["$avatar", {}]
-                          },
-                          then: null,
-                          else: "$avatar"
+                                    then: null,
+                                    else: "$avatar"
+                                }
+                            },
+                            "urluserBadge": "$urluserBadge",
+                            "statusCB": "$statusCB",
+                            "privacy": "$privacy",
+                            "isViewed":
+                            {
+                                $cond: {
+                                    if: {
+                                        $eq: ["$isView", []]
+                                    },
+                                    then: false,
+                                    else: true
+                                }
+                            },
+
                         }
-                      },
-                      "urluserBadge": "$urluserBadge",
-                      "statusCB": "$statusCB",
-                      "privacy": "$privacy",
-                      "isViewed":
-                      {
-                        $cond: {
-                          if: {
-                            $eq: ["$isView", []]
-                          },
-                          then: false,
-                          else: true
-                        }
-                      },
-        
                     }
-                  }
                 }
-              },
-              {
+            },
+            {
                 "$sort":
                 {
-                  'story.createdAt': - 1
+                    'story.createdAt': - 1
                 }
-              },
-              {
+            },
+            {
                 "$project":
                 {
-                  _id: 0,
-                  email: "$_id.email",
-                  username: "$_id.username",
-                  story: 1
+                    _id: 0,
+                    email: "$_id.email",
+                    username: "$_id.username",
+                    story: 1
                 }
-              },
+            },
         ]);
-    
-    
+
+
         return query;
-      }
+    }
 
 
-      
+
 }
