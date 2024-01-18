@@ -2267,8 +2267,9 @@ export class UtilsService {
         if (get_userbasic.gender != undefined) { ProfileDTO_.gender = get_userbasic.gender; }
         if (get_userbasic.idProofNumber != undefined) { ProfileDTO_.idProofNumber = get_userbasic.idProofNumber; }
 
-        if (get_cities != null) { ProfileDTO_.city = get_cities.cityName; }
-        if (get_states != null) { ProfileDTO_.area = get_states.stateName; }
+        if (get_cities != null) { ProfileDTO_.city = get_cities; }
+        if (get_states != null) { ProfileDTO_.area = get_states; }
+        if (get_countries != null) { ProfileDTO_.country = get_countries; }
         ProfileDTO_.mobileNumber = get_userbasic.mobileNumber;
         if (get_languages != null) {
           var eula = await this.eulasService.findOnelangiso(get_languages.langIso);
@@ -2317,13 +2318,13 @@ export class UtilsService {
       if (datafor == 'LOGIN' || datafor == 'FULL' || datafor == 'PROFILE') {
         if (get_states != null) { ProfileDTO_.area = get_states; }
         if (get_countries != null) { ProfileDTO_.country = get_countries; }
+        if (get_cities != null) { ProfileDTO_.city = get_cities; }
         if (await this.ceckData(get_userbasic)) {
           if (get_userbasic.gender != undefined) { ProfileDTO_.gender = get_userbasic.gender; }
         }
         if (await this.ceckData(get_userbasic)) {
           if (get_userbasic.dob != undefined) { ProfileDTO_.dob = get_userbasic.dob; }
         }
-        if (get_cities != null) { ProfileDTO_.city = get_cities.cityName; }
         if (await this.ceckData(get_userbasic)) {
           ProfileDTO_.mobileNumber = get_userbasic.mobileNumber;
         }
