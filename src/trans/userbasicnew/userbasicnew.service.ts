@@ -6988,7 +6988,7 @@ export class UserbasicnewService {
 
         if (getdata != null) {
             try {
-                listpertemanan = (type == "FOLLOWING" ? (getdata.guestMode == true ? getdata.tempfollowing : getdata.following) : getdata.follower);
+                listpertemanan = (type == "FOLLOWING" ? getdata.following : getdata.follower);
             }
             catch (e) {
                 listpertemanan = [];
@@ -6997,12 +6997,7 @@ export class UserbasicnewService {
 
             var update = new CreateuserbasicnewDto();
             if (type == "FOLLOWING") {
-                if (getdata.guestMode == false) {
-                    update.following = listpertemanan;
-                }
-                else {
-                    update.tempfollowing = listpertemanan;
-                }
+                update.following = listpertemanan;
             }
             else {
                 update.follower = listpertemanan;
@@ -7022,7 +7017,7 @@ export class UserbasicnewService {
 
         if (getdata != null) {
             try {
-                listpertemanan = (type == "FOLLOWING" ? (getdata.guestMode == true ? getdata.tempfollowing : getdata.following) : getdata.follower);
+                listpertemanan = (type == "FOLLOWING" ? getdata.following : getdata.follower);
             }
             catch (e) {
                 listpertemanan = [];
@@ -7030,13 +7025,9 @@ export class UserbasicnewService {
             var filterpertemanan = listpertemanan.filter(emaildata => emaildata != email_target);
 
             var update = new CreateuserbasicnewDto();
-            if (type == "FOLLOWING") {
-                if (getdata.guestMode == false) {
-                    update.following = filterpertemanan;
-                }
-                else {
-                    update.tempfollowing = filterpertemanan;
-                }
+            if (type == "FOLLOWING") 
+            {
+                update.following = filterpertemanan;
             }
             else {
                 update.follower = filterpertemanan;

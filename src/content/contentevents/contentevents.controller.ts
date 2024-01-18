@@ -3413,12 +3413,6 @@ export class ContenteventsController {
 
   async checkFriendbasedString2(email1: Userbasicnew, email2: Userbasicnew, jenisoperasi: string) {
     console.log('proses data friend');
-    // var databasic1 = await this.basic2SS.findOne(email1._id.toString());
-    // console.log(databasic1);
-    // var databasic2 = await this.basic2SS.findOne(email2._id.toString());
-    // console.log(databasic2);
-    // var checklist1 = databasic1.following.find(element => element.email === email2.email);
-    // var checklist2 = databasic2.following.find(element => element.email === email1.email);
 
     var data = await this.contenteventsService.checkFriendListdata(email1.email.toString(), email2.email.toString());
     var checkexist = await this.utilsService.ceckData(data);
@@ -3431,8 +3425,6 @@ export class ContenteventsController {
       try
       {
         if (jenisoperasi == 'create') {
-          // setTimeout(() => this.basic2SS.addFriendList(email1, email2), 2000);
-          // setTimeout(() => this.basic2SS.addFriendList(email2, email1), 4000);
           console.log('proses1');
           await this.basic2SS.addFriendList(email1, email2);
           console.log('proses2');
