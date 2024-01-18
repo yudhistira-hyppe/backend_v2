@@ -14400,7 +14400,7 @@ export class AuthService {
     );
 
     //Ceck User Userbasics
-    const datauserbasicsService = await this.basic2SS.findOne(
+    const datauserbasicsService = await this.basic2SS.findBymail(
       user_email,
     );
 
