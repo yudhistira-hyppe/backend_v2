@@ -66,11 +66,11 @@ export class UserbasicnewController {
             let obj = getdata.find(objs => objs._id === tempdate);
             //console.log(obj);
             if (obj == undefined) {
-            obj =
-            {
-                _id: tempdate,
-                totaldata: 0
-            }
+                obj =
+                {
+                    _id: tempdate,
+                    totaldata: 0
+                }
             }
 
             array.push(obj);
@@ -101,7 +101,7 @@ export class UserbasicnewController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
-        
+
         var request_json = JSON.parse(JSON.stringify(request.body));
         var username = null;
         var skip = 0;
@@ -109,7 +109,7 @@ export class UserbasicnewController {
         var data = null;
 
         const messages = {
-        "info": ["The process successful"],
+            "info": ["The process successful"],
         };
 
         if (request_json["username"] !== undefined) {
@@ -260,10 +260,10 @@ export class UserbasicnewController {
 
         if (lengwilayah > 0) {
 
-        for (let i = 0; i < lengwilayah; i++) {
-            sumwilayah += wilayah[i].count;
+            for (let i = 0; i < lengwilayah; i++) {
+                sumwilayah += wilayah[i].count;
 
-        }
+            }
 
         } else {
             sumwilayah = 0;
@@ -277,16 +277,16 @@ export class UserbasicnewController {
                 let stateName = wilayah[i].stateName;
 
                 if (stateName == null) {
-                state = "Other";
+                    state = "Other";
                 } else {
-                state = stateName;
+                    state = stateName;
                 }
 
                 let persen = count * 100 / sumwilayah;
                 let objcounwilayah = {
-                stateName: state,
-                count: count,
-                persen: persen.toFixed(2)
+                    stateName: state,
+                    count: count,
+                    persen: persen.toFixed(2)
                 }
                 dataSumwilayah.push(objcounwilayah);
             }
@@ -303,5 +303,106 @@ export class UserbasicnewController {
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('getguestprofiles')
+    async profileguest(@Req() request: Request, @Headers() headers): Promise<any> {
+        var setdate = new Date();
+        var DateTime = new Date(setdate.getTime() - (setdate.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        var fullurl = headers.host + '/api/getguestprofiles';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var username = null;
+        var gender = null;
+        var startage = null;
+        var endage = null;
+        var jenis = null;
+        var data = null;
+        var page = null;
+        var lokasi = null;
+        var countrow = null;
+        var startdate = null;
+        var enddate = null;
+        var startlogin = null;
+        var endlogin = null;
+        var limit = null;
+        var datafilter = null;
+        var totalfilter = 0;
+        var descending = null;
+        var os = null;
+        var viewsgte = null;
+        var viewslte = null;
+        var likesgte = null;
+        var likeslte = null;
+        var sharesgte = null;
+        var shareslte = null;
+        const messages = {
+            "info": ["The process was successful"],
+        };
+
+        startage = request_json["startage"];
+        endage = request_json["endage"];
+        username = request_json["username"];
+        gender = request_json["gender"];
+        jenis = request_json["jenis"];
+        lokasi = request_json["lokasi"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        startlogin = request_json["startlogin"];
+        endlogin = request_json["endlogin"];
+        descending = request_json["descending"];
+        os = request_json["os"];
+        viewsgte = request_json["viewsgte"];
+        viewslte = request_json["viewslte"];
+        likesgte = request_json["likesgte"];
+        likeslte = request_json["likeslte"];
+        sharesgte = request_json["sharesgte"];
+        shareslte = request_json["shareslte"];
+        var allrow = 0;
+        var totalallrow = 0;
+        var totalrow = 0;
+        var totalpage = 0;
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            var date = new Date();
+            var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+            var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unable to proceed");
+        }
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            var date = new Date();
+            var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+            var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unable to proceed");
+        }
+
+        try {
+            data = await this.UserbasicnewService.filterguest(username, lokasi, startdate, enddate, startlogin, endlogin, page, limit, descending, os, viewsgte, viewslte, likesgte, likeslte, sharesgte, shareslte);
+            totalrow = data.length;
+        } catch (e) {
+            data = [];
+            totalrow = 0;
+        }
+
+        var date = new Date();
+        var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+        var timestamps_end = DateTime.substring(0, DateTime.lastIndexOf('.'));
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        return { response_code: 202, data, page, limit, totalrow, totalallrow, totalfilter, totalpage, messages };
+
+
     }
 }

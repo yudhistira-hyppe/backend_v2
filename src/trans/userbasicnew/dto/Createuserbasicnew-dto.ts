@@ -45,7 +45,7 @@ export class CreateuserbasicnewDto {
   };
   userInterests: any[];
   authUsers: {
-    "devices": any[]
+    "devices": any[],
   };
   cities: {
     $ref: String;

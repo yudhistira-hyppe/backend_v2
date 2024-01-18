@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards, Req, HttpCode, HttpStatus, Post, Body, Headers, BadRequestException, Param, Query, UseInterceptors, UploadedFile, Logger } from '@nestjs/common';
 import { NewPostService } from './new_post.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-import { CreatePostRequest, CreatePostResponse } from './dto/create-newPost.dto';
+import { CreatePostRequest, CreatePostResponse, GetcontenteventsDto } from './dto/create-newPost.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import mongoose from 'mongoose';
 import { MediastikerService } from '../mediastiker/mediastiker.service';
@@ -2087,5 +2087,444 @@ export class NewPostController {
 
     async scorepostrequest(iduser: string, idevent: string, namatabel: string, event: string, postID: string) {
         await this.contenteventsService.scorepostrequest(iduser, idevent, namatabel, event, postID);
+    }
+
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Post('post/viewlike/v2')
+    async getViewLike(
+        @Body() CreateGetcontenteventsDto_: GetcontenteventsDto,
+        @Headers() headers
+    ) {
+        console.log(headers);
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed token and email not match',
+            );
+        }
+
+        if (CreateGetcontenteventsDto_.postID == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed postID is required',
+            );
+        }
+
+        if (CreateGetcontenteventsDto_.eventType == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed eventType is required',
+            );
+        }
+
+        //Ceck POST ID
+        const datapostsService = await this.newPostService.findid(
+            CreateGetcontenteventsDto_.postID.toString(),
+        );
+        
+        if (await this.utilsService.ceckData(datapostsService)) {
+            CreateGetcontenteventsDto_.receiverParty = datapostsService.email;
+            CreateGetcontenteventsDto_.active = true;
+            CreateGetcontenteventsDto_.emailView = headers['x-auth-user'];
+            var data_response = await this.newPostService.getUserEvent(CreateGetcontenteventsDto_);
+            var response = {
+                "response_code": 202,
+                "data": data_response,
+                "messages": {
+                    "info": [
+                        "successfully"
+                    ]
+                },
+            }
+            return response;
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed postID not found',
+            );
+        }
+    }
+
+    @Post('posts/getuserposts/my/v2')
+    @UseInterceptors(FileInterceptor('postContent'))
+    @UseGuards(JwtAuthGuard)
+    async contentlandingpagemy(@Body() body, @Headers('x-auth-user') email: string): Promise<any> {
+        console.log('=============================================MY PAGE HIT=============================================')
+        console.log('============================================= BODY =============================================', JSON.stringify(body))
+
+        var pageNumber = null;
+        var pageRow = null;
+        var postType = null;
+        var data = null;
+        var datasearch = null;
+        var emailreceiver = null;
+        if (body.pageNumber !== undefined) {
+            pageNumber = body.pageNumber;
+        }
+
+        if (body.pageRow !== undefined) {
+            pageRow = body.pageRow;
+        }
+        if (body.postType !== undefined) {
+            postType = body.postType;
+        }
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var picts = [];
+        var lengpict = null;
+
+        try {
+
+            data = await this.newPostService.landingpageMigration(email, email, postType, parseInt(pageNumber), parseInt(pageRow));
+            lengpict = data.length;
+
+        } catch (e) {
+            console.log("ERROR", e);
+            data = null;
+            lengpict = 0;
+
+        }
+
+        console.log(data);
+
+        var tempapsaraMusicThumbId = [];
+        var tempapsaraId = [];
+        var tempapsaraThumbId = [];
+        var tempdatapict = [];
+
+        var tempdatapict = [];
+
+        var apsaraMusicThumbId = null;
+        var boosted = null;
+        var boostCount = null;
+        var version = null;
+        var uploadSource = null;
+        var apsaraId = null;
+        var apsaraThumbId = null;
+        var mediaType = null;
+        var postID = null;
+        var gettempresultpictapsara = null;
+        // console.log(lengpict);
+        if (lengpict > 0) {
+            var tempapsaraId_result = null;
+            var tempapsaraThumbId_result = null; 
+            var tempapsaraMusicThumbId_result = null;
+
+            var resultpictapsara = null;
+            version = data[0].version;
+            // console.log(tempdatapict);
+            if (postType == "pict") {
+                for (let i = 0; i < lengpict; i++) {
+                    uploadSource = data[i].uploadSource;
+                    try {
+                        apsaraId = data[i].apsaraId;
+                    } catch (e) {
+                        apsaraId = "";
+                    }
+                    try {
+                        apsaraThumbId = data[i].apsaraThumbId;
+                    } catch (e) {
+                        apsaraThumbId = "";
+                    }
+                    try {
+                        apsaraMusicThumbId = data[i].apsaraMusicThumnail;
+                    } catch (e) {
+                        apsaraMusicThumbId = "";
+                    }
+
+                    if (apsaraId != "") {
+                        tempapsaraId.push(data[i].apsaraId);
+                    }
+
+                    if (apsaraId != "") {
+                        tempapsaraThumbId.push(data[i].apsaraThumbId);
+                    }
+
+                    if (apsaraMusicThumbId != "") {
+                        tempapsaraMusicThumbId.push(data[i].apsaraMusicThumnail);
+                    }
+                }
+                console.log("");
+                tempapsaraId_result = await this.newPostContentService.getImageApsara(tempapsaraId);
+                tempapsaraThumbId_result = await this.newPostContentService.getImageApsara(tempapsaraThumbId);
+                tempapsaraMusicThumbId_result = await this.newPostContentService.getImageApsara(tempapsaraMusicThumbId);
+
+                let gettempresultpictapsara_tempapsaraId = tempapsaraId_result.ImageInfo;
+                let gettempresultpictapsara_tempapsaraThumbId = tempapsaraThumbId_result.ImageInfo;
+                let gettempresultpictapsara_tempapsaraMusicThumbId = tempapsaraMusicThumbId_result.ImageInfo;
+                // for (let i = 0; i < lengpict; i++) {
+
+                //     uploadSource = data[i].uploadSource;
+                //     try {
+                //         apsaraId = data[i].apsaraId;
+                //     } catch (e) {
+                //         apsaraId = "";
+                //     }
+                //     try {
+                //         apsaraThumbId = data[i].apsaraThumbId;
+                //     } catch (e) {
+                //         apsaraThumbId = "";
+                //     }
+
+                //     if (apsaraId !== undefined && apsaraThumbId !== undefined) {
+                //         tempdatapict.push(data[i].apsaraThumbId);
+                //         // tempdatapict.push(data[i].apsaraId);
+
+                //     }
+                //     else if (apsaraId !== undefined && apsaraThumbId === undefined) {
+                //         tempdatapict.push(data[i].apsaraId);
+
+                //     }
+                //     else if (apsaraId === undefined && apsaraThumbId !== undefined) {
+                //         tempdatapict.push(data[i].apsaraThumbId);
+
+                //     }
+                // }
+                // resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                // let gettempresultpictapsara = resultpictapsara.ImageInfo;
+                for (let i = 0; i < lengpict; i++) {
+                    emailreceiver = data[i].email;
+                    boosted = data[i].boosted;
+                    boostCount = data[i].boostCount;
+                    var checkpictketemu = false;
+                    uploadSource = data[i].uploadSource;
+                    var dataUpsaraThum = (data[i].apsaraThumbId != undefined);
+                    var dataUpsara = (data[i].apsaraId != undefined);
+
+                    if (data[i].isApsara) {
+                        for (var j = 0; j < gettempresultpictapsara_tempapsaraId.length; j++) {
+                            if (gettempresultpictapsara_tempapsaraId[j].ImageId == data[i].apsaraId) {
+                                data[i].mediaEndpoint = gettempresultpictapsara_tempapsaraId[j].URL;
+                                if (!dataUpsaraThum) {
+                                    data[i].mediaThumbEndpoint = gettempresultpictapsara_tempapsaraId[j].URL;
+                                }
+                            }
+                        }
+                        for (var j = 0; j < gettempresultpictapsara_tempapsaraThumbId.length; j++) {
+                            if (gettempresultpictapsara_tempapsaraThumbId[j].ImageId == data[i].apsaraThumbId) {
+                                data[i].mediaThumbEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
+                                if (!dataUpsara) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara_tempapsaraThumbId[j].URL;
+                                }
+                            }
+                        }
+                    }
+
+                    if (data[i].apsaraMusicThumnail) {
+                        for (var j = 0; j < gettempresultpictapsara_tempapsaraMusicThumbId.length; j++) {
+                            if (gettempresultpictapsara_tempapsaraMusicThumbId[j].ImageId == data[i].apsaraMusicThumnail) {
+                                data[i].mediaMusicThumbEndpoint = gettempresultpictapsara_tempapsaraMusicThumbId[j].URL;
+                            }
+                        }
+                    }
+                    // emailreceiver = data[i].email;
+                    // boosted = data[i].boosted;
+                    // boostCount = data[i].boostCount;
+                    // var checkpictketemu = false;
+                    // uploadSource = data[i].uploadSource;
+                    // var dataUpsaraThum = (data[i].apsaraThumbId != undefined);
+                    // var dataUpsara = (data[i].apsaraId != undefined);
+
+                    // if (data[i].isApsara) {
+                    //     for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+                    //         if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
+                    //             if (data[i].apsaraThumbId == data[i].apsaraId) {
+                    //                 data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+                    //             }
+                    //             if (!dataUpsara) {
+                    //                 data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+                    //             }
+                    //             // checkpictketemu = true;
+                    //             data[i].media =
+                    //             {
+                    //                 "ImageInfo": [gettempresultpictapsara[j]]
+                    //             }
+
+                    //             data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+
+
+                    //         }
+                    //         else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                    //             if (data[i].apsaraThumbId == data[i].apsaraId) {
+                    //                 data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                    //             }
+                    //             if (!dataUpsaraThum) {
+                    //                 data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                    //             }
+                    //             checkpictketemu = true;
+                    //             data[i].media =
+                    //             {
+                    //                 "ImageInfo": [gettempresultpictapsara[j]]
+                    //             }
+
+                    //             data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+
+                    //         }
+                    //     }
+                    // } else {
+                    //     data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
+                    // }
+
+
+
+
+                    if (boosted !== null || boosted.length > 0) {
+                        console.log("boosted: " + data[i].postID);
+                        if (data[i].postID != undefined) {
+                            this.newPostService.updateBoostViewer(data[i].postID, email);
+                        }
+                        //pd.boostJangkauan = this.countBoosted(obj, email);
+                        if (boosted.length > 0) {
+                            if (boosted[0] != undefined) {
+                                boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
+                                boosted = boosted;
+                                await this.newPostService.updateBoostCount(data[i].postID, boostCount + 1);
+                            } else {
+                                boostCount = 0;
+                                boosted = [];
+                            }
+                        } else {
+                            boostCount = 0;
+                            boosted = [];
+                        }
+                    } else {
+                        boostCount = 0;
+                        boosted = [];
+                    }
+                    //  this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
+
+                    picts.push(data[i]);
+                }
+
+            } else {
+                for (let i = 0; i < lengpict; i++) {
+                    //ini buat produksion
+                    // postType = data[i].postType;
+                    // if (postType === "diary") {
+                    //     data[i].saleAmount = 0;
+                    // }
+                    mediaType = data[i].mediaType;
+
+
+                    if (data[i].isApsara == true) {
+                        tempdatapict.push(data[i].apsaraId);
+                    } else {
+                        if (mediaType == "image" || mediaType == "images") {
+                            data[i].mediaEndpoint = "/pict/" + data[i].postID;
+                        } else {
+                            data[i].mediaEndpoint = "/stream/" + data[i].postID;
+
+                        }
+                    }
+                }
+
+                if (mediaType == "image" || mediaType == "images") {
+                    resultpictapsara = await this.newPostContentService.getImageApsara(tempdatapict);
+                    gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+                } else {
+                    resultpictapsara = await this.newPostContentService.getVideoApsara(tempdatapict);
+                    gettempresultpictapsara = resultpictapsara.VideoList;
+                }
+
+                for (let i = 0; i < lengpict; i++) {
+                    emailreceiver = data[i].email;
+                    boostCount = data[i].boostCount;
+                    boosted = data[i].boosted;
+                    var checkpictketemu = false;
+                    for (var j = 0; j < gettempresultpictapsara.length; j++) {
+                        if (mediaType == "image" || mediaType == "images") {
+                            if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
+                                if (data[i].apsaraThumbId == data[i].apsaraId) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+                                }
+                                if (!dataUpsara) {
+                                    data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+                                }
+                                // checkpictketemu = true;
+                                data[i].media =
+                                {
+                                    "ImageInfo": [gettempresultpictapsara[j]]
+                                }
+
+                                data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+
+
+                            }
+                            else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
+                                if (data[i].apsaraThumbId == data[i].apsaraId) {
+                                    data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                }
+                                if (!dataUpsaraThum) {
+                                    data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+                                }
+                                checkpictketemu = true;
+                                data[i].media =
+                                {
+                                    "ImageInfo": [gettempresultpictapsara[j]]
+                                }
+
+                                data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
+
+                            }
+                        } else {
+                            if (gettempresultpictapsara[j].VideoId == data[i].apsaraId) {
+                                checkpictketemu = true;
+                                data[i].media =
+                                {
+                                    "VideoList": [gettempresultpictapsara[j]]
+                                }
+
+                                data[i].mediaThumbEndpoint = gettempresultpictapsara[j].CoverURL;
+                            }
+                        }
+                    }
+
+                    if (checkpictketemu == false) {
+                        data[i].apsaraId = "";
+                        data[i].isApsara = false;
+                        data[i].media =
+                        {
+                            "VideoList": []
+                        };
+                    }
+                    if (boosted !== null || boosted.length > 0) {
+                        console.log("boosted: " + data[i].postID);
+                        if (data[i].postID != undefined) {
+                            this.newPostService.updateBoostViewer(data[i].postID, email);
+                        }
+                        //pd.boostJangkauan = this.countBoosted(obj, email);
+                        if (boosted.length > 0) {
+                            if (boosted[0] != undefined) {
+                                boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
+                                boosted = boosted;
+
+                                await this.newPostService.updateBoostCount(data[i].postID, boostCount + 1);
+                            } else {
+                                boostCount = 0;
+                                boosted = [];
+                            }
+                        } else {
+                            boostCount = 0;
+                            boosted = [];
+                        }
+                    } else {
+                        boostCount = 0;
+                        boosted = [];
+                    }
+                    // this.PostBoostService.markViewedNew(data[i].postID, email, emailreceiver);
+
+
+                    picts.push(data[i]);
+                }
+            }
+        } else {
+            picts = [];
+            version = "";
+        }
+        return { response_code: 202, data: picts, version: version.toString(), version_ios: (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString(), messages };
     }
 }

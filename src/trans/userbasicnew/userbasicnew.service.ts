@@ -792,7 +792,7 @@ export class UserbasicnewService {
                                         },
                                         friend:
                                         {
-                                            "$size":"$friend"
+                                            "$size": "$friend"
                                         }
                                     },
                                     langIso: "$languagesLangIso",
@@ -6786,195 +6786,195 @@ export class UserbasicnewService {
 
     async userNew(startdate: string, enddate: string) {
         try {
-          var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-    
-          var dateend = currentdate.toISOString();
-    
-          var dt = dateend.substring(0, 10);
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+
+            var dt = dateend.substring(0, 10);
         } catch (e) {
-          dt = "";
+            dt = "";
         }
         var query = await this.UserbasicnewModel.aggregate([
-          {
-            $match: {
-    
-              createdAt: {
-                $gte: startdate,
-                $lte: dt
-    
-              }
-            }
-          },
-          {
-            $group: {
-    
-              _id: {
-                tgl: {
-                  $substrCP: ['$createdAt', 0, 10]
-                },
-    
-              },
-              count: {
-                $sum: 1
-              },
-    
+            {
+                $match: {
+
+                    createdAt: {
+                        $gte: startdate,
+                        $lte: dt
+
+                    }
+                }
             },
-    
-          },
-          {
-            $project: {
-              _id: 0,
-              date: '$_id.tgl',
-              count: 1
+            {
+                $group: {
+
+                    _id: {
+                        tgl: {
+                            $substrCP: ['$createdAt', 0, 10]
+                        },
+
+                    },
+                    count: {
+                        $sum: 1
+                    },
+
+                },
+
+            },
+            {
+                $project: {
+                    _id: 0,
+                    date: '$_id.tgl',
+                    count: 1
+                }
+            },
+
+            {
+                $sort: { date: 1 }
             }
-          },
-    
-          {
-            $sort: { date: 1 }
-          }
-    
+
         ]);
         return query;
-    
+
     }
 
     async demografis(startdate: string, enddate: string) {
         try {
-          var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-    
-          var dateend = currentdate.toISOString();
-    
-          var dt = dateend.substring(0, 10);
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+
+            var dt = dateend.substring(0, 10);
         } catch (e) {
-          dt = "";
+            dt = "";
         }
         var query = await this.UserbasicnewModel.aggregate([
-    
-          {
-            $match: {
-    
-              createdAt: {
-                $gte: startdate,
-                $lte: dt
-    
-              }
+
+            {
+                $match: {
+
+                    createdAt: {
+                        $gte: startdate,
+                        $lte: dt
+
+                    }
+                }
+            },
+            {
+                $project: {
+                    createdAt: 1,
+                    email: 1,
+                    states: 1,
+                    gender: 1,
+                    statesName:
+                    {
+                        "$ifNull":
+                            [
+                                "$statesName",
+                                "OTHER"
+                            ]
+                    }
+                }
+            },
+            {
+                $facet: {
+                    "gender": [
+                        {
+                            $group: {
+
+                                _id: '$gender',
+                                count: {
+                                    $sum: 1
+                                },
+
+                            },
+
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                gender: '$_id',
+                                count: 1,
+
+                            }
+                        },
+
+                    ],
+                    "wilayah": [
+                        {
+                            $group: {
+
+                                _id: '$statesName',
+                                count: {
+                                    $sum: 1
+                                },
+
+                            },
+
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                stateName: '$_id',
+                                count: 1,
+
+                            }
+                        },
+
+                    ]
+                }
             }
-          },
-          {
-            $project: {
-              createdAt: 1,
-              email: 1,
-              states: 1,
-              gender: 1,
-              statesName:
-              {
-                "$ifNull":
-                [
-                    "$statesName",
-                    "OTHER"
-                ]
-              }
-            }
-          },
-          {
-            $facet: {
-              "gender": [
-                {
-                  $group: {
-    
-                    _id: '$gender',
-                    count: {
-                      $sum: 1
-                    },
-    
-                  },
-    
-                },
-                {
-                  $project: {
-                    _id: 0,
-                    gender: '$_id',
-                    count: 1,
-    
-                  }
-                },
-    
-              ],
-              "wilayah": [
-                {
-                  $group: {
-    
-                    _id: '$statesName',
-                    count: {
-                      $sum: 1
-                    },
-    
-                  },
-    
-                },
-                {
-                  $project: {
-                    _id: 0,
-                    stateName: '$_id',
-                    count: 1,
-    
-                  }
-                },
-    
-              ]
-            }
-          }
         ]);
         return query;
     }
 
     async findInbyid(userid: any[]) {
         var result = await this.UserbasicnewModel.aggregate([
-          {
-            "$match":
             {
-              "_id":
-              {
-                "$in": userid
-              }
-            }
-          },
-          {
-            "$project":
+                "$match":
+                {
+                    "_id":
+                    {
+                        "$in": userid
+                    }
+                }
+            },
             {
-              _id: 1,
-              email: 1,
-              username:1
+                "$project":
+                {
+                    _id: 1,
+                    email: 1,
+                    username: 1
+                }
             }
-          }
         ]);
-    
+
         return result;
     }
 
     async getcount() {
         var query = await this.UserbasicnewModel.aggregate([
-          {
-            $group: {
-              _id: null,
-              totalpost: {
-                $sum: 1
-              }
+            {
+                $group: {
+                    _id: null,
+                    totalpost: {
+                        $sum: 1
+                    }
+                }
             }
-          }
         ]);
         return query;
     }
 
     async getuser(page: number, limit: number) {
         var pipeline = [];
-    
+
         pipeline.push(
-          { $skip: page * limit },
-          { $limit: limit },
+            { $skip: page * limit },
+            { $limit: limit },
         );
         var query = await this.UserbasicnewModel.aggregate(pipeline);
-    
+
         return query;
     }
 
@@ -6982,37 +6982,24 @@ export class UserbasicnewService {
         TAMBAHIN GET USER TARGET DATA!!
     */
 
-    async updatefollowSystem(email_target:string, email_source:string, type:string)
-    {
-        var getdata = await this.UserbasicnewModel.findOne({ email:email_source });
+    async updatefollowSystem(email_target: string, email_source: string, type: string) {
+        var getdata = await this.UserbasicnewModel.findOne({ email: email_source });
         var listpertemanan = null;
 
-        if(getdata != null)
-        {
-            try
-            {
-                listpertemanan = (type == "FOLLOWING" ? (getdata.guestMode == true ? getdata.tempfollowing : getdata.following) : getdata.follower);
+        if (getdata != null) {
+            try {
+                listpertemanan = (type == "FOLLOWING" ? getdata.following : getdata.follower);
             }
-            catch(e)
-            {
+            catch (e) {
                 listpertemanan = [];
             }
             listpertemanan.push(email_target);
 
             var update = new CreateuserbasicnewDto();
-            if(type == "FOLLOWING")
-            {
-                if(getdata.guestMode == false)
-                {
-                    update.following = listpertemanan;
-                }
-                else
-                {
-                    update.tempfollowing = listpertemanan; 
-                }
+            if (type == "FOLLOWING") {
+                update.following = listpertemanan;
             }
-            else
-            {
+            else {
                 update.follower = listpertemanan;
             }
             var result = await this.UserbasicnewModel.findByIdAndUpdate(getdata._id.toString(), update, { new: true });
@@ -7024,37 +7011,25 @@ export class UserbasicnewService {
         return true;
     }
 
-    async updateunfollowSystem(email_target:string, email_source:string, type:string)
-    {
-        var getdata = await this.UserbasicnewModel.findOne({ email:email_source });
+    async updateunfollowSystem(email_target: string, email_source: string, type: string) {
+        var getdata = await this.UserbasicnewModel.findOne({ email: email_source });
         var listpertemanan = null;
 
-        if(getdata != null)
-        {
-            try
-            {
-                listpertemanan = (type == "FOLLOWING" ? (getdata.guestMode == true ? getdata.tempfollowing : getdata.following) : getdata.follower);
+        if (getdata != null) {
+            try {
+                listpertemanan = (type == "FOLLOWING" ? getdata.following : getdata.follower);
             }
-            catch(e)
-            {
+            catch (e) {
                 listpertemanan = [];
             }
             var filterpertemanan = listpertemanan.filter(emaildata => emaildata != email_target);
 
             var update = new CreateuserbasicnewDto();
-            if(type == "FOLLOWING")
+            if (type == "FOLLOWING") 
             {
-                if(getdata.guestMode == false)
-                {
-                    update.following = filterpertemanan;
-                }
-                else
-                {
-                    update.tempfollowing = filterpertemanan; 
-                }
+                update.following = filterpertemanan;
             }
-            else
-            {
+            else {
                 update.follower = filterpertemanan;
             }
             var result = await this.UserbasicnewModel.findByIdAndUpdate(getdata._id.toString(), update, { new: true });
@@ -7066,13 +7041,11 @@ export class UserbasicnewService {
         return true;
     }
 
-    async addFriendList(email_target:Userbasicnew, email_source: Userbasicnew)
-    {
+    async addFriendList(email_target: Userbasicnew, email_source: Userbasicnew) {
         console.log(email_source);
         var convertdata = JSON.parse(JSON.stringify(email_source));
         var listarray = null;
-        try
-        {
+        try {
             //bermasalah disini
             // if(convertdata.friend != null && convertdata.friend != undefined)
             // {
@@ -7083,18 +7056,15 @@ export class UserbasicnewService {
             //     listarray = [];
             // }
             for (const key in email_source) {
-                if(key == "friend")
-                {
+                if (key == "friend") {
                     listarray = email_source[key];
                 }
             }
-            if(listarray == null || listarray == undefined)
-            {
+            if (listarray == null || listarray == undefined) {
                 listarray = [];
             }
         }
-        catch(e)
-        {
+        catch (e) {
             listarray = [];
         }
         console.log('ready');
@@ -7102,27 +7072,23 @@ export class UserbasicnewService {
         console.log('go!!');
 
         var checkfriendexist = true;
-        if(listarray.length == 0)
-        {
+        if (listarray.length == 0) {
             checkfriendexist = false;
             listarray = [
                 {
-                    "email":email_target.email
+                    "email": email_target.email
                 }
             ];
         }
-        else
-        {
+        else {
             var checkdata = listarray.find(getdata => getdata.email === email_target.email);
-            if(checkdata == undefined)
-            {
+            if (checkdata == undefined) {
                 checkfriendexist = false;
                 listarray.push({
-                    "email":email_target.email
+                    "email": email_target.email
                 });
             }
-            else
-            {
+            else {
                 checkfriendexist = true;
             }
         }
@@ -7135,21 +7101,19 @@ export class UserbasicnewService {
             klo pake await, auto berhenti disini.
             klo gak pake await, auto berhenti ketika friend gak ketemu!!
         */
-        if(checkfriendexist == false)
-        {
+        if (checkfriendexist == false) {
             var mongo = require('mongoose');
-            try
-            {
+            try {
                 await this.UserbasicnewModel.updateOne(
                     {
-                        "_id":new mongo.Types.ObjectId(email_source._id.toString())
+                        "_id": new mongo.Types.ObjectId(email_source._id.toString())
                     },
                     {
                         "$push":
                         {
                             "friend":
                             {
-                                "email":email_target.email.toString()
+                                "email": email_target.email.toString()
                             }
                         }
                     },
@@ -7168,24 +7132,20 @@ export class UserbasicnewService {
                     },
                 );
             }
-            catch(e)
-            {
+            catch (e) {
                 console.log(e);
             }
         }
         console.log('update!!');
     }
 
-    async deleteFriendList(email_target: Userbasicnew, email_source: Userbasicnew) 
-    {
+    async deleteFriendList(email_target: Userbasicnew, email_source: Userbasicnew) {
         var convertdata = JSON.parse(JSON.stringify(email_source));
         // var getdata = await this.UserbasicnewModel.findOne({ email:email_source }).exec();
-        if(convertdata.friend == null || convertdata.friend == undefined || convertdata.friend.length == 0)
-        {
+        if (convertdata.friend == null || convertdata.friend == undefined || convertdata.friend.length == 0) {
             return false;
         }
-        else
-        {
+        else {
             var updatedata = new Userbasicnew();
             var listfriend = convertdata.friend;
             updatedata.friend = listfriend.filter((email) => email.email != email_target.email.toString());
@@ -7193,73 +7153,338 @@ export class UserbasicnewService {
 
             await this.UserbasicnewModel.updateOne(
                 {
-                    "_id":new mongodb.Types.ObjectId(convertdata._id.toString())
+                    "_id": new mongodb.Types.ObjectId(convertdata._id.toString())
                 },
                 {
-                    "$set":updatedata
+                    "$set": updatedata
                 }
             );
 
-            return true;   
+            return true;
         }
     }
 
     async countuserchart() {
         var getmaledata = await this.UserbasicnewModel.find({
-          $or: [
-            { gender: "MALE" },
-            { gender: " MALE" },
-            { gender: "Male" },
-            { gender: "LAKI-LAKI" },
-            { gender: "Laki-laki" },
-            { gender: "Pria" },
-          ]
+            $or: [
+                { gender: "MALE" },
+                { gender: " MALE" },
+                { gender: "Male" },
+                { gender: "LAKI-LAKI" },
+                { gender: "Laki-laki" },
+                { gender: "Pria" },
+            ]
         }).count();
-    
+
         var getfemaledata = await this.UserbasicnewModel.find({
-          $or: [
-            { gender: "FEMALE" },
-            { gender: " FEMALE" },
-            { gender: "Female" },
-            { gender: "Perempuan" },
-            { gender: " Perempuan" },
-            { gender: "PEREMPUAN" },
-            { gender: "Wanita" },
-          ]
+            $or: [
+                { gender: "FEMALE" },
+                { gender: " FEMALE" },
+                { gender: "Female" },
+                { gender: "Perempuan" },
+                { gender: " Perempuan" },
+                { gender: "PEREMPUAN" },
+                { gender: "Wanita" },
+            ]
         }).count();
-    
+
         var getotherdata = await this.UserbasicnewModel.find({
-          $or: [
-            { gender: "" },
-            { gender: null }
-          ]
+            $or: [
+                { gender: "" },
+                { gender: null }
+            ]
         }).count();
-    
+
         var totaldata = await this.UserbasicnewModel.aggregate([
-          { $count: "myCount" }
+            { $count: "myCount" }
         ]);
-    
+
         var data = [
-          {
-            gender:
-              [
-                {
-                  "_id": "MALE",
-                  "count": getmaledata,
-                },
-                {
-                  "_id": "FEMALE",
-                  "count": getfemaledata,
-                },
-                {
-                  "_id": "OTHER",
-                  "count": getotherdata,
-                },
-              ],
-            userActive: totaldata[0].myCount
-          }
+            {
+                gender:
+                    [
+                        {
+                            "_id": "MALE",
+                            "count": getmaledata,
+                        },
+                        {
+                            "_id": "FEMALE",
+                            "count": getfemaledata,
+                        },
+                        {
+                            "_id": "OTHER",
+                            "count": getotherdata,
+                        },
+                    ],
+                userActive: totaldata[0].myCount
+            }
         ];
-    
+
         return data;
+    }
+
+    async filterguest(username: string, lokasi: [], startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number, descending: any, os: [], viewsgte: number, viewslte: number, likesgte: number, likeslte: number, sharesgte: number, shareslte: number) {
+
+        var arrlokasi = [];
+        var idlokasi = null;
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var lenglokasi = null;
+        var order = null;
+
+        if (descending === true) {
+            order = -1;
+        } else {
+            order = 1;
+        }
+        try {
+            lenglokasi = lokasi.length;
+        } catch (e) {
+            lenglokasi = 0;
+        }
+        if (lenglokasi > 0) {
+
+            for (let i = 0; i < lenglokasi; i++) {
+                let idkat = lokasi[i];
+                idlokasi = mongoose.Types.ObjectId(idkat);
+                arrlokasi.push(idlokasi);
+            }
+        }
+
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
+        var dt = dateend.substring(0, 10);
+        try {
+            var currentdatelogin = new Date(new Date(endlogin).setDate(new Date(endlogin).getDate() + 1));
+
+            var dateendlogin = currentdatelogin.toISOString();
+        } catch (e) {
+            dateendlogin = "";
+        }
+        var dtlogin = dateendlogin.substring(0, 10);
+        var pipeline = [];
+
+        pipeline.push(
+
+            {
+                $match: {
+                    'guestMode': true
+                }
+            },
+            {
+                $lookup: {
+                    from: 'contentevents',
+                    localField: 'email',
+                    foreignField: 'email',
+                    as: 'eventData',
+                    pipeline: [
+                        {
+                            $group: {
+                                _id: "$email",
+                                shares: {
+                                    $sum: {
+                                        $cond: [
+                                            {
+                                                $eq: ["$eventType", "SHARE"],
+
+                                            },
+                                            1,
+                                            0,
+
+                                        ],
+
+                                    },
+
+                                },
+                                views: {
+                                    $sum: {
+                                        $cond: [
+                                            {
+                                                $eq: ["$eventType", "VIEW"],
+
+                                            },
+                                            1,
+                                            0,
+
+                                        ],
+
+                                    },
+
+                                },
+                                likes: {
+                                    $sum: {
+                                        $cond: [
+                                            {
+                                                $eq: ["$eventType", "LIKE"],
+
+                                            },
+                                            1,
+                                            0,
+
+                                        ],
+
+                                    },
+
+                                },
+
+                            },
+
+                        }
+                    ]
+                }
+            },
+            {
+                $unwind: {
+                    path: '$eventData',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: 'activityevents',
+                    localField: '_id',
+                    foreignField: 'userbasic',
+                    as: 'activityData',
+                    pipeline: [
+                        {
+                            $match: {
+                                'event': 'LOGIN_GUEST'
+                            }
+                        },
+                        {
+                            $sort: {
+                                'createdAt': -1
+                            }
+                        },
+                        {
+                            $limit: 1
+                        }
+                    ]
+                }
+            },
+            {
+                $unwind: {
+                    path: '$activityData',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    'createdAt': 1,
+                    'username': 1,
+                    'os': '$regSrc',
+                    'areasId': '$states.$id',
+                    'views': {
+                        '$ifNull': ["$eventData.views", 0]
+                    },
+                    'likes': {
+                        '$ifNull': ["$eventData.likes", 0]
+                    },
+                    'shares': {
+                        '$ifNull': ["$eventData.shares", 0]
+                    },
+                    'lastlogin': '$activityData.createdAt'
+                }
+            },
+            {
+                $sort: {
+                    lastlogin: order
+                }
+            },
+        );
+
+        if (username && username !== undefined) {
+
+            pipeline.push({
+                $match: {
+                    username: {
+                        $regex: username,
+                        $options: 'i'
+                    },
+
+                }
+            },);
+
+        }
+
+        if (startdate && startdate !== undefined) {
+            pipeline.push({ $match: { createdAt: { $gte: startdate } } });
+        }
+        if (enddate && enddate !== undefined) {
+            pipeline.push({ $match: { createdAt: { $lte: dt } } });
+        }
+
+        if (viewsgte && viewsgte !== undefined) {
+            pipeline.push({ $match: { views: { $gte: viewsgte } } });
+        }
+        if (viewslte && viewslte !== undefined) {
+            pipeline.push({ $match: { views: { $lte: viewslte } } });
+        }
+        if (likesgte && likesgte !== undefined) {
+            pipeline.push({ $match: { likes: { $gte: likesgte } } });
+        }
+        if (likeslte && likeslte !== undefined) {
+            pipeline.push({ $match: { likes: { $lte: likeslte } } });
+        }
+        if (sharesgte && sharesgte !== undefined) {
+            pipeline.push({ $match: { shares: { $gte: sharesgte } } });
+        }
+        if (shareslte && shareslte !== undefined) {
+            pipeline.push({ $match: { shares: { $lte: shareslte } } });
+        }
+
+        if (lokasi && lokasi !== undefined) {
+            pipeline.push({
+                $match: {
+                    $or: [
+                        {
+                            areasId: {
+                                $in: arrlokasi
+                            }
+                        },
+
+                    ]
+                }
+            },);
+        }
+
+        if (os && os !== undefined) {
+            pipeline.push({
+                $match: {
+                    $or: [
+                        {
+                            os: {
+                                $in: os
+                            }
+                        },
+
+                    ]
+                }
+            },);
+        }
+
+        if (startlogin && startlogin !== undefined) {
+            pipeline.push({ $match: { lastlogin: { $gte: startlogin } } });
+        }
+        if (endlogin && endlogin !== undefined) {
+            pipeline.push({ $match: { lastlogin: { $lte: dtlogin } } });
+        }
+
+        if (page > 0) {
+            pipeline.push({ $skip: (page * limit) });
+        }
+        if (limit > 0) {
+            pipeline.push({ $limit: limit });
+        }
+
+        let query = await this.UserbasicnewModel.aggregate(pipeline);
+
+        return query;
+
     }
 }
