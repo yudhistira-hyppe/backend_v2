@@ -14512,8 +14512,10 @@ export class AuthService {
               if (emailLogin != null) {
                 data_update_userbasict['emailLogin'] = emailLogin;
               }
-              if (await this.utilsService.validateUsername(user_username)) {
-                data_update_userbasict['username'] = user_username;
+              if (user_username != null) {
+                if (await this.utilsService.validateUsername(user_username)) {
+                  data_update_userbasict['username'] = user_username;
+                }
               }
 
               if (user_bio != null || user_fullName != null || user_dob != null || user_gender != null || user_mobileNumber != null) {
@@ -14676,8 +14678,10 @@ export class AuthService {
               if (emailLogin != null) {
                 data_update_userbasict['emailLogin'] = emailLogin;
               }
-              if (await this.utilsService.validateUsername(user_username)) {
-                data_update_userbasict['username'] = user_username;
+              if (user_username != null) {
+                if (await this.utilsService.validateUsername(user_username)) {
+                  data_update_userbasict['username'] = user_username;
+                }
               }
 
               if (user_bio != null || user_fullName != null || user_dob != null || user_gender != null || user_mobileNumber != null) {
@@ -14854,8 +14858,10 @@ export class AuthService {
               if (emailLogin != null) {
                 data_update_userbasict['emailLogin'] = emailLogin;
               }
-              if (await this.utilsService.validateUsername(user_username)) {
-                data_update_userbasict['username'] = user_username;
+              if (user_username != null) {
+                if (await this.utilsService.validateUsername(user_username)) {
+                  data_update_userbasict['username'] = user_username;
+                }
               }
 
               //data_update_userbasict['status'] = status;
@@ -14944,8 +14950,10 @@ export class AuthService {
                   };
                 }
               }
-              if (await this.utilsService.validateUsername(user_username)) {
-                data_update_userbasict['username'] = user_username;
+              if (user_username != null) {
+                if (await this.utilsService.validateUsername(user_username)) {
+                  data_update_userbasict['username'] = user_username;
+                }
               }
               //data_update_userbasict['isComplete'] = true;
               //data_update_userbasict['status'] = status;
