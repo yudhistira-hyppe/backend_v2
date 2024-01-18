@@ -14467,6 +14467,7 @@ export class AuthService {
                 var countries = await this.countriesService.findOneName(user_country);
                 if ((await this.utilsService.ceckData(countries))) {
                   var countries_id = (await countries)._id;
+                  data_update_userbasict['countriesName'] = (await countries).country;
                   data_update_userbasict['countries'] = {
                     $ref: 'countries',
                     $id: countries_id,
@@ -14478,6 +14479,7 @@ export class AuthService {
                 var areas = await this.areasService.findOneName(user_area);
                 if ((await this.utilsService.ceckData(areas))) {
                   var areas_id = (await areas)._id;
+                  data_update_userbasict['statesName'] = (await areas).stateName;
                   data_update_userbasict['states'] = {
                     $ref: 'areas',
                     $id: areas_id,
@@ -14489,6 +14491,7 @@ export class AuthService {
                 var cities = await this.citiesService.findOneName(user_city);
                 if ((await this.utilsService.ceckData(cities))) {
                   var cities_id = (await cities)._id;
+                  data_update_userbasict['citiesName'] = (await cities).cityName;
                   data_update_userbasict['cities'] = {
                     $ref: 'cities',
                     $id: cities_id,
@@ -14500,6 +14503,8 @@ export class AuthService {
                 var languages = await this.languagesService.findOneLangiso(user_langIso);
                 if ((await this.utilsService.ceckData(languages))) {
                   var languages_id = (await languages)._id;
+                  data_update_userbasict['languagesLang'] = (await languages).lang;
+                  data_update_userbasict['languagesLangIso'] = (await languages).langIso;
                   data_update_userbasict['languages'] = {
                     $ref: 'languages',
                     $id: languages_id,
@@ -14632,6 +14637,7 @@ export class AuthService {
                 var countries = await this.countriesService.findOneName(user_country);
                 if ((await this.utilsService.ceckData(countries))) {
                   var countries_id = (await countries)._id;
+                  data_update_userbasict['countriesName'] = (await countries).country;
                   data_update_userbasict['countries'] = {
                     $ref: 'countries',
                     $id: countries_id,
@@ -14643,6 +14649,7 @@ export class AuthService {
                 var areas = await this.areasService.findOneName(user_area);
                 if ((await this.utilsService.ceckData(areas))) {
                   var areas_id = (await areas)._id;
+                  data_update_userbasict['statesName'] = (await areas).stateName;
                   data_update_userbasict['states'] = {
                     $ref: 'areas',
                     $id: areas_id,
@@ -14654,6 +14661,7 @@ export class AuthService {
                 var cities = await this.citiesService.findOneName(user_city);
                 if ((await this.utilsService.ceckData(cities))) {
                   var cities_id = (await cities)._id;
+                  data_update_userbasict['citiesName'] = (await cities).cityName;
                   data_update_userbasict['cities'] = {
                     $ref: 'cities',
                     $id: cities_id,
@@ -14665,6 +14673,8 @@ export class AuthService {
                 var languages = await this.languagesService.findOneLangiso(user_langIso);
                 if ((await this.utilsService.ceckData(languages))) {
                   var languages_id = (await languages)._id;
+                  data_update_userbasict['languagesLang'] = (await languages).lang;
+                  data_update_userbasict['languagesLangIso'] = (await languages).langIso;
                   data_update_userbasict['languages'] = {
                     $ref: 'languages',
                     $id: languages_id,
@@ -14815,6 +14825,7 @@ export class AuthService {
                 var countries = await this.countriesService.findOneName(user_country);
                 if ((await this.utilsService.ceckData(countries))) {
                   var countries_id = (await countries)._id;
+                  data_update_userbasict['countriesName'] = (await countries).country;
                   data_update_userbasict['countries'] = {
                     $ref: 'countries',
                     $id: countries_id,
@@ -14826,6 +14837,7 @@ export class AuthService {
                 var areas = await this.areasService.findOneName(user_area);
                 if ((await this.utilsService.ceckData(areas))) {
                   var areas_id = (await areas)._id;
+                  data_update_userbasict['statesName'] = (await areas).stateName;
                   data_update_userbasict['states'] = {
                     $ref: 'areas',
                     $id: areas_id,
@@ -14837,6 +14849,7 @@ export class AuthService {
                 var cities = await this.citiesService.findOneName(user_city);
                 if ((await this.utilsService.ceckData(cities))) {
                   var cities_id = (await cities)._id;
+                  data_update_userbasict['citiesName'] = (await cities).cityName;
                   data_update_userbasict['cities'] = {
                     $ref: 'cities',
                     $id: cities_id,
@@ -14848,6 +14861,8 @@ export class AuthService {
                 var languages = await this.languagesService.findOneLangiso(user_langIso);
                 if ((await this.utilsService.ceckData(languages))) {
                   var languages_id = (await languages)._id;
+                  data_update_userbasict['languagesLang'] = (await languages).lang; 
+                  data_update_userbasict['languagesLangIso'] = (await languages).langIso;
                   data_update_userbasict['languages'] = {
                     $ref: 'languages',
                     $id: languages_id,
@@ -14910,6 +14925,7 @@ export class AuthService {
                 var countries = await this.countriesService.findOneName(user_country);
                 if ((await this.utilsService.ceckData(countries))) {
                   var countries_id = (await countries)._id;
+                  data_update_userbasict['countriesName'] = (await countries).country;
                   data_update_userbasict['countries'] = {
                     $ref: 'countries',
                     $id: countries_id,
@@ -14921,6 +14937,7 @@ export class AuthService {
                 var areas = await this.areasService.findOneName(user_area);
                 if ((await this.utilsService.ceckData(areas))) {
                   var areas_id = (await areas)._id;
+                  data_update_userbasict['statesName'] = (await areas).stateName;
                   data_update_userbasict['states'] = {
                     $ref: 'areas',
                     $id: areas_id,
@@ -14932,6 +14949,7 @@ export class AuthService {
                 var cities = await this.citiesService.findOneName(user_city);
                 if ((await this.utilsService.ceckData(cities))) {
                   var cities_id = (await cities)._id;
+                  data_update_userbasict['citiesName'] = (await cities).cityName;
                   data_update_userbasict['cities'] = {
                     $ref: 'cities',
                     $id: cities_id,
@@ -14943,6 +14961,8 @@ export class AuthService {
                 var languages = await this.languagesService.findOneLangiso(user_langIso);
                 if ((await this.utilsService.ceckData(languages))) {
                   var languages_id = (await languages)._id;
+                  data_update_userbasict['languagesLang'] = (await languages).lang;
+                  data_update_userbasict['languagesLangIso'] = (await languages).langIso;
                   data_update_userbasict['languages'] = {
                     $ref: 'languages',
                     $id: languages_id,
