@@ -5463,19 +5463,21 @@ export class AuthService {
         var languages = await this.languagesService.findOneLangiso(langIso);
         var data_update_userbasict = {};
         if ((await this.utilsService.ceckData(languages))) {
-          var languages_id = (await languages)._id.toString();
+          var languages_id = (await languages)._id;
           // data_update_userbasict['languages'] = {
           //   ref: 'languages',
           //   id: new ObjectId(languages_id),
           //   db: 'hyppe_infra_db',
           // };
-          var CreateUserbasicnewDto_ = new CreateUserbasicnewDto();
+          var CreateUserbasicnewDto_ = new CreateuserbasicnewDto();
+          CreateUserbasicnewDto_.languagesLang = (await languages).lang.toString();
+          CreateUserbasicnewDto_.languagesLangIso = (await languages).langIso.toString();
           CreateUserbasicnewDto_.languages = {
             $ref: 'languages',
-            $id: new ObjectId(languages_id),
+            $id: languages_id,
             $db: 'hyppe_infra_db',
           }
-          await this.userbasicsnewService.updateLanguage(head['x-auth-user'], CreateUserbasicnewDto_);
+          await this.basic2SS.updateLanguage(head['x-auth-user'], CreateUserbasicnewDto_);
         }
 
         return {
