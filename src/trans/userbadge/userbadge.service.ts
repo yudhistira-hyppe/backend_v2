@@ -607,6 +607,329 @@ export class UserbadgeService {
         return query;
     }
 
+    async getBadgeUserCollectionV2(iduser: string, page: number, limit: number) {
+        var pipeline = [];
+
+        pipeline.push({
+            $match: {
+                "userId": new Types.ObjectId(iduser),
+
+            }
+        },
+            {
+                $lookup: {
+                    from: 'newUserBasics',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'basicdata',
+
+                }
+            },
+            // {
+            //     $addFields: {
+
+            //         'profilepictid': {
+            //             $arrayElemAt: ['$basicdata.profilePict.$id', 0]
+            //         },
+
+            //     }
+            // },
+            // {
+            //     $lookup: {
+            //         from: 'mediaprofilepicts',
+            //         localField: 'profilepictid',
+            //         foreignField: '_id',
+            //         as: 'avatardata',
+
+            //     }
+            // },
+            {
+                $facet: {
+                    user: [
+                        {
+                            $project: {
+                                "avatar": {
+                                    $arrayElemAt: ['$basicdata.mediaEndpoint', 0]
+                                }
+
+                            }
+                        }
+                    ],
+                    badgeAktif: [
+                        {
+                            $match: {
+                                "isActive": true,
+
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'badge',
+                                localField: 'idBadge',
+                                foreignField: '_id',
+                                as: 'badge_data',
+
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "subChallenge",
+                                "as": "subChallenge_data",
+                                "let": {
+                                    "local_id": "$SubChallengeId",
+
+                                },
+                                "pipeline": [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$_id', '$$local_id']
+                                                    }
+                                                },
+
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "challengeId": 1,
+                                            "startDatetime": 1,
+                                            "endDatetime": 1,
+                                            "isActive": 1,
+                                            "session": 1,
+
+                                        }
+                                    },
+                                    {
+                                        $lookup: {
+                                            from: 'challenge',
+                                            localField: 'challengeId',
+                                            foreignField: '_id',
+                                            as: 'challenge_data',
+
+                                        },
+
+                                    },
+                                    {
+                                        $project: {
+                                            "challengeId": 1,
+                                            "startDatetime": 1,
+                                            "endDatetime": 1,
+                                            "isActive": 1,
+                                            "session": 1,
+                                            "nameChallenge": {
+                                                "$arrayElemAt":
+                                                    [
+                                                        "$challenge_data.nameChallenge",
+                                                        0
+                                                    ]
+                                            },
+
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        // {
+                        //     $project: {
+
+                        //         "SubChallengeId": 1,
+                        //         "userId": 1,
+                        //         "idBadge": 1,
+                        //         "session": 1,
+                        //         "startDatetime": 1,
+                        //         "endDatetime": 1,
+                        //         "createdAt": 1,
+                        //         "isActive": 1,
+                        //         "badge_data": 1,
+                        //         "subChallenge_data": 1
+                        //     }
+                        // },
+                        {
+                            $project: {
+
+                                "SubChallengeId": 1,
+                                "userId": 1,
+                                "idBadge": 1,
+                                "session": 1,
+                                "startDatetime": 1,
+                                "endDatetime": 1,
+                                "createdAt": 1,
+                                "isActive": 1,
+                                "badge_data": 1,
+                                "subChallenge_data": 1
+                            }
+                        },
+                        {
+                            $sort: {
+                                "createdAt": - 1
+                            }
+                        },
+
+                    ],
+                    badgeNonAktif: [
+                        {
+                            $match: {
+                                "isActive": false,
+
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'badge',
+                                localField: 'idBadge',
+                                foreignField: '_id',
+                                as: 'badge_data',
+
+                            },
+
+                        },
+                        {
+                            "$lookup": {
+                                "from": "subChallenge",
+                                "as": "subChallenge_data",
+                                "let": {
+                                    "local_id": "$SubChallengeId",
+
+                                },
+                                "pipeline": [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$_id', '$$local_id']
+                                                    }
+                                                },
+
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "challengeId": 1,
+                                            "startDatetime": 1,
+                                            "endDatetime": 1,
+                                            "isActive": 1,
+                                            "session": 1,
+
+                                        }
+                                    },
+                                    {
+                                        $lookup: {
+                                            from: 'challenge',
+                                            localField: 'challengeId',
+                                            foreignField: '_id',
+                                            as: 'challenge_data',
+
+                                        },
+
+                                    },
+                                    {
+                                        $project: {
+                                            "challengeId": 1,
+                                            "startDatetime": 1,
+                                            "endDatetime": 1,
+                                            "isActive": 1,
+                                            "session": 1,
+                                            "nameChallenge": {
+                                                "$arrayElemAt":
+                                                    [
+                                                        "$challenge_data.nameChallenge",
+                                                        0
+                                                    ]
+                                            },
+
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        // {
+                        //     $project: {
+
+                        //         "SubChallengeId": 1,
+                        //         "userId": 1,
+                        //         "idBadge": 1,
+                        //         "session": 1,
+                        //         "startDatetime": 1,
+                        //         "endDatetime": 1,
+                        //         "createdAt": 1,
+                        //         "isActive": 1,
+                        //         "avatar": "$basicdata.mediaEndpoint",
+                        //         "badge_data": 1,
+                        //         "subChallenge_data": 1
+                        //     }
+                        // },
+                        {
+                            $project: {
+
+                                "SubChallengeId": 1,
+                                "userId": 1,
+                                "idBadge": 1,
+                                "session": 1,
+                                "startDatetime": 1,
+                                "endDatetime": 1,
+                                "createdAt": 1,
+                                "isActive": 1,
+                                "badge_data": 1,
+                                "subChallenge_data": 1
+                            }
+                        },
+                        {
+                            $sort: {
+                                "createdAt": - 1
+                            }
+                        },
+                        { $skip: (page * limit) },
+                        {
+                            $limit: limit,
+
+                        }
+                    ]
+                }
+            },
+
+            // {
+            //     $project: {
+            //         user: {
+            //             $arrayElemAt: ['$user.avatar', 0]
+            //         },
+
+            //         badgeAktif: 1,
+            //         badgeNonAktif: 1
+            //     }
+            // },
+            {
+                $project: {
+
+                    avatar: {
+
+                        mediaEndpoint: {
+                            $arrayElemAt: ['$user.avatar', 0]
+                        },
+
+                    },
+                    badgeAktif: 1,
+                    badgeNonAktif: 1
+                }
+            },);
+
+        var query = await this.UserbadgeModel.aggregate(pipeline);
+        return query;
+    }
+
     async getBadgeIduserbadge(id: string) {
         var pipeline = [];
 
