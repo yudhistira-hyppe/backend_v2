@@ -139,7 +139,7 @@ export class NewPostController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post('api/posts/updatepost/v2')
+    @Post('posts/updatepost/v2')
     @UseInterceptors(FileInterceptor('postContent'))
     async updatePostnew(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
         var timestamps_start = await this.utilsService.getDateTimeString();
@@ -1160,7 +1160,7 @@ export class NewPostController {
         var timestamps_end = splitdate[0];
 
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, body.body);
-        
+
         var ver = await this.settingsService.findOneByJenis('AppsVersion');
         ver.value;
         var version = String(ver.value);

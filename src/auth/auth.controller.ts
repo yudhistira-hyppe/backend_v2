@@ -6878,8 +6878,10 @@ export class AuthController {
                   createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
                   await this.mediaprofilepictsService.create(createMediaproofpictsDto);
                 }
-                console.log("UPDATE USERBASIC");
+
                 try {
+                  var json_mediaprofilepicts = { "$ref": "mediaprofilepicts", "$id": id_mediaprofilepicts, "$db": "hyppe_content_db" };
+                  datauserbasicsService.profilePict = json_mediaprofilepicts;
                   datauserbasicsService._idAvatar = id_mediaprofilepicts;
                   datauserbasicsService.postType = 'profilepict';
                   datauserbasicsService.mediaType = 'image';

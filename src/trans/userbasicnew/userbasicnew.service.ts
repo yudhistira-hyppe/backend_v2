@@ -5982,6 +5982,7 @@ export class UserbasicnewService {
     }
 
     async getpostquery(email: string, visibility: string, postids: string, tipepost: string, activestatus: string, exptime: string, skip: number, page: number, insight: string, sorttime: string) {
+        console.log("CECK CECK CECk")
         var pipeline = [];
         var postkeyword = {};
         var postmatch = [];
