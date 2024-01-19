@@ -2705,6 +2705,69 @@ export class ChallengeController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('allchallenge/v2')
+  async showallchallengev2(
+    @Req() request: Request,
+    @Headers() headers
+  ) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/allchallenge';
+
+    var iduser = null;
+    var page = null;
+    var limit = null;
+    var jenischallenge = null;
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+    if (request_json["iduser"] !== undefined) {
+      iduser = request_json['iduser'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, iduser field is required");
+    }
+
+    if (request_json["page"] !== undefined) {
+      page = request_json['page'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, page field is required");
+    }
+
+    if (request_json["limit"] !== undefined) {
+      limit = request_json['limit'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, limit field is required");
+    }
+
+    if (request_json["jenischallenge"] !== undefined) {
+      jenischallenge = request_json['jenischallenge'];
+    }
+
+    var data = await this.challengeService.checkallchallengev2(iduser, jenischallenge, page, limit);
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
+    return {
+      response_code: 202,
+      data: data,
+      messages: messages,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('leaderboard')
   async listingleaderboard(
     @Req() request: Request,
