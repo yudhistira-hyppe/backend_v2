@@ -1291,7 +1291,7 @@ export class NewPostContentService {
       AvatarDTO_.mediaBasePath = profile.mediaBasePath;
       AvatarDTO_.mediaUri = profile.mediaUri;
       AvatarDTO_.mediaType = profile.mediaType;
-      AvatarDTO_.mediaEndpoint = '/profilepict/' + profile.profilePict.toString();
+      AvatarDTO_.mediaEndpoint = '/profilepict/' + profile._idAvatar.toString();
       console.log("AvatarDTO_", AvatarDTO_)
       return AvatarDTO_;
     } else {
