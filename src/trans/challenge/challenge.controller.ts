@@ -3733,6 +3733,58 @@ export class ChallengeController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('listbadgebyuser/v2')
+  async listbadgebyuserv2(@Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/listbadgebyuser/v2';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
+    var iduser = null;
+    var page = null;
+    var limit = null;
+    var datasession = null;
+    var data = null;
+    var totalSession = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+
+    if (request_json["iduser"] !== undefined) {
+      iduser = request_json['iduser'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, ascending field is required");
+    }
+
+    page = request_json['page'];
+    limit = request_json['limit'];
+    try {
+      data = await this.userbadgeService.getBadgeByuserV2(iduser, page, limit);
+    } catch (e) {
+      data = [];
+    }
+
+
+    const messages = {
+      "info": ["The proses successful"],
+    };
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+    return {
+      response_code: 202,
+      "data": data,
+      "page": page,
+      "limit": limit,
+      "message": messages
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('listbadgeuserdetail')
   async listbadgeuserdetail(@Req() request: Request, @Headers() headers) {
     var timestamps_start = await this.util.getDateTimeString();
