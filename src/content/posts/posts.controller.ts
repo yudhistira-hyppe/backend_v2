@@ -3170,7 +3170,7 @@ export class PostsController {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var dataMedia = await this.NewPostService.findOnepostID2(id);
         if (await this.utilsService.ceckData(dataMedia)) {
-          if (dataMedia[0].mediaSource[0].uploadSource != undefined) {
+          if (dataMedia[0].mediaSource[0].uploadSource !== undefined) {
             console.log("OSS");
             if (dataMedia[0].mediaSource[0].uploadSource == "OSS") {
               var mediaMime = "";
