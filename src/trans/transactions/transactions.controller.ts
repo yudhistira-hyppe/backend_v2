@@ -1312,7 +1312,7 @@ export class TransactionsController {
         var rotanggal = this.romawi(numtanggal);
         var no = "INV/" + (await rotahun).toString() + "/" + (await robulan).toString() + "/" + (await rotanggal).toString() + "/" + leng;
 
-        var ubasic = await this.basic2SS.findOne(email);
+        var ubasic = await this.basic2SS.findBymail(email);
 
         var iduser = ubasic._id;
 
