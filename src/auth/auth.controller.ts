@@ -6878,7 +6878,7 @@ export class AuthController {
                   createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
                   await this.mediaprofilepictsService.create(createMediaproofpictsDto);
                 }
-
+                console.log("UPDATE USERBASIC");
                 try {
                   datauserbasicsService._idAvatar = id_mediaprofilepicts;
                   datauserbasicsService.postType = 'profilepict';
