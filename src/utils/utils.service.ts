@@ -1857,7 +1857,7 @@ export class UtilsService {
     }
   }
   async getUserlanguagesv2(email: string): Promise<String> {
-    var get_userbasic = await this.basic2SS.findOne(email);
+    var get_userbasic = await this.basic2SS.findBymail(email);
     var get_languages = null;
     if (await this.ceckData(get_userbasic)) {
       if (get_userbasic.languages != undefined) {
