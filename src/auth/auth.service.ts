@@ -2161,13 +2161,6 @@ export class AuthService {
       if (req.body.country != undefined) {
         user_country = req.body.country;
       }
-
-      // throw new NotAcceptableException({
-      //   response_code: 406,
-      //   messages: {
-      //     info: ['Unabled to proceedssssssss'],
-      //   },
-      // });
     }
 
     // if (user_email_header != user_email) {
@@ -14369,22 +14362,35 @@ export class AuthService {
         user_langIso = req.body.langIso;
       }
     } else {
-      throw new NotAcceptableException({
-        response_code: 406,
-        messages: {
-          info: ['Unabled to proceed'],
-        },
-      });
+      if (req.body.area != undefined) {
+        user_area = req.body.area;
+      }
+
+      if (req.body.gender != undefined) {
+        user_gender = req.body.gender;
+      } else {
+        user_gender = "";
+      }
+
+      if (req.body.dob != undefined) {
+        user_dob = req.body.dob;
+      } else {
+        user_dob = "";
+      }
+
+      if (req.body.country != undefined) {
+        user_country = req.body.country;
+      }
     }
 
-    if (user_email_header != user_email) {
-      throw new NotAcceptableException({
-        response_code: 406,
-        messages: {
-          info: ['Unabled to proceed'],
-        },
-      });
-    }
+    // if (user_email_header != user_email) {
+    //   throw new NotAcceptableException({
+    //     response_code: 406,
+    //     messages: {
+    //       info: ['Unabled to proceed'],
+    //     },
+    //   });
+    // }
 
     var type = 'ENROL';
     var current_date = await this.utilsService.getDateTimeString();
@@ -14784,6 +14790,44 @@ export class AuthService {
                 error,
               );
             }
+          } else {
+            var data_update_userbasict = {};
+            user_email = user_email_header;
+            console.log("user_area", user_area)
+            if (user_area != null) {
+              var areas = await this.areasService.findOneName(user_area);
+              if ((await this.utilsService.ceckData(areas))) {
+                var areas_id = (await areas)._id;
+                data_update_userbasict['statesName'] = (await areas).stateName;
+                data_update_userbasict['states'] = {
+                  $ref: 'areas',
+                  $id: areas_id,
+                  $db: 'hyppe_infra_db',
+                };
+              }
+            }
+            if (user_gender != null) {
+              data_update_userbasict['gender'] = user_gender;
+            }
+            if (user_dob != null) {
+              data_update_userbasict['dob'] = user_dob;
+            }
+            if (user_country != null) {
+              var countries = await this.countriesService.findOneName(user_country);
+              if ((await this.utilsService.ceckData(countries))) {
+                var countries_id = (await countries)._id;
+                data_update_userbasict['countriesName'] = (await countries).country;
+                data_update_userbasict['countries'] = {
+                  $ref: 'countries',
+                  $id: countries_id,
+                  $db: 'hyppe_infra_db',
+                };
+              }
+            }
+
+            if (user_area != null || user_gender != null || user_dob != null || user_country != null) {
+              await this.basic2SS.updatebyEmail(user_email, data_update_userbasict);
+            }
           }
 
           return {
@@ -14988,6 +15032,43 @@ export class AuthService {
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed update profile detail. Error:' + error,
               );
+            }
+          } else {
+            var data_update_userbasict = {};
+            user_email = user_email_header;
+            console.log("user_email", user_email)
+            if (user_area != null) {
+              var areas = await this.areasService.findOneName(user_area);
+              if ((await this.utilsService.ceckData(areas))) {
+                var areas_id = (await areas)._id;
+                data_update_userbasict['statesName'] = (await areas).stateName;
+                data_update_userbasict['states'] = {
+                  $ref: 'areas',
+                  $id: areas_id,
+                  $db: 'hyppe_infra_db',
+                };
+              }
+            }
+            if (user_gender != null) {
+              data_update_userbasict['gender'] = user_gender;
+            }
+            if (user_dob != null) {
+              data_update_userbasict['dob'] = user_dob;
+            }
+            if (user_country != null) {
+              var countries = await this.countriesService.findOneName(user_country);
+              if ((await this.utilsService.ceckData(countries))) {
+                var countries_id = (await countries)._id;
+                data_update_userbasict['countriesName'] = (await countries).country;
+                data_update_userbasict['countries'] = {
+                  $ref: 'countries',
+                  $id: countries_id,
+                  $db: 'hyppe_infra_db',
+                };
+              }
+            }
+            if (user_area != null || user_gender != null || user_dob != null || user_country != null) {
+              await this.basic2SS.updatebyEmail(user_email, data_update_userbasict);
             }
           }
 
