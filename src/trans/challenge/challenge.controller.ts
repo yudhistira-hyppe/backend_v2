@@ -2711,7 +2711,7 @@ export class ChallengeController {
     @Headers() headers
   ) {
     var timestamps_start = await this.util.getDateTimeString();
-    var fullurl = headers.host + '/api/challenge/allchallenge';
+    var fullurl = headers.host + '/api/challenge/allchallenge/v2';
 
     var iduser = null;
     var page = null;
