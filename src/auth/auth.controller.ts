@@ -3797,6 +3797,7 @@ export class AuthController {
         'Unabled to proceed',
       );
     }
+    console.log("CECK");
     if (await this.utilsService.validasiEmail(SearchUserbasicDto_.search.toString())) {
       //Ceck User Userbasics
       const data_userbasics = await this.basic2SS.findbyemail(SearchUserbasicDto_.search.toString());

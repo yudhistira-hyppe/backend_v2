@@ -2189,6 +2189,7 @@ export class UtilsService {
     var pin_create = false;
     var otppinVerified = false;
 
+    console.log("GENERATE PROFILE");
     if (await this.ceckData(get_userbasic)) {
 
       get_languages = get_userbasic.languagesLangIso;
