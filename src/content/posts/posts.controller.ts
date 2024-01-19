@@ -2736,19 +2736,12 @@ export class PostsController {
     let contenteventsService_data = [];
     if(eventType_ == "FOLLOWER" || eventType_ == "FOLLOWING")
     {
-      var before = Number(pageNumber_) * pageRow_;
-      var after = (Number(pageNumber_) + 1) * pageRow_;
-      var resultdarinewUser = (eventType_ == "FOLLOWING" ? userbasicsService_data.following : userbasicsService_data.follower);
-      if(contenteventsService_data != null && contenteventsService_data.length != 0)
-      {
-        contenteventsService_data = resultdarinewUser.slice(before, after);
-      }
+      contenteventsService_data = (eventType_ == "FOLLOWING" ? userbasicsService_data.following : userbasicsService_data.follower);
     }
     else if (eventType_ == "UNFOLLOW" || eventType_ == "REACTION" || eventType_ == "VIEW")
     {
       //UNFOLLOW nih yang mau dicari apa ya ???
       const contenteventsService_data_ = await this.contenteventsService.findByCriteria2(headers['x-auth-user'], postID_, eventType_, withEvents_, pageRow_, pageNumber_);
-      console.log(contenteventsService_data_);
       if(contenteventsService_data_ != null && contenteventsService_data_.length != 0)
       {
         for(var i = 0; i < contenteventsService_data_.length; i++)
@@ -2898,6 +2891,14 @@ export class PostsController {
     else{
       getlist = contenteventsService_data;
     }
+
+    if(eventType_ == "FOLLOWER" || eventType_ == "FOLLOWING")
+    {
+      var before = Number(pageNumber_) * pageRow_;
+      var after = (Number(pageNumber_) + 1) * pageRow_;
+      getlist = getlist.slice(before, after);
+    }
+
     var data_response = null;
     if(getlist.length != 0)
     {

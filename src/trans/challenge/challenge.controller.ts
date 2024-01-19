@@ -1207,9 +1207,17 @@ export class ChallengeController {
   async findOne(@Param('id') id: string, @Headers() headers) {
     var timestamps_start = await this.util.getDateTimeString();
     var fullurl = headers.host + '/api/challenge/' + id;
-    var token = headers['x-auth-token'];
-    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    var email = auth.email;
+    var email = null;
+    try
+    {
+      var token = headers['x-auth-token'];
+      var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      email = auth.email;
+    }
+    catch(e)
+    {
+      //kosong aja
+    }
 
     var data = await this.challengeService.detailchallenge(id);
 
