@@ -672,18 +672,18 @@ export class NewPostContentService {
 
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    var profile = await this.basic2SS.findOne(auth.email);
-    if (profile == undefined) {
-      let msg = new Messages();
-      msg.info = ["Email unknown"];
-      res.messages = msg;
-      return res;
-    }
+    // var profile = await this.basic2SS.findBymail(auth.email);
+    // if (profile == undefined) {
+    //   let msg = new Messages();
+    //   msg.info = ["Email unknown"];
+    //   res.messages = msg;
+    //   return res;
+    // }
 
     let opost = await this.newPostService.findByPostId(body.postID);
 
     if (body.certified && body.certified == "true") {
-      if (profile.isIdVerified != true) {
+      if (data_userbasics.isIdVerified != true) {
         let msg = new Messages();
         msg.info = ["The user ID has not been verified"];
         res.messages = msg;
@@ -701,13 +701,12 @@ export class NewPostContentService {
       if (opost.certified == undefined || opost.certified == false) {
         this.generateCertificate(String(post.postID), 'id', apost, data_userbasics);
       }
-
     }
 
     let cm = post.contentMedias[0];
 
     let updatePl = new CreateUserplaylistDto();
-    updatePl.userPostId = Object(profile._id);
+    updatePl.userPostId = Object(data_userbasics._id.toString());
     updatePl.mediaId = Object(cm.oid);
     updatePl.postType = apost.postType;
     //this.postService.updateGenerateUserPlaylist_(updatePl);
