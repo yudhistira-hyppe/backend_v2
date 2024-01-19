@@ -1643,7 +1643,7 @@ export class NewPostContentService {
 
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    var profile = await this.basic2SS.findOne(auth.email);
+    var profile = await this.basic2SS.findBymail(auth.email);
     this.logger.log('buildPost >>> profile: ' + profile.email);
 
     let post = await this.newPostService.findByPostId(body.postID);
