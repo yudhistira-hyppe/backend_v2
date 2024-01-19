@@ -1039,6 +1039,59 @@ export class ContenteventsService {
     return query;
   }
 
+  async findByCriteria2(email: string, PostID: string, EventType: string, Events: string[], pageRow: number, pageNumber: number): Promise<Contentevents[]> {
+    var Where = {}
+    var Or = []
+    Object.assign(Where, { email: email });
+    if (PostID != "") {
+      Object.assign(Where, { postID: PostID });
+    }
+    if (EventType != "") {
+      Object.assign(Where, { eventType: (EventType == "UNFOLLOW" ? "FOLLOWER" : EventType) });
+    }
+    Object.assign(Where, { event: "ACCEPT" });
+    if(EventType == "UNFOLLOW")
+    {
+      Object.assign(Where, { active: false });
+    }
+    else
+    {
+      Object.assign(Where, { active: true });
+    }
+    // if (Events.length > 0) {
+    //   for (let i = 0; i < Events.length; i++) {
+    //     if (Events[i] == "INITIAL") {
+    //       Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
+    //     } else if (Events[i] == "REQUEST") {
+    //       Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
+    //     } else {
+    //       Or.push({ event: Events[i] }, { $and: [{ flowIsDone: true }] })
+    //     }
+    //   }
+    // }
+    if (Object.keys(Or).length > 0) {
+      Object.assign(Where, { $or: Or });
+    } else {
+      Object.assign(Where);
+    }
+
+    var sort = null;
+    if (EventType != "") {
+      if (EventType == "FOLLOWING" || EventType == "FOLLOWER") {
+        sort = { sequenceNumber: 1, updatedAt: -1 }
+      } else {
+        sort = { postType: 1, updatedAt: -1 }
+      }
+    } else {
+      sort = { postType: 1, updatedAt: -1 }
+    }
+    console.log(Where);
+    const query = this.ContenteventsModel.find(Where)
+      .limit(pageRow)
+      .skip(pageRow * pageNumber).sort(sort);
+    return query;
+  }
+
   async findfriend(email: string) {
 
     let query = await this.ContenteventsModel.aggregate(
