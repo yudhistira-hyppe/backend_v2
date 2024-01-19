@@ -1284,14 +1284,18 @@ export class NewPostContentService {
   }
 
   public async getProfileAvatar(profile: Userbasicnew) {
+    console.log("PROFILE", profile)
+    console.log("PROFILE profilePict", profile.profilePict)
     let AvatarDTO_ = new Avatar();
     if (profile.profilePict != undefined) {
       AvatarDTO_.mediaBasePath = profile.mediaBasePath;
       AvatarDTO_.mediaUri = profile.mediaUri;
       AvatarDTO_.mediaType = profile.mediaType;
       AvatarDTO_.mediaEndpoint = '/profilepict/' + profile.profilePict.toString();
+      console.log("AvatarDTO_", AvatarDTO_)
       return AvatarDTO_;
     } else {
+      console.log("AvatarDTO_", AvatarDTO_)
       return AvatarDTO_;
     }
   }
