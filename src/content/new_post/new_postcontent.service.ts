@@ -1287,7 +1287,7 @@ export class NewPostContentService {
     console.log("PROFILE", profile)
     console.log("PROFILE profilePict", profile.profilePict)
     let AvatarDTO_ = new Avatar();
-    if (profile.profilePict != undefined) {
+    if (profile._idAvatar != undefined) {
       AvatarDTO_.mediaBasePath = profile.mediaBasePath;
       AvatarDTO_.mediaUri = profile.mediaUri;
       AvatarDTO_.mediaType = profile.mediaType;
