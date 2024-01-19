@@ -6716,6 +6716,10 @@ export class AuthController {
 
     var re = /(?:\.([^.]+))?$/;
 
+    var current_date = await this.utilsService.getDateTimeString();
+    var id_mediaprofilepicts = await this.utilsService.generateId();
+    var createMediaproofpictsDto = new CreateMediaprofilepictsDto();
+
     //Ceck User Userbasics
     if (await this.utilsService.ceckData(datauserbasicsService)) {
       if (files.profilePict != undefined) {
@@ -6805,23 +6809,94 @@ export class AuthController {
           if (result.res != undefined) {
             if (result.res.statusCode != undefined) {
               if (result.res.statusCode == 200) {
-                try {
-                  if (datauserbasicsService.mediaBasePath == null || datauserbasicsService.mediaBasePath == undefined) {
-                    datauserbasicsService.postType = 'profilepict';
-                    datauserbasicsService.mediaType = 'image';
-                    datauserbasicsService.mediaMime = mimetype;
-                  }
+                if (datauserbasicsService.profilePict != undefined) {
+                  var profilePict_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
+                  var data_mediaprofpicts = await this.mediaprofilepictsService.findOne(profilePict_json.$id);
+                  if (await this.utilsService.ceckData(data_mediaprofpicts)) {
+                    id_mediaprofilepicts = data_mediaprofpicts._id.toString();
 
-                  datauserbasicsService.originalName = originalName;
-                  datauserbasicsService.mediaUri = fileName;
-                  datauserbasicsService.mediaThumBasePath = fileName;
-                  datauserbasicsService.mediaThumName = userId + "_thum" + extension;
+                    createMediaproofpictsDto.mediaID = id_mediaprofilepicts;
+                    createMediaproofpictsDto.mediaBasePath = userId + "/profilePict/" + fileName;
+                    createMediaproofpictsDto.mediaUri = fileName;
+                    createMediaproofpictsDto.originalName = originalName;
+
+                    createMediaproofpictsDto.fsSourceUri = result.res.requestUrls[0];
+                    createMediaproofpictsDto.fsSourceName = fileName;
+                    createMediaproofpictsDto.fsTargetUri = result.res.requestUrls[0];
+                    createMediaproofpictsDto.uploadSource = "OSS";
+
+                    createMediaproofpictsDto.mediaThumBasePath = userId + "/profilePict/" + userId + "_thum" + extension;
+                    createMediaproofpictsDto.mediaThumName = userId + "_thum" + extension;
+                    createMediaproofpictsDto.mediaThumUri = result_thum.res.requestUrls[0];
+                    createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
+                    await this.mediaprofilepictsService.updatebyId(id_mediaprofilepicts, createMediaproofpictsDto);
+                  } else {
+                    createMediaproofpictsDto._id = id_mediaprofilepicts;
+                    createMediaproofpictsDto.mediaID = id_mediaprofilepicts;
+                    createMediaproofpictsDto.active = true;
+                    createMediaproofpictsDto.createdAt = current_date;
+                    createMediaproofpictsDto.updatedAt = current_date;
+                    createMediaproofpictsDto.postType = 'profilepict';
+                    createMediaproofpictsDto.mediaType = 'image';
+
+                    createMediaproofpictsDto.mediaBasePath = userId + "/profilePict/" + fileName;
+                    createMediaproofpictsDto.mediaUri = fileName;
+                    createMediaproofpictsDto.originalName = originalName;
+
+                    createMediaproofpictsDto.fsSourceUri = result.res.requestUrls[0];
+                    createMediaproofpictsDto.fsSourceName = fileName;
+                    createMediaproofpictsDto.fsTargetUri = result.res.requestUrls[0];
+
+                    createMediaproofpictsDto.mediaThumBasePath = userId + "/profilePict/" + userId + "_thum" + extension;
+                    createMediaproofpictsDto.mediaThumName = userId + "_thum" + extension;
+                    createMediaproofpictsDto.mediaMime = mimetype;
+                    createMediaproofpictsDto.uploadSource = "OSS";
+                    createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
+                    await this.mediaprofilepictsService.create(createMediaproofpictsDto);
+                  }
+                } else {
+                  createMediaproofpictsDto._id = id_mediaprofilepicts;
+                  createMediaproofpictsDto.mediaID = id_mediaprofilepicts;
+                  createMediaproofpictsDto.active = true;
+                  createMediaproofpictsDto.createdAt = current_date;
+                  createMediaproofpictsDto.updatedAt = current_date;
+                  createMediaproofpictsDto.postType = 'profilepict';
+                  createMediaproofpictsDto.mediaType = 'image';
+
+                  createMediaproofpictsDto.mediaBasePath = userId + "/profilePict/" + fileName;
+                  createMediaproofpictsDto.mediaUri = fileName;
+                  createMediaproofpictsDto.originalName = originalName;
+
+                  createMediaproofpictsDto.fsSourceUri = result.res.requestUrls[0];
+                  createMediaproofpictsDto.fsSourceName = fileName;
+                  createMediaproofpictsDto.fsTargetUri = result.res.requestUrls[0];
+
+                  createMediaproofpictsDto.mediaThumBasePath = userId + "/profilePict/" + userId + "_thum" + extension;
+                  createMediaproofpictsDto.mediaThumName = userId + "_thum" + extension;
+                  createMediaproofpictsDto.mediaMime = mimetype;
+                  createMediaproofpictsDto.uploadSource = "OSS";
+                  createMediaproofpictsDto._class = "io.melody.hyppe.content.domain.MediaProfilePict";
+                  await this.mediaprofilepictsService.create(createMediaproofpictsDto);
+                }
+
+                try {
+                  datauserbasicsService._idAvatar = id_mediaprofilepicts;
+                  datauserbasicsService.postType = 'profilepict';
+                  datauserbasicsService.mediaType = 'image';
+
                   datauserbasicsService.mediaBasePath = userId + "/profilePict/" + fileName;
-                  datauserbasicsService.uploadSource = "OSS";
+                  datauserbasicsService.mediaUri = fileName;
+                  datauserbasicsService.originalName = originalName;
 
                   datauserbasicsService.fsSourceUri = result.res.requestUrls[0];
                   datauserbasicsService.fsSourceName = fileName;
                   datauserbasicsService.fsTargetUri = result.res.requestUrls[0];
+
+                  datauserbasicsService.mediaThumBasePath = userId + "/profilePict/" + userId + "_thum" + extension;
+                  datauserbasicsService.mediaThumName = userId + "_thum" + extension;
+                  datauserbasicsService.mediaEndpoint = "/profilePict/" + id_mediaprofilepicts;
+                  datauserbasicsService.mediaMime = mimetype;
+                  datauserbasicsService.uploadSource = "OSS";
 
                   await this.basic2SS.updatebyEmail(request.email, datauserbasicsService);
 
