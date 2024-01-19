@@ -2733,128 +2733,179 @@ export class PostsController {
     }
     const insightsService_data = await this.insightsService.findemail(headers['x-auth-user']);
     const userbasicsService_data = await this.basic2SS.findbyemail(headers['x-auth-user']);
-    const contenteventsService_data_ = await this.contenteventsService.findByCriteria(headers['x-auth-user'], postID_, eventType_, withEvents_, pageRow_, pageNumber_);
-    let contenteventsService_data = contenteventsService_data_;
-    if (eventType_ == "FOLLOWER") {
-      contenteventsService_data = [...new Map(contenteventsService_data_.map(item => [item["receiverParty"], item])).values()];
-    } else if (eventType_ == "FOLLOWING") {
-      contenteventsService_data = [...new Map(contenteventsService_data_.map(item => [item["senderParty"], item])).values()];
+    let contenteventsService_data = [];
+    if(eventType_ == "FOLLOWER" || eventType_ == "FOLLOWING")
+    {
+      var before = Number(pageNumber_) * pageRow_;
+      var after = (Number(pageNumber_) + 1) * pageRow_;
+      var resultdarinewUser = (eventType_ == "FOLLOWING" ? userbasicsService_data.following : userbasicsService_data.follower);
+      if(contenteventsService_data != null && contenteventsService_data.length != 0)
+      {
+        contenteventsService_data = resultdarinewUser.slice(before, after);
+      }
     }
-    var getProfile_ = await this.utilsService.generateProfile2(headers['x-auth-user'], 'PROFILE');
-    var avatar_ = {}
-    if (getProfile_ != null || getProfile_ != undefined) {
-      if (getProfile_.avatar != null || getProfile_.avatar != undefined) {
-        if (getProfile_.avatar.mediaBasePath != null || getProfile_.avatar.mediaBasePath != undefined) {
-          Object.assign(avatar_, {
-            "mediaBasePath": getProfile_.avatar.mediaBasePath,
-          });
-        }
-        if (getProfile_.avatar.mediaUri != null || getProfile_.avatar.mediaUri != undefined) {
-          Object.assign(avatar_, {
-            "mediaUri": getProfile_.avatar.mediaUri,
-          });
-        }
-        if (getProfile_.avatar.mediaType != null || getProfile_.avatar.mediaType != undefined) {
-          Object.assign(avatar_, {
-            "mediaType": getProfile_.avatar.mediaType,
-          });
-        }
-        if (getProfile_.avatar.mediaEndpoint != null || getProfile_.avatar.mediaEndpoint != undefined) {
-          Object.assign(avatar_, {
-            "mediaEndpoint": getProfile_.avatar.mediaEndpoint,
-          });
+    else if (eventType_ == "UNFOLLOW" || eventType_ == "REACTION" || eventType_ == "VIEW")
+    {
+      //UNFOLLOW nih yang mau dicari apa ya ???
+      const contenteventsService_data_ = await this.contenteventsService.findByCriteria2(headers['x-auth-user'], postID_, eventType_, withEvents_, pageRow_, pageNumber_);
+      console.log(contenteventsService_data_);
+      if(contenteventsService_data_ != null && contenteventsService_data_.length != 0)
+      {
+        for(var i = 0; i < contenteventsService_data_.length; i++)
+        {
+          if(eventType_ == "UNFOLLOW")
+          {
+            contenteventsService_data.push(contenteventsService_data_[i].receiverParty);
+          }
+          else
+          {
+            contenteventsService_data.push(contenteventsService_data_[i].senderParty);
+          }
         }
       }
     }
-
-    let data_response = [];
-    for (let i = 0; i < contenteventsService_data.length; i++) {
-      var emailSenderorreceiver = (contenteventsService_data[i].senderParty != undefined) ? contenteventsService_data[i].senderParty : (contenteventsService_data[i].receiverParty != undefined) ? contenteventsService_data[i].receiverParty : null;
-
-      if (emailSenderorreceiver != null) {
-        var getProfile = await this.utilsService.generateProfile2(emailSenderorreceiver.toString(), 'PROFILE');
-      }
-
-      var datas = {}
-      var senderOrReceiverInfo = {}
-      var avatar = {}
-      if (getProfile != null || getProfile != undefined) {
-        if (getProfile.avatar != null || getProfile.avatar != undefined) {
-          if (getProfile.avatar.mediaBasePath != null || getProfile.avatar.mediaBasePath != undefined) {
-            Object.assign(avatar, {
-              "mediaBasePath": getProfile.avatar.mediaBasePath,
-            });
-          }
-          if (getProfile.avatar.mediaUri != null || getProfile.avatar.mediaUri != undefined) {
-            Object.assign(avatar, {
-              "mediaUri": getProfile.avatar.mediaUri,
-            });
-          }
-          if (getProfile.avatar.mediaType != null || getProfile.avatar.mediaType != undefined) {
-            Object.assign(avatar, {
-              "mediaType": getProfile.avatar.mediaType,
-            });
-          }
-          if (getProfile.avatar.mediaEndpoint != null || getProfile.avatar.mediaEndpoint != undefined) {
-            Object.assign(avatar, {
-              "mediaEndpoint": getProfile.avatar.mediaEndpoint,
-            });
-          }
-        }
-      }
-
-      if (getProfile != null || getProfile != undefined) {
-        Object.assign(senderOrReceiverInfo, {
-          "fullName": (getProfile != null) ? (getProfile.fullName != undefined) ? getProfile.fullName : "" : "",
-          avatar,
-          "urluserBadge": getProfile.urluserBadge,
-          "email": getProfile.email,
-          "username": getProfile.username,
-        });
-      }
-      if (withDetail_) {
-        Object.assign(datas, {
-          "createdAt": contenteventsService_data[i].createdAt,
-        });
-        Object.assign(datas, {
-          "profileInsight": {
-            "follower": insightsService_data.followers,
-            "following": insightsService_data.followings,
-          },
-        });
-        Object.assign(datas, {
-          senderOrReceiverInfo,
-        });
-        Object.assign(datas, {
-          "fullName": userbasicsService_data.fullName,
-        });
-      }
-      var avatar = avatar_;
-      Object.assign(datas, {
-        "flowIsDone": contenteventsService_data[i].flowIsDone,
-        "eventType": contenteventsService_data[i].eventType,
-        avatar,
-        "urluserBadge": getProfile_.urluserBadge,
-        "event": contenteventsService_data[i].event,
-        "senderOrReceiver": (contenteventsService_data[i].senderParty != undefined) ? contenteventsService_data[i].senderParty : contenteventsService_data[i].receiverParty,
-        "email": contenteventsService_data[i].email
-      });
-      if (getProfile_ != null || getProfile_ != undefined) {
-        if (withDetail_) {
-          Object.assign(datas, {
-            "username": getProfile_.username,
-          });
-        }
-      }
-      data_response.push(datas);
+    else
+    {
+      await this.errorHandler.generateNotAcceptableException("Unabled to proceed. eventType field is required");
     }
-    let data_filter = [];
-    console.log("senderOrReceiver_", senderOrReceiver_);
+    // console.log(contenteventsService_data);
+    // var getProfile_ = await this.utilsService.generateProfile2(headers['x-auth-user'], 'PROFILE');
+    // var avatar_ = {}
+    // if (getProfile_ != null || getProfile_ != undefined) {
+    //   if (getProfile_.avatar != null || getProfile_.avatar != undefined) {
+    //     if (getProfile_.avatar.mediaBasePath != null || getProfile_.avatar.mediaBasePath != undefined) {
+    //       Object.assign(avatar_, {
+    //         "mediaBasePath": getProfile_.avatar.mediaBasePath,
+    //       });
+    //     }
+    //     if (getProfile_.avatar.mediaUri != null || getProfile_.avatar.mediaUri != undefined) {
+    //       Object.assign(avatar_, {
+    //         "mediaUri": getProfile_.avatar.mediaUri,
+    //       });
+    //     }
+    //     if (getProfile_.avatar.mediaType != null || getProfile_.avatar.mediaType != undefined) {
+    //       Object.assign(avatar_, {
+    //         "mediaType": getProfile_.avatar.mediaType,
+    //       });
+    //     }
+    //     if (getProfile_.avatar.mediaEndpoint != null || getProfile_.avatar.mediaEndpoint != undefined) {
+    //       Object.assign(avatar_, {
+    //         "mediaEndpoint": getProfile_.avatar.mediaEndpoint,
+    //       });
+    //     }
+    //   }
+    // }
+
+    // let data_response = [];
+    // if(contenteventsService_data.length != 0)
+    // {
+    //   var listuser = await this.basic2SS.findInbyemail(contenteventsService_data);
+    //   for (let i = 0; i < listuser.length; i++) {
+    //     var emailSenderorreceiver = (contenteventsService_data[i].senderParty != undefined) ? contenteventsService_data[i].senderParty : (contenteventsService_data[i].receiverParty != undefined) ? contenteventsService_data[i].receiverParty : null;
+  
+    //     if (emailSenderorreceiver != null) {
+    //       var getProfile = await this.utilsService.generateProfile2(emailSenderorreceiver.toString(), 'PROFILE');
+    //     }
+  
+    //     var datas = {}
+    //     var senderOrReceiverInfo = {}
+    //     var avatar = {}
+    //     if (getProfile != null || getProfile != undefined) {
+    //       if (getProfile.avatar != null || getProfile.avatar != undefined) {
+    //         if (getProfile.avatar.mediaBasePath != null || getProfile.avatar.mediaBasePath != undefined) {
+    //           Object.assign(avatar, {
+    //             "mediaBasePath": getProfile.avatar.mediaBasePath,
+    //           });
+    //         }
+    //         if (getProfile.avatar.mediaUri != null || getProfile.avatar.mediaUri != undefined) {
+    //           Object.assign(avatar, {
+    //             "mediaUri": getProfile.avatar.mediaUri,
+    //           });
+    //         }
+    //         if (getProfile.avatar.mediaType != null || getProfile.avatar.mediaType != undefined) {
+    //           Object.assign(avatar, {
+    //             "mediaType": getProfile.avatar.mediaType,
+    //           });
+    //         }
+    //         if (getProfile.avatar.mediaEndpoint != null || getProfile.avatar.mediaEndpoint != undefined) {
+    //           Object.assign(avatar, {
+    //             "mediaEndpoint": getProfile.avatar.mediaEndpoint,
+    //           });
+    //         }
+    //       }
+    //     }
+  
+    //     if (getProfile != null || getProfile != undefined) {
+    //       Object.assign(senderOrReceiverInfo, {
+    //         "fullName": (getProfile != null) ? (getProfile.fullName != undefined) ? getProfile.fullName : "" : "",
+    //         avatar,
+    //         "urluserBadge": getProfile.urluserBadge,
+    //         "email": getProfile.email,
+    //         "username": getProfile.username,
+    //       });
+    //     }
+    //     if (withDetail_) {
+    //       Object.assign(datas, {
+    //         "createdAt": contenteventsService_data[i].createdAt,
+    //       });
+    //       Object.assign(datas, {
+    //         "profileInsight": {
+    //           "follower": insightsService_data.followers,
+    //           "following": insightsService_data.followings,
+    //         },
+    //       });
+    //       Object.assign(datas, {
+    //         senderOrReceiverInfo,
+    //       });
+    //       Object.assign(datas, {
+    //         "fullName": userbasicsService_data.fullName,
+    //       });
+    //     }
+    //     var avatar = avatar_;
+    //     Object.assign(datas, {
+    //       "flowIsDone": contenteventsService_data[i].flowIsDone,
+    //       "eventType": contenteventsService_data[i].eventType,
+    //       avatar,
+    //       "urluserBadge": getProfile_.urluserBadge,
+    //       "event": contenteventsService_data[i].event,
+    //       "senderOrReceiver": (contenteventsService_data[i].senderParty != undefined) ? contenteventsService_data[i].senderParty : contenteventsService_data[i].receiverParty,
+    //       "email": contenteventsService_data[i].email
+    //     });
+    //     if (getProfile_ != null || getProfile_ != undefined) {
+    //       if (withDetail_) {
+    //         Object.assign(datas, {
+    //           "username": getProfile_.username,
+    //         });
+    //       }
+    //     }
+    //     data_response.push(datas);
+    //   }
+    // }
+    
+    // let data_filter = [];
+    // console.log("senderOrReceiver_", senderOrReceiver_);
+    // if (senderOrReceiver_ != "") {
+    //   data_filter = data_response.filter(function (data_response_) {
+    //     return data_response_.senderOrReceiver == senderOrReceiver_;
+    //   });
+    //   data_response = data_filter;
+    // }
+
+    var getlist = null;
     if (senderOrReceiver_ != "") {
-      data_filter = data_response.filter(function (data_response_) {
-        return data_response_.senderOrReceiver == senderOrReceiver_;
-      });
-      data_response = data_filter;
+      getlist = contenteventsService_data.filter((element) => element == senderOrReceiver_);
+    }
+    else{
+      getlist = contenteventsService_data;
+    }
+    var data_response = null;
+    if(getlist.length != 0)
+    {
+      data_response = await this.basic2SS.listfilterInteractive(headers['x-auth-user'], getlist, eventType_, withDetail_);
+    }
+    else
+    {
+      data_response = [];
     }
 
     var timestamps_end = await this.utilsService.getDateTimeString();
@@ -3170,7 +3221,7 @@ export class PostsController {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var dataMedia = await this.NewPostService.findOnepostID2(id);
         if (await this.utilsService.ceckData(dataMedia)) {
-          if (dataMedia[0].mediaSource[0].uploadSource != undefined) {
+          if (dataMedia[0].mediaSource[0].uploadSource !== undefined) {
             console.log("OSS");
             if (dataMedia[0].mediaSource[0].uploadSource == "OSS") {
               var mediaMime = "";
