@@ -9889,8 +9889,8 @@ export class NewPostService {
       {
         $lookup: {
           from: 'newUserBasics',
-          localField: 'idUser',
-          foreignField: '_id',
+          localField: 'email',
+          foreignField: 'email',
           as: 'userbasics_data',
         },
       },
@@ -34857,7 +34857,7 @@ export class NewPostService {
       }
     );
 
-    if(skip != null && skip != undefined && page != null && page != undefined)
+    if(skip != null && skip != undefined && !isNaN(skip) && page != null && page != undefined && !isNaN(page))
     {
       pipeline.push(
         {
