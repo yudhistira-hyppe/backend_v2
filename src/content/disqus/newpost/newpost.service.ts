@@ -19,39 +19,9 @@ export class NewpostService {
         var data = await this.seaweedfsService.read(media.replace('/localrepo', ''));
         return data;
     }
-    async findOnepostID2(postID: string): Promise<Object> {
-        var datacontent = null;
+    async findOnepostID2(postID: string): Promise<Newpost> {
         var CreatePostsDto_ = await this.PostsModel.findOne({ postID: postID }).exec();
-        if (await this.utilsService.ceckData(CreatePostsDto_)) {
-            //   if (CreatePostsDto_.postType == 'vid' || CreatePostsDto_.postType == 'video') {
-            //     datacontent = 'mediavideos';
-            //   } else if (CreatePostsDto_.postType == 'pict') {
-            //     datacontent = 'mediapicts';
-            //   } else if (CreatePostsDto_.postType == 'diary') {
-            //     datacontent = 'mediadiaries';
-            //   } else if (CreatePostsDto_.postType == 'story') {
-            //     datacontent = 'mediastories';
-            //   }
-
-            const query = await this.PostsModel.aggregate([
-                {
-                    $match: {
-                        postID: postID
-                    }
-                },
-                // {
-                //   $lookup: {
-                //     from: datacontent,
-                //     localField: "postID",
-                //     foreignField: "postID",
-                //     as: "datacontent"
-                //   }
-                // },
-            ]);
-            return query;
-        } else {
-            return null;
-        }
+        return CreatePostsDto_;
     }
     async findByPostId(postID: string): Promise<Newpost> {
         return this.PostsModel.findOne({ postID: postID }).exec();
