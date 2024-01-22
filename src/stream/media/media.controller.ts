@@ -2945,7 +2945,7 @@ export class MediaController {
         try {
             datakyc = await this.basic2SS.detailkyc(id);
             try {
-                datafriend = await this.friendListService.findOnebyemail(datakyc[0].email);
+                datafriend = datakyc[0].friend;
                 totalfriend = datafriend.totalfriend;
             } catch (e) {
                 datafriend = null;
