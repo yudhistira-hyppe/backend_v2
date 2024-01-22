@@ -3388,4 +3388,113 @@ export class NewPostController {
             );
         }
     }
+
+    @Post('getusercontents/buy/details/v2')
+    @UseGuards(JwtAuthGuard)
+    async contentuserdetailbuy2(@Req() request, @Headers() headers): Promise<any> {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
+        var data = null;
+        var postID = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        let databuy = await this.newPostService.findcontenbuy(postID);
+        console.log(databuy);
+
+        var saleAmount = databuy[0].saleAmount;
+        var totalamount = 0;
+        var idmdradmin = "62bd413ff37a00001a004369";
+        var idvacharege = "62bd40e0f37a00001a004366";
+        var datamradmin = null;
+        var datavacharge = null;
+        var valuecharge = null;
+        try {
+
+            datavacharge = await this.settingsService.findOne(idvacharege);
+            valuecharge = datavacharge._doc.value;
+
+        } catch (e) {
+            valuecharge = 0;
+        }
+        try {
+
+            datamradmin = await this.settingsService.findOne(idmdradmin);
+            var valuemradmin = datamradmin._doc.value;
+            var nominalmradmin = saleAmount * valuemradmin / 100;
+
+            totalamount = saleAmount + Math.ceil(nominalmradmin) + valuecharge;
+
+
+
+        } catch (e) {
+            totalamount = saleAmount + 0;
+        }
+
+
+
+        if (saleAmount > 0) {
+            data = {
+
+                "_id": databuy[0]._id,
+                "mediaBasePath": databuy[0].mediaBasePath,
+                "mediaUri": databuy[0].mediaUri,
+                "mediaType": "image",
+                "mediaEndpoint": databuy[0].mediaEndpoint,
+                "createdAt": databuy[0].createdAt,
+                "updatedAt": databuy[0].updatedAt,
+                "postID": databuy[0].postID,
+                "postType": databuy[0].postType,
+                "description": databuy[0].description,
+                "title": databuy[0].title,
+                "active": databuy[0].active,
+                "location": databuy[0].location,
+                "tags": databuy[0].tags,
+                "likes": databuy[0].likes,
+                "shares": databuy[0].shares,
+                "comments": databuy[0].comments,
+                "isOwned": databuy[0].isOwned,
+                "views": databuy[0].views,
+                "privacy": databuy[0].privacy,
+                "isViewed": databuy[0].isViewed,
+                "allowComments": databuy[0].allowComments,
+                "certified": databuy[0].certified,
+                "saleLike": databuy[0].saleLike,
+                "saleView": databuy[0].saleView,
+                "adminFee": Math.ceil(nominalmradmin),
+                "serviceFee": valuecharge,
+                "prosentaseAdminFee": valuemradmin + " %",
+                "price": databuy[0].saleAmount,
+                "totalAmount": totalamount,
+                "monetize": databuy[0].monetize
+
+            };
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Content not for sell..!");
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        return { response_code: 202, data, messages };
+    }
 }
