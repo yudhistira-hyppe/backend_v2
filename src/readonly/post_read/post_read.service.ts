@@ -19401,12 +19401,13 @@ export class PostsReadService {
               //
           }
       },
+      
       {
         "$lookup": {
             from: "newUserBasics",
             as: "userTag",
             let: {
-                localID:{$ifNull:[ '$tagPeople',[new mongoose.Types.ObjectId("65081f573dedykd4ba21869f")]]}
+                localID:{$ifNull:[ '$tagPeople',[]]}
             },
             pipeline: [
                 {
@@ -19438,6 +19439,43 @@ export class PostsReadService {
             
         }
     },
+  //   {
+  //     "$lookup": {
+  //         from: "newUserBasics",
+  //         as: "userTag",
+  //         let: {
+  //             localID: '$tagPeople'
+  //         },
+  //         pipeline: [
+  //             {
+  //                 $match: 
+  //                 {
+  //                     $or: [
+  //                         {
+  //                             $expr: {
+  //                                 $eq: ['$_id', "$$localID"]
+  //                             }
+  //                         },
+  //                         {
+  //                             $expr: {
+  //                                 $eq: ['$_idAuth', "$$localID.$id"]
+  //                             }
+  //                         },
+                          
+  //                     ]
+  //                 },
+                  
+  //             },
+  //             {
+  //                 $project: {
+  //                     "_id": 1,
+  //                     "username": 1
+  //                 }
+  //             }
+  //         ],
+          
+  //     }
+  // },
       {
           $lookup: {
               from: "settings",
@@ -20426,7 +20464,7 @@ export class PostsReadService {
             from: "newUserBasics",
             as: "userTag",
             let: {
-                localID:{$ifNull:[ '$tagPeople',[new mongoose.Types.ObjectId("65081f573dedykd4ba21869f")]]}
+                localID:{$ifNull:[ '$tagPeople',[]]}
             },
             pipeline: [
                 {
@@ -21445,7 +21483,7 @@ export class PostsReadService {
             from: "newUserBasics",
             as: "userTag",
             let: {
-                localID:{$ifNull:[ '$tagPeople',[new mongoose.Types.ObjectId("65081f573dedykd4ba21869f")]]}
+                localID:{$ifNull:[ '$tagPeople',[]]}
             },
             pipeline: [
                 {
