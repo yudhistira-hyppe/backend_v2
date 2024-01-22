@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
 import { AdsRewardsService } from './adsrewards.service';
 import { AdsRewards } from './schema/adsrewards.schema';
+import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema';
 
 @Controller('api/adsv2/reward/price')
 export class AdsRewardsController {
@@ -18,7 +19,7 @@ export class AdsRewardsController {
     @HttpCode(HttpStatus.ACCEPTED)
     @Post("/create")
     async create(@Body() AdsRewards_: AdsRewards, @Headers() headers) {
-        const Userbasic_: Userbasic = await this.utilsService.getIdUserByToken(headers);
+        const Userbasic_: Userbasicnew = await this.utilsService.getIdUserByToken(headers);
         //Get current Time
         const currentDate = await this.utilsService.getDateTimeISOString()
         if (AdsRewards_.rewardPrice == undefined) {

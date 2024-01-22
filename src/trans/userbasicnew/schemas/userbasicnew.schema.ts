@@ -116,7 +116,7 @@ export class Userbasicnew {
     otpToken: String;
 
     @Prop()
-    otp_expired_time: String;
+    otp_expired_time: Long;
     @Prop()
     otppinVerified: boolean;
     @Prop()
@@ -245,6 +245,8 @@ export class Userbasicnew {
     postType: string;
     @Prop()
     creator: boolean;
+    @Prop()
+    otp_attemp: number;
 }
 
 export const UserbasicnewSchema = SchemaFactory.createForClass(Userbasicnew);

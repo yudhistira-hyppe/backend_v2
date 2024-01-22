@@ -4213,958 +4213,189 @@ export class AuthController {
     }
 
     //Ceck User Userbasics
-    const datauserbasicsService = await this.userbasicsService.findOne(
+    const datauserbasicsService = await this.basic2SS.findBymail(
       user_email,
     );
 
     //Ceck User Auth
-    const user_userAuth = await this.userauthsService.findOne(user_email);
+    //const user_userAuth = await this.userauthsService.findOne(user_email);
 
     if (await this.utilsService.ceckData(datauserbasicsService)) {
-      if (await this.utilsService.ceckData(user_userAuth)) {
-        //Ceck User ActivityEvent Parent
-        const user_activityevents = await this.activityeventsService.findParentWitoutDevice(user_email, type, false,);
-        if (Object.keys(user_activityevents).length > 0) {
-          if (type == "FORGOT_PIN") {
-            let last;
-            const count_transition = user_activityevents[0].transitions.length;
-            if (user_activityevents[0].transitions.length > 0) {
-              last = await this.activityeventsService.findbyactivityEventID(user_email, user_activityevents[0].transitions[count_transition - 1].oid, type, false,);
-            } else {
-              last = user_activityevents;
-            }
-
-            let StatusNext;
-            let EventNext;
-
-            if (last[0].status == 'NOTIFY') {
-              StatusNext = 'REPLY';
-              EventNext = 'VERIFY_OTP';
-            } else if (last[0].status == 'REPLY') {
-              StatusNext = 'INITIAL';
-              EventNext = 'CREATE_PIN';
-            } else if (last[0].status == 'INITIAL') {
-              StatusNext = user_activityevents[0].status;
-              EventNext = user_activityevents[0].event;
-            }
-
-            if ('otp' in body_) {
-              user_otp = body_.otp;
-            }
-
-            const StatusCurrent = body_.status;
-            const EventCurrent = body_.event;
-
-            if (
-              StatusNext == 'REPLY' &&
-              StatusNext == StatusCurrent &&
-              EventNext == EventCurrent
-            ) {
-              if (
-                datauserbasicsService.otp_pin != undefined &&
-                EventCurrent == 'VERIFY_OTP' &&
-                StatusCurrent == 'REPLY'
-              ) {
-                if (datauserbasicsService.otp_attemp == undefined) {
-                  otp_attemp = 0;
-                } else {
-                  otp_attemp = datauserbasicsService.otp_attemp;
-                }
-
-                if (otp_attemp < Number(setting_MaxWrongOTPPIN)) {
-                  console.log(new Date().getTime());
-                  console.log(Number(await datauserbasicsService.otp_expired_time));
-                  console.log((new Date().getTime() > Number(await datauserbasicsService.otp_expired_time)));
-                  if (
-                    (datauserbasicsService.otp_pin != undefined
-                      ? (new Date().getTime() > Number(await datauserbasicsService.otp_expired_time))
-                      : false) == false &&
-                    user_otp == datauserbasicsService.otp_pin
-                  ) {
-
-                    //Create ActivityEvent child
-                    try {
-                      var id_child = new mongoose.Types.ObjectId();
-                      data_CreateActivityeventsDto_child._id = id_child;
-                      data_CreateActivityeventsDto_child.activityEventID =
-                        ID_child_ActivityEvent;
-                      data_CreateActivityeventsDto_child.activityType = type;
-                      data_CreateActivityeventsDto_child.active = true;
-                      data_CreateActivityeventsDto_child.status = StatusCurrent;
-                      data_CreateActivityeventsDto_child.target = 'CHANGE';
-                      data_CreateActivityeventsDto_child.event = EventCurrent;
-                      data_CreateActivityeventsDto_child.action =
-                        'VerifyActivityCommand';
-                      data_CreateActivityeventsDto_child._class =
-                        'io.melody.hyppe.trans.domain.ActivityEvent';
-                      data_CreateActivityeventsDto_child.payload = {
-                        login_location: {
-                          latitude: undefined,
-                          longitude: undefined,
-                        },
-                        logout_date: undefined,
-                        login_date: undefined,
-                        login_device: undefined,
-                        email: user_email,
-                      };
-                      data_CreateActivityeventsDto_child.createdAt = current_date_string;
-                      data_CreateActivityeventsDto_child.updatedAt = current_date_string;
-                      data_CreateActivityeventsDto_child.sequenceNumber =
-                        new Int32(2);
-                      data_CreateActivityeventsDto_child.flowIsDone = false;
-                      data_CreateActivityeventsDto_child.parentActivityEventID =
-                        user_activityevents[0].activityEventID;
-                      data_CreateActivityeventsDto_child.userbasic =
-                        datauserbasicsService._id;
-
-                      //Insert ActivityEvent child
-                      await this.activityeventsService.create(
-                        data_CreateActivityeventsDto_child,
-                      );
-                    } catch (error) {
-                      await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed Create Activity events Child. Error:' +
-                        error,
-                      );
-                    }
-
-                    //Update ActivityEvent Parent
-                    try {
-                      const data_transitions = user_activityevents[0].transitions;
-                      data_transitions.push({
-                        $ref: 'activityevents',
-                        $id: new Object(ID_child_ActivityEvent),
-                        $db: 'hyppe_trans_db',
-                      });
-                      await this.activityeventsService.update(
-                        {
-                          _id: user_activityevents[0]._id,
-                        },
-                        {
-                          payload: {
-                            login_location: {
-                              latitude: undefined,
-                              longitude: undefined,
-                            },
-                            logout_date: undefined,
-                            login_date: user_activityevents[0].payload.login_date,
-                            login_device: undefined,
-                            email: user_email,
-                          },
-                          flowIsDone: false,
-                          transitions: data_transitions,
-                        },
-                      );
-                    } catch (error) {
-                      var fullurl = request.get("Host") + request.originalUrl;
-                      var timestamps_end = await this.utilsService.getDateTimeString();
-                      var reqbody = JSON.parse(JSON.stringify(body_));
-                      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                      await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed Update Activity Event Parent. Error:' +
-                        error,
-                      );
-                    }
-
-                    var createUserbasicDto_ = new CreateUserbasicDto();
-                    createUserbasicDto_.otp_pin = null;
-                    createUserbasicDto_.otp_request_time = new Long(0);
-                    createUserbasicDto_.otp_expired_time = new Long(0);
-                    createUserbasicDto_.otp_attemp = 0;
-                    createUserbasicDto_.otppinVerified = true;
-                    await this.userbasicsService.updateData(user_email, createUserbasicDto_);
-
-                    return {
-                      response_code: 202,
-                      messages: {
-                        info: ['Verify OTP successful'],
-                      },
-                    };
-                  } else {
-                    await this.userbasicsService.findOneupdatebyEmail(user_email);
-                    var messages = "";
-                    if (lang == "en") {
-                      messages = "The OTP code you entered is incorrect; please check again.";
-                    } else {
-                      messages = "Kode OTP yang kamu masukan salah, silahkan cek kembali.";
-                    }
-
-                    var fullurl = request.get("Host") + request.originalUrl;
-                    var timestamps_end = await this.utilsService.getDateTimeString();
-                    var reqbody = JSON.parse(JSON.stringify(body_));
-                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                    await this.errorHandler.generateNotAcceptableException(
-                      messages,
-                    );
-                  }
-                } else {
-                  var fullurl = request.get("Host") + request.originalUrl;
-                  var timestamps_end = await this.utilsService.getDateTimeString();
-                  var reqbody = JSON.parse(JSON.stringify(body_));
-                  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed, OTP Max Wrong',
-                  );
-                }
-              } else {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed',
-                );
-              }
-            } else if (
-              StatusNext == 'INITIAL' &&
-              StatusNext == StatusCurrent &&
-              EventNext == EventCurrent
-            ) {
-
-              let data_transitions = user_activityevents[0].transitions;
-
-              //Create ActivityEvent child
-              try {
-                var id_child = new mongoose.Types.ObjectId();
-                data_CreateActivityeventsDto_child._id = id_child;
-                data_CreateActivityeventsDto_child.activityEventID =
-                  ID_child_ActivityEvent;
-                data_CreateActivityeventsDto_child.activityType = type;
-                data_CreateActivityeventsDto_child.active = true;
-                data_CreateActivityeventsDto_child.status = 'INITIAL';
-                data_CreateActivityeventsDto_child.target = 'COMPLETE';
-                data_CreateActivityeventsDto_child.event = 'CREATE_PIN';
-                data_CreateActivityeventsDto_child._class =
-                  'io.melody.hyppe.trans.domain.ActivityEvent';
-                data_CreateActivityeventsDto_child.payload = {
-                  login_location: {
-                    latitude: undefined,
-                    longitude: undefined,
-                  },
-                  logout_date: undefined,
-                  login_date: undefined,
-                  login_device: undefined,
-                  email: user_email,
-                };
-                data_CreateActivityeventsDto_child.createdAt = current_date_string;
-                data_CreateActivityeventsDto_child.updatedAt = current_date_string;
-                data_CreateActivityeventsDto_child.sequenceNumber = new Int32(
-                  3,
-                );
-                data_CreateActivityeventsDto_child.flowIsDone = false;
-                data_CreateActivityeventsDto_child.parentActivityEventID =
-                  user_activityevents[0].activityEventID;
-                data_CreateActivityeventsDto_child.userbasic =
-                  datauserbasicsService._id;
-
-                //Insert ActivityEvent child
-                await this.activityeventsService.create(
-                  data_CreateActivityeventsDto_child,
-                );
-              } catch (error) {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Create Activity events Child. Error:' +
-                  error,
-                );
-              }
-
-              //Update ActivityEvent Parent
-              try {
-                data_transitions = user_activityevents[0].transitions;
-                data_transitions.push({
-                  $ref: 'activityevents',
-                  $id: new Object(ID_child_ActivityEvent),
-                  $db: 'hyppe_trans_db',
-                });
-
-                //Update ActivityEvent Parent
-                const update_activityevents_parent =
-                  await this.activityeventsService.update(
-                    {
-                      _id: user_activityevents[0]._id,
-                    },
-                    {
-                      transitions: data_transitions,
-                    },
-                  );
-              } catch (error) {
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Update Activity events Parent. Error:' +
-                  error,
-                );
-              }
-
-              //Update Pin
-              try {
-                var encrypt_pin = await this.utilsService.encrypt(body_.pin.toString());
-                var createUserbasicDto_ = new CreateUserbasicDto();
-                createUserbasicDto_.pin = encrypt_pin;
-                await this.userbasicsService.updateData(user_email, createUserbasicDto_);
-              } catch (error) {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Create Pin. Error: ' +
-                  error,
-                );
-              }
-
-              //Create ActivityEvent child
-              try {
-                var id_child = new mongoose.Types.ObjectId();
-                data_CreateActivityeventsDto_child._id = id_child;
-                data_CreateActivityeventsDto_child.activityEventID =
-                  ID_child_ActivityEvent_2;
-                data_CreateActivityeventsDto_child.activityType = type;
-                data_CreateActivityeventsDto_child.active = true;
-                data_CreateActivityeventsDto_child.status = 'COMPLETE';
-                data_CreateActivityeventsDto_child.target = 'COMPLETE';
-                data_CreateActivityeventsDto_child.event = 'COMPLETE';
-                data_CreateActivityeventsDto_child.action =
-                  'VerifyActivityCommand';
-                data_CreateActivityeventsDto_child._class =
-                  'io.melody.hyppe.trans.domain.ActivityEvent';
-                data_CreateActivityeventsDto_child.payload = {
-                  login_location: {
-                    latitude: undefined,
-                    longitude: undefined,
-                  },
-                  logout_date: undefined,
-                  login_date: undefined,
-                  login_device: undefined,
-                  email: user_email,
-                };
-                data_CreateActivityeventsDto_child.createdAt = current_date_string;
-                data_CreateActivityeventsDto_child.updatedAt = current_date_string;
-                data_CreateActivityeventsDto_child.sequenceNumber =
-                  new Int32(4);
-                data_CreateActivityeventsDto_child.flowIsDone = false;
-                data_CreateActivityeventsDto_child.parentActivityEventID =
-                  user_activityevents[0].activityEventID;
-                data_CreateActivityeventsDto_child.userbasic =
-                  datauserbasicsService._id;
-
-                //Insert ActivityEvent child
-                await this.activityeventsService.create(
-                  data_CreateActivityeventsDto_child,
-                );
-              } catch (error) {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Create Activity events Child. Error:' +
-                  error,
-                );
-              }
-
-              //Update ActivityEvent Parent
-              try {
-                data_transitions.push({
-                  $ref: 'activityevents',
-                  $id: new Object(ID_child_ActivityEvent_2),
-                  $db: 'hyppe_trans_db',
-                });
-
-                //Update ActivityEvent Parent
-                const update_activityevents_parent =
-                  await this.activityeventsService.update(
-                    {
-                      _id: user_activityevents[0]._id,
-                    },
-                    {
-                      transitions: data_transitions,
-                    },
-                  );
-              } catch (error) {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Update Activity events Parent. Error:' +
-                  error,
-                );
-              }
-
-              //Update ActivityEvent All Child True
-              try {
-                await this.activityeventsService.updateFlowDone(
-                  user_activityevents[0].activityEventID,
-                );
-              } catch (error) {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Update ActivityEvent All Child True. Error:' +
-                  error,
-                );
-              }
-
-              var fullurl = request.get("Host") + request.originalUrl;
-              var timestamps_end = await this.utilsService.getDateTimeString();
-              var reqbody = JSON.parse(JSON.stringify(body_));
-              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-              return {
-                response_code: 202,
-                messages: {
-                  info: ['Create PIN request successful'],
-                },
-              };
-            } else {
-              //Create ActivityEvent child
-              try {
-                var id_child = new mongoose.Types.ObjectId();
-                data_CreateActivityeventsDto_child._id = id_child;
-                data_CreateActivityeventsDto_child.activityEventID =
-                  ID_child_ActivityEvent;
-                data_CreateActivityeventsDto_child.activityType = type;
-                data_CreateActivityeventsDto_child.active = true;
-                data_CreateActivityeventsDto_child.status = 'NOTIFY';
-                data_CreateActivityeventsDto_child.target = 'REPLY';
-                data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
-                data_CreateActivityeventsDto_child._class =
-                  'io.melody.hyppe.trans.domain.ActivityEvent';
-                data_CreateActivityeventsDto_child.action =
-                  'NotifyActivityCommand';
-                data_CreateActivityeventsDto_child.payload = {
-                  login_location: {
-                    latitude: undefined,
-                    longitude: undefined,
-                  },
-                  logout_date: undefined,
-                  login_date: undefined,
-                  login_device: undefined,
-                  email: user_email,
-                };
-                data_CreateActivityeventsDto_child.createdAt = current_date_string;
-                data_CreateActivityeventsDto_child.updatedAt = current_date_string;
-                data_CreateActivityeventsDto_child.sequenceNumber = new Int32(1);
-                data_CreateActivityeventsDto_child.flowIsDone = false;
-                data_CreateActivityeventsDto_child.__v = undefined;
-                data_CreateActivityeventsDto_child.parentActivityEventID =
-                  user_activityevents[0].activityEventID;
-                data_CreateActivityeventsDto_child.userbasic =
-                  datauserbasicsService._id;
-
-                //Insert ActivityEvent Parent
-                await this.activityeventsService.create(
-                  data_CreateActivityeventsDto_child,
-                );
-              } catch (error) {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Create Activity events Child. Error: ' +
-                  error,
-                );
-              }
-
-              //Update ActivityEvent Parent
-              try {
-                const data_transitions = user_activityevents[0].transitions;
-                data_transitions.push({
-                  $ref: 'activityevents',
-                  $id: new Object(ID_child_ActivityEvent),
-                  $db: 'hyppe_trans_db',
-                });
-
-                //Update ActivityEvent Parent
-                await this.activityeventsService.update(
-                  {
-                    _id: user_activityevents[0]._id,
-                  },
-                  {
-                    transitions: data_transitions,
-                  },
-                );
-              } catch (error) {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Update Activity events Parent. Error:' +
-                  error,
-                );
-              }
-
-              //Generate OTP
-              try {
-                var OTP = await this.utilsService.generateOTP();
-                var OTP_request_time = current_date.getTime();
-                var OTP_expired_time = (current_date.setMinutes(current_date.getMinutes() + Number(setting_ExpiredTimeOTPPin)));
-
-
-                console.log(new Date().getTime());
-                console.log(OTP_expired_time);
-                console.log((new Date().getTime() > OTP_expired_time));
-
-
-                var createUserbasicDto_ = new CreateUserbasicDto();
-                createUserbasicDto_.otp_pin = OTP;
-                createUserbasicDto_.otp_attemp = 0;
-                createUserbasicDto_.otppinVerified = false;
-                createUserbasicDto_.otp_request_time = Long.fromString(OTP_request_time.toString());
-                createUserbasicDto_.otp_expired_time = Long.fromString(OTP_expired_time.toString());
-                await this.userbasicsService.updateData(user_email, createUserbasicDto_);
-
-                await this.authService.sendemailOTP(
-                  user_userAuth.email.toString(),
-                  OTP.toString(),
-                  'RECOVER_PASS',
-                );
-
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                return {
-                  response_code: 202,
-                  messages: {
-                    info: ['Request forgot PIN request successful'],
-                  },
-                };
-              } catch (error) {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Generate OTP. Error: ' + error,
-                );
-              }
-            }
+      //Ceck User ActivityEvent Parent
+      const user_activityevents = await this.activityeventsService.findParentWitoutDevice(user_email, type, false,);
+      if (Object.keys(user_activityevents).length > 0) {
+        if (type == "FORGOT_PIN") {
+          let last;
+          const count_transition = user_activityevents[0].transitions.length;
+          if (user_activityevents[0].transitions.length > 0) {
+            last = await this.activityeventsService.findbyactivityEventID(user_email, user_activityevents[0].transitions[count_transition - 1].oid, type, false,);
           } else {
-            let last;
-            if (user_activityevents[0].transitions.length > 0) {
-              last = await this.activityeventsService.findbyactivityEventID(user_email, user_activityevents[0].transitions[0].oid, type, false,);
-            } else {
-              last = user_activityevents;
-            }
+            last = user_activityevents;
+          }
 
-            let StatusNext;
-            let EventNext;
-            if (last[0].status == 'NOTIFY') {
-              StatusNext = 'REPLY';
-              EventNext = 'VERIFY_OTP';
-            } else if (last[0].status == 'INITIAL') {
-              StatusNext = user_activityevents[0].status;
-              EventNext = user_activityevents[0].event;
-            }
-            if ('otp' in body_) {
-              user_otp = body_.otp;
-            }
-            const StatusCurrent = body_.status;
-            const EventCurrent = body_.event;
+          let StatusNext;
+          let EventNext;
 
+          if (last[0].status == 'NOTIFY') {
+            StatusNext = 'REPLY';
+            EventNext = 'VERIFY_OTP';
+          } else if (last[0].status == 'REPLY') {
+            StatusNext = 'INITIAL';
+            EventNext = 'CREATE_PIN';
+          } else if (last[0].status == 'INITIAL') {
+            StatusNext = user_activityevents[0].status;
+            EventNext = user_activityevents[0].event;
+          }
+
+          if ('otp' in body_) {
+            user_otp = body_.otp;
+          }
+
+          const StatusCurrent = body_.status;
+          const EventCurrent = body_.event;
+
+          if (
+            StatusNext == 'REPLY' &&
+            StatusNext == StatusCurrent &&
+            EventNext == EventCurrent
+          ) {
             if (
-              StatusNext == 'REPLY' &&
-              StatusNext == StatusCurrent &&
-              EventNext == EventCurrent
+              datauserbasicsService.otp_pin != undefined &&
+              EventCurrent == 'VERIFY_OTP' &&
+              StatusCurrent == 'REPLY'
             ) {
-              if (
-                datauserbasicsService.otp_pin != undefined &&
-                EventCurrent == 'VERIFY_OTP' &&
-                StatusCurrent == 'REPLY'
-              ) {
+              if (datauserbasicsService.otp_attemp == undefined) {
+                otp_attemp = 0;
+              } else {
+                otp_attemp = datauserbasicsService.otp_attemp;
+              }
 
-                //Create ActivityEvent child
-                try {
-                  var id_child = new mongoose.Types.ObjectId();
-                  data_CreateActivityeventsDto_child._id = id_child;
-                  data_CreateActivityeventsDto_child.activityEventID =
-                    ID_child_ActivityEvent;
-                  data_CreateActivityeventsDto_child.activityType = type;
-                  data_CreateActivityeventsDto_child.active = true;
-                  data_CreateActivityeventsDto_child.status = StatusCurrent;
-                  data_CreateActivityeventsDto_child.target = 'COMPLETE';
-                  data_CreateActivityeventsDto_child.event = EventCurrent;
-                  data_CreateActivityeventsDto_child.action =
-                    'VerifyActivityCommand';
-                  data_CreateActivityeventsDto_child._class =
-                    'io.melody.hyppe.trans.domain.ActivityEvent';
-                  data_CreateActivityeventsDto_child.payload = {
-                    login_location: {
-                      latitude: undefined,
-                      longitude: undefined,
-                    },
-                    logout_date: undefined,
-                    login_date: undefined,
-                    login_device: undefined,
-                    email: user_email,
-                  };
-                  data_CreateActivityeventsDto_child.createdAt = current_date_string;
-                  data_CreateActivityeventsDto_child.updatedAt = current_date_string;
-                  data_CreateActivityeventsDto_child.sequenceNumber = new Int32(
-                    3,
-                  );
-                  data_CreateActivityeventsDto_child.flowIsDone = false;
-                  data_CreateActivityeventsDto_child.parentActivityEventID =
-                    user_activityevents[0].activityEventID;
-                  data_CreateActivityeventsDto_child.userbasic =
-                    datauserbasicsService._id;
+              if (otp_attemp < Number(setting_MaxWrongOTPPIN)) {
+                console.log(new Date().getTime());
+                console.log(Number(await datauserbasicsService.otp_expired_time));
+                console.log((new Date().getTime() > Number(await datauserbasicsService.otp_expired_time)));
+                if (
+                  (datauserbasicsService.otp_pin != undefined
+                    ? (new Date().getTime() > Number(await datauserbasicsService.otp_expired_time))
+                    : false) == false &&
+                  user_otp == datauserbasicsService.otp_pin
+                ) {
 
-                  //Insert ActivityEvent child
-                  await this.activityeventsService.create(
-                    data_CreateActivityeventsDto_child,
-                  );
-                } catch (error) {
-                  var fullurl = request.get("Host") + request.originalUrl;
-                  var timestamps_end = await this.utilsService.getDateTimeString();
-                  var reqbody = JSON.parse(JSON.stringify(body_));
-                  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+                  //Create ActivityEvent child
+                  try {
+                    var id_child = new mongoose.Types.ObjectId();
+                    data_CreateActivityeventsDto_child._id = id_child;
+                    data_CreateActivityeventsDto_child.activityEventID =
+                      ID_child_ActivityEvent;
+                    data_CreateActivityeventsDto_child.activityType = type;
+                    data_CreateActivityeventsDto_child.active = true;
+                    data_CreateActivityeventsDto_child.status = StatusCurrent;
+                    data_CreateActivityeventsDto_child.target = 'CHANGE';
+                    data_CreateActivityeventsDto_child.event = EventCurrent;
+                    data_CreateActivityeventsDto_child.action =
+                      'VerifyActivityCommand';
+                    data_CreateActivityeventsDto_child._class =
+                      'io.melody.hyppe.trans.domain.ActivityEvent';
+                    data_CreateActivityeventsDto_child.payload = {
+                      login_location: {
+                        latitude: undefined,
+                        longitude: undefined,
+                      },
+                      logout_date: undefined,
+                      login_date: undefined,
+                      login_device: undefined,
+                      email: user_email,
+                    };
+                    data_CreateActivityeventsDto_child.createdAt = current_date_string;
+                    data_CreateActivityeventsDto_child.updatedAt = current_date_string;
+                    data_CreateActivityeventsDto_child.sequenceNumber =
+                      new Int32(2);
+                    data_CreateActivityeventsDto_child.flowIsDone = false;
+                    data_CreateActivityeventsDto_child.parentActivityEventID =
+                      user_activityevents[0].activityEventID;
+                    data_CreateActivityeventsDto_child.userbasic =
+                      Object(datauserbasicsService._id.toString());
 
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Create Activity events Child. Error:' +
-                    error,
-                  );
-                }
-
-                //Update ActivityEvent Parent
-                try {
-                  const data_transitions = user_activityevents[0].transitions;
-                  data_transitions.push({
-                    $ref: 'activityevents',
-                    $id: new Object(ID_child_ActivityEvent),
-                    $db: 'hyppe_trans_db',
-                  });
+                    //Insert ActivityEvent child
+                    await this.activityeventsService.create(
+                      data_CreateActivityeventsDto_child,
+                    );
+                  } catch (error) {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Unabled to proceed Create Activity events Child. Error:' +
+                      error,
+                    );
+                  }
 
                   //Update ActivityEvent Parent
-                  const update_activityevents_parent =
+                  try {
+                    const data_transitions = user_activityevents[0].transitions;
+                    data_transitions.push({
+                      $ref: 'activityevents',
+                      $id: new Object(ID_child_ActivityEvent),
+                      $db: 'hyppe_trans_db',
+                    });
                     await this.activityeventsService.update(
                       {
                         _id: user_activityevents[0]._id,
                       },
                       {
+                        payload: {
+                          login_location: {
+                            latitude: undefined,
+                            longitude: undefined,
+                          },
+                          logout_date: undefined,
+                          login_date: user_activityevents[0].payload.login_date,
+                          login_device: undefined,
+                          email: user_email,
+                        },
+                        flowIsDone: false,
                         transitions: data_transitions,
                       },
                     );
-                } catch (error) {
-                  var fullurl = request.get("Host") + request.originalUrl;
-                  var timestamps_end = await this.utilsService.getDateTimeString();
-                  var reqbody = JSON.parse(JSON.stringify(body_));
-                  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Update Activity events Parent. Error:' +
-                    error,
-                  );
-                }
-
-                if (datauserbasicsService.otp_attemp == undefined) {
-                  otp_attemp = 0;
-                } else {
-                  otp_attemp = datauserbasicsService.otp_attemp;
-                }
-
-                if (otp_attemp < Number(setting_MaxWrongOTPPIN)) {
-                  if (
-                    (datauserbasicsService.otp_pin != undefined
-                      ? (new Date().getTime() > Number(await datauserbasicsService.otp_expired_time))
-                      : false) == false &&
-                    user_otp == datauserbasicsService.otp_pin
-                  ) {
-
-                    //Create ActivityEvent child
-                    try {
-                      var id_child = new mongoose.Types.ObjectId();
-                      data_CreateActivityeventsDto_child._id = id_child;
-                      data_CreateActivityeventsDto_child.activityEventID =
-                        ID_child_ActivityEvent;
-                      data_CreateActivityeventsDto_child.activityType = type;
-                      data_CreateActivityeventsDto_child.active = true;
-                      data_CreateActivityeventsDto_child.status = 'COMPLETE';
-                      data_CreateActivityeventsDto_child.target = 'COMPLETE';
-                      data_CreateActivityeventsDto_child.event = 'COMPLETE';
-                      data_CreateActivityeventsDto_child.action =
-                        'VerifyActivityCommand';
-                      data_CreateActivityeventsDto_child._class =
-                        'io.melody.hyppe.trans.domain.ActivityEvent';
-                      data_CreateActivityeventsDto_child.payload = {
-                        login_location: {
-                          latitude: undefined,
-                          longitude: undefined,
-                        },
-                        logout_date: undefined,
-                        login_date: undefined,
-                        login_device: undefined,
-                        email: user_email,
-                      };
-                      data_CreateActivityeventsDto_child.createdAt = current_date_string;
-                      data_CreateActivityeventsDto_child.updatedAt = current_date_string;
-                      data_CreateActivityeventsDto_child.sequenceNumber =
-                        new Int32(4);
-                      data_CreateActivityeventsDto_child.flowIsDone = false;
-                      data_CreateActivityeventsDto_child.parentActivityEventID =
-                        user_activityevents[0].activityEventID;
-                      data_CreateActivityeventsDto_child.userbasic =
-                        datauserbasicsService._id;
-
-                      //Insert ActivityEvent child
-                      await this.activityeventsService.create(
-                        data_CreateActivityeventsDto_child,
-                      );
-                    } catch (error) {
-                      var fullurl = request.get("Host") + request.originalUrl;
-                      var timestamps_end = await this.utilsService.getDateTimeString();
-                      var reqbody = JSON.parse(JSON.stringify(body_));
-                      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                      await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed Create Activity events Child. Error:' +
-                        error,
-                      );
-                    }
-
-                    //Update ActivityEvent Parent
-                    try {
-                      const data_transitions = user_activityevents[0].transitions;
-                      data_transitions.push({
-                        $ref: 'activityevents',
-                        $id: new Object(ID_child_ActivityEvent),
-                        $db: 'hyppe_trans_db',
-                      });
-                      await this.activityeventsService.update(
-                        {
-                          _id: user_activityevents[0]._id,
-                        },
-                        {
-                          payload: {
-                            login_location: {
-                              latitude: undefined,
-                              longitude: undefined,
-                            },
-                            logout_date: undefined,
-                            login_date: user_activityevents[0].payload.login_date,
-                            login_device: undefined,
-                            email: user_email,
-                          },
-                          flowIsDone: true,
-                          transitions: data_transitions,
-                        },
-                      );
-                    } catch (error) {
-                      var fullurl = request.get("Host") + request.originalUrl;
-                      var timestamps_end = await this.utilsService.getDateTimeString();
-                      var reqbody = JSON.parse(JSON.stringify(body_));
-                      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                      await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed Update Activity Event Parent. Error:' +
-                        error,
-                      );
-                    }
-
-                    //Update ActivityEvent All Child True
-                    try {
-                      await this.activityeventsService.updateFlowDone(
-                        user_activityevents[0].activityEventID,
-                      );
-                    } catch (error) {
-                      var fullurl = request.get("Host") + request.originalUrl;
-                      var timestamps_end = await this.utilsService.getDateTimeString();
-                      var reqbody = JSON.parse(JSON.stringify(body_));
-                      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                      await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed Update ActivityEvent All Child True. Error:' +
-                        error,
-                      );
-                    }
-
-                    var createUserbasicDto_ = new CreateUserbasicDto();
-                    createUserbasicDto_.pin = encrypt_pin;
-                    createUserbasicDto_.otp_pin = null;
-                    createUserbasicDto_.otp_request_time = new Long(0);
-                    createUserbasicDto_.otp_expired_time = new Long(0);
-                    createUserbasicDto_.otp_attemp = 0;
-                    createUserbasicDto_.otppinVerified = true;
-                    await this.userbasicsService.updateData(user_email, createUserbasicDto_);
-
+                  } catch (error) {
                     var fullurl = request.get("Host") + request.originalUrl;
                     var timestamps_end = await this.utilsService.getDateTimeString();
                     var reqbody = JSON.parse(JSON.stringify(body_));
                     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
 
-                    return {
-                      response_code: 202,
-                      messages: {
-                        info: ['Verify OTP successful'],
-                      },
-                    };
-                  } else {
-                    await this.userbasicsService.findOneupdatebyEmail(user_email);
-                    var messages = "";
-                    if (lang == "en") {
-                      messages = "The OTP code you entered is incorrect; please check again.";
-                    } else {
-                      messages = "Kode OTP yang kamu masukan salah, silahkan cek kembali.";
-                    }
                     await this.errorHandler.generateNotAcceptableException(
-                      messages,
+                      'Unabled to proceed Update Activity Event Parent. Error:' +
+                      error,
                     );
                   }
-                } else {
-                  var fullurl = request.get("Host") + request.originalUrl;
-                  var timestamps_end = await this.utilsService.getDateTimeString();
-                  var reqbody = JSON.parse(JSON.stringify(body_));
-                  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed, OTP Max Wrong',
-                  );
-                }
-              } else if (
-                datauserbasicsService.otp_pin != undefined &&
-                EventCurrent == 'NOTIFY_OTP' &&
-                StatusCurrent == 'NOTIFY'
-              ) {
-
-                //Create ActivityEvent child
-                try {
-                  var id_child = new mongoose.Types.ObjectId();
-                  data_CreateActivityeventsDto_child._id = id_child;
-                  data_CreateActivityeventsDto_child.activityEventID =
-                    ID_child_ActivityEvent;
-                  data_CreateActivityeventsDto_child.activityType = type;
-                  data_CreateActivityeventsDto_child.active = true;
-                  data_CreateActivityeventsDto_child.status = 'NOTIFY';
-                  data_CreateActivityeventsDto_child.target = 'REPLY';
-                  data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
-                  data_CreateActivityeventsDto_child._class =
-                    'io.melody.hyppe.trans.domain.ActivityEvent';
-                  data_CreateActivityeventsDto_child.payload = {
-                    login_location: {
-                      latitude: undefined,
-                      longitude: undefined,
-                    },
-                    logout_date: undefined,
-                    login_date: undefined,
-                    login_device: undefined,
-                    email: user_email,
-                  };
-                  data_CreateActivityeventsDto_child.createdAt = current_date_string;
-                  data_CreateActivityeventsDto_child.updatedAt = current_date_string;
-                  data_CreateActivityeventsDto_child.sequenceNumber = new Int32(
-                    3,
-                  );
-                  data_CreateActivityeventsDto_child.flowIsDone = false;
-                  data_CreateActivityeventsDto_child.parentActivityEventID =
-                    user_activityevents[0].activityEventID;
-                  data_CreateActivityeventsDto_child.userbasic =
-                    datauserbasicsService._id;
-
-                  //Insert ActivityEvent child
-                  await this.activityeventsService.create(
-                    data_CreateActivityeventsDto_child,
-                  );
-                } catch (error) {
-                  var fullurl = request.get("Host") + request.originalUrl;
-                  var timestamps_end = await this.utilsService.getDateTimeString();
-                  var reqbody = JSON.parse(JSON.stringify(body_));
-                  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Create Activity events Child. Error:' +
-                    error,
-                  );
-                }
-
-                //Update ActivityEvent Parent
-                try {
-                  const data_transitions = user_activityevents[0].transitions;
-                  data_transitions.push({
-                    $ref: 'activityevents',
-                    $id: new Object(ID_child_ActivityEvent),
-                    $db: 'hyppe_trans_db',
-                  });
-
-                  //Update ActivityEvent Parent
-                  const update_activityevents_parent =
-                    await this.activityeventsService.update(
-                      {
-                        _id: user_activityevents[0]._id,
-                      },
-                      {
-                        transitions: data_transitions,
-                      },
-                    );
-                } catch (error) {
-                  var fullurl = request.get("Host") + request.originalUrl;
-                  var timestamps_end = await this.utilsService.getDateTimeString();
-                  var reqbody = JSON.parse(JSON.stringify(body_));
-                  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Update Activity events Parent. Error:' +
-                    error,
-                  );
-                }
-
-                //Generate OTP
-                try {
-                  var OTP = await this.utilsService.generateOTP();
-                  var OTP_request_time = current_date.getTime();
-                  var OTP_expired_time = (current_date.setMinutes(current_date.getMinutes() + Number(setting_ExpiredTimeOTPPin)));
 
                   var createUserbasicDto_ = new CreateUserbasicDto();
-                  createUserbasicDto_.otp_pin = OTP;
+                  createUserbasicDto_.otp_pin = null;
+                  createUserbasicDto_.otp_request_time = new Long(0);
+                  createUserbasicDto_.otp_expired_time = new Long(0);
                   createUserbasicDto_.otp_attemp = 0;
-                  createUserbasicDto_.otp_request_time = Long.fromString(OTP_request_time.toString());
-                  createUserbasicDto_.otp_expired_time = Long.fromString(OTP_expired_time.toString());
+                  createUserbasicDto_.otppinVerified = true;
                   await this.userbasicsService.updateData(user_email, createUserbasicDto_);
-
-                  await this.authService.sendemailOTP(
-                    user_userAuth.email.toString(),
-                    OTP.toString(),
-                    'RECOVER_PASS',
-                  );
-
-                  var fullurl = request.get("Host") + request.originalUrl;
-                  var timestamps_end = await this.utilsService.getDateTimeString();
-                  var reqbody = JSON.parse(JSON.stringify(body_));
-                  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
 
                   return {
                     response_code: 202,
                     messages: {
-                      info: ['Request create PIN request successful'],
+                      info: ['Verify OTP successful'],
                     },
                   };
-                } catch (error) {
+                } else {
+                  await this.userbasicsService.findOneupdatebyEmail(user_email);
+                  var messages = "";
+                  if (lang == "en") {
+                    messages = "The OTP code you entered is incorrect; please check again.";
+                  } else {
+                    messages = "Kode OTP yang kamu masukan salah, silahkan cek kembali.";
+                  }
+
                   var fullurl = request.get("Host") + request.originalUrl;
                   var timestamps_end = await this.utilsService.getDateTimeString();
                   var reqbody = JSON.parse(JSON.stringify(body_));
                   this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
 
                   await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Gnerate OTP. Error: ' + error,
+                    messages,
                   );
                 }
               } else {
@@ -5174,278 +4405,7 @@ export class AuthController {
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
 
                 await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed',
-                );
-              }
-            } else {
-              //Create ActivityEvent child
-              try {
-                var id_child = new mongoose.Types.ObjectId();
-                data_CreateActivityeventsDto_child._id = id_child;
-                data_CreateActivityeventsDto_child.activityEventID =
-                  ID_child_ActivityEvent;
-                data_CreateActivityeventsDto_child.activityType = type;
-                data_CreateActivityeventsDto_child.active = true;
-                data_CreateActivityeventsDto_child.status = 'NOTIFY';
-                data_CreateActivityeventsDto_child.target = 'REPLY';
-                data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
-                data_CreateActivityeventsDto_child._class =
-                  'io.melody.hyppe.trans.domain.ActivityEvent';
-                data_CreateActivityeventsDto_child.action =
-                  'NotifyActivityCommand';
-                data_CreateActivityeventsDto_child.payload = {
-                  login_location: {
-                    latitude: undefined,
-                    longitude: undefined,
-                  },
-                  logout_date: undefined,
-                  login_date: undefined,
-                  login_device: undefined,
-                  email: user_email,
-                };
-                data_CreateActivityeventsDto_child.createdAt = current_date_string;
-                data_CreateActivityeventsDto_child.updatedAt = current_date_string;
-                data_CreateActivityeventsDto_child.sequenceNumber = new Int32(2);
-                data_CreateActivityeventsDto_child.flowIsDone = false;
-                data_CreateActivityeventsDto_child.__v = undefined;
-                data_CreateActivityeventsDto_child.parentActivityEventID =
-                  user_activityevents[0].activityEventID;
-                data_CreateActivityeventsDto_child.userbasic =
-                  datauserbasicsService._id;
-
-                //Insert ActivityEvent Parent
-                await this.activityeventsService.create(
-                  data_CreateActivityeventsDto_child,
-                );
-              } catch (error) {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Create Activity events Child. Error: ' +
-                  error,
-                );
-              }
-
-              //Update ActivityEvent Parent
-              try {
-                const data_transitions = user_activityevents[0].transitions;
-                data_transitions.push({
-                  $ref: 'activityevents',
-                  $id: new Object(ID_child_ActivityEvent),
-                  $db: 'hyppe_trans_db',
-                });
-
-                //Update ActivityEvent Parent
-                await this.activityeventsService.update(
-                  {
-                    _id: user_activityevents[0]._id,
-                  },
-                  {
-                    transitions: data_transitions,
-                  },
-                );
-              } catch (error) {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Update Activity events Parent. Error:' +
-                  error,
-                );
-              }
-
-              var OTP = await this.utilsService.generateOTP();
-              var OTP_request_time = current_date.getTime();
-              var OTP_expired_time = (current_date.setMinutes(current_date.getMinutes() + Number(setting_ExpiredTimeOTPPin)));
-
-              var createUserbasicDto_ = new CreateUserbasicDto();
-              createUserbasicDto_.otp_pin = OTP;
-              createUserbasicDto_.otp_attemp = 0;
-              createUserbasicDto_.otp_request_time = Long.fromString(OTP_request_time.toString());
-              createUserbasicDto_.otp_expired_time = Long.fromString(OTP_expired_time.toString());
-              await this.userbasicsService.updateData(user_email, createUserbasicDto_);
-
-              await this.authService.sendemailOTP(
-                user_userAuth.email.toString(),
-                OTP.toString(),
-                'RECOVER_PASS',
-              );
-
-              var messages = "";
-              if (lang == "en") {
-                messages = "Email Sent, We have sent a verification code to your email.";
-              } else {
-                messages = "Email Terkirim, Kami telah mengirimkan kode verifikasi ke email kamu.";
-              }
-
-              var fullurl = request.get("Host") + request.originalUrl;
-              var timestamps_end = await this.utilsService.getDateTimeString();
-              var reqbody = JSON.parse(JSON.stringify(body_));
-              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-              return {
-                response_code: 202,
-                messages: {
-                  info: messages,
-                },
-              };
-            }
-          }
-        } else {
-          if (type == "CECK_PIN") {
-            if (body_.pin == undefined) {
-              var fullurl = request.get("Host") + request.originalUrl;
-              var timestamps_end = await this.utilsService.getDateTimeString();
-              var reqbody = JSON.parse(JSON.stringify(body_));
-              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-              await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed, param pin is required',
-              );
-            } else {
-              if (body_.pin.length != 6) {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed, pin lenght must 6 digit',
-                );
-              }
-            }
-
-            if (datauserbasicsService.pin != undefined) {
-              var current_pin = datauserbasicsService.pin;
-              var decript_pin = await this.utilsService.decrypt(current_pin.toString());
-              if (decript_pin == body_.pin) {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                return {
-                  response_code: 202,
-                  messages: {
-                    info: ['Ceck Pin Succcesfully'],
-                  },
-                };
-              } else {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed, pin not match current pin',
-                );
-              }
-
-              //Create ActivityEvent Parent
-              try {
-                var id_parent = new mongoose.Types.ObjectId();
-                data_CreateActivityeventsDto_parent._id = id_parent;
-                data_CreateActivityeventsDto_parent.activityEventID =
-                  ID_parent_ActivityEvent;
-                data_CreateActivityeventsDto_parent.activityType = type;
-                data_CreateActivityeventsDto_parent.active = true;
-                data_CreateActivityeventsDto_parent.status = 'INITIAL';
-                data_CreateActivityeventsDto_parent.target = 'COMPLETE';
-                data_CreateActivityeventsDto_parent.event = type;
-                data_CreateActivityeventsDto_parent._class =
-                  'io.melody.hyppe.trans.domain.ActivityEvent';
-                data_CreateActivityeventsDto_parent.payload = {
-                  login_location: {
-                    latitude: undefined,
-                    longitude: undefined,
-                  },
-                  logout_date: undefined,
-                  login_date: undefined,
-                  login_device: undefined,
-                  email: user_email,
-                };
-                data_CreateActivityeventsDto_parent.createdAt = current_date_string;
-                data_CreateActivityeventsDto_parent.updatedAt = current_date_string;
-                data_CreateActivityeventsDto_parent.sequenceNumber = new Int32(0);
-                data_CreateActivityeventsDto_parent.__v = undefined;
-                data_CreateActivityeventsDto_parent.flowIsDone = true;
-                data_CreateActivityeventsDto_parent.transitions = [
-                  {
-                    $ref: 'activityevents',
-                    $id: Object(ID_child_ActivityEvent),
-                    $db: 'hyppe_trans_db',
-                  },
-                ];
-                data_CreateActivityeventsDto_parent.userbasic =
-                  datauserbasicsService._id;
-
-                //Insert ActivityEvent Parent
-                await this.activityeventsService.create(
-                  data_CreateActivityeventsDto_parent,
-                );
-              } catch (error) {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Create Activity events Parent. Error: ' +
-                  error,
-                );
-              }
-
-              //Create ActivityEvent child
-              try {
-                var id_child = new mongoose.Types.ObjectId();
-                data_CreateActivityeventsDto_child._id = id_child;
-                data_CreateActivityeventsDto_child.activityEventID =
-                  ID_child_ActivityEvent;
-                data_CreateActivityeventsDto_child.activityType = type;
-                data_CreateActivityeventsDto_child.active = true;
-                data_CreateActivityeventsDto_child.status = 'COMPLETE';
-                data_CreateActivityeventsDto_child.target = 'COMPLETE';
-                data_CreateActivityeventsDto_child.event = type;
-                data_CreateActivityeventsDto_child._class =
-                  'io.melody.hyppe.trans.domain.ActivityEvent';
-                data_CreateActivityeventsDto_child.payload = {
-                  login_location: {
-                    latitude: undefined,
-                    longitude: undefined,
-                  },
-                  logout_date: undefined,
-                  login_date: undefined,
-                  login_device: undefined,
-                  email: user_email,
-                };
-                data_CreateActivityeventsDto_child.createdAt = current_date_string;
-                data_CreateActivityeventsDto_child.updatedAt = current_date_string;
-                data_CreateActivityeventsDto_child.sequenceNumber = new Int32(2);
-                data_CreateActivityeventsDto_child.flowIsDone = true;
-                data_CreateActivityeventsDto_child.__v = undefined;
-                data_CreateActivityeventsDto_child.parentActivityEventID =
-                  ID_parent_ActivityEvent;
-                data_CreateActivityeventsDto_child.userbasic =
-                  datauserbasicsService._id;
-
-                //Insert ActivityEvent Parent
-                await this.activityeventsService.create(
-                  data_CreateActivityeventsDto_child,
-                );
-              } catch (error) {
-                var fullurl = request.get("Host") + request.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                var reqbody = JSON.parse(JSON.stringify(body_));
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
-
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Create Activity events Child. Error: ' +
-                  error,
+                  'Unabled to proceed, OTP Max Wrong',
                 );
               }
             } else {
@@ -5455,26 +4415,31 @@ export class AuthController {
               this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
 
               await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed, you must create pin first',
+                'Unabled to proceed',
               );
             }
-          } else if (type == "FORGOT_PIN") {
-            //Create ActivityEvent Parent
+          } else if (
+            StatusNext == 'INITIAL' &&
+            StatusNext == StatusCurrent &&
+            EventNext == EventCurrent
+          ) {
+
+            let data_transitions = user_activityevents[0].transitions;
+
+            //Create ActivityEvent child
             try {
-              var id_parent = new mongoose.Types.ObjectId();
-              data_CreateActivityeventsDto_parent._id = id_parent;
-              data_CreateActivityeventsDto_parent.activityEventID =
-                ID_parent_ActivityEvent;
-              data_CreateActivityeventsDto_parent.activityType = type;
-              data_CreateActivityeventsDto_parent.active = true;
-              data_CreateActivityeventsDto_parent.status = 'INITIAL';
-              data_CreateActivityeventsDto_parent.target = 'NOTIFY';
-              data_CreateActivityeventsDto_parent.event = type;
-              data_CreateActivityeventsDto_parent.fork = 'NOTIFY_OTP';
-              data_CreateActivityeventsDto_parent.action = 'RecoverPinCommand';
-              data_CreateActivityeventsDto_parent._class =
+              var id_child = new mongoose.Types.ObjectId();
+              data_CreateActivityeventsDto_child._id = id_child;
+              data_CreateActivityeventsDto_child.activityEventID =
+                ID_child_ActivityEvent;
+              data_CreateActivityeventsDto_child.activityType = type;
+              data_CreateActivityeventsDto_child.active = true;
+              data_CreateActivityeventsDto_child.status = 'INITIAL';
+              data_CreateActivityeventsDto_child.target = 'COMPLETE';
+              data_CreateActivityeventsDto_child.event = 'CREATE_PIN';
+              data_CreateActivityeventsDto_child._class =
                 'io.melody.hyppe.trans.domain.ActivityEvent';
-              data_CreateActivityeventsDto_parent.payload = {
+              data_CreateActivityeventsDto_child.payload = {
                 login_location: {
                   latitude: undefined,
                   longitude: undefined,
@@ -5484,24 +4449,20 @@ export class AuthController {
                 login_device: undefined,
                 email: user_email,
               };
-              data_CreateActivityeventsDto_parent.createdAt = current_date_string;
-              data_CreateActivityeventsDto_parent.updatedAt = current_date_string;
-              data_CreateActivityeventsDto_parent.sequenceNumber = new Int32(0);
-              data_CreateActivityeventsDto_parent.__v = undefined;
-              data_CreateActivityeventsDto_parent.flowIsDone = false;
-              data_CreateActivityeventsDto_parent.transitions = [
-                {
-                  $ref: 'activityevents',
-                  $id: Object(ID_child_ActivityEvent),
-                  $db: 'hyppe_trans_db',
-                },
-              ];
-              data_CreateActivityeventsDto_parent.userbasic =
-                datauserbasicsService._id;
+              data_CreateActivityeventsDto_child.createdAt = current_date_string;
+              data_CreateActivityeventsDto_child.updatedAt = current_date_string;
+              data_CreateActivityeventsDto_child.sequenceNumber = new Int32(
+                3,
+              );
+              data_CreateActivityeventsDto_child.flowIsDone = false;
+              data_CreateActivityeventsDto_child.parentActivityEventID =
+                user_activityevents[0].activityEventID;
+              data_CreateActivityeventsDto_child.userbasic =
+                Object(datauserbasicsService._id.toString());
 
-              //Insert ActivityEvent Parent
+              //Insert ActivityEvent child
               await this.activityeventsService.create(
-                data_CreateActivityeventsDto_parent,
+                data_CreateActivityeventsDto_child,
               );
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
@@ -5510,11 +4471,165 @@ export class AuthController {
               this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
 
               await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Create Activity events Parent. Error: ' +
+                'Unabled to proceed Create Activity events Child. Error:' +
                 error,
               );
             }
 
+            //Update ActivityEvent Parent
+            try {
+              data_transitions = user_activityevents[0].transitions;
+              data_transitions.push({
+                $ref: 'activityevents',
+                $id: new Object(ID_child_ActivityEvent),
+                $db: 'hyppe_trans_db',
+              });
+
+              //Update ActivityEvent Parent
+              const update_activityevents_parent =
+                await this.activityeventsService.update(
+                  {
+                    _id: user_activityevents[0]._id,
+                  },
+                  {
+                    transitions: data_transitions,
+                  },
+                );
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Update Activity events Parent. Error:' +
+                error,
+              );
+            }
+
+            //Update Pin
+            try {
+              var encrypt_pin = await this.utilsService.encrypt(body_.pin.toString());
+              var createUserbasicDto_ = new CreateUserbasicDto();
+              createUserbasicDto_.pin = encrypt_pin;
+              await this.userbasicsService.updateData(user_email, createUserbasicDto_);
+            } catch (error) {
+              var fullurl = request.get("Host") + request.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(body_));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Create Pin. Error: ' +
+                error,
+              );
+            }
+
+            //Create ActivityEvent child
+            try {
+              var id_child = new mongoose.Types.ObjectId();
+              data_CreateActivityeventsDto_child._id = id_child;
+              data_CreateActivityeventsDto_child.activityEventID =
+                ID_child_ActivityEvent_2;
+              data_CreateActivityeventsDto_child.activityType = type;
+              data_CreateActivityeventsDto_child.active = true;
+              data_CreateActivityeventsDto_child.status = 'COMPLETE';
+              data_CreateActivityeventsDto_child.target = 'COMPLETE';
+              data_CreateActivityeventsDto_child.event = 'COMPLETE';
+              data_CreateActivityeventsDto_child.action =
+                'VerifyActivityCommand';
+              data_CreateActivityeventsDto_child._class =
+                'io.melody.hyppe.trans.domain.ActivityEvent';
+              data_CreateActivityeventsDto_child.payload = {
+                login_location: {
+                  latitude: undefined,
+                  longitude: undefined,
+                },
+                logout_date: undefined,
+                login_date: undefined,
+                login_device: undefined,
+                email: user_email,
+              };
+              data_CreateActivityeventsDto_child.createdAt = current_date_string;
+              data_CreateActivityeventsDto_child.updatedAt = current_date_string;
+              data_CreateActivityeventsDto_child.sequenceNumber =
+                new Int32(4);
+              data_CreateActivityeventsDto_child.flowIsDone = false;
+              data_CreateActivityeventsDto_child.parentActivityEventID =
+                user_activityevents[0].activityEventID;
+              data_CreateActivityeventsDto_child.userbasic =
+                Object(datauserbasicsService._id.toString());
+
+              //Insert ActivityEvent child
+              await this.activityeventsService.create(
+                data_CreateActivityeventsDto_child,
+              );
+            } catch (error) {
+              var fullurl = request.get("Host") + request.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(body_));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Create Activity events Child. Error:' +
+                error,
+              );
+            }
+
+            //Update ActivityEvent Parent
+            try {
+              data_transitions.push({
+                $ref: 'activityevents',
+                $id: new Object(ID_child_ActivityEvent_2),
+                $db: 'hyppe_trans_db',
+              });
+
+              //Update ActivityEvent Parent
+              const update_activityevents_parent =
+                await this.activityeventsService.update(
+                  {
+                    _id: user_activityevents[0]._id,
+                  },
+                  {
+                    transitions: data_transitions,
+                  },
+                );
+            } catch (error) {
+              var fullurl = request.get("Host") + request.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(body_));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Update Activity events Parent. Error:' +
+                error,
+              );
+            }
+
+            //Update ActivityEvent All Child True
+            try {
+              await this.activityeventsService.updateFlowDone(
+                user_activityevents[0].activityEventID,
+              );
+            } catch (error) {
+              var fullurl = request.get("Host") + request.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(body_));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Update ActivityEvent All Child True. Error:' +
+                error,
+              );
+            }
+
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(body_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+            return {
+              response_code: 202,
+              messages: {
+                info: ['Create PIN request successful'],
+              },
+            };
+          } else {
             //Create ActivityEvent child
             try {
               var id_child = new mongoose.Types.ObjectId();
@@ -5528,7 +4643,8 @@ export class AuthController {
               data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
               data_CreateActivityeventsDto_child._class =
                 'io.melody.hyppe.trans.domain.ActivityEvent';
-              data_CreateActivityeventsDto_child.action = 'NotifyActivityCommand';
+              data_CreateActivityeventsDto_child.action =
+                'NotifyActivityCommand';
               data_CreateActivityeventsDto_child.payload = {
                 login_location: {
                   latitude: undefined,
@@ -5545,9 +4661,9 @@ export class AuthController {
               data_CreateActivityeventsDto_child.flowIsDone = false;
               data_CreateActivityeventsDto_child.__v = undefined;
               data_CreateActivityeventsDto_child.parentActivityEventID =
-                ID_parent_ActivityEvent;
+                user_activityevents[0].activityEventID;
               data_CreateActivityeventsDto_child.userbasic =
-                datauserbasicsService._id;
+                Object(datauserbasicsService._id.toString());
 
               //Insert ActivityEvent Parent
               await this.activityeventsService.create(
@@ -5565,22 +4681,58 @@ export class AuthController {
               );
             }
 
+            //Update ActivityEvent Parent
+            try {
+              const data_transitions = user_activityevents[0].transitions;
+              data_transitions.push({
+                $ref: 'activityevents',
+                $id: new Object(ID_child_ActivityEvent),
+                $db: 'hyppe_trans_db',
+              });
+
+              //Update ActivityEvent Parent
+              await this.activityeventsService.update(
+                {
+                  _id: user_activityevents[0]._id,
+                },
+                {
+                  transitions: data_transitions,
+                },
+              );
+            } catch (error) {
+              var fullurl = request.get("Host") + request.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(body_));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Update Activity events Parent. Error:' +
+                error,
+              );
+            }
+
             //Generate OTP
             try {
               var OTP = await this.utilsService.generateOTP();
               var OTP_request_time = current_date.getTime();
               var OTP_expired_time = (current_date.setMinutes(current_date.getMinutes() + Number(setting_ExpiredTimeOTPPin)));
 
-              var createUserbasicDto_ = new CreateUserbasicDto();
-              createUserbasicDto_.otp_pin = OTP;
-              createUserbasicDto_.otp_attemp = 0;
-              createUserbasicDto_.otppinVerified = false;
-              createUserbasicDto_.otp_request_time = Long.fromString(OTP_request_time.toString());
-              createUserbasicDto_.otp_expired_time = Long.fromString(OTP_expired_time.toString());
-              await this.userbasicsService.updateData(user_email, createUserbasicDto_);
+
+              console.log(new Date().getTime());
+              console.log(OTP_expired_time);
+              console.log((new Date().getTime() > OTP_expired_time));
+
+
+              var CreateuserbasicnewDto_ = new CreateuserbasicnewDto();
+              CreateuserbasicnewDto_.otp_pin = OTP;
+              CreateuserbasicnewDto_.otp_attemp = 0;
+              CreateuserbasicnewDto_.otppinVerified = false;
+              CreateuserbasicnewDto_.otp_request_time = Long.fromString(OTP_request_time.toString());
+              CreateuserbasicnewDto_.otp_expired_time = Long.fromString(OTP_expired_time.toString());
+              await this.basic2SS.updateData(user_email, CreateuserbasicnewDto_);
 
               await this.authService.sendemailOTP(
-                user_userAuth.email.toString(),
+                datauserbasicsService.email.toString(),
                 OTP.toString(),
                 'RECOVER_PASS',
               );
@@ -5603,30 +4755,593 @@ export class AuthController {
               this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
 
               await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Gnerate OTP. Error: ' + error,
+                'Unabled to proceed Generate OTP. Error: ' + error,
               );
             }
+          }
+        } else {
+          let last;
+          if (user_activityevents[0].transitions.length > 0) {
+            last = await this.activityeventsService.findbyactivityEventID(user_email, user_activityevents[0].transitions[0].oid, type, false,);
           } else {
-            if (body_.pin == undefined) {
-              var fullurl = request.get("Host") + request.originalUrl;
-              var timestamps_end = await this.utilsService.getDateTimeString();
-              var reqbody = JSON.parse(JSON.stringify(body_));
-              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+            last = user_activityevents;
+          }
 
-              await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed, param pin is required',
-              );
-            } else {
-              if (body_.pin.length != 6) {
+          let StatusNext;
+          let EventNext;
+          if (last[0].status == 'NOTIFY') {
+            StatusNext = 'REPLY';
+            EventNext = 'VERIFY_OTP';
+          } else if (last[0].status == 'INITIAL') {
+            StatusNext = user_activityevents[0].status;
+            EventNext = user_activityevents[0].event;
+          }
+          if ('otp' in body_) {
+            user_otp = body_.otp;
+          }
+          const StatusCurrent = body_.status;
+          const EventCurrent = body_.event;
+
+          if (
+            StatusNext == 'REPLY' &&
+            StatusNext == StatusCurrent &&
+            EventNext == EventCurrent
+          ) {
+            if (
+              datauserbasicsService.otp_pin != undefined &&
+              EventCurrent == 'VERIFY_OTP' &&
+              StatusCurrent == 'REPLY'
+            ) {
+
+              //Create ActivityEvent child
+              try {
+                var id_child = new mongoose.Types.ObjectId();
+                data_CreateActivityeventsDto_child._id = id_child;
+                data_CreateActivityeventsDto_child.activityEventID =
+                  ID_child_ActivityEvent;
+                data_CreateActivityeventsDto_child.activityType = type;
+                data_CreateActivityeventsDto_child.active = true;
+                data_CreateActivityeventsDto_child.status = StatusCurrent;
+                data_CreateActivityeventsDto_child.target = 'COMPLETE';
+                data_CreateActivityeventsDto_child.event = EventCurrent;
+                data_CreateActivityeventsDto_child.action =
+                  'VerifyActivityCommand';
+                data_CreateActivityeventsDto_child._class =
+                  'io.melody.hyppe.trans.domain.ActivityEvent';
+                data_CreateActivityeventsDto_child.payload = {
+                  login_location: {
+                    latitude: undefined,
+                    longitude: undefined,
+                  },
+                  logout_date: undefined,
+                  login_date: undefined,
+                  login_device: undefined,
+                  email: user_email,
+                };
+                data_CreateActivityeventsDto_child.createdAt = current_date_string;
+                data_CreateActivityeventsDto_child.updatedAt = current_date_string;
+                data_CreateActivityeventsDto_child.sequenceNumber = new Int32(
+                  3,
+                );
+                data_CreateActivityeventsDto_child.flowIsDone = false;
+                data_CreateActivityeventsDto_child.parentActivityEventID =
+                  user_activityevents[0].activityEventID;
+                data_CreateActivityeventsDto_child.userbasic =
+                  Object(datauserbasicsService._id.toString());
+
+                //Insert ActivityEvent child
+                await this.activityeventsService.create(
+                  data_CreateActivityeventsDto_child,
+                );
+              } catch (error) {
                 var fullurl = request.get("Host") + request.originalUrl;
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 var reqbody = JSON.parse(JSON.stringify(body_));
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
 
                 await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed, pin lenght must 6 digit',
+                  'Unabled to proceed Create Activity events Child. Error:' +
+                  error,
                 );
               }
+
+              //Update ActivityEvent Parent
+              try {
+                const data_transitions = user_activityevents[0].transitions;
+                data_transitions.push({
+                  $ref: 'activityevents',
+                  $id: new Object(ID_child_ActivityEvent),
+                  $db: 'hyppe_trans_db',
+                });
+
+                //Update ActivityEvent Parent
+                await this.activityeventsService.update(
+                    {
+                      _id: user_activityevents[0]._id,
+                    },
+                    {
+                      transitions: data_transitions,
+                    },
+                  );
+              } catch (error) {
+                var fullurl = request.get("Host") + request.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                var reqbody = JSON.parse(JSON.stringify(body_));
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Update Activity events Parent. Error:' +
+                  error,
+                );
+              }
+
+              if (datauserbasicsService.otp_attemp == undefined) {
+                otp_attemp = 0;
+              } else {
+                otp_attemp = datauserbasicsService.otp_attemp;
+              }
+
+              if (otp_attemp < Number(setting_MaxWrongOTPPIN)) {
+                if (
+                  (datauserbasicsService.otp_pin != undefined
+                    ? (new Date().getTime() > Number(await datauserbasicsService.otp_expired_time))
+                    : false) == false &&
+                  user_otp == datauserbasicsService.otp_pin
+                ) {
+
+                  //Create ActivityEvent child
+                  try {
+                    var id_child = new mongoose.Types.ObjectId();
+                    data_CreateActivityeventsDto_child._id = id_child;
+                    data_CreateActivityeventsDto_child.activityEventID =
+                      ID_child_ActivityEvent;
+                    data_CreateActivityeventsDto_child.activityType = type;
+                    data_CreateActivityeventsDto_child.active = true;
+                    data_CreateActivityeventsDto_child.status = 'COMPLETE';
+                    data_CreateActivityeventsDto_child.target = 'COMPLETE';
+                    data_CreateActivityeventsDto_child.event = 'COMPLETE';
+                    data_CreateActivityeventsDto_child.action =
+                      'VerifyActivityCommand';
+                    data_CreateActivityeventsDto_child._class =
+                      'io.melody.hyppe.trans.domain.ActivityEvent';
+                    data_CreateActivityeventsDto_child.payload = {
+                      login_location: {
+                        latitude: undefined,
+                        longitude: undefined,
+                      },
+                      logout_date: undefined,
+                      login_date: undefined,
+                      login_device: undefined,
+                      email: user_email,
+                    };
+                    data_CreateActivityeventsDto_child.createdAt = current_date_string;
+                    data_CreateActivityeventsDto_child.updatedAt = current_date_string;
+                    data_CreateActivityeventsDto_child.sequenceNumber =
+                      new Int32(4);
+                    data_CreateActivityeventsDto_child.flowIsDone = false;
+                    data_CreateActivityeventsDto_child.parentActivityEventID =
+                      user_activityevents[0].activityEventID;
+                    data_CreateActivityeventsDto_child.userbasic =
+                      Object(datauserbasicsService._id);
+
+                    //Insert ActivityEvent child
+                    await this.activityeventsService.create(
+                      data_CreateActivityeventsDto_child,
+                    );
+                  } catch (error) {
+                    var fullurl = request.get("Host") + request.originalUrl;
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    var reqbody = JSON.parse(JSON.stringify(body_));
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Unabled to proceed Create Activity events Child. Error:' +
+                      error,
+                    );
+                  }
+
+                  //Update ActivityEvent Parent
+                  try {
+                    const data_transitions = user_activityevents[0].transitions;
+                    data_transitions.push({
+                      $ref: 'activityevents',
+                      $id: new Object(ID_child_ActivityEvent),
+                      $db: 'hyppe_trans_db',
+                    });
+                    await this.activityeventsService.update(
+                      {
+                        _id: user_activityevents[0]._id,
+                      },
+                      {
+                        payload: {
+                          login_location: {
+                            latitude: undefined,
+                            longitude: undefined,
+                          },
+                          logout_date: undefined,
+                          login_date: user_activityevents[0].payload.login_date,
+                          login_device: undefined,
+                          email: user_email,
+                        },
+                        flowIsDone: true,
+                        transitions: data_transitions,
+                      },
+                    );
+                  } catch (error) {
+                    var fullurl = request.get("Host") + request.originalUrl;
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    var reqbody = JSON.parse(JSON.stringify(body_));
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Unabled to proceed Update Activity Event Parent. Error:' +
+                      error,
+                    );
+                  }
+
+                  //Update ActivityEvent All Child True
+                  try {
+                    await this.activityeventsService.updateFlowDone(
+                      user_activityevents[0].activityEventID,
+                    );
+                  } catch (error) {
+                    var fullurl = request.get("Host") + request.originalUrl;
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    var reqbody = JSON.parse(JSON.stringify(body_));
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Unabled to proceed Update ActivityEvent All Child True. Error:' +
+                      error,
+                    );
+                  }
+
+                  var CreateuserbasicnewDto_ = new CreateuserbasicnewDto();
+                  CreateuserbasicnewDto_.pin = encrypt_pin;
+                  CreateuserbasicnewDto_.otp_pin = null;
+                  CreateuserbasicnewDto_.otp_request_time = new Long(0);
+                  CreateuserbasicnewDto_.otp_expired_time = new Long(0);
+                  CreateuserbasicnewDto_.otp_attemp = 0;
+                  CreateuserbasicnewDto_.otppinVerified = true;
+                  await this.basic2SS.updateData(user_email, CreateuserbasicnewDto_);
+
+                  var fullurl = request.get("Host") + request.originalUrl;
+                  var timestamps_end = await this.utilsService.getDateTimeString();
+                  var reqbody = JSON.parse(JSON.stringify(body_));
+                  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+                  return {
+                    response_code: 202,
+                    messages: {
+                      info: ['Verify OTP successful'],
+                    },
+                  };
+                } else {
+                  await this.userbasicsService.findOneupdatebyEmail(user_email);
+                  var messages = "";
+                  if (lang == "en") {
+                    messages = "The OTP code you entered is incorrect; please check again.";
+                  } else {
+                    messages = "Kode OTP yang kamu masukan salah, silahkan cek kembali.";
+                  }
+                  await this.errorHandler.generateNotAcceptableException(
+                    messages,
+                  );
+                }
+              } else {
+                var fullurl = request.get("Host") + request.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                var reqbody = JSON.parse(JSON.stringify(body_));
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed, OTP Max Wrong',
+                );
+              }
+            } else if (
+              datauserbasicsService.otp_pin != undefined &&
+              EventCurrent == 'NOTIFY_OTP' &&
+              StatusCurrent == 'NOTIFY'
+            ) {
+
+              //Create ActivityEvent child
+              try {
+                var id_child = new mongoose.Types.ObjectId();
+                data_CreateActivityeventsDto_child._id = id_child;
+                data_CreateActivityeventsDto_child.activityEventID =
+                  ID_child_ActivityEvent;
+                data_CreateActivityeventsDto_child.activityType = type;
+                data_CreateActivityeventsDto_child.active = true;
+                data_CreateActivityeventsDto_child.status = 'NOTIFY';
+                data_CreateActivityeventsDto_child.target = 'REPLY';
+                data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
+                data_CreateActivityeventsDto_child._class =
+                  'io.melody.hyppe.trans.domain.ActivityEvent';
+                data_CreateActivityeventsDto_child.payload = {
+                  login_location: {
+                    latitude: undefined,
+                    longitude: undefined,
+                  },
+                  logout_date: undefined,
+                  login_date: undefined,
+                  login_device: undefined,
+                  email: user_email,
+                };
+                data_CreateActivityeventsDto_child.createdAt = current_date_string;
+                data_CreateActivityeventsDto_child.updatedAt = current_date_string;
+                data_CreateActivityeventsDto_child.sequenceNumber = new Int32(
+                  3,
+                );
+                data_CreateActivityeventsDto_child.flowIsDone = false;
+                data_CreateActivityeventsDto_child.parentActivityEventID =
+                  user_activityevents[0].activityEventID;
+                data_CreateActivityeventsDto_child.userbasic =
+                  Object(datauserbasicsService._id.toString());
+
+                //Insert ActivityEvent child
+                await this.activityeventsService.create(
+                  data_CreateActivityeventsDto_child,
+                );
+              } catch (error) {
+                var fullurl = request.get("Host") + request.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                var reqbody = JSON.parse(JSON.stringify(body_));
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Create Activity events Child. Error:' +
+                  error,
+                );
+              }
+
+              //Update ActivityEvent Parent
+              try {
+                const data_transitions = user_activityevents[0].transitions;
+                data_transitions.push({
+                  $ref: 'activityevents',
+                  $id: new Object(ID_child_ActivityEvent),
+                  $db: 'hyppe_trans_db',
+                });
+
+                //Update ActivityEvent Parent
+                const update_activityevents_parent =
+                  await this.activityeventsService.update(
+                    {
+                      _id: user_activityevents[0]._id,
+                    },
+                    {
+                      transitions: data_transitions,
+                    },
+                  );
+              } catch (error) {
+                var fullurl = request.get("Host") + request.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                var reqbody = JSON.parse(JSON.stringify(body_));
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Update Activity events Parent. Error:' +
+                  error,
+                );
+              }
+
+              //Generate OTP
+              try {
+                var OTP = await this.utilsService.generateOTP();
+                var OTP_request_time = current_date.getTime();
+                var OTP_expired_time = (current_date.setMinutes(current_date.getMinutes() + Number(setting_ExpiredTimeOTPPin)));
+
+                var CreateuserbasicnewDto_ = new CreateuserbasicnewDto();
+                CreateuserbasicnewDto_.otp_pin = OTP;
+                CreateuserbasicnewDto_.otp_attemp = 0;
+                CreateuserbasicnewDto_.otp_request_time = Long.fromString(OTP_request_time.toString());
+                CreateuserbasicnewDto_.otp_expired_time = Long.fromString(OTP_expired_time.toString());
+                await this.basic2SS.updateData(user_email, CreateuserbasicnewDto_);
+
+                await this.authService.sendemailOTP(
+                  datauserbasicsService.email.toString(),
+                  OTP.toString(),
+                  'RECOVER_PASS',
+                );
+
+                var fullurl = request.get("Host") + request.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                var reqbody = JSON.parse(JSON.stringify(body_));
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+                return {
+                  response_code: 202,
+                  messages: {
+                    info: ['Request create PIN request successful'],
+                  },
+                };
+              } catch (error) {
+                var fullurl = request.get("Host") + request.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                var reqbody = JSON.parse(JSON.stringify(body_));
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Gnerate OTP. Error: ' + error,
+                );
+              }
+            } else {
+              var fullurl = request.get("Host") + request.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(body_));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed',
+              );
+            }
+          } else {
+            //Create ActivityEvent child
+            try {
+              var id_child = new mongoose.Types.ObjectId();
+              data_CreateActivityeventsDto_child._id = id_child;
+              data_CreateActivityeventsDto_child.activityEventID =
+                ID_child_ActivityEvent;
+              data_CreateActivityeventsDto_child.activityType = type;
+              data_CreateActivityeventsDto_child.active = true;
+              data_CreateActivityeventsDto_child.status = 'NOTIFY';
+              data_CreateActivityeventsDto_child.target = 'REPLY';
+              data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
+              data_CreateActivityeventsDto_child._class =
+                'io.melody.hyppe.trans.domain.ActivityEvent';
+              data_CreateActivityeventsDto_child.action =
+                'NotifyActivityCommand';
+              data_CreateActivityeventsDto_child.payload = {
+                login_location: {
+                  latitude: undefined,
+                  longitude: undefined,
+                },
+                logout_date: undefined,
+                login_date: undefined,
+                login_device: undefined,
+                email: user_email,
+              };
+              data_CreateActivityeventsDto_child.createdAt = current_date_string;
+              data_CreateActivityeventsDto_child.updatedAt = current_date_string;
+              data_CreateActivityeventsDto_child.sequenceNumber = new Int32(2);
+              data_CreateActivityeventsDto_child.flowIsDone = false;
+              data_CreateActivityeventsDto_child.__v = undefined;
+              data_CreateActivityeventsDto_child.parentActivityEventID =
+                user_activityevents[0].activityEventID;
+              data_CreateActivityeventsDto_child.userbasic =
+                Object(datauserbasicsService._id.toString());
+
+              //Insert ActivityEvent Parent
+              await this.activityeventsService.create(
+                data_CreateActivityeventsDto_child,
+              );
+            } catch (error) {
+              var fullurl = request.get("Host") + request.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(body_));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Create Activity events Child. Error: ' +
+                error,
+              );
+            }
+
+            //Update ActivityEvent Parent
+            try {
+              const data_transitions = user_activityevents[0].transitions;
+              data_transitions.push({
+                $ref: 'activityevents',
+                $id: new Object(ID_child_ActivityEvent),
+                $db: 'hyppe_trans_db',
+              });
+
+              //Update ActivityEvent Parent
+              await this.activityeventsService.update(
+                {
+                  _id: user_activityevents[0]._id,
+                },
+                {
+                  transitions: data_transitions,
+                },
+              );
+            } catch (error) {
+              var fullurl = request.get("Host") + request.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(body_));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Update Activity events Parent. Error:' +
+                error,
+              );
+            }
+
+            var OTP = await this.utilsService.generateOTP();
+            var OTP_request_time = current_date.getTime();
+            var OTP_expired_time = (current_date.setMinutes(current_date.getMinutes() + Number(setting_ExpiredTimeOTPPin)));
+
+            var CreateuserbasicnewDto_ = new CreateuserbasicnewDto();
+            CreateuserbasicnewDto_.otp_pin = OTP;
+            CreateuserbasicnewDto_.otp_attemp = 0;
+            CreateuserbasicnewDto_.otp_request_time = Long.fromString(OTP_request_time.toString());
+            CreateuserbasicnewDto_.otp_expired_time = Long.fromString(OTP_expired_time.toString());
+            await this.basic2SS.updateData(user_email, CreateuserbasicnewDto_);
+
+            await this.authService.sendemailOTP(
+              datauserbasicsService.email.toString(),
+              OTP.toString(),
+              'RECOVER_PASS',
+            );
+
+            var messages = "";
+            if (lang == "en") {
+              messages = "Email Sent, We have sent a verification code to your email.";
+            } else {
+              messages = "Email Terkirim, Kami telah mengirimkan kode verifikasi ke email kamu.";
+            }
+
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(body_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+            return {
+              response_code: 202,
+              messages: {
+                info: messages,
+              },
+            };
+          }
+        }
+      } else {
+        if (type == "CECK_PIN") {
+          if (body_.pin == undefined) {
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(body_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed, param pin is required',
+            );
+          } else {
+            if (body_.pin.length != 6) {
+              var fullurl = request.get("Host") + request.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(body_));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, pin lenght must 6 digit',
+              );
+            }
+          }
+
+          if (datauserbasicsService.pin != undefined) {
+            var current_pin = datauserbasicsService.pin;
+            var decript_pin = await this.utilsService.decrypt(current_pin.toString());
+            if (decript_pin == body_.pin) {
+              var fullurl = request.get("Host") + request.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(body_));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+              return {
+                response_code: 202,
+                messages: {
+                  info: ['Ceck Pin Succcesfully'],
+                },
+              };
+            } else {
+              var fullurl = request.get("Host") + request.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(body_));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, pin not match current pin',
+              );
             }
 
             //Create ActivityEvent Parent
@@ -5638,10 +5353,8 @@ export class AuthController {
               data_CreateActivityeventsDto_parent.activityType = type;
               data_CreateActivityeventsDto_parent.active = true;
               data_CreateActivityeventsDto_parent.status = 'INITIAL';
-              data_CreateActivityeventsDto_parent.target = 'NOTIFY';
+              data_CreateActivityeventsDto_parent.target = 'COMPLETE';
               data_CreateActivityeventsDto_parent.event = type;
-              data_CreateActivityeventsDto_parent.fork = 'NOTIFY_OTP';
-              data_CreateActivityeventsDto_parent.action = 'RecoverPassCommand';
               data_CreateActivityeventsDto_parent._class =
                 'io.melody.hyppe.trans.domain.ActivityEvent';
               data_CreateActivityeventsDto_parent.payload = {
@@ -5658,7 +5371,7 @@ export class AuthController {
               data_CreateActivityeventsDto_parent.updatedAt = current_date_string;
               data_CreateActivityeventsDto_parent.sequenceNumber = new Int32(0);
               data_CreateActivityeventsDto_parent.__v = undefined;
-              data_CreateActivityeventsDto_parent.flowIsDone = false;
+              data_CreateActivityeventsDto_parent.flowIsDone = true;
               data_CreateActivityeventsDto_parent.transitions = [
                 {
                   $ref: 'activityevents',
@@ -5667,7 +5380,7 @@ export class AuthController {
                 },
               ];
               data_CreateActivityeventsDto_parent.userbasic =
-                datauserbasicsService._id;
+                Object(datauserbasicsService._id.toString());
 
               //Insert ActivityEvent Parent
               await this.activityeventsService.create(
@@ -5693,12 +5406,11 @@ export class AuthController {
                 ID_child_ActivityEvent;
               data_CreateActivityeventsDto_child.activityType = type;
               data_CreateActivityeventsDto_child.active = true;
-              data_CreateActivityeventsDto_child.status = 'NOTIFY';
-              data_CreateActivityeventsDto_child.target = 'REPLY';
-              data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
+              data_CreateActivityeventsDto_child.status = 'COMPLETE';
+              data_CreateActivityeventsDto_child.target = 'COMPLETE';
+              data_CreateActivityeventsDto_child.event = type;
               data_CreateActivityeventsDto_child._class =
                 'io.melody.hyppe.trans.domain.ActivityEvent';
-              data_CreateActivityeventsDto_child.action = 'NotifyActivityCommand';
               data_CreateActivityeventsDto_child.payload = {
                 login_location: {
                   latitude: undefined,
@@ -5712,12 +5424,12 @@ export class AuthController {
               data_CreateActivityeventsDto_child.createdAt = current_date_string;
               data_CreateActivityeventsDto_child.updatedAt = current_date_string;
               data_CreateActivityeventsDto_child.sequenceNumber = new Int32(2);
-              data_CreateActivityeventsDto_child.flowIsDone = false;
+              data_CreateActivityeventsDto_child.flowIsDone = true;
               data_CreateActivityeventsDto_child.__v = undefined;
               data_CreateActivityeventsDto_child.parentActivityEventID =
                 ID_parent_ActivityEvent;
               data_CreateActivityeventsDto_child.userbasic =
-                datauserbasicsService._id;
+                Object(datauserbasicsService._id.toString());
 
               //Insert ActivityEvent Parent
               await this.activityeventsService.create(
@@ -5734,68 +5446,337 @@ export class AuthController {
                 error,
               );
             }
+          } else {
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(body_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
 
-            //Generate OTP
-            try {
-              var encrypt_pin = await this.utilsService.encrypt(body_.pin.toString());
-              var OTP = await this.utilsService.generateOTP();
-              var OTP_request_time = current_date.getTime();
-              var OTP_expired_time = (current_date.setMinutes(current_date.getMinutes() + Number(setting_ExpiredTimeOTPPin)));
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed, you must create pin first',
+            );
+          }
+        } else if (type == "FORGOT_PIN") {
+          //Create ActivityEvent Parent
+          try {
+            var id_parent = new mongoose.Types.ObjectId();
+            data_CreateActivityeventsDto_parent._id = id_parent;
+            data_CreateActivityeventsDto_parent.activityEventID =
+              ID_parent_ActivityEvent;
+            data_CreateActivityeventsDto_parent.activityType = type;
+            data_CreateActivityeventsDto_parent.active = true;
+            data_CreateActivityeventsDto_parent.status = 'INITIAL';
+            data_CreateActivityeventsDto_parent.target = 'NOTIFY';
+            data_CreateActivityeventsDto_parent.event = type;
+            data_CreateActivityeventsDto_parent.fork = 'NOTIFY_OTP';
+            data_CreateActivityeventsDto_parent.action = 'RecoverPinCommand';
+            data_CreateActivityeventsDto_parent._class =
+              'io.melody.hyppe.trans.domain.ActivityEvent';
+            data_CreateActivityeventsDto_parent.payload = {
+              login_location: {
+                latitude: undefined,
+                longitude: undefined,
+              },
+              logout_date: undefined,
+              login_date: undefined,
+              login_device: undefined,
+              email: user_email,
+            };
+            data_CreateActivityeventsDto_parent.createdAt = current_date_string;
+            data_CreateActivityeventsDto_parent.updatedAt = current_date_string;
+            data_CreateActivityeventsDto_parent.sequenceNumber = new Int32(0);
+            data_CreateActivityeventsDto_parent.__v = undefined;
+            data_CreateActivityeventsDto_parent.flowIsDone = false;
+            data_CreateActivityeventsDto_parent.transitions = [
+              {
+                $ref: 'activityevents',
+                $id: Object(ID_child_ActivityEvent),
+                $db: 'hyppe_trans_db',
+              },
+            ];
+            data_CreateActivityeventsDto_parent.userbasic =
+              Object(datauserbasicsService._id.toString());
 
-              var createUserbasicDto_ = new CreateUserbasicDto();
-              createUserbasicDto_.pin = encrypt_pin;
-              createUserbasicDto_.otp_pin = OTP;
-              createUserbasicDto_.otp_attemp = 0;
-              createUserbasicDto_.otppinVerified = false;
-              createUserbasicDto_.otp_request_time = Long.fromString(OTP_request_time.toString());
-              createUserbasicDto_.otp_expired_time = Long.fromString(OTP_expired_time.toString());
-              await this.userbasicsService.updateData(user_email, createUserbasicDto_);
+            //Insert ActivityEvent Parent
+            await this.activityeventsService.create(
+              data_CreateActivityeventsDto_parent,
+            );
+          } catch (error) {
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(body_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
 
-              await this.authService.sendemailOTP(
-                user_userAuth.email.toString(),
-                OTP.toString(),
-                'RECOVER_PASS',
-              );
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Create Activity events Parent. Error: ' +
+              error,
+            );
+          }
 
-              var fullurl = request.get("Host") + request.originalUrl;
-              var timestamps_end = await this.utilsService.getDateTimeString();
-              var reqbody = JSON.parse(JSON.stringify(body_));
-              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+          //Create ActivityEvent child
+          try {
+            var id_child = new mongoose.Types.ObjectId();
+            data_CreateActivityeventsDto_child._id = id_child;
+            data_CreateActivityeventsDto_child.activityEventID =
+              ID_child_ActivityEvent;
+            data_CreateActivityeventsDto_child.activityType = type;
+            data_CreateActivityeventsDto_child.active = true;
+            data_CreateActivityeventsDto_child.status = 'NOTIFY';
+            data_CreateActivityeventsDto_child.target = 'REPLY';
+            data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
+            data_CreateActivityeventsDto_child._class =
+              'io.melody.hyppe.trans.domain.ActivityEvent';
+            data_CreateActivityeventsDto_child.action = 'NotifyActivityCommand';
+            data_CreateActivityeventsDto_child.payload = {
+              login_location: {
+                latitude: undefined,
+                longitude: undefined,
+              },
+              logout_date: undefined,
+              login_date: undefined,
+              login_device: undefined,
+              email: user_email,
+            };
+            data_CreateActivityeventsDto_child.createdAt = current_date_string;
+            data_CreateActivityeventsDto_child.updatedAt = current_date_string;
+            data_CreateActivityeventsDto_child.sequenceNumber = new Int32(1);
+            data_CreateActivityeventsDto_child.flowIsDone = false;
+            data_CreateActivityeventsDto_child.__v = undefined;
+            data_CreateActivityeventsDto_child.parentActivityEventID =
+              ID_parent_ActivityEvent;
+            data_CreateActivityeventsDto_child.userbasic =
+              Object(datauserbasicsService._id.toString());
 
-              return {
-                response_code: 202,
-                messages: {
-                  info: ['Request create PIN request successful'],
-                },
-              };
-            } catch (error) {
+            //Insert ActivityEvent Parent
+            await this.activityeventsService.create(
+              data_CreateActivityeventsDto_child,
+            );
+          } catch (error) {
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(body_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Create Activity events Child. Error: ' +
+              error,
+            );
+          }
+
+          //Generate OTP
+          try {
+            var OTP = await this.utilsService.generateOTP();
+            var OTP_request_time = current_date.getTime();
+            var OTP_expired_time = (current_date.setMinutes(current_date.getMinutes() + Number(setting_ExpiredTimeOTPPin)));
+
+            var CreateuserbasicnewDto_ = new CreateuserbasicnewDto();
+            CreateuserbasicnewDto_.otp_pin = OTP;
+            CreateuserbasicnewDto_.otp_attemp = 0;
+            CreateuserbasicnewDto_.otppinVerified = false;
+            CreateuserbasicnewDto_.otp_request_time = Long.fromString(OTP_request_time.toString());
+            CreateuserbasicnewDto_.otp_expired_time = Long.fromString(OTP_expired_time.toString());
+            await this.basic2SS.updateData(user_email, CreateuserbasicnewDto_);
+
+            await this.authService.sendemailOTP(
+              datauserbasicsService.email.toString(),
+              OTP.toString(),
+              'RECOVER_PASS',
+            );
+
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(body_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+            return {
+              response_code: 202,
+              messages: {
+                info: ['Request forgot PIN request successful'],
+              },
+            };
+          } catch (error) {
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(body_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Gnerate OTP. Error: ' + error,
+            );
+          }
+        } else {
+          if (body_.pin == undefined) {
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(body_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed, param pin is required',
+            );
+          } else {
+            if (body_.pin.length != 6) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
               var reqbody = JSON.parse(JSON.stringify(body_));
               this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
 
               await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Gnerate OTP. Error: ' + error,
+                'Unabled to proceed, pin lenght must 6 digit',
               );
             }
           }
-        }
-      } else {
-        var messages = "";
-        if (lang == "en") {
-          messages = "No users were found. Please check again.";
-        } else {
-          messages = "Tidak ada pengguna yang ditemukan. Silahkan cek kembali.";
-        }
 
-        var fullurl = request.get("Host") + request.originalUrl;
-        var timestamps_end = await this.utilsService.getDateTimeString();
-        var reqbody = JSON.parse(JSON.stringify(body_));
-        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+          //Create ActivityEvent Parent
+          try {
+            var id_parent = new mongoose.Types.ObjectId();
+            data_CreateActivityeventsDto_parent._id = id_parent;
+            data_CreateActivityeventsDto_parent.activityEventID =
+              ID_parent_ActivityEvent;
+            data_CreateActivityeventsDto_parent.activityType = type;
+            data_CreateActivityeventsDto_parent.active = true;
+            data_CreateActivityeventsDto_parent.status = 'INITIAL';
+            data_CreateActivityeventsDto_parent.target = 'NOTIFY';
+            data_CreateActivityeventsDto_parent.event = type;
+            data_CreateActivityeventsDto_parent.fork = 'NOTIFY_OTP';
+            data_CreateActivityeventsDto_parent.action = 'RecoverPassCommand';
+            data_CreateActivityeventsDto_parent._class =
+              'io.melody.hyppe.trans.domain.ActivityEvent';
+            data_CreateActivityeventsDto_parent.payload = {
+              login_location: {
+                latitude: undefined,
+                longitude: undefined,
+              },
+              logout_date: undefined,
+              login_date: undefined,
+              login_device: undefined,
+              email: user_email,
+            };
+            data_CreateActivityeventsDto_parent.createdAt = current_date_string;
+            data_CreateActivityeventsDto_parent.updatedAt = current_date_string;
+            data_CreateActivityeventsDto_parent.sequenceNumber = new Int32(0);
+            data_CreateActivityeventsDto_parent.__v = undefined;
+            data_CreateActivityeventsDto_parent.flowIsDone = false;
+            data_CreateActivityeventsDto_parent.transitions = [
+              {
+                $ref: 'activityevents',
+                $id: Object(ID_child_ActivityEvent),
+                $db: 'hyppe_trans_db',
+              },
+            ];
+            data_CreateActivityeventsDto_parent.userbasic =
+              Object(datauserbasicsService._id.toString());
 
-        await this.errorHandler.generateNotAcceptableException(
-          messages,
-        );
+            //Insert ActivityEvent Parent
+            await this.activityeventsService.create(
+              data_CreateActivityeventsDto_parent,
+            );
+          } catch (error) {
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(body_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Create Activity events Parent. Error: ' +
+              error,
+            );
+          }
+
+          //Create ActivityEvent child
+          try {
+            var id_child = new mongoose.Types.ObjectId();
+            data_CreateActivityeventsDto_child._id = id_child;
+            data_CreateActivityeventsDto_child.activityEventID =
+              ID_child_ActivityEvent;
+            data_CreateActivityeventsDto_child.activityType = type;
+            data_CreateActivityeventsDto_child.active = true;
+            data_CreateActivityeventsDto_child.status = 'NOTIFY';
+            data_CreateActivityeventsDto_child.target = 'REPLY';
+            data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
+            data_CreateActivityeventsDto_child._class =
+              'io.melody.hyppe.trans.domain.ActivityEvent';
+            data_CreateActivityeventsDto_child.action = 'NotifyActivityCommand';
+            data_CreateActivityeventsDto_child.payload = {
+              login_location: {
+                latitude: undefined,
+                longitude: undefined,
+              },
+              logout_date: undefined,
+              login_date: undefined,
+              login_device: undefined,
+              email: user_email,
+            };
+            data_CreateActivityeventsDto_child.createdAt = current_date_string;
+            data_CreateActivityeventsDto_child.updatedAt = current_date_string;
+            data_CreateActivityeventsDto_child.sequenceNumber = new Int32(2);
+            data_CreateActivityeventsDto_child.flowIsDone = false;
+            data_CreateActivityeventsDto_child.__v = undefined;
+            data_CreateActivityeventsDto_child.parentActivityEventID =
+              ID_parent_ActivityEvent;
+            data_CreateActivityeventsDto_child.userbasic =
+              Object(datauserbasicsService._id.toString());
+
+            //Insert ActivityEvent Parent
+            await this.activityeventsService.create(
+              data_CreateActivityeventsDto_child,
+            );
+          } catch (error) {
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(body_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Create Activity events Child. Error: ' +
+              error,
+            );
+          }
+
+          //Generate OTP
+          try {
+            var encrypt_pin = await this.utilsService.encrypt(body_.pin.toString());
+            var OTP = await this.utilsService.generateOTP();
+            var OTP_request_time = current_date.getTime();
+            var OTP_expired_time = (current_date.setMinutes(current_date.getMinutes() + Number(setting_ExpiredTimeOTPPin)));
+
+            var CreateuserbasicnewDto_ = new CreateuserbasicnewDto();
+            CreateuserbasicnewDto_.pin = encrypt_pin;
+            CreateuserbasicnewDto_.otp_pin = OTP;
+            CreateuserbasicnewDto_.otp_attemp = 0;
+            CreateuserbasicnewDto_.otppinVerified = false;
+            CreateuserbasicnewDto_.otp_request_time = Long.fromString(OTP_request_time.toString());
+            CreateuserbasicnewDto_.otp_expired_time = Long.fromString(OTP_expired_time.toString());
+            await this.basic2SS.updateData(user_email, CreateuserbasicnewDto_);
+
+            await this.authService.sendemailOTP(
+              datauserbasicsService.email.toString(),
+              OTP.toString(),
+              'RECOVER_PASS',
+            );
+
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(body_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+            return {
+              response_code: 202,
+              messages: {
+                info: ['Request create PIN request successful'],
+              },
+            };
+          } catch (error) {
+            var fullurl = request.get("Host") + request.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(body_));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email, null, null, reqbody);
+
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Gnerate OTP. Error: ' + error,
+            );
+          }
+        }
       }
     } else {
       var messages = "";

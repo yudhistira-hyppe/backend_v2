@@ -71,7 +71,6 @@ export class CreateuserbasicnewDto {
   pin: String;
   otp_pin: String;
   otpToken: String;
-  otp_expired_time: String;
   otppinVerified: boolean;
   statusKyc: string;
   timeEmailSend: string;
@@ -129,6 +128,9 @@ export class CreateuserbasicnewDto {
   guestMode: boolean;
   friend: any[];
   creator: boolean
+  otp_attemp: number;
+  otp_request_time: Long;
+  otp_expired_time: Long;
 }
 
 export class SearchUserbasicDto {

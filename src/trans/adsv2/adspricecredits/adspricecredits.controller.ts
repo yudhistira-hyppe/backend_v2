@@ -6,6 +6,7 @@ import { UtilsService } from 'src/utils/utils.service';
 import { ErrorHandler } from 'src/utils/error.handler';
 import mongoose from 'mongoose';
 import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
+import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema';
 
 @Controller('api/adsv2/credit/price')
 export class AdsPriceCreditsController {
@@ -18,7 +19,7 @@ export class AdsPriceCreditsController {
     @HttpCode(HttpStatus.ACCEPTED)
     @Post("/create")
     async create(@Body() AdsPriceCredits_: AdsPriceCredits, @Headers() headers) {
-        const Userbasic_: Userbasic = await this.utilsService.getIdUserByToken(headers);
+        const Userbasic_: Userbasicnew = await this.utilsService.getIdUserByToken(headers);
         //Get current Time
         const currentDate = await this.utilsService.getDateTimeISOString()
         if (AdsPriceCredits_.creditPrice == undefined) {

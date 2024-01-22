@@ -43,6 +43,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
 import { time } from 'console';
 import { GetprofilecontenteventService } from './getprofilecontentevent/getprofilecontentevent.service';
+import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -60,14 +61,14 @@ export class UtilsService {
 
     @InjectModel(SettingsMixed.name, 'SERVER_FULL')
     private readonly settingMixes: Model<SettingsDocument>,
-    private userauthsService: UserauthsService,
+    //private userauthsService: UserauthsService,
     private jwtrefreshtokenService: JwtrefreshtokenService,
     private jwtService: JwtService,
     private mailerService: MailerService,
     private templatesRepoService: TemplatesRepoService,
     private templatesService: TemplatesService,
     private errorHandler: ErrorHandler,
-    private userbasicsService: UserbasicsService,
+    //private userbasicsService: UserbasicsService,
     private languagesService: LanguagesService,
     private insightsService: InsightsService,
     private citiesService: CitiesService,
@@ -775,7 +776,7 @@ export class UtilsService {
     }
     this.logger.log('sendFcmCMod >>> res: ' + JSON.stringify(body_send));
 
-    const datauserbasicsService = await this.userbasicsService.findOne(receiverParty);
+    const datauserbasicsService = await this.basic2SS.findBymail(receiverParty);
 
     var mediaUri = null;
     var mediaBasePath = null;
@@ -789,7 +790,7 @@ export class UtilsService {
     } catch (e) {
       mediaprofilepicts = null;
     }
-    const user_userAuth = await this.userauthsService.findOne(receiverParty);
+    //const user_userAuth = await this.userauthsService.findOne(receiverParty);
 
     var mediaUri = null;
     var mediaBasePath = null;
@@ -828,7 +829,7 @@ export class UtilsService {
         mediaType: mediaType,
         mediaEndpoint: mediaEndpoint
       },
-      username: user_userAuth.username.toString()
+      username: datauserbasicsService.username.toString()
     };
 
     //SEND FCM
@@ -920,7 +921,7 @@ export class UtilsService {
     var regSrc = null;
     let createNotificationsDto = new CreateNotificationsDto();
 
-    const datauserbasicsService = await this.userbasicsService.findOne(
+    const datauserbasicsService = await this.basic2SS.findBymail(
       email
     );
     if (await this.ceckData(datauserbasicsService)) {
@@ -933,9 +934,9 @@ export class UtilsService {
       } catch (e) {
         mediaprofilepicts = null;
       }
-      const user_userAuth = await this.userauthsService.findOne(
-        emailuserbasic
-      );
+      // const user_userAuth = await this.userauthsService.findOne(
+      //   emailuserbasic
+      // );
 
       var mediaUri = null;
       var mediaBasePath = null;
@@ -975,7 +976,7 @@ export class UtilsService {
           mediaType: mediaType,
           mediaEndpoint: mediaEndpoint
         },
-        username: user_userAuth.username.toString()
+        username: datauserbasicsService.username.toString()
       };
       try {
         languages = datauserbasicsService.languages;
@@ -1111,7 +1112,7 @@ export class UtilsService {
     var bodypayload = null;
     let createNotificationsDto = new CreateNotificationsDto();
 
-    const datauserbasicsService = await this.userbasicsService.findOne(
+    const datauserbasicsService = await this.basic2SS.findBymail(
       email
     );
     if (await this.ceckData(datauserbasicsService)) {
@@ -1124,9 +1125,9 @@ export class UtilsService {
       } catch (e) {
         mediaprofilepicts = null;
       }
-      const user_userAuth = await this.userauthsService.findOne(
-        emailuserbasic
-      );
+      // const user_userAuth = await this.userauthsService.findOne(
+      //   emailuserbasic
+      // );
 
       var mediaUri = null;
       var mediaBasePath = null;
@@ -1166,7 +1167,7 @@ export class UtilsService {
           mediaType: mediaType,
           mediaEndpoint: mediaEndpoint
         },
-        username: user_userAuth.username.toString()
+        username: datauserbasicsService.username.toString()
       };
       try {
         languages = datauserbasicsService.languages;
@@ -1292,7 +1293,7 @@ export class UtilsService {
   }
 
   async getUsertname(email: string) {
-    return (await this.userauthsService.findOne(email)).username;
+    return (await this.basic2SS.findBymail(email)).username;
   }
 
   async getUsertname2(email: string) {
@@ -1301,7 +1302,7 @@ export class UtilsService {
   }
 
   async getregSrc(email: string) {
-    var regSrc = (await this.userauthsService.findOne(email)).regSrc;
+    var regSrc = (await this.basic2SS.findBymail(email)).regSrc;
     if (regSrc == undefined || regSrc == null) {
       regSrc = "android";
     }
@@ -1400,7 +1401,7 @@ export class UtilsService {
 
   async ceckUserByEmail(email: string): Promise<boolean> {
     var existing = false;
-    var user_auth = await this.userauthsService.findOne(email);
+    var user_auth = await this.basic2SS.findBymail(email);
     if (await this.ceckData(user_auth)) {
       existing = true;
     }
@@ -1578,7 +1579,7 @@ export class UtilsService {
 
   async generateUsername(email: string): Promise<string> {
     var username = email.substring(0, email.indexOf('@'));
-    var list_username = await this.userauthsService.findOneUsername(username);
+    var list_username = await this.basic2SS.findOneUsername(username);
     if (await this.ceckData(list_username)) {
       username += '_' + await this.generateOTP();
     }
@@ -1587,7 +1588,7 @@ export class UtilsService {
 
   async validateUsername(username: string): Promise<boolean> {
     var isTrue = false;
-    var list_username = await this.userauthsService.findOneUsername(username);
+    var list_username = await this.basic2SS.findOneUsername(username);
     if (!(await this.ceckData(list_username))) {
       isTrue = true;
     }
@@ -1842,13 +1843,15 @@ export class UtilsService {
   }
 
   async getUserlanguages(email: string): Promise<String> {
-    var get_userbasic = await this.userbasicsService.findOne(email);
+    var get_userbasic = await this.basic2SS.findBymail(email);
     var get_languages = null;
     if (await this.ceckData(get_userbasic)) {
       if (get_userbasic.languages != undefined) {
-        var languages_json = JSON.parse(JSON.stringify(get_userbasic.languages));
-        get_languages = await this.languagesService.findOne(languages_json.$id);
-        return get_languages.langIso.toString();
+        if (get_userbasic.languagesLangIso != undefined) {
+          return get_userbasic.languagesLangIso.toString();
+        } else {
+          return 'id';
+        }
       } else {
         return 'id';
       }
@@ -1875,7 +1878,7 @@ export class UtilsService {
   async getAvatarUser(email: string) {
     var AvatarDTO_ = new AvatarDTO();
     var get_profilePict = null;
-    var get_userbasic = await this.userbasicsService.findOne(email);
+    var get_userbasic = await this.basic2SS.findBymail(email);
     if (await this.ceckData(get_userbasic)) {
       if (get_userbasic.profilePict != null) {
         var mediaprofilepicts_json = JSON.parse(JSON.stringify(get_userbasic.profilePict));
@@ -1907,9 +1910,9 @@ export class UtilsService {
     return AvatarDTO_;
   }
   async generateProfile(email: string, datafor: string, email_view?: string): Promise<ProfileDTO> {
-    var get_userbasic = await this.userbasicsService.findone_(email);
+    var get_userbasic = await this.basic2SS.finddetail(email);
     // var get_userbasic = await this.userbasicsService.findOne(email);
-    var get_userauth = await this.userauthsService.findOne(email);
+    //var get_userauth = await this.userauthsService.findOne(email);
 
     var get_languages = null;
     var get_insight = null;
@@ -2014,7 +2017,7 @@ export class UtilsService {
     if (datafor == 'FULL') {
       if (await this.ceckData(get_userbasic)) {
         if (get_userbasic.profileID != undefined) { ProfileDTO_.profileID = get_userbasic.profileID; }
-        if (get_userauth.regSrc != undefined) { ProfileDTO_.regSrc = get_userauth.regSrc; }
+        if (get_userbasic.regSrc != undefined) { ProfileDTO_.regSrc = get_userbasic.regSrc; }
         if (get_userbasic.bio != undefined) { ProfileDTO_.bio = get_userbasic.bio; }
         if (get_userbasic.dob != undefined) { ProfileDTO_.dob = get_userbasic.dob; }
         if (get_userbasic.gender != undefined) { ProfileDTO_.gender = get_userbasic.gender; }
@@ -2034,10 +2037,10 @@ export class UtilsService {
         ProfileDTO_.isPrivate = get_userbasic.isPrivate.toString();
         ProfileDTO_.isFollowPrivate = get_userbasic.isFollowPrivate.toString();
         ProfileDTO_.isPostPrivate = get_userbasic.isPostPrivate.toString();
-        ProfileDTO_.otp = get_userauth.oneTimePassword;
-        ProfileDTO_.otpToken = get_userauth.otpToken;
-        ProfileDTO_.otpToken = get_userauth.otpToken;
-        ProfileDTO_.authEmail = get_userauth.email;
+        ProfileDTO_.otp = get_userbasic.oneTimePassword;
+        ProfileDTO_.otpToken = get_userbasic.otpToken;
+        ProfileDTO_.otpToken = get_userbasic.otpToken;
+        ProfileDTO_.authEmail = get_userbasic.email;
         ProfileDTO_.iduser = get_userbasic._id;
         ProfileDTO_.profileID = get_userbasic.profileID;
         //ProfileDTO_.token =
@@ -2075,7 +2078,7 @@ export class UtilsService {
         otppinVerified = get_userbasic.otppinVerified;
       }
     }
-    if (await this.ceckData(get_userbasic) && await this.ceckData(get_userauth)) {
+    if (await this.ceckData(get_userbasic)) {
       if (datafor == 'LOGIN' || datafor == 'FULL' || datafor == 'PROFILE') {
         if (get_states != null) { ProfileDTO_.area = get_states.stateName; }
         if (get_countries != null) { ProfileDTO_.country = get_countries.country; }
@@ -2092,9 +2095,9 @@ export class UtilsService {
         if (await this.ceckData(get_userbasic)) {
           if (get_userbasic.idProofNumber != undefined) { ProfileDTO_.idProofNumber = get_userbasic.idProofNumber; }
         }
-        if (get_userauth.roles != undefined) {
-          if (get_userauth.roles != null) {
-            ProfileDTO_.roles = get_userauth.roles;
+        if (get_userbasic.roles != undefined) {
+          if (get_userbasic.roles != null) {
+            ProfileDTO_.roles = get_userbasic.roles;
           }
         }
         if (await this.ceckData(get_userbasic)) {
@@ -2107,7 +2110,7 @@ export class UtilsService {
         if (await this.ceckData(get_userbasic)) {
           ProfileDTO_.isIdVerified = get_userbasic.isIdVerified.toString();
         }
-        ProfileDTO_.isEmailVerified = get_userauth.isEmailVerified.toString();
+        ProfileDTO_.isEmailVerified = get_userbasic.isEmailVerified.toString();
         if (await this.ceckData(get_userbasic)) {
           if (get_userbasic.idProofStatus != undefined) { ProfileDTO_.idProofStatus = get_userbasic.idProofStatus; }
         }
@@ -2118,7 +2121,7 @@ export class UtilsService {
           ProfileDTO_.event = get_userbasic.event;
           if (get_userbasic.email != undefined) { ProfileDTO_.email = get_userbasic.email; }
         }
-        if (get_userauth.username != undefined) { ProfileDTO_.username = get_userauth.username; }
+        if (get_userbasic.username != undefined) { ProfileDTO_.username = get_userbasic.username; }
         if (await this.ceckData(get_userbasic)) {
           ProfileDTO_.isComplete = get_userbasic.isComplete.toString();
           ProfileDTO_.status = get_userbasic.status;
@@ -2412,7 +2415,7 @@ export class UtilsService {
 
   async getPin(email: string) {
     var pin = "";
-    var data_user = await this.userbasicsService.findOne(email);
+    var data_user = await this.basic2SS.findBymail(email);
     if (data_user.otp_pin == undefined) {
       pin = data_user.pin.toString();
     }
@@ -2506,7 +2509,7 @@ export class UtilsService {
   }
 
   async getUserBasic(email: string) {
-    return await this.userbasicsService.findOne(email);
+    return await this.basic2SS.findBymail(email);
   }
   async getUserBasic2(email: string) {
     return await this.basic2SS.findBymail(email);
@@ -2695,7 +2698,7 @@ export class UtilsService {
     var bodypayload = null;
     let createNotificationsDto = new CreateNotificationsDto();
 
-    const datauserbasicsService = await this.userbasicsService.findOne(
+    const datauserbasicsService = await this.basic2SS.findBymail(
       email
     );
     if (await this.ceckData(datauserbasicsService)) {
@@ -2708,9 +2711,9 @@ export class UtilsService {
       } catch (e) {
         mediaprofilepicts = null;
       }
-      const user_userAuth = await this.userauthsService.findOne(
-        emailuserbasic
-      );
+      // const user_userAuth = await this.userauthsService.findOne(
+      //   emailuserbasic
+      // );
 
       var mediaUri = null;
       var mediaBasePath = null;
@@ -2752,7 +2755,7 @@ export class UtilsService {
           mediaType: mediaType,
           mediaEndpoint: mediaEndpoint
         },
-        username: user_userAuth.username.toString()
+        username: datauserbasicsService.username.toString()
       };
 
       payload = {
@@ -2840,7 +2843,7 @@ export class UtilsService {
     var datanotifchall = null;
     let createNotificationsDto = new CreateNotificationsDto();
 
-    const datauserbasicsService = await this.userbasicsService.findOne(
+    const datauserbasicsService = await this.basic2SS.findBymail(
       email
     );
     if (await this.ceckData(datauserbasicsService)) {
@@ -2853,9 +2856,9 @@ export class UtilsService {
       } catch (e) {
         mediaprofilepicts = null;
       }
-      const user_userAuth = await this.userauthsService.findOne(
-        emailuserbasic
-      );
+      // const user_userAuth = await this.userauthsService.findOne(
+      //   emailuserbasic
+      // );
 
       var mediaUri = null;
       var mediaBasePath = null;
@@ -2897,7 +2900,7 @@ export class UtilsService {
           mediaType: mediaType,
           mediaEndpoint: mediaEndpoint
         },
-        username: user_userAuth.username.toString()
+        username: datauserbasicsService.username.toString()
       };
       try {
         languages = datauserbasicsService.languages;
@@ -3090,7 +3093,7 @@ export class UtilsService {
     var bodypayload = null;
     let createNotificationsDto = new CreateNotificationsDto();
 
-    const datauserbasicsService = await this.userbasicsService.findOne(
+    const datauserbasicsService = await this.basic2SS.findBymail(
       email
     );
     if (await this.ceckData(datauserbasicsService)) {
@@ -3103,9 +3106,9 @@ export class UtilsService {
       } catch (e) {
         mediaprofilepicts = null;
       }
-      const user_userAuth = await this.userauthsService.findOne(
-        emailuserbasic
-      );
+      // const user_userAuth = await this.userauthsService.findOne(
+      //   emailuserbasic
+      // );
 
       var mediaUri = null;
       var mediaBasePath = null;
@@ -3147,7 +3150,7 @@ export class UtilsService {
           mediaType: mediaType,
           mediaEndpoint: mediaEndpoint
         },
-        username: user_userAuth.username.toString()
+        username: datauserbasicsService.username.toString()
       };
       try {
         languages = datauserbasicsService.languages;
@@ -3262,12 +3265,12 @@ export class UtilsService {
     }
   }
 
-  async getIdUserByToken(head: any): Promise<Userbasic> {
+  async getIdUserByToken(head: any): Promise<Userbasicnew> {
     var token = ((head['x-auth-token']).split(" "))[1];
     var data = await this.jwtService.decode(token);
     if (data != undefined) {
       if (data['email'] != undefined) {
-        const Userbasic_: Userbasic = await this.userbasicsService.findOne(data['email'])
+        const Userbasic_: Userbasicnew = await this.basic2SS.findBymail(data['email'])
         return Userbasic_;
       } else {
         return null;

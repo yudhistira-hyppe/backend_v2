@@ -244,6 +244,20 @@ export class UserbasicnewService {
             },
         );
     }
+
+    async updateData(email: string, createUserbasicDto: CreateuserbasicnewDto): Promise<Object> {
+        let data = await this.UserbasicnewModel.updateOne({ email: email },
+            createUserbasicDto,
+            function (err, docs) {
+                if (err) {
+                    console.log("Updated Error : ", err)
+                } else {
+                    console.log("Updated Docs : ", docs);
+                }
+            }).clone().exec();
+        return data;
+    }
+
     async finddetail(email: string) {
         var result = await this.UserbasicnewModel.aggregate([
             {
