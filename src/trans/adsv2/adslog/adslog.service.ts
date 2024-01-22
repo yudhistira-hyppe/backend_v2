@@ -26,7 +26,7 @@ export class AdslogsService {
             },
             {
                 $lookup: {
-                    from: "userbasics",
+                    from: "newUserBasics",
                     localField: "iduser",
                     foreignField: "_id",
                     as: "userbasics_data"
