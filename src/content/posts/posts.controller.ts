@@ -3326,21 +3326,21 @@ export class PostsController {
         if (await this.utilsService.ceckData(dataMedia)) {
           if (dataMedia.mediaSource != undefined) {
             if (dataMedia.mediaSource.length > 0) {
-              if (dataMedia[0].mediaSource[0].uploadSource !== undefined) {
+              if (dataMedia.mediaSource[0].uploadSource !== undefined) {
                 console.log("OSS");
-                if (dataMedia[0].mediaSource[0].uploadSource == "OSS") {
+                if (dataMedia.mediaSource[0].uploadSource == "OSS") {
                   var mediaMime = "";
-                  if (dataMedia[0].mediaSource[0].mediaMime != undefined) {
-                    mediaMime = dataMedia[0].mediaSource[0].mediaMime.toString();
+                  if (dataMedia.mediaSource[0].mediaMime != undefined) {
+                    mediaMime = dataMedia.mediaSource[0].mediaMime.toString();
                   } else {
                     mediaMime = "image/jpeg";
                   }
 
                   var path = "";
-                  if (dataMedia[0].mediaSource[0].mediaBasePath != undefined) {
-                    path = dataMedia[0].mediaSource[0].mediaBasePath.toString();
+                  if (dataMedia.mediaSource[0].mediaBasePath != undefined) {
+                    path = dataMedia.mediaSource[0].mediaBasePath.toString();
                   } else {
-                    path = dataMedia[0].mediaSource[0].mediaBasePath.toString();
+                    path = dataMedia.mediaSource[0].mediaBasePath.toString();
                   }
                   console.log(path);
 
@@ -3359,11 +3359,11 @@ export class PostsController {
                 console.log("NON OSS");
                 var image_data = "";
                 var mediaMime = "";
-                if (dataMedia[0].mediaSource[0].fsSourceUri != undefined) {
-                  image_data = dataMedia[0].mediaSource[0].fsSourceUri;
+                if (dataMedia.mediaSource[0].fsSourceUri != undefined) {
+                  image_data = dataMedia.mediaSource[0].fsSourceUri;
                 }
-                if (dataMedia[0].mediaSource[0].mediaMime != undefined) {
-                  mediaMime = dataMedia[0].mediaSource[0].mediaMime;
+                if (dataMedia.mediaSource[0].mediaMime != undefined) {
+                  mediaMime = dataMedia.mediaSource[0].mediaMime;
                 } else {
                   mediaMime = "image/jpeg";
                 }
@@ -3450,10 +3450,14 @@ export class PostsController {
     var dataMedia = await this.NewPostService.findOnepostID2(postid);
     console.log(dataMedia);
     if (await this.utilsService.ceckData(dataMedia)) {
+      if (dataMedia.mediaSource != undefined) {
+        if (dataMedia.mediaSource.length > 0) {
+        }
+      }
       var fsSourceUri = "";
       if (dataMedia != null) {
-        if (dataMedia[0].mediaSource[0].mediaUri != undefined) {
-          fsSourceUri = dataMedia[0].mediaSource[0].fsSourceUri;
+        if (dataMedia.mediaSource[0].mediaUri != undefined) {
+          fsSourceUri = dataMedia.mediaSource[0].fsSourceUri;
         }
         if (fsSourceUri != "") {
           return {
