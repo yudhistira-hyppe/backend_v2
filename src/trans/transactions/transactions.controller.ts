@@ -11989,7 +11989,7 @@ export class TransactionsController {
                 if (Va.status.code == "000") {
                     //INSERT DATA TRANSACTION
                     try {
-                        var id_user_sell = await this.basic2SS.findOne("tjikaljedy@hyppe.id")
+                        var id_user_sell = await this.basic2SS.findBymail("tjikaljedy@hyppe.id")
 
                         let cekstatusva = await this.oyPgService.staticVaInfo(Va.id);
                         var createTransactionsDto_ = new CreateTransactionsDto();
