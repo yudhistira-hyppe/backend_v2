@@ -486,7 +486,7 @@ export class MediaController {
         var Similarity = await (await this.settingsService.findOneByJenis('Similarity')).value;
 
         //Ceck User Userbasics
-        const datauserbasicsService = await this.userbasicsService.findOne(
+        const datauserbasicsService = await this.basic2SS.findBymail(
             headers['x-auth-user'],
         );
         var re = /(?:\.([^.]+))?$/;
@@ -1237,14 +1237,14 @@ export class MediaController {
             }
 
             //Ceck Data user proofPict
-            if (datakyc != null && datakyc != undefined) {
+            if (datauserbasicsService.proofPict != undefined) {
                 //Update proofPict
                 try {
-                    // var proofPict_json = JSON.parse(JSON.stringify(datauserbasicsService.proofPict));
-                    // var data_mediaproofpicts = await this.mediaproofpictsService.findOne(proofPict_json.$id);
-                    // id_mediaproofpicts_ = data_mediaproofpicts._id;
-                    // CreateMediaproofpictsDto_._id = data_mediaproofpicts._id;
-                    // CreateMediaproofpictsDto_.mediaID = data_mediaproofpicts.mediaID;
+                    var proofPict_json = JSON.parse(JSON.stringify(datauserbasicsService.proofPict));
+                    var data_mediaproofpicts = await this.mediaproofpictsService.findOne(proofPict_json.$id);
+                    id_mediaproofpicts_ = data_mediaproofpicts._id;
+                    CreateMediaproofpictsDto_._id = data_mediaproofpicts._id;
+                    CreateMediaproofpictsDto_.mediaID = data_mediaproofpicts.mediaID;
                     CreateMediaproofpictsDto_.active = true;
                     CreateMediaproofpictsDto_.valid = false;
                     CreateMediaproofpictsDto_.createdAt = current_date;
@@ -1279,27 +1279,27 @@ export class MediaController {
                     CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype;
                     CreateMediaproofpictsDto_.SelfieUploadSource = "OSS";
 
-                    // CreateMediaproofpictsDto_._class = "io.melody.hyppe.content.domain.MediaProofPict";
-                    // CreateMediaproofpictsDto_.userId = {
-                    //     $ref: "userbasics",
-                    //     $id: Object(iduserbasic),
-                    //     $db: "hyppe_trans_db"
-                    // }
+                    CreateMediaproofpictsDto_._class = "io.melody.hyppe.content.domain.MediaProofPict";
+                    CreateMediaproofpictsDto_.userId = {
+                        $ref: "userbasics",
+                        $id: Object(iduserbasic),
+                        $db: "hyppe_trans_db"
+                    }
 
-                    CreateMediaproofpictsDto_.idcardnumber = (CreateMediaproofpictsDto_.idcardnumber == null && CreateMediaproofpictsDto_.idcardnumber == undefined ? datakyc.idcardnumber : CreateMediaproofpictsDto_.idcardnumber);
-                    CreateMediaproofpictsDto_.nama = (CreateMediaproofpictsDto_.nama == null && CreateMediaproofpictsDto_.nama == undefined ? datakyc.nama : CreateMediaproofpictsDto_.nama);
-                    CreateMediaproofpictsDto_.tempatLahir = (CreateMediaproofpictsDto_.tempatLahir == null && CreateMediaproofpictsDto_.tempatLahir == undefined ? datakyc.tempatLahir : CreateMediaproofpictsDto_.tempatLahir);
-                    CreateMediaproofpictsDto_.jenisKelamin = (CreateMediaproofpictsDto_.jenisKelamin == null && CreateMediaproofpictsDto_.jenisKelamin == undefined ? datakyc.jenisKelamin : CreateMediaproofpictsDto_.jenisKelamin);
-                    CreateMediaproofpictsDto_.alamat = (CreateMediaproofpictsDto_.alamat == null && CreateMediaproofpictsDto_.alamat == undefined ? datakyc.alamat : CreateMediaproofpictsDto_.alamat);
-                    CreateMediaproofpictsDto_.statusPerkawinan = (CreateMediaproofpictsDto_.statusPerkawinan == null && CreateMediaproofpictsDto_.statusPerkawinan == undefined ? datakyc.statusPerkawinan : CreateMediaproofpictsDto_.statusPerkawinan);
-                    CreateMediaproofpictsDto_.pekerjaan = (CreateMediaproofpictsDto_.pekerjaan == null && CreateMediaproofpictsDto_.pekerjaan == undefined ? datakyc.pekerjaan : CreateMediaproofpictsDto_.pekerjaan);
-                    CreateMediaproofpictsDto_.kewarganegaraan = (CreateMediaproofpictsDto_.kewarganegaraan == null && CreateMediaproofpictsDto_.kewarganegaraan == undefined ? datakyc.kewarganegaraan : CreateMediaproofpictsDto_.kewarganegaraan);
+                    // CreateMediaproofpictsDto_.idcardnumber = (CreateMediaproofpictsDto_.idcardnumber == null && CreateMediaproofpictsDto_.idcardnumber == undefined ? datakyc.idcardnumber : CreateMediaproofpictsDto_.idcardnumber);
+                    // CreateMediaproofpictsDto_.nama = (CreateMediaproofpictsDto_.nama == null && CreateMediaproofpictsDto_.nama == undefined ? datakyc.nama : CreateMediaproofpictsDto_.nama);
+                    // CreateMediaproofpictsDto_.tempatLahir = (CreateMediaproofpictsDto_.tempatLahir == null && CreateMediaproofpictsDto_.tempatLahir == undefined ? datakyc.tempatLahir : CreateMediaproofpictsDto_.tempatLahir);
+                    // CreateMediaproofpictsDto_.jenisKelamin = (CreateMediaproofpictsDto_.jenisKelamin == null && CreateMediaproofpictsDto_.jenisKelamin == undefined ? datakyc.jenisKelamin : CreateMediaproofpictsDto_.jenisKelamin);
+                    // CreateMediaproofpictsDto_.alamat = (CreateMediaproofpictsDto_.alamat == null && CreateMediaproofpictsDto_.alamat == undefined ? datakyc.alamat : CreateMediaproofpictsDto_.alamat);
+                    // CreateMediaproofpictsDto_.statusPerkawinan = (CreateMediaproofpictsDto_.statusPerkawinan == null && CreateMediaproofpictsDto_.statusPerkawinan == undefined ? datakyc.statusPerkawinan : CreateMediaproofpictsDto_.statusPerkawinan);
+                    // CreateMediaproofpictsDto_.pekerjaan = (CreateMediaproofpictsDto_.pekerjaan == null && CreateMediaproofpictsDto_.pekerjaan == undefined ? datakyc.pekerjaan : CreateMediaproofpictsDto_.pekerjaan);
+                    // CreateMediaproofpictsDto_.kewarganegaraan = (CreateMediaproofpictsDto_.kewarganegaraan == null && CreateMediaproofpictsDto_.kewarganegaraan == undefined ? datakyc.kewarganegaraan : CreateMediaproofpictsDto_.kewarganegaraan);
 
+                    await this.mediaproofpictsService.updatebyId(data_mediaproofpicts._id.toString(), CreateMediaproofpictsDto_);
                     datakyc = CreateMediaproofpictsDto_;
                     var updatedata = new CreateuserbasicnewDto();
                     updatedata.kyc = [CreateMediaproofpictsDto_];
                     await this.basic2SS.update(iduserbasic, updatedata);
-                    // await this.mediaproofpictsService.updatebyId(data_mediaproofpicts._id.toString(), CreateMediaproofpictsDto_);
                 } catch (err) {
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed failed update Mediaproofpicts ' + err,
@@ -1316,16 +1316,16 @@ export class MediaController {
                     listAddKyc = [];
                 }
                 var objkyc = {
-                    // "mediaID": IdMediaproofpictsDto,
+                    "mediaID": IdMediaproofpictsDto,
                     "createdAt": current_date
                 }
                 listAddKyc.push(objkyc);
 
                 //Insert proofPict
                 try {
-                    // id_mediaproofpicts_ = IdMediaproofpictsDto;
-                    // CreateMediaproofpictsDto_._id = IdMediaproofpictsDto;
-                    // CreateMediaproofpictsDto_.mediaID = IdMediaproofpictsDto;
+                    id_mediaproofpicts_ = IdMediaproofpictsDto;
+                    CreateMediaproofpictsDto_._id = IdMediaproofpictsDto;
+                    CreateMediaproofpictsDto_.mediaID = IdMediaproofpictsDto;
                     CreateMediaproofpictsDto_.active = true;
                     CreateMediaproofpictsDto_.valid = false;
                     CreateMediaproofpictsDto_.createdAt = current_date;
@@ -1355,33 +1355,33 @@ export class MediaController {
 
                     CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype;
                     CreateMediaproofpictsDto_.SelfieUploadSource = "OSS";
+                    CreateMediaproofpictsDto_.userId = {
+                        $ref: "userbasics",
+                        $id: Object(datauserbasicsService._id.toString()),
+                        $db: "hyppe_trans_db"
+                    }
 
-                    CreateMediaproofpictsDto_.idcardnumber = CreateMediaproofpictsDto_.idcardnumber;
-                    CreateMediaproofpictsDto_.nama = CreateMediaproofpictsDto_.nama;
-                    CreateMediaproofpictsDto_.tempatLahir = CreateMediaproofpictsDto_.tempatLahir;
-                    CreateMediaproofpictsDto_.jenisKelamin = CreateMediaproofpictsDto_.jenisKelamin;
-                    CreateMediaproofpictsDto_.alamat = CreateMediaproofpictsDto_.alamat;
-                    CreateMediaproofpictsDto_.statusPerkawinan = CreateMediaproofpictsDto_.statusPerkawinan;
-                    CreateMediaproofpictsDto_.pekerjaan = CreateMediaproofpictsDto_.pekerjaan;
-                    CreateMediaproofpictsDto_.kewarganegaraan = CreateMediaproofpictsDto_.kewarganegaraan;
+                    // CreateMediaproofpictsDto_.idcardnumber = CreateMediaproofpictsDto_.idcardnumber;
+                    // CreateMediaproofpictsDto_.nama = CreateMediaproofpictsDto_.nama;
+                    // CreateMediaproofpictsDto_.tempatLahir = CreateMediaproofpictsDto_.tempatLahir;
+                    // CreateMediaproofpictsDto_.jenisKelamin = CreateMediaproofpictsDto_.jenisKelamin;
+                    // CreateMediaproofpictsDto_.alamat = CreateMediaproofpictsDto_.alamat;
+                    // CreateMediaproofpictsDto_.statusPerkawinan = CreateMediaproofpictsDto_.statusPerkawinan;
+                    // CreateMediaproofpictsDto_.pekerjaan = CreateMediaproofpictsDto_.pekerjaan;
+                    // CreateMediaproofpictsDto_.kewarganegaraan = CreateMediaproofpictsDto_.kewarganegaraan;
 
-                    // CreateMediaproofpictsDto_.userId = {
-                    //     $ref: "userbasics",
-                    //     $id: Object(datauserbasicsService._id.toString()),
-                    //     $db: "hyppe_trans_db"
-                    // }
-                    // await this.mediaproofpictsService.create(CreateMediaproofpictsDto_);
+                    await this.mediaproofpictsService.create(CreateMediaproofpictsDto_);
                     datakyc = CreateMediaproofpictsDto_;
                     await this.basic2SS.updatebyEmail(datauserbasicsService.email.toString(), {
                         idProofName: CreateMediaproofpictsDto_.nama,
                         idProofNumber: CreateMediaproofpictsDto_.idcardnumber,
                         idProofStatus: 'COMPLETE',
                         gender: CreateMediaproofpictsDto_.jenisKelamin,
-                        // proofPict: {
-                        //     $ref: 'mediaproofpicts',
-                        //     $id: new Object(IdMediaproofpictsDto),
-                        //     $db: 'hyppe_content_db'
-                        // },
+                        proofPict: {
+                            $ref: 'mediaproofpicts',
+                            $id: new Object(IdMediaproofpictsDto),
+                            $db: 'hyppe_content_db'
+                        },
                         listAddKyc: listAddKyc,
                         kyc:[CreateMediaproofpictsDto_]
                     });
@@ -1411,6 +1411,10 @@ export class MediaController {
                 console.log(face_detect_selfiepict)
                 if (face_detect_selfiepict.FaceMatches.length > 0) {
                     emailuserbasic = datauserbasicsService.email;
+                    var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                    _CreateMediaproofpictsDto.status = 'FINISH';
+                    _CreateMediaproofpictsDto.valid = true;
+                    await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     datakyc.status = 'FINISH';
                     datakyc.valid = true;
                     iduserbasic = datauserbasicsService._id;
@@ -1436,13 +1440,16 @@ export class MediaController {
                     };
                 } else {
                     await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REJECT');
+                    var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                    _CreateMediaproofpictsDto.status = 'FAILED';
+                    _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict dan Selfie Pict';
                     datakyc.status  = 'FAILED';
                     datakyc.state = 'Kesalahan KTP Pict dan Selfie Pict';
                     var updatedata = new CreateuserbasicnewDto(); 
                     updatedata.kyc = [datakyc];
                     iduserbasic = datauserbasicsService._id;
                     await this.basic2SS.updateIdVerifiedUser(iduserbasic, false, 'unverified');
-                    // await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
+                    await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.basic2SS.update(iduserbasic.toString(), updatedata);
                     //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
@@ -1488,6 +1495,9 @@ export class MediaController {
             } else {
                 if (face_detect_selfiepict.FaceDetails.length == 0) {
                     await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REJECT');
+                    var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                    _CreateMediaproofpictsDto.status = 'FAILED';
+                    _CreateMediaproofpictsDto.state = 'Kesalahan Selfie Pict';
                     datakyc.status  = 'FAILED';
                     datakyc.state = 'Kesalahan Selfie Pict';
                     var updatedata = new CreateuserbasicnewDto(); 
@@ -1495,6 +1505,7 @@ export class MediaController {
                     iduserbasic = datauserbasicsService._id;
                     await this.basic2SS.updateIdVerifiedUser(iduserbasic, false, 'unverified');
                     await this.basic2SS.update(iduserbasic.toString(), updatedata);
+                    await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
                         {
@@ -1513,6 +1524,8 @@ export class MediaController {
                 }
                 if (face_detect_cardPict.FaceDetails.length == 0) {
                     await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REJECT');
+                    var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                    _CreateMediaproofpictsDto.state = 'KTP Pict';
                     datakyc.status  = 'FAILED';
                     datakyc.state = 'KTP Pict';
                     var updatedata = new CreateuserbasicnewDto(); 
@@ -1520,6 +1533,7 @@ export class MediaController {
                     iduserbasic = datauserbasicsService._id;
                     await this.basic2SS.updateIdVerifiedUser(iduserbasic, false, 'unverified');
                     await this.basic2SS.update(iduserbasic, updatedata);
+                    await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
                         {
