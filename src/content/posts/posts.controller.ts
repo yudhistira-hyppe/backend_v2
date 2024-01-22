@@ -3324,58 +3324,66 @@ export class PostsController {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var dataMedia = await this.NewPostService.findOnepostID2(id);
         if (await this.utilsService.ceckData(dataMedia)) {
-          if (dataMedia[0].mediaSource[0].uploadSource !== undefined) {
-            console.log("OSS");
-            if (dataMedia[0].mediaSource[0].uploadSource == "OSS") {
-              var mediaMime = "";
-              if (dataMedia[0].mediaSource[0].mediaMime != undefined) {
-                mediaMime = dataMedia[0].mediaSource[0].mediaMime.toString();
-              } else {
-                mediaMime = "image/jpeg";
-              }
+          if (dataMedia.mediaSource != undefined) {
+            if (dataMedia.mediaSource.length > 0) {
+              if (dataMedia[0].mediaSource[0].uploadSource !== undefined) {
+                console.log("OSS");
+                if (dataMedia[0].mediaSource[0].uploadSource == "OSS") {
+                  var mediaMime = "";
+                  if (dataMedia[0].mediaSource[0].mediaMime != undefined) {
+                    mediaMime = dataMedia[0].mediaSource[0].mediaMime.toString();
+                  } else {
+                    mediaMime = "image/jpeg";
+                  }
 
-              var path = "";
-              if (dataMedia[0].mediaSource[0].mediaBasePath != undefined) {
-                path = dataMedia[0].mediaSource[0].mediaBasePath.toString();
-              } else {
-                path = dataMedia[0].mediaSource[0].mediaBasePath.toString();
-              }
-              console.log(path);
+                  var path = "";
+                  if (dataMedia[0].mediaSource[0].mediaBasePath != undefined) {
+                    path = dataMedia[0].mediaSource[0].mediaBasePath.toString();
+                  } else {
+                    path = dataMedia[0].mediaSource[0].mediaBasePath.toString();
+                  }
+                  console.log(path);
 
-              var data2 = await this.ossContentPictService.readFile(path);
-              console.log(data2);
-              if (data2 != null) {
-                response.set("Content-Type", "image/jpeg");
-                response.send(data2);
+                  var data2 = await this.ossContentPictService.readFile(path);
+                  console.log(data2);
+                  if (data2 != null) {
+                    response.set("Content-Type", "image/jpeg");
+                    response.send(data2);
+                  } else {
+                    response.send(null);
+                  }
+                } else {
+                  response.send(null);
+                }
               } else {
-                response.send(null);
+                console.log("NON OSS");
+                var image_data = "";
+                var mediaMime = "";
+                if (dataMedia[0].mediaSource[0].fsSourceUri != undefined) {
+                  image_data = dataMedia[0].mediaSource[0].fsSourceUri;
+                }
+                if (dataMedia[0].mediaSource[0].mediaMime != undefined) {
+                  mediaMime = dataMedia[0].mediaSource[0].mediaMime;
+                } else {
+                  mediaMime = "image/jpeg";
+                }
+                if (image_data != '') {
+                  var data = await this.NewPostService.pict(image_data);
+                  if (data != null) {
+                    response.set("Content-Type", "image/png");
+                    response.send(data);
+                  } else {
+                    response.send(null);
+                  }
+                } else {
+                  response.send(null);
+                }
               }
             } else {
               response.send(null);
             }
           } else {
-            console.log("NON OSS");
-            var image_data = "";
-            var mediaMime = "";
-            if (dataMedia[0].mediaSource[0].fsSourceUri != undefined) {
-              image_data = dataMedia[0].mediaSource[0].fsSourceUri;
-            }
-            if (dataMedia[0].mediaSource[0].mediaMime != undefined) {
-              mediaMime = dataMedia[0].mediaSource[0].mediaMime;
-            } else {
-              mediaMime = "image/jpeg";
-            }
-            if (image_data != '') {
-              var data = await this.NewPostService.pict(image_data);
-              if (data != null) {
-                response.set("Content-Type", "image/png");
-                response.send(data);
-              } else {
-                response.send(null);
-              }
-            } else {
-              response.send(null);
-            }
+            response.send(null);
           }
         } else {
           response.send(null);
