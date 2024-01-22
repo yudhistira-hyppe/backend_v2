@@ -3223,68 +3223,31 @@ export class PostsController {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var dataMedia = await this.NewPostService.findOnepostID2(id);
         if (await this.utilsService.ceckData(dataMedia)) {
-          if (dataMedia[0].mediaSource[0].uploadSource !== undefined) {
-            console.log("OSS");
-            if (dataMedia[0].mediaSource[0].uploadSource == "OSS") {
-              var mediaMime = "";
-              if (dataMedia[0].mediaSource[0].mediaMime != undefined) {
-                mediaMime = dataMedia[0].mediaSource[0].mediaMime.toString();
-              } else {
-                mediaMime = "image/jpeg";
-              }
+          if (dataMedia.mediaSource!=undefined){
+            if (dataMedia.mediaSource.length>0) {
+              if (dataMedia.mediaSource[0].uploadSource !== undefined) {
+                console.log("OSS");
+                if (dataMedia[0].mediaSource[0].uploadSource == "OSS") {
+                  var mediaMime = "";
+                  if (dataMedia[0].mediaSource[0].mediaMime != undefined) {
+                    mediaMime = dataMedia[0].mediaSource[0].mediaMime.toString();
+                  } else {
+                    mediaMime = "image/jpeg";
+                  }
 
-              var path = "";
-              if (dataMedia[0].mediaSource[0].mediaThumBasePath != undefined) {
-                path = dataMedia[0].mediaSource[0].mediaThumBasePath.toString();
-              } else {
-                path = dataMedia[0].mediaSource[0].mediaBasePath.toString();
-              }
-              console.log(path);
+                  var path = "";
+                  if (dataMedia[0].mediaSource[0].mediaThumBasePath != undefined) {
+                    path = dataMedia[0].mediaSource[0].mediaThumBasePath.toString();
+                  } else {
+                    path = dataMedia[0].mediaSource[0].mediaBasePath.toString();
+                  }
+                  console.log(path);
 
-              var data2 = await this.ossContentPictService.readFile(path);
-              console.log(data2);
-              if (data2 != null) {
-                response.set("Content-Type", "image/jpeg");
-                response.send(data2);
-              } else {
-                response.send(null);
-              }
-            } else {
-              response.send(null);
-            }
-          } else {
-            console.log("NON OSS");
-            var thum_data = "";
-            if (dataMedia[0].mediaSource[0].apsara) {
-              if (dataMedia[0].mediaSource[0].apsaraId != undefined) {
-                var resultpictapsara = await this.postContentService.getVideoApsara([dataMedia[0].mediaSource[0].apsaraId.toString()]);
-                var UrlThumnail = resultpictapsara.VideoList[0].CoverURL;
-                var data_thum = await this.PostsService.urlToBuffer(UrlThumnail);
-                //var data_thum = await this.postContentService.generate_thumnail_buffer(data, "jpg");
-
-                if (data_thum != null) {
-                  response.set("Content-Type", "image/jpeg");
-                  response.send(data_thum);
-                } else {
-                  response.send(null);
-                }
-              } else {
-                response.send(null);
-              }
-            } else {
-              if (dataMedia[0].mediaSource[0].fsTargetThumbUri != undefined) {
-                thum_data = dataMedia[0].mediaSource[0].fsTargetThumbUri;
-              } else {
-                thum_data = dataMedia[0].mediaSource[0].fsSourceUri;
-              }
-              if (thum_data != '') {
-                var data = await this.PostsService.thum(thum_data);
-                if (data != null) {
-                  var data_thum = await this.postContentService.generate_thumnail_buffer(data, "jpg");
-                  console.log("data_thum", data_thum);
-                  if (data_thum != null) {
+                  var data2 = await this.ossContentPictService.readFile(path);
+                  console.log(data2);
+                  if (data2 != null) {
                     response.set("Content-Type", "image/jpeg");
-                    response.send(data_thum);
+                    response.send(data2);
                   } else {
                     response.send(null);
                   }
@@ -3292,9 +3255,54 @@ export class PostsController {
                   response.send(null);
                 }
               } else {
-                response.send(null);
+                console.log("NON OSS");
+                var thum_data = "";
+                if (dataMedia.mediaSource[0].apsara) {
+                  if (dataMedia.mediaSource[0].apsaraId != undefined) {
+                    var resultpictapsara = await this.postContentService.getVideoApsara([dataMedia[0].mediaSource[0].apsaraId.toString()]);
+                    var UrlThumnail = resultpictapsara.VideoList[0].CoverURL;
+                    var data_thum = await this.PostsService.urlToBuffer(UrlThumnail);
+                    //var data_thum = await this.postContentService.generate_thumnail_buffer(data, "jpg");
+
+                    if (data_thum != null) {
+                      response.set("Content-Type", "image/jpeg");
+                      response.send(data_thum);
+                    } else {
+                      response.send(null);
+                    }
+                  } else {
+                    response.send(null);
+                  }
+                } else {
+                  if (dataMedia[0].mediaSource[0].fsTargetThumbUri != undefined) {
+                    thum_data = dataMedia[0].mediaSource[0].fsTargetThumbUri;
+                  } else {
+                    thum_data = dataMedia[0].mediaSource[0].fsSourceUri;
+                  }
+                  if (thum_data != '') {
+                    var data = await this.PostsService.thum(thum_data);
+                    if (data != null) {
+                      var data_thum = await this.postContentService.generate_thumnail_buffer(data, "jpg");
+                      console.log("data_thum", data_thum);
+                      if (data_thum != null) {
+                        response.set("Content-Type", "image/jpeg");
+                        response.send(data_thum);
+                      } else {
+                        response.send(null);
+                      }
+                    } else {
+                      response.send(null);
+                    }
+                  } else {
+                    response.send(null);
+                  }
+                }
               }
+            } else {
+              response.send(null);
             }
+          } else {
+            response.send(null);
           }
         } else {
           response.send(null);
