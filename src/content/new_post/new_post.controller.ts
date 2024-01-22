@@ -1070,7 +1070,7 @@ export class NewPostController {
         }
 
         // var data = await this.UserbasicnewService.getpostquery(email:string, visibility:string, postids: string, tipepost:string, activestatus:string, exptime:string, skip:number, page:number, insight:string, sorttime:string);
-        var data = await this.basic2SS.getpostquery(auth.email, body.visibility, body.postID, body.postType, body.withActive, body.withExp, parseInt(body.pageRow), parseInt(body.pageNumber), body.withInsight, 'true');
+        var data = await this.newPostService.getpostquery(auth.email, body.visibility, body.postID, body.postType, body.withActive, body.withExp, parseInt(body.pageRow), parseInt(body.pageNumber), body.withInsight, 'true');
 
         var listdata = [];
         var listmusic = [];
