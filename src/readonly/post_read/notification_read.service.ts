@@ -899,13 +899,13 @@ export class NotificationReadService {
                     flowIsDone: 1,
                     mate: 1,
                     postType: 1,
-                    mediaTypeStory: 1,
+                    // mediaTypeStory: 1,
                     notificationID: 1,
                     actionButtons: 1,
                     postID: 1,
                     senderOrReceiverInfo: 1,
                     title: 1,
-                    titleEN: 1,
+                    // titleEN: 1,
                     updatedAt: 1,
                     urluserBadge:
                     {
