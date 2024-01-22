@@ -50,6 +50,17 @@ export class NewPostService {
     return data;
   }
 
+
+  async updateByPostId(
+    postID: string,
+    CreateNewPostDTO: CreateNewPostDTO,
+  ): Promise<Object> {
+    return await this.loaddata.updateOne(
+      { postID: postID },
+      CreateNewPostDTO
+    );
+  }
+
   async findByPostId(postID: string): Promise<newPosts> {
     return this.loaddata.findOne({ postID: postID }).exec();
   }

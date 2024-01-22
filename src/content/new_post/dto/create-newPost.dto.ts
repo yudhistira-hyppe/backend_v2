@@ -60,6 +60,7 @@ export class CreateNewPostDTO {
   reportedUserCount: number
   stiker: any[];
   text: any[];
+  boostCount: number;
 
   //CONTENT EVENT
   userView: any[];

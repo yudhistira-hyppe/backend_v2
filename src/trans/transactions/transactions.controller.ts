@@ -45,6 +45,7 @@ import { AdsPriceCreditsService } from '../adsv2/adspricecredits/adspricecredits
 import { AdsPriceCredits } from '../adsv2/adspricecredits/schema/adspricecredits.schema';
 import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
 import { NewPostService } from 'src/content/new_post/new_post.service';
+import { CreateNewPostDTO } from 'src/content/new_post/dto/create-newPost.dto';
 
 const cheerio = require('cheerio');
 const nodeHtmlToImage = require('node-html-to-image');
@@ -2913,11 +2914,11 @@ export class TransactionsController {
             boostViewer: [],
         }
         boost.push(dataBost);
-        var CreatePostsDto_ = new CreatePostsDto();
-        CreatePostsDto_.boostCount = 0;
-        CreatePostsDto_.isBoost = 5;
-        CreatePostsDto_.boosted = boost;
-        await this.postsService.updateByPostId(postid, CreatePostsDto_)
+        var CreateNewPostDTO_ = new CreateNewPostDTO();
+        CreateNewPostDTO_.boostCount = 0;
+        CreateNewPostDTO_.isBoost = 5;
+        CreateNewPostDTO_.boosted = boost;
+        await this.posts2SS.updateByPostId(postid, CreateNewPostDTO_)
     }
 
     async accontbalanceBoost(postid: string, idusersell: { oid: string }, amount: number): Promise<Accountbalances> {
@@ -11671,7 +11672,7 @@ export class TransactionsController {
 
         var email = headers['x-auth-user'];
         //CECK USER
-        var user = await this.userbasicsService.findOne(email);
+        var user = await this.basic2SS.findBymail(email);
         if (!(await this.utilsService.ceckData(user))) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
@@ -11871,7 +11872,7 @@ export class TransactionsController {
             }
 
             //CECK POST ID
-            var post = await this.postsService.findByPostId(body.postID);
+            var post = await this.posts2SS.findByPostId(body.postID);
             if (!(await this.utilsService.ceckData(post))) {
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
@@ -11882,15 +11883,15 @@ export class TransactionsController {
             }
 
             //CECK MEDIA POST ID
-            var media = await this.postsService.findOnepostID(body.postID);
-            if (!(await this.utilsService.ceckData(media))) {
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+            // var media = await this.postsService.findOnepostID(body.postID);
+            // if (!(await this.utilsService.ceckData(media))) {
+            //     var timestamps_end = await this.utilsService.getDateTimeString();
+            //     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
 
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed, post not found',
-                );
-            }
+            //     await this.errorHandler.generateNotAcceptableException(
+            //         'Unabled to proceed, post not found',
+            //     );
+            // }
 
             //CECK PARAM PAYMENT METHOD
             if (!(body.paymentmethod)) {
@@ -11988,7 +11989,7 @@ export class TransactionsController {
                 if (Va.status.code == "000") {
                     //INSERT DATA TRANSACTION
                     try {
-                        var id_user_sell = await this.userbasicsService.findOne("tjikaljedy@hyppe.id")
+                        var id_user_sell = await this.basic2SS.findOne("tjikaljedy@hyppe.id")
 
                         let cekstatusva = await this.oyPgService.staticVaInfo(Va.id);
                         var createTransactionsDto_ = new CreateTransactionsDto();
@@ -12207,7 +12208,7 @@ export class TransactionsController {
                     if (Va.status.code == "000") {
                         //INSERT DATA TRANSACTION
                         try {
-                            var id_user_sell = await this.userbasicsService.findOne("tjikaljedy@hyppe.id")
+                            var id_user_sell = await this.basic2SS.findBymail("tjikaljedy@hyppe.id")
 
                             let cekstatusva = await this.oyPgService.staticVaInfo(Va.id);
                             var createTransactionsDto_ = new CreateTransactionsDto();
