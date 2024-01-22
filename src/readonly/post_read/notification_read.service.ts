@@ -4,7 +4,7 @@ import { NotificationsRead, NotificationsReadDocument } from './schema/notificat
 import { Model } from 'mongoose';
 
 @Injectable()
-export class NotificationReadService { 
+export class NotificationReadService {
     constructor(
         @InjectModel(NotificationsRead.name, 'SERVER_FULL')
         private readonly NotificationsReadModel: Model<NotificationsReadDocument>,
@@ -545,6 +545,336 @@ export class NotificationReadService {
                             }
                         },
 
+
+                    }
+                }
+            },
+            {
+                $set: {
+                    tester: {
+                        $ifNull: ['$content.isApsara', "dodol"]
+                    }
+                }
+            },
+            {
+                $project: {
+                    active: 1,
+                    body: 1,
+                    bodyId: 1,
+                    contentEventID: 1,
+                    createdAt: 1,
+                    email: 1,
+                    event: 1,
+                    eventType: 1,
+                    flowIsDone: 1,
+                    mate: 1,
+                    postType: 1,
+                    mediaTypeStory: 1,
+                    notificationID: 1,
+                    actionButtons: 1,
+                    postID: 1,
+                    senderOrReceiverInfo: 1,
+                    title: 1,
+                    titleEN: 1,
+                    updatedAt: 1,
+                    urluserBadge:
+                    {
+                        "$ifNull":
+                            [
+                                {
+                                    "$arrayElemAt": ["$urluserBadge", 0]
+                                },
+                                null
+                            ]
+                    },
+                    content:
+                    {
+                        $cond: {
+                            if: {
+                                $eq: ["$tester", "dodol"],
+                            },
+                            then: "$kancutTaslim",
+                            else: "$content"
+                        }
+                    },
+                }
+            }
+        );
+        console.log(JSON.stringify(pipeline));
+        var query = await this.NotificationsReadModel.aggregate(pipeline);
+        return query;
+    }
+
+    async getNotification2V2(email: string, eventType: string, skip: number, limit: number,) {
+        var pipeline = [];
+        if (eventType && eventType !== undefined && eventType !== null && eventType !== "GENERAL") {
+            pipeline.push(
+                {
+                    $match:
+                    {
+                        $or: [
+                            {
+                                $and: [
+                                    {
+                                        "email": email
+
+                                    },
+                                    {
+                                        "eventType": eventType,
+
+                                    },
+                                    {
+                                        "active": true
+                                    },
+
+                                ]
+                            },
+
+                        ]
+                    },
+
+                },
+            );
+        }
+        else if (eventType && eventType !== undefined && eventType !== null && eventType === "GENERAL") {
+            pipeline.push(
+                {
+                    $match:
+                    {
+                        $or: [
+                            {
+                                $and: [
+                                    {
+                                        "email": email
+
+                                    },
+                                    {
+                                        "eventType": { $in: ['VERIFICATIONID', 'SUPPORTFILE', 'TRANSACTION', 'POST', 'ADS VIEW', 'BOOST_CONTENT', 'BOOST_BUY', 'CONTENT', 'ADS CLICK', 'BANK', 'CONTENTMOD', 'KYC', 'GENERAL'] },
+
+                                    },
+                                    {
+                                        "active": true
+                                    },
+
+                                ]
+                            },
+
+                        ]
+                    },
+
+                },
+            );
+        }
+        else {
+            pipeline.push(
+                {
+                    $match:
+                    {
+                        $or: [
+                            {
+                                $and: [
+                                    {
+                                        "email": email
+
+                                    },
+
+                                    {
+                                        "active": true
+                                    },
+
+                                ]
+                            },
+
+                        ]
+                    },
+
+                },
+            );
+        }
+
+        pipeline.push(
+
+            {
+                $lookup: {
+                    from: 'newPosts',
+                    localField: 'postID',
+                    foreignField: 'postID',
+                    as: 'post',
+
+                },
+
+            },
+            {
+                $unwind: {
+                    path: "$post",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: 'newUserBasics',
+                    localField: 'mate',
+                    foreignField: 'email',
+                    as: 'userSender',
+
+                },
+
+            },
+            {
+                $unwind: {
+                    path: "$userSender",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $sort: {
+                    createdAt: - 1
+                }
+            },
+            {
+                $skip: (skip * limit)
+            },
+            {
+                $limit: limit
+            },
+            {
+                $project: {
+                    active: 1,
+                    body: 1,
+                    bodyId: 1,
+                    contentEventID: 1,
+                    createdAt: 1,
+                    email: 1,
+                    event: 1,
+                    eventType: 1,
+                    flowIsDone: 1,
+                    mate: 1,
+                    postType: "$post.postType",
+                    mediaTypeStory: {
+                        "$arrayElemAt": ["$post.mediaSource.mediaType", 0]
+                    },
+                    notificationID: 1,
+                    actionButtons: 1,
+                    postID: 1,
+                    titleEN: {
+                        "$arrayElemAt": ["$template_data.subject", 0]
+                    },
+                    senderOrReceiverInfo:
+                    {
+                        fullName: "$senderOrReceiverInfo.fullName",
+                        username: "$senderOrReceiverInfo.username",
+                        avatar: {
+                            mediaEndpoint: { $concat: ["/profilepict/", '$userSender.profilePict.$id'] }
+                        }
+                    },
+                    urluserBadge:
+                    {
+                        "$ifNull":
+                            [
+                                {
+                                    "$filter":
+                                    {
+                                        input: "$userSender.userBadge",
+                                        as: "listbadge",
+                                        cond:
+                                        {
+                                            "$and":
+                                                [
+                                                    {
+                                                        "$eq":
+                                                            [
+                                                                "$$listbadge.isActive", true
+                                                            ]
+                                                    },
+                                                    {
+                                                        "$lte": [
+                                                            {
+                                                                "$dateToString": {
+                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                    "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "$$listbadge.endDatetime"
+                                                        ]
+                                                    }
+                                                ]
+                                        }
+                                    }
+                                },
+                                []
+                            ]
+                    },
+                    title: 1,
+                    updatedAt: 1,
+
+                    content: {
+                        uploadSource: {
+                            "$arrayElemAt": ["$post.mediaSource.uploadSource", 0]
+                        },
+                        apsaraId: {
+                            "$arrayElemAt": ["$post.mediaSource.apsaraId", 0]
+                        },
+                        isApsara: {
+                            "$arrayElemAt": ["$post.mediaSource.apsara", 0]
+                        },
+                        mediaEndpoint:
+                        {
+                            $cond: {
+                                if: {
+                                    $eq: ['$post.postType', 'pict']
+                                },
+                                then: {
+                                    $concat: ["/thumb/", "$postID",]
+                                },
+                                else:
+                                {
+                                    $cond: {
+                                        if: {
+                                            $eq: ['$post.postType', 'vid']
+                                        },
+                                        then: {
+                                            $concat: ["/thumb/", "$postID",]
+                                        },
+                                        else:
+                                        {
+                                            $cond: {
+                                                if: {
+                                                    $eq: ['$post.postType', 'diary']
+                                                },
+                                                then: {
+                                                    $concat: ["/thumb/", "$postID",]
+                                                },
+                                                else: {
+
+
+                                                    $cond: {
+                                                        if: {
+                                                            $eq: [{
+                                                                "$arrayElemAt": ["$post.mediaSource.mediaType", 0]
+                                                            }, 'video']
+                                                        },
+                                                        then: {
+                                                            $concat: ["/thumb/", "$postID",]
+                                                        },
+                                                        else: {
+                                                            $concat: ["/pict/", "$postID",]
+                                                        }
+                                                    },
+
+                                                }
+                                            },
+
+                                        }
+                                    }
+                                },
+
+                            }
+                        },
 
                     }
                 }

@@ -86,7 +86,7 @@ export class PostsReadController {
         // console.log(lengpict);
         if (lengpict > 0) {
             var tempapsaraId_result = null;
-            var tempapsaraThumbId_result = null; 
+            var tempapsaraThumbId_result = null;
             var tempapsaraMusicThumbId_result = null;
 
             var resultpictapsara = null;
@@ -890,12 +890,12 @@ export class PostsReadController {
         var apsaraThumbId = null;
         var isApsara = null;
         var postType = null;
-        var versionIos=null;
+        var versionIos = null;
         // console.log(lengpict);
         if (lengpict > 0) {
             var resultpictapsara = null;
             version = data[0].version;
-            versionIos=data[0].versionIos;
+            versionIos = data[0].versionIos;
             var tempapsaraId_result = null;
             var tempapsaraThumbId_result = null;
 
@@ -1243,7 +1243,7 @@ export class PostsReadController {
         } else {
             picts = [];
             version = "";
-            versionIos="";
+            versionIos = "";
         }
 
         var timestamps_end = await this.utilsService.getDateTimeString();
@@ -1489,6 +1489,249 @@ export class PostsReadController {
         }
 
         var fullurl = headers.host + "/api/posts/getnotification2";
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, body);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('api/posts/getnotification2/v2')
+    @UseInterceptors(FileInterceptor('postContent'))
+    async getNotification2V2(@Body() body, @Headers('x-auth-user') email: string, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        this.logger.log("getNotification >>> start: " + JSON.stringify(body));
+        var eventType = null;
+        var pageRow = null;
+        var pageNumber = null;
+        var data = null;
+        var lengpict = null;
+        if (body.eventType !== undefined) {
+            eventType = body.eventType;
+        }
+        if (body.pageNumber !== undefined) {
+            pageNumber = body.pageNumber;
+        }
+
+        if (body.pageRow !== undefined) {
+            pageRow = body.pageRow;
+        }
+        const messages = {
+            "info": ["The process was successful"],
+        };
+        try {
+
+            data = await this.notificationReadService.getNotification2V2(email, eventType, parseInt(pageNumber), parseInt(pageRow));
+            lengpict = data.length;
+
+        } catch (e) {
+            data = null;
+            lengpict = 0;
+
+        }
+
+        var datatemp = [];
+        var tempdatapict = [];
+        var apsaraId = null;
+        var isApsara = null;
+        var apsaraThumbId = null;
+        var uploadSource = null;
+        var postType = null;
+        var mediaTypeStory = null;
+        // console.log(lengpict);
+        if (lengpict > 0) {
+
+            for (let i = 0; i < lengpict; i++) {
+
+                try {
+                    postType = data[i].postType;
+                } catch (e) {
+                    postType = "";
+                }
+                try {
+                    mediaTypeStory = data[i].mediaTypeStory;
+                } catch (e) {
+                    mediaTypeStory = "";
+                }
+                if (postType === "pict") {
+                    try {
+                        apsaraId = data[i].content.apsaraId;
+                    } catch (e) {
+                        apsaraId = "";
+                    }
+                    try {
+                        isApsara = data[i].content.isApsara;
+                    } catch (e) {
+                        isApsara = "";
+                    }
+                    try {
+                        apsaraThumbId = data[i].content.apsaraThumbId;
+                    } catch (e) {
+                        apsaraThumbId = "";
+                    }
+
+
+                    try {
+
+                        uploadSource = data[i].content.uploadSource;
+                    } catch (e) {
+                        uploadSource = "";
+                    }
+
+                    if (apsaraId !== undefined && apsaraThumbId !== undefined) {
+                        tempdatapict.push(data[i].content.apsaraThumbId);
+
+                    }
+                    else if (apsaraId !== undefined && apsaraThumbId === undefined) {
+                        tempdatapict.push(data[i].content.apsaraId);
+
+                    }
+                    else if (apsaraId === undefined && apsaraThumbId !== undefined) {
+                        tempdatapict.push(data[i].content.apsaraThumbId);
+
+                    }
+                    var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                    var gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+                    if (uploadSource == "OSS") {
+                        data[i].content.mediaThumbEndpoint = data[i].content.mediaEndpoint;
+
+                    } else {
+                        for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+                            if (gettempresultpictapsara[j].ImageId == data[i].content.apsaraThumbId) {
+
+                                data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+                            }
+                            else if (gettempresultpictapsara[j].ImageId == data[i].content.apsaraId) {
+
+                                data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+                            }
+                        }
+                    }
+
+
+                }
+                else if (postType === "vid" || postType === "diary") {
+                    try {
+                        apsaraId = data[i].content.apsaraId;
+                    } catch (e) {
+                        apsaraId = "";
+                    }
+                    try {
+                        isApsara = data[i].content.isApsara;
+                    } catch (e) {
+                        isApsara = "";
+                    }
+
+                    try {
+
+                        uploadSource = data[i].content.uploadSource;
+                    } catch (e) {
+                        uploadSource = "";
+                    }
+
+
+                    if (apsaraId !== undefined && apsaraId !== '') {
+                        tempdatapict.push(data[i].content.apsaraId);
+
+                    }
+
+                    var resultvidapsara = await this.postContentService.getVideoApsara(tempdatapict);
+                    var gettempresultvidapsara = resultvidapsara.VideoList;
+
+                    for (var j = 0; j < gettempresultvidapsara.length; j++) {
+                        var apsaraID = null;
+                        try {
+
+                            apsaraID = data[i].content.apsaraId;
+                        } catch (e) {
+                            apsaraID = null;
+                        }
+
+                        if (apsaraID !== null && apsaraID !== undefined) {
+                            if (gettempresultvidapsara[j].VideoId == apsaraID) {
+
+                                data[i].content.mediaThumbEndpoint = gettempresultvidapsara[j].CoverURL;
+
+                            }
+                        }
+
+
+
+                    }
+                }
+                else {
+
+
+                    try {
+                        apsaraId = data[i].content.apsaraId;
+                    } catch (e) {
+                        apsaraId = "";
+                    }
+                    try {
+                        isApsara = data[i].content.isApsara;
+                    } catch (e) {
+                        isApsara = "";
+                    }
+
+                    try {
+
+                        uploadSource = data[i].content.uploadSource;
+                    } catch (e) {
+                        uploadSource = "";
+                    }
+
+
+                    if (apsaraId !== undefined && apsaraId !== '') {
+                        tempdatapict.push(data[i].content.apsaraId);
+
+                    }
+
+                    if (mediaTypeStory !== undefined && mediaTypeStory === "video") {
+                        var resultvidapsara = await this.postContentService.getVideoApsara(tempdatapict);
+                        var gettempresultvidapsara = resultvidapsara.VideoList;
+
+                        for (var j = 0; j < gettempresultvidapsara.length; j++) {
+
+                            if (gettempresultvidapsara[j].VideoId == data[i].content.apsaraId) {
+
+                                data[i].content.mediaThumbEndpoint = gettempresultvidapsara[j].CoverURL;
+
+                            }
+
+                        }
+                    } else {
+                        var resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                        var gettempresultpictapsara = resultpictapsara.ImageInfo;
+
+                        for (var j = 0; j < gettempresultpictapsara.length; j++) {
+
+                            if (apsaraId !== undefined && apsaraId !== "") {
+                                if (gettempresultpictapsara[j].ImageId == apsaraId) {
+
+                                    data[i].content.mediaThumbEndpoint = gettempresultpictapsara[j].URL;
+
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+
+
+
+            }
+
+
+        } else {
+            data = [];
+        }
+
+        var fullurl = headers.host + "/api/posts/getnotification2/v2";
         var timestamps_end = await this.utilsService.getDateTimeString();
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, body);
 
