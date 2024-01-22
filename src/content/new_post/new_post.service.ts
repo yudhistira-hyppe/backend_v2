@@ -3645,15 +3645,14 @@ export class NewPostService {
                           []
                         ]
                     },
-                    "idUser": 1
                   }
                 },
                 {
                   "$lookup":
                   {
                     from: "newUserBasics",
-                    localField: "idUser",
-                    foreignField: "_id",
+                    localField: "email",
+                    foreignField: "email",
                     as: "authdata"
                   }
                 },
@@ -4073,16 +4072,15 @@ export class NewPostService {
                           },
                           []
                         ]
-                    },
-                    "idUser": 1
+                    }
                   }
                 },
                 {
                   "$lookup":
                   {
                     from: "newUserBasics",
-                    localField: "idUser",
-                    foreignField: "_id",
+                    localField: "email",
+                    foreignField: "email",
                     as: "authdata"
                   }
                 },
@@ -4502,16 +4500,15 @@ export class NewPostService {
                           },
                           []
                         ]
-                    },
-                    "idUser": 1
+                    }
                   }
                 },
                 {
                   "$lookup":
                   {
                     from: "newUserBasics",
-                    localField: "idUser",
-                    foreignField: "_id",
+                    localField: "email",
+                    foreignField: "email",
                     as: "authdata"
                   }
                 },
@@ -4902,8 +4899,8 @@ export class NewPostService {
           "$lookup":
           {
             from: 'newUserBasics',
-            localField: 'post_data.idUser',
-            foreignField: '_id',
+            localField: 'post_data.email',
+            foreignField: 'email',
             as: 'basicdata',
           }
         },
@@ -5222,8 +5219,8 @@ export class NewPostService {
         {
           $lookup: {
             from: 'newUserBasics',
-            localField: 'idUser',
-            foreignField: '_id',
+            localField: 'email',
+            foreignField: 'email',
             as: 'basicdata',
           }
         },
@@ -5510,8 +5507,8 @@ export class NewPostService {
     pipeline.push({ $limit: limit });
 
     var query = await this.loaddata.aggregate(pipeline);
-    var setutil = require('util');
-    console.log(setutil.inspect(pipeline, { showHidden: false, depth: null }));
+    // var setutil = require('util');
+    // console.log(setutil.inspect(pipeline, { showHidden: false, depth: null }));
     var listdata = [];
     var tempresult = null;
     var tempdata = null;
@@ -5763,15 +5760,14 @@ export class NewPostService {
                       [
                         "$mediaSource", 0
                       ]
-                  },
-                  idUser: 1,
+                  }
                 }
               },
               {
                 $lookup: {
                   from: 'newUserBasics',
-                  localField: 'idUser',
-                  foreignField: '_id',
+                  localField: 'email',
+                  foreignField: 'email',
                   as: 'databasic',
 
                 },
@@ -34715,7 +34711,7 @@ export class NewPostService {
     return data;
   }
 
-  async getpostquery(email: string, visibility: string, postids: string, tipepost: string, activestatus: string, exptime: string, page: number, skip: number, insight: string, sorttime: string) 
+  async getpostquery(email: string, search:string, visibility: string, postids: string, tipepost: string, activestatus: string, exptime: string, page: number, skip: number, insight: string, sorttime: string) 
   {
     var pipeline = [];
     var postmatch = [];
@@ -34781,10 +34777,10 @@ export class NewPostService {
 
       postmatch.push(
         {
-          "$gte":
-          [
-            "$createdAt", "$yesterday"
-          ]
+          "createdAt":
+          {
+            "$gte":"$yesterday"
+          }
         }
       );
     }
@@ -34837,14 +34833,14 @@ export class NewPostService {
       );
     }
 
-    // if(email != null && email != undefined)
-    // {
-    //   postmatch.push(
-    //     {
-    //       "email":email
-    //     }
-    //   );
-    // }
+    if(search != null && search != undefined)
+    {
+      postmatch.push(
+        {
+          "email":search
+        }
+      );
+    }
 
     pipeline.push(
       {
@@ -35386,8 +35382,8 @@ export class NewPostService {
       }
     );
 
-    var util = require('util');
-    console.log(util.inspect(pipeline, { showHidden:false, depth:null }));
+    // var util = require('util');
+    // console.log(util.inspect(pipeline, { showHidden:false, depth:null }));
 
     var result = await this.loaddata.aggregate(pipeline);
     return result;
