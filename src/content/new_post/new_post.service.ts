@@ -17131,7 +17131,7 @@ export class NewPostService {
     }
   }
 
-  async getUserEvent(CreateGetcontenteventsDto_: GetcontenteventsDto){
+  async getUserEvent(CreateGetcontenteventsDto_: GetcontenteventsDto) {
     let pipeline = [];
     pipeline.push(
       {
@@ -17141,7 +17141,7 @@ export class NewPostService {
         }
       },
     )
-    if(CreateGetcontenteventsDto_.eventType=="VIEW"){
+    if (CreateGetcontenteventsDto_.eventType == "VIEW") {
       pipeline.push(
         {
           "$lookup":
@@ -17276,7 +17276,7 @@ export class NewPostService {
                 }
               ]
           }
-        }, 
+        },
       )
     }
     if (CreateGetcontenteventsDto_.eventType == "LIKE") {
@@ -17425,7 +17425,7 @@ export class NewPostService {
         }
       },
       {
-        $project:{
+        $project: {
           _id: "$basic_data._id",
           email: "$basic_data.email",
           fullName: "$basic_data.fullName",
@@ -17495,7 +17495,6 @@ export class NewPostService {
           {
             "user":
               [
-
                 {
                   $lookup: {
                     from: "newUserBasics",
@@ -17532,16 +17531,18 @@ export class NewPostService {
                     "username": "$userAuth.username",
                     "email": "$userAuth.email",
                     "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        "mediaEndpoint": "$userAuth.mediaEndpoint",
-                      }],
+                    {
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    },
                     //"idUserAuth": "$userAuth._id",
                     "urluserBadge":
                     {
@@ -17593,7 +17594,6 @@ export class NewPostService {
                           []
                         ]
                     },
-
                   }
                 },
                 {
@@ -17626,8 +17626,8 @@ export class NewPostService {
                 {
                   $limit: limit
                 },
-
               ],
+
             //pict
             "pict":
               [
@@ -17721,6 +17721,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -17735,6 +17736,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -17816,6 +17819,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -17840,13 +17844,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -17902,11 +17906,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -17946,8 +17954,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -17992,7 +18000,6 @@ export class NewPostService {
           {
             "user":
               [
-
                 {
                   $lookup: {
                     from: "newUserBasics",
@@ -18029,16 +18036,18 @@ export class NewPostService {
                     "username": "$userAuth.username",
                     "email": "$userAuth.email",
                     "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        "mediaEndpoint": "$userAuth.mediaEndpoint",
-                      }],
+                    {
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    },
                     //"idUserAuth": "$userAuth._id",
                     "urluserBadge":
                     {
@@ -18090,7 +18099,6 @@ export class NewPostService {
                           []
                         ]
                     },
-
                   }
                 },
                 {
@@ -18123,11 +18131,8 @@ export class NewPostService {
                 {
                   $limit: limit
                 },
-
               ],
-
             "vid":
-
               [
                 {
                   $lookup: {
@@ -18219,7 +18224,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
-                          "mediaSource":1
+                          "mediaSource": 1,
 
                         }
                       },
@@ -18234,6 +18239,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -18315,6 +18322,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -18339,13 +18347,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -18401,11 +18409,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -18445,8 +18457,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -18490,7 +18502,6 @@ export class NewPostService {
           {
             "user":
               [
-
                 {
                   $lookup: {
                     from: "newUserBasics",
@@ -18527,16 +18538,18 @@ export class NewPostService {
                     "username": "$userAuth.username",
                     "email": "$userAuth.email",
                     "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        "mediaEndpoint": "$userAuth.mediaEndpoint",
-                      }],
+                    {
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    },
                     //"idUserAuth": "$userAuth._id",
                     "urluserBadge":
                     {
@@ -18588,7 +18601,6 @@ export class NewPostService {
                           []
                         ]
                     },
-
                   }
                 },
                 {
@@ -18621,9 +18633,7 @@ export class NewPostService {
                 {
                   $limit: limit
                 },
-
               ],
-
 
             "diary":
 
@@ -18718,6 +18728,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -18732,6 +18743,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -18813,6 +18826,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -18837,13 +18851,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -18899,11 +18913,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -18943,8 +18961,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -18957,7 +18975,6 @@ export class NewPostService {
                 },
 
               ],
-
           },
 
         },
@@ -18987,7 +19004,6 @@ export class NewPostService {
           {
             "user":
               [
-
                 {
                   $lookup: {
                     from: "newUserBasics",
@@ -19024,16 +19040,18 @@ export class NewPostService {
                     "username": "$userAuth.username",
                     "email": "$userAuth.email",
                     "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        "mediaEndpoint": "$userAuth.mediaEndpoint",
-                      }],
+                    {
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    },
                     //"idUserAuth": "$userAuth._id",
                     "urluserBadge":
                     {
@@ -19085,7 +19103,6 @@ export class NewPostService {
                           []
                         ]
                     },
-
                   }
                 },
                 {
@@ -19118,7 +19135,6 @@ export class NewPostService {
                 {
                   $limit: limit
                 },
-
               ],
             //pict
             "pict":
@@ -19213,6 +19229,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -19227,6 +19244,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -19308,6 +19327,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -19332,13 +19352,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -19394,11 +19414,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -19438,8 +19462,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -19453,7 +19477,6 @@ export class NewPostService {
 
               ],
             "vid":
-
               [
                 {
                   $lookup: {
@@ -19545,6 +19568,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -19559,6 +19583,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -19640,6 +19666,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -19664,13 +19691,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -19726,11 +19753,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -19770,8 +19801,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -19784,7 +19815,6 @@ export class NewPostService {
                 },
 
               ],
-
 
           },
 
@@ -19818,7 +19848,6 @@ export class NewPostService {
           {
             "user":
               [
-
                 {
                   $lookup: {
                     from: "newUserBasics",
@@ -19855,16 +19884,18 @@ export class NewPostService {
                     "username": "$userAuth.username",
                     "email": "$userAuth.email",
                     "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        "mediaEndpoint": "$userAuth.mediaEndpoint",
-                      }],
+                    {
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    },
                     //"idUserAuth": "$userAuth._id",
                     "urluserBadge":
                     {
@@ -19916,7 +19947,6 @@ export class NewPostService {
                           []
                         ]
                     },
-
                   }
                 },
                 {
@@ -19949,7 +19979,6 @@ export class NewPostService {
                 {
                   $limit: limit
                 },
-
               ],
             //pict
             "pict":
@@ -20044,6 +20073,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -20058,6 +20088,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -20139,6 +20171,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -20163,13 +20196,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -20225,11 +20258,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -20269,8 +20306,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -20284,7 +20321,7 @@ export class NewPostService {
 
               ],
 
-            "diary":
+              "diary":
 
               [
                 {
@@ -20377,6 +20414,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -20391,6 +20429,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -20472,6 +20512,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -20496,13 +20537,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -20558,11 +20599,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -20602,8 +20647,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -20616,7 +20661,6 @@ export class NewPostService {
                 },
 
               ],
-
           },
 
         },
@@ -20648,7 +20692,6 @@ export class NewPostService {
           {
             "user":
               [
-
                 {
                   $lookup: {
                     from: "newUserBasics",
@@ -20685,16 +20728,18 @@ export class NewPostService {
                     "username": "$userAuth.username",
                     "email": "$userAuth.email",
                     "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        "mediaEndpoint": "$userAuth.mediaEndpoint",
-                      }],
+                    {
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    },
                     //"idUserAuth": "$userAuth._id",
                     "urluserBadge":
                     {
@@ -20746,7 +20791,6 @@ export class NewPostService {
                           []
                         ]
                     },
-
                   }
                 },
                 {
@@ -20779,11 +20823,8 @@ export class NewPostService {
                 {
                   $limit: limit
                 },
-
               ],
-
             "vid":
-
               [
                 {
                   $lookup: {
@@ -20875,6 +20916,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -20889,6 +20931,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -20970,6 +21014,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -20994,13 +21039,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -21056,11 +21101,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -21100,8 +21149,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -21114,7 +21163,7 @@ export class NewPostService {
                 },
 
               ],
-            "diary":
+              "diary":
 
               [
                 {
@@ -21207,6 +21256,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -21221,6 +21271,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -21302,6 +21354,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -21326,13 +21379,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -21388,11 +21441,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -21432,8 +21489,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -21446,7 +21503,6 @@ export class NewPostService {
                 },
 
               ],
-
           },
 
         },
@@ -21478,7 +21534,6 @@ export class NewPostService {
           {
             "user":
               [
-
                 {
                   $lookup: {
                     from: "newUserBasics",
@@ -21515,16 +21570,18 @@ export class NewPostService {
                     "username": "$userAuth.username",
                     "email": "$userAuth.email",
                     "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        "mediaEndpoint": "$userAuth.mediaEndpoint",
-                      }],
+                    {
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    },
                     //"idUserAuth": "$userAuth._id",
                     "urluserBadge":
                     {
@@ -21576,7 +21633,6 @@ export class NewPostService {
                           []
                         ]
                     },
-
                   }
                 },
                 {
@@ -21609,7 +21665,6 @@ export class NewPostService {
                 {
                   $limit: limit
                 },
-
               ],
             //pict
             "pict":
@@ -21704,6 +21759,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -21718,6 +21774,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -21799,6 +21857,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -21823,13 +21882,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -21885,11 +21944,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -21929,8 +21992,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -21944,7 +22007,6 @@ export class NewPostService {
 
               ],
             "vid":
-
               [
                 {
                   $lookup: {
@@ -22036,6 +22098,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -22050,6 +22113,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -22131,6 +22196,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -22155,13 +22221,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -22217,11 +22283,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -22261,8 +22331,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -22275,7 +22345,7 @@ export class NewPostService {
                 },
 
               ],
-            "diary":
+              "diary":
 
               [
                 {
@@ -22368,6 +22438,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -22382,6 +22453,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -22463,6 +22536,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -22487,13 +22561,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -22549,11 +22623,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -22593,8 +22671,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -22640,7 +22718,6 @@ export class NewPostService {
           {
             "user":
               [
-
                 {
                   $lookup: {
                     from: "newUserBasics",
@@ -22677,16 +22754,18 @@ export class NewPostService {
                     "username": "$userAuth.username",
                     "email": "$userAuth.email",
                     "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        "mediaEndpoint": "$userAuth.mediaEndpoint",
-                      }],
+                    {
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    },
                     //"idUserAuth": "$userAuth._id",
                     "urluserBadge":
                     {
@@ -22738,7 +22817,6 @@ export class NewPostService {
                           []
                         ]
                     },
-
                   }
                 },
                 {
@@ -22771,9 +22849,7 @@ export class NewPostService {
                 {
                   $limit: limit
                 },
-
               ],
-
           },
 
         },
@@ -22802,7 +22878,6 @@ export class NewPostService {
           {
 
             "vid":
-
               [
                 {
                   $lookup: {
@@ -22894,6 +22969,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -22908,6 +22984,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -22989,6 +23067,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -23013,13 +23092,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -23075,11 +23154,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -23119,8 +23202,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -23133,7 +23216,6 @@ export class NewPostService {
                 },
 
               ],
-
           },
 
         },
@@ -23244,6 +23326,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -23258,6 +23341,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -23339,6 +23424,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -23363,13 +23449,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -23425,11 +23511,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -23469,8 +23559,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -23502,337 +23592,344 @@ export class NewPostService {
 
             "diary":
 
-              [
-                {
-                  $lookup: {
-                    from: "newPosts",
-                    let: {
-                      name: "$dedy"
-                    },
-                    pipeline: [
+            [
+              {
+                $lookup: {
+                  from: "newPosts",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match:
                       {
-                        $match:
-                        {
-                          $and: [
-                            {
-                              $expr: {
-                                $regexMatch: {
-                                  input: "$description",
-                                  regex: "$$name",
-                                  options: "i"
-                                }
-                              }
-                            },
-                            {
-                              "reportedStatus": {
-                                $ne: "OWNED"
-                              }
-                            },
-                            {
-                              "visibility": "PUBLIC"
-                            },
-                            {
-                              "active": true
-                            },
-                            {
-                              "postType": "diary"
-                            },
-                            {
-                              "reportedUser.email": {
-                                $not: {
-                                  $regex: email
-                                }
-                              }
-                            },
-
-                          ]
-                        },
-
-                      },
-                      {
-                        $project: {
-                          "boosted":
+                        $and: [
                           {
-                            $cond: {
-                              if: {
-                                $gt: [{
-                                  "$dateToString": {
-                                    "format": "%Y-%m-%d %H:%M:%S",
-                                    "date": {
-                                      $add: [new Date(), 25200000]
-                                    }
-                                  }
-                                }, "$boosted.boostSession.timeEnd"]
-                              },
-                              then: [],
-                              else: '$boosted'
+                            $expr: {
+                              $regexMatch: {
+                                input: "$description",
+                                regex: "$$name",
+                                options: "i"
+                              }
                             }
                           },
-                          "reportedStatus": 1,
-                          "insight": {
-                            "shares": "$shares",
-                            "comments": "$comments",
-                            "views": "$views",
-                            "likes": "$likes",
-
-                          },
-                          "_id": 1,
-                          "postID": 1,
-                          "createdAt": 1,
-                          "updatedAt": 1,
-                          "email": 1,
-                          "postType": 1,
-                          "description": 1,
-                          "active": 1,
-                          "metadata": 1,
-                          "location": 1,
-                          "isOwned": 1,
-                          "visibility": 1,
-                          "isViewed": 1,
-                          "allowComments": 1,
-                          "saleAmount": 1,
-                          "isLiked": 1,
-                          "certified": 1,
-
-                        }
-                      },
-                      {
-                        $lookup: {
-                          from: 'newUserBasics',
-                          localField: 'email',
-                          foreignField: 'email',
-                          as: 'authdata',
-
-                        }
-                      },
-                      {
-                        $project: {
-                          "boosted": 1,
-                          "reportedStatus": 1,
-                          "insight": 1,
-                          "_id": 1,
-                          "postID": 1,
-                          "createdAt": 1,
-                          "updatedAt": 1,
-                          "email": 1,
-                          "postType": 1,
-                          "description": 1,
-                          "active": 1,
-                          "metadata": 1,
-                          "location": 1,
-                          "isOwned": 1,
-                          "visibility": 1,
-                          "isViewed": 1,
-                          "allowComments": 1,
-                          "saleAmount": 1,
-                          "isLiked": 1,
-                          "certified": 1,
-                          "username": {
-                            $arrayElemAt: ['$authdata.username', 0]
-                          },
-                          'profilepictid': {
-                            $arrayElemAt: ['$basicdata.profilePict.$id', 0]
-                          },
-                          "urluserBadge":
                           {
-                            "$ifNull":
-                              [
-                                {
-                                  "$filter":
-                                  {
-                                    input:
-                                    {
-                                      "$arrayElemAt":
-                                        [
-                                          "$basicdata.userBadge",
-                                          0
-                                        ]
-                                    },
-                                    as: "listbadge",
-                                    cond:
-                                    {
-                                      "$and":
-                                        [
-                                          {
-                                            "$eq":
-                                              [
-                                                "$$listbadge.isActive",
-                                                true
-                                              ]
-                                          },
-                                          {
-                                            "$lte": [
-                                              {
-                                                "$dateToString": {
-                                                  "format": "%Y-%m-%d %H:%M:%S",
-                                                  "date": {
-                                                    "$add": [
-                                                      new Date(),
-                                                      25200000
-                                                    ]
-                                                  }
-                                                }
-                                              },
-                                              "$$listbadge.endDatetime"
-                                            ]
-                                          }
-                                        ]
-                                    }
+                            "reportedStatus": {
+                              $ne: "OWNED"
+                            }
+                          },
+                          {
+                            "visibility": "PUBLIC"
+                          },
+                          {
+                            "active": true
+                          },
+                          {
+                            "postType": "diary"
+                          },
+                          {
+                            "reportedUser.email": {
+                              $not: {
+                                $regex: email
+                              }
+                            }
+                          },
+
+                        ]
+                      },
+
+                    },
+                    {
+                      $project: {
+                        "boosted":
+                        {
+                          $cond: {
+                            if: {
+                              $gt: [{
+                                "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                    $add: [new Date(), 25200000]
                                   }
-                                },
-                                []
-                              ]
-                          },
-
-                        }
-                      },
-                      {
-                        $project: {
-                          "boosted": 1,
-                          "reportedStatus": 1,
-                          "insight": 1,
-                          "_id": 1,
-                          "postID": 1,
-                          "createdAt": 1,
-                          "updatedAt": 1,
-                          "email": 1,
-                          "postType": 1,
-                          "description": 1,
-                          "active": 1,
-                          "metadata": 1,
-                          "location": 1,
-                          "isOwned": 1,
-                          "visibility": 1,
-                          "isViewed": 1,
-                          "allowComments": 1,
-                          "saleAmount": 1,
-                          "isLiked": 1,
-                          "certified": 1,
-                          "username": 1,
-                          "profilepictid": 1,
-                          "avatar":
-                          {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
-                            //"mediaEndpoint": {
-                            //"$concat": ["/profilepict/", "$mediaUri"]
-                            //}
-                          },
-                          "urluserBadge":
-                          {
-                            "$ifNull":
-                              [
-                                {
-                                  "$arrayElemAt":
-                                    [
-                                      "$urluserBadge",
-                                      0
-                                    ]
-                                },
-                                null
-                              ]
+                                }
+                              }, "$boosted.boostSession.timeEnd"]
+                            },
+                            then: [],
+                            else: '$boosted'
                           }
-                        }
-                      },
+                        },
+                        "reportedStatus": 1,
+                        "insight": {
+                          "shares": "$shares",
+                          "comments": "$comments",
+                          "views": "$views",
+                          "likes": "$likes",
 
-                    ],
-                    as: "pict"
+                        },
+                        "_id": 1,
+                        "postID": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1,
+                        "email": 1,
+                        "postType": 1,
+                        "description": 1,
+                        "active": 1,
+                        "metadata": 1,
+                        "location": 1,
+                        "isOwned": 1,
+                        "visibility": 1,
+                        "isViewed": 1,
+                        "allowComments": 1,
+                        "saleAmount": 1,
+                        "isLiked": 1,
+                        "certified": 1,
+                        "mediaSource": 1,
+
+                      }
+                    },
+                    {
+                      $lookup: {
+                        from: 'newUserBasics',
+                        localField: 'email',
+                        foreignField: 'email',
+                        as: 'authdata',
+
+                      }
+                    },
+                    {
+                      $project: {
+                        "mediaSource": 1,
+                        authdata: 1,
+                        "boosted": 1,
+                        "reportedStatus": 1,
+                        "insight": 1,
+                        "_id": 1,
+                        "postID": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1,
+                        "email": 1,
+                        "postType": 1,
+                        "description": 1,
+                        "active": 1,
+                        "metadata": 1,
+                        "location": 1,
+                        "isOwned": 1,
+                        "visibility": 1,
+                        "isViewed": 1,
+                        "allowComments": 1,
+                        "saleAmount": 1,
+                        "isLiked": 1,
+                        "certified": 1,
+                        "username": {
+                          $arrayElemAt: ['$authdata.username', 0]
+                        },
+                        'profilepictid': {
+                          $arrayElemAt: ['$basicdata.profilePict.$id', 0]
+                        },
+                        "urluserBadge":
+                        {
+                          "$ifNull":
+                            [
+                              {
+                                "$filter":
+                                {
+                                  input:
+                                  {
+                                    "$arrayElemAt":
+                                      [
+                                        "$basicdata.userBadge",
+                                        0
+                                      ]
+                                  },
+                                  as: "listbadge",
+                                  cond:
+                                  {
+                                    "$and":
+                                      [
+                                        {
+                                          "$eq":
+                                            [
+                                              "$$listbadge.isActive",
+                                              true
+                                            ]
+                                        },
+                                        {
+                                          "$lte": [
+                                            {
+                                              "$dateToString": {
+                                                "format": "%Y-%m-%d %H:%M:%S",
+                                                "date": {
+                                                  "$add": [
+                                                    new Date(),
+                                                    25200000
+                                                  ]
+                                                }
+                                              }
+                                            },
+                                            "$$listbadge.endDatetime"
+                                          ]
+                                        }
+                                      ]
+                                  }
+                                }
+                              },
+                              []
+                            ]
+                        },
+
+                      }
+                    },
+                    {
+                      $project: {
+                        "mediaSource": 1,
+                        "boosted": 1,
+                        "reportedStatus": 1,
+                        "insight": 1,
+                        "_id": 1,
+                        "postID": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1,
+                        "email": 1,
+                        "postType": 1,
+                        "description": 1,
+                        "active": 1,
+                        "metadata": 1,
+                        "location": 1,
+                        "isOwned": 1,
+                        "visibility": 1,
+                        "isViewed": 1,
+                        "allowComments": 1,
+                        "saleAmount": 1,
+                        "isLiked": 1,
+                        "certified": 1,
+                        "username": 1,
+                        "profilepictid": 1,
+                        "avatar":
+                        {
+                          "mediaBasePath": "$authdata.mediaBasePath",
+                          "mediaUri": "$authdata.mediaUri",
+                          "originalName": "$authdata.originalName",
+                          "fsSourceUri": "$authdata.fsSourceUri",
+                          "fsSourceName": "$authdata.fsSourceName",
+                          "fsTargetUri": "$authdata.fsTargetUri",
+                          "mediaType": "$authdata.mediaType",
+                          //"mediaEndpoint": {
+                          //"$concat": ["/profilepict/", "$mediaUri"]
+                          //}
+                        },
+                        "urluserBadge":
+                        {
+                          "$ifNull":
+                            [
+                              {
+                                "$arrayElemAt":
+                                  [
+                                    "$urluserBadge",
+                                    0
+                                  ]
+                              },
+                              null
+                            ]
+                        }
+                      }
+                    },
+
+                  ],
+                  as: "pict"
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$pict",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $set: {
+                  likes:
+                  {
+                    "$cond":
+                    {
+                      if:
+                      {
+                        "$in":
+                          [email, {
+                            $ifNull: ["$pict.userLike", []]
+                          }]
+                      },
+                      then: true,
+                      else: false
+                    }
                   },
 
-                },
-                {
-                  $unwind: {
-                    path: "$pict",
-                    preserveNullAndEmptyArrays: true
-                  }
-                },
-                {
-                  $set: {
-                    likes:
-                    {
-                      "$cond":
-                      {
-                        if:
-                        {
-                          "$in":
-                            [email, {
-                              $ifNull: ["$pict.userLike", []]
-                            }]
-                        },
-                        then: true,
-                        else: false
-                      }
-                    },
+                }
+              },
+              {
+                $project: {
+                  "boosted": "$pict.boosted",
+                  //"tester": "$pict.mediaSource.mediaUri",
+                  "reportedStatus": "$pict.reportedStatus",
+                  "_id": "$pict._id",
+                  "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                  //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                  "mediaEndpoint": {
+                    "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                  },
+                  "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
+                  "createdAt": "$pict.createdAt",
+                  "updatedAt": "$pict.updatedAt",
+                  "postID": "$pict.postID",
+                  "email": "$pict.email",
+                  "postType": "$pict.postType",
+                  "description": "$pict.description",
+                  "active": "$pict.active",
+                  "metadata": "$pict.metadata",
+                  "location": "$pict.location",
+                  "isOwned": "$pict.isOwned",
+                  "visibility": "$pict.visibility",
+                  "isViewed": "$pict.isViewed",
+                  "allowComments": "$pict.allowComments",
+                  "saleAmount": "$pict.saleAmount",
+                  "certified": "$pict.certified",
+                  "username": "$pict.username",
+                  "avatar": "$pict.avatar",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        "$pict.urluserBadge",
+                        null
+                      ]
+                  },
+                  "monetize":
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$pict.saleAmount", 1]
+                      },
+                      then: true,
+                      else: "$taslimKONAG"
+                    }
+                  },
+                  "insight":
+                  {
+                    $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+                  },
+                  "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                  "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
+                  "isLiked": "$likes",
 
-                  }
-                },
-                {
-                  $project: {
-                    "boosted": "$pict.boosted",
-                    "reportedStatus": "$pict.reportedStatus",
-                    "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
-                    "createdAt": "$pict.createdAt",
-                    "updatedAt": "$pict.updatedAt",
-                    "postID": "$pict.postID",
-                    "email": "$pict.email",
-                    "postType": "$pict.postType",
-                    "description": "$pict.description",
-                    "active": "$pict.active",
-                    "metadata": "$pict.metadata",
-                    "location": "$pict.location",
-                    "isOwned": "$pict.isOwned",
-                    "visibility": "$pict.visibility",
-                    "isViewed": "$pict.isViewed",
-                    "allowComments": "$pict.allowComments",
-                    "saleAmount": "$pict.saleAmount",
-                    "certified": "$pict.certified",
-                    "username": "$pict.username",
-                    "avatar": "$pict.avatar",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          "$pict.urluserBadge",
-                          null
-                        ]
-                    },
-                    "monetize":
-                    {
-                      $cond: {
-                        if: {
-                          $gte: ["$pict.saleAmount", 1]
-                        },
-                        then: true,
-                        else: "$taslimKONAG"
-                      }
-                    },
-                    "insight":
-                    {
-                      $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
-                    },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
-                    "isLiked": "$likes",
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
 
-                  }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
-
-              ],
-
+            ],
 
           },
 
@@ -23963,7 +24060,6 @@ export class NewPostService {
           {
             "user":
               [
-
                 {
                   $lookup: {
                     from: "newUserBasics",
@@ -24000,16 +24096,18 @@ export class NewPostService {
                     "username": "$userAuth.username",
                     "email": "$userAuth.email",
                     "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        "mediaEndpoint": "$userAuth.mediaEndpoint",
-                      }],
+                    {
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    },
                     //"idUserAuth": "$userAuth._id",
                     "urluserBadge":
                     {
@@ -24061,7 +24159,6 @@ export class NewPostService {
                           []
                         ]
                     },
-
                   }
                 },
                 {
@@ -24094,9 +24191,7 @@ export class NewPostService {
                 {
                   $limit: limit
                 },
-
               ],
-
             "tags":
               [
                 {
@@ -24310,6 +24405,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -24324,6 +24420,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -24405,6 +24503,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -24429,13 +24528,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -24491,11 +24590,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -24535,8 +24638,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -24662,7 +24765,6 @@ export class NewPostService {
           $facet:
           {
             "vid":
-
               [
                 {
                   $lookup: {
@@ -24754,6 +24856,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -24768,6 +24871,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -24849,6 +24954,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -24873,13 +24979,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -24935,11 +25041,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -24979,8 +25089,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -25198,6 +25308,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -25212,6 +25323,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -25293,6 +25406,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -25317,13 +25431,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -25379,11 +25493,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -25423,8 +25541,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -25641,6 +25759,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -25655,6 +25774,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -25736,6 +25857,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -25760,13 +25882,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -25822,11 +25944,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -25866,8 +25992,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -25881,7 +26007,6 @@ export class NewPostService {
 
               ],
             "vid":
-
               [
                 {
                   $lookup: {
@@ -25973,6 +26098,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -25987,6 +26113,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -26068,6 +26196,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -26092,13 +26221,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -26154,11 +26283,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -26198,8 +26331,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -26417,6 +26550,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -26431,6 +26565,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -26512,6 +26648,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -26536,13 +26673,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -26598,11 +26735,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -26642,8 +26783,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -26657,7 +26798,6 @@ export class NewPostService {
 
               ],
             "vid":
-
               [
                 {
                   $lookup: {
@@ -26749,6 +26889,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -26763,6 +26904,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -26844,6 +26987,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -26868,13 +27012,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -26930,11 +27074,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -26974,8 +27122,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -26988,7 +27136,7 @@ export class NewPostService {
                 },
 
               ],
-            "diary":
+              "diary":
 
               [
                 {
@@ -27081,6 +27229,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -27095,6 +27244,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -27176,6 +27327,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -27200,13 +27352,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -27262,11 +27414,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -27306,8 +27462,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -27525,6 +27681,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -27539,6 +27696,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -27620,6 +27779,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -27644,13 +27804,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -27706,11 +27866,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -27750,8 +27914,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -27764,8 +27928,7 @@ export class NewPostService {
                 },
 
               ],
-
-            "diary":
+              "diary":
 
               [
                 {
@@ -27858,6 +28021,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -27872,6 +28036,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -27953,6 +28119,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -27977,13 +28144,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -28039,11 +28206,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -28083,8 +28254,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -28211,7 +28382,6 @@ export class NewPostService {
           {
             "user":
               [
-
                 {
                   $lookup: {
                     from: "newUserBasics",
@@ -28248,16 +28418,18 @@ export class NewPostService {
                     "username": "$userAuth.username",
                     "email": "$userAuth.email",
                     "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        "mediaEndpoint": "$userAuth.mediaEndpoint",
-                      }],
+                    {
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    },
                     //"idUserAuth": "$userAuth._id",
                     "urluserBadge":
                     {
@@ -28309,7 +28481,6 @@ export class NewPostService {
                           []
                         ]
                     },
-
                   }
                 },
                 {
@@ -28342,7 +28513,6 @@ export class NewPostService {
                 {
                   $limit: limit
                 },
-
               ],
             //pict
             "pict":
@@ -28437,6 +28607,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -28451,6 +28622,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -28532,6 +28705,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -28556,13 +28730,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -28618,11 +28792,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -28662,8 +28840,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -28800,7 +28978,6 @@ export class NewPostService {
           {
             "user":
               [
-
                 {
                   $lookup: {
                     from: "newUserBasics",
@@ -28837,16 +29014,18 @@ export class NewPostService {
                     "username": "$userAuth.username",
                     "email": "$userAuth.email",
                     "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        "mediaEndpoint": "$userAuth.mediaEndpoint",
-                      }],
+                    {
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    },
                     //"idUserAuth": "$userAuth._id",
                     "urluserBadge":
                     {
@@ -28898,7 +29077,6 @@ export class NewPostService {
                           []
                         ]
                     },
-
                   }
                 },
                 {
@@ -28931,7 +29109,6 @@ export class NewPostService {
                 {
                   $limit: limit
                 },
-
               ],
             //pict
             "pict":
@@ -29026,6 +29203,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -29040,6 +29218,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -29121,6 +29301,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -29145,13 +29326,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -29207,11 +29388,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -29251,8 +29436,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -29266,7 +29451,6 @@ export class NewPostService {
 
               ],
             "vid":
-
               [
                 {
                   $lookup: {
@@ -29358,6 +29542,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -29372,6 +29557,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -29453,6 +29640,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -29477,13 +29665,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -29539,11 +29727,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -29583,8 +29775,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -29722,7 +29914,6 @@ export class NewPostService {
           {
             "user":
               [
-
                 {
                   $lookup: {
                     from: "newUserBasics",
@@ -29759,16 +29950,18 @@ export class NewPostService {
                     "username": "$userAuth.username",
                     "email": "$userAuth.email",
                     "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        "mediaEndpoint": "$userAuth.mediaEndpoint",
-                      }],
+                    {
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    },
                     //"idUserAuth": "$userAuth._id",
                     "urluserBadge":
                     {
@@ -29820,7 +30013,6 @@ export class NewPostService {
                           []
                         ]
                     },
-
                   }
                 },
                 {
@@ -29853,11 +30045,8 @@ export class NewPostService {
                 {
                   $limit: limit
                 },
-
               ],
-
             "vid":
-
               [
                 {
                   $lookup: {
@@ -29949,6 +30138,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -29963,6 +30153,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -30044,6 +30236,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -30068,13 +30261,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -30130,11 +30323,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -30174,8 +30371,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -30188,7 +30385,7 @@ export class NewPostService {
                 },
 
               ],
-            "diary":
+              "diary":
 
               [
                 {
@@ -30281,6 +30478,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -30295,6 +30493,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -30376,6 +30576,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -30400,13 +30601,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -30462,11 +30663,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -30506,8 +30711,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -30520,7 +30725,6 @@ export class NewPostService {
                 },
 
               ],
-
             "tags":
               [
                 {
@@ -30738,6 +30942,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -30752,6 +30957,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -30833,6 +31040,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -30857,13 +31065,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -30919,11 +31127,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -30963,8 +31175,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -30978,7 +31190,6 @@ export class NewPostService {
 
               ],
             "vid":
-
               [
                 {
                   $lookup: {
@@ -31070,6 +31281,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -31084,6 +31296,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -31165,6 +31379,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -31189,13 +31404,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -31251,11 +31466,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -31295,8 +31514,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -31309,7 +31528,7 @@ export class NewPostService {
                 },
 
               ],
-            "diary":
+              "diary":
 
               [
                 {
@@ -31402,6 +31621,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -31416,6 +31636,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -31497,6 +31719,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -31521,13 +31744,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -31583,11 +31806,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -31627,8 +31854,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -31641,7 +31868,6 @@ export class NewPostService {
                 },
 
               ],
-
             "tags":
               [
                 {
@@ -31757,7 +31983,6 @@ export class NewPostService {
           {
             "user":
               [
-
                 {
                   $lookup: {
                     from: "newUserBasics",
@@ -31794,16 +32019,18 @@ export class NewPostService {
                     "username": "$userAuth.username",
                     "email": "$userAuth.email",
                     "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        "mediaEndpoint": "$userAuth.mediaEndpoint",
-                      }],
+                    {
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    },
                     //"idUserAuth": "$userAuth._id",
                     "urluserBadge":
                     {
@@ -31855,7 +32082,6 @@ export class NewPostService {
                           []
                         ]
                     },
-
                   }
                 },
                 {
@@ -31888,7 +32114,6 @@ export class NewPostService {
                 {
                   $limit: limit
                 },
-
               ],
             //pict
             "pict":
@@ -31983,6 +32208,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -31997,6 +32223,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -32078,6 +32306,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -32102,13 +32331,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -32164,11 +32393,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -32208,8 +32441,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -32223,7 +32456,6 @@ export class NewPostService {
 
               ],
             "vid":
-
               [
                 {
                   $lookup: {
@@ -32315,6 +32547,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -32329,6 +32562,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -32410,6 +32645,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -32434,13 +32670,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -32496,11 +32732,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -32540,8 +32780,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -32554,7 +32794,7 @@ export class NewPostService {
                 },
 
               ],
-            "diary":
+              "diary":
 
               [
                 {
@@ -32647,6 +32887,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -32661,6 +32902,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -32742,6 +32985,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -32766,13 +33010,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -32828,11 +33072,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -32872,8 +33120,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -33104,6 +33352,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -33118,6 +33367,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -33199,6 +33450,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -33223,13 +33475,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -33285,11 +33537,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -33329,8 +33585,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -33344,7 +33600,6 @@ export class NewPostService {
 
               ],
             "vid":
-
               [
                 {
                   $lookup: {
@@ -33436,6 +33691,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -33450,6 +33706,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -33531,6 +33789,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -33555,13 +33814,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -33617,11 +33876,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -33661,8 +33924,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -33675,7 +33938,7 @@ export class NewPostService {
                 },
 
               ],
-            "diary":
+              "diary":
 
               [
                 {
@@ -33768,6 +34031,7 @@ export class NewPostService {
                           "saleAmount": 1,
                           "isLiked": 1,
                           "certified": 1,
+                          "mediaSource": 1,
 
                         }
                       },
@@ -33782,6 +34046,8 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
+                          authdata: 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -33863,6 +34129,7 @@ export class NewPostService {
                       },
                       {
                         $project: {
+                          "mediaSource": 1,
                           "boosted": 1,
                           "reportedStatus": 1,
                           "insight": 1,
@@ -33887,13 +34154,13 @@ export class NewPostService {
                           "profilepictid": 1,
                           "avatar":
                           {
-                            "mediaBasePath": "$userAuth.mediaBasePath",
-                            "mediaUri": "$userAuth.mediaUri",
-                            "originalName": "$userAuth.originalName",
-                            "fsSourceUri": "$userAuth.fsSourceUri",
-                            "fsSourceName": "$userBasic.fsSourceName",
-                            "fsTargetUri": "$userAuth.fsTargetUri",
-                            "mediaType": "$userAuth.mediaType",
+                            "mediaBasePath": "$authdata.mediaBasePath",
+                            "mediaUri": "$authdata.mediaUri",
+                            "originalName": "$authdata.originalName",
+                            "fsSourceUri": "$authdata.fsSourceUri",
+                            "fsSourceName": "$authdata.fsSourceName",
+                            "fsTargetUri": "$authdata.fsTargetUri",
+                            "mediaType": "$authdata.mediaType",
                             //"mediaEndpoint": {
                             //"$concat": ["/profilepict/", "$mediaUri"]
                             //}
@@ -33949,11 +34216,15 @@ export class NewPostService {
                 {
                   $project: {
                     "boosted": "$pict.boosted",
+                    //"tester": "$pict.mediaSource.mediaUri",
                     "reportedStatus": "$pict.reportedStatus",
                     "_id": "$pict._id",
-                    "mediaThumbEndpoint": '$pict.mediaSource.mediaThumbEndpoint',
-                    "mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
-                    "mediaType": '$pict.mediaSource.mediaType',
+                    "mediaThumbEndpoint": { $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                    //"mediaEndpoint": '$pict.mediaSource.mediaEndpoint',
+                    "mediaEndpoint": {
+                      "$concat": ["/profilepict/", { $arrayElemAt: ["$pict.mediaSource.mediaUri", 0] }]
+                    },
+                    "mediaType": { $arrayElemAt: ['$pict.mediaSource.mediaType', 0] },
                     "createdAt": "$pict.createdAt",
                     "updatedAt": "$pict.updatedAt",
                     "postID": "$pict.postID",
@@ -33993,8 +34264,8 @@ export class NewPostService {
                     {
                       $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                     },
-                    "apsaraId": '$pict.mediaSource.apsaraId',
-                    "isApsara": '$pict.mediaSource.apsara',
+                    "apsaraId": { $arrayElemAt: ['$pict.mediaSource.apsaraId', 0] },
+                    "isApsara": { $arrayElemAt: ['$pict.mediaSource.apsara', 0] },
                     "isLiked": "$likes",
 
                   }
@@ -34025,12 +34296,10 @@ export class NewPostService {
     return query;
   }
 
-  async landingpageMigration(email:string, emailLogin:string, type:string, skip:number, limit:number)
-  {
+  async landingpageMigration(email: string, emailLogin: string, type: string, skip: number, limit: number) {
     var mongo = require('mongoose');
     var pipeline = [];
-    if(email == emailLogin)
-    {
+    if (email == emailLogin) {
       pipeline.push(
         {
           "$match": {
@@ -34068,8 +34337,7 @@ export class NewPostService {
         },
       );
     }
-    else
-    {
+    else {
       pipeline.push(
         {
           "$match": {
@@ -34116,191 +34384,191 @@ export class NewPostService {
     pipeline.push(
       {
         $sort: {
-          createdAt: - 1,    
+          createdAt: - 1,
         }
       },
       {
-          $skip: ((skip - 1) * limit)
+        $skip: ((skip - 1) * limit)
       },
       {
-          $limit: limit
+        $limit: limit
       },
       {
-          "$lookup": {
-              from: "disquslogs",
-              let: {
-                  localID: '$postID',
-              },
-              as: "comment",
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $and: [
-                              {
-                                  $expr: {
-                                      $eq: ['$postID', '$$localID']
-                                  }
-                              },
-                              {
-                                  "active": {
-                                      $ne: false
-                                  }
-                              },
-                          ]
-                      }
-                  },
-                  {
-                      "$lookup": {
-                          from: "newUserBasics",
-                          as: "userComment",
-                          let: {
-                              localID: '$sender'
-                          },
-                          pipeline: [
-                              {
-                                  $match: 
-                                  {
-                                      $expr: {
-                                          $eq: ['$email', '$$localID']
-                                      }
-                                  }
-                              },
-                              {
-                                  $project: {
-                                      "username": 1
-                                  }
-                              }
-                          ],
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$userComment"
-                      }
-                  },
-                  {
-                      $sort: {
-                          createdAt: - 1
-                      }
-                  },
-                  
-              ]
+        "$lookup": {
+          from: "disquslogs",
+          let: {
+            localID: '$postID',
           },
-      },
-      {
-          "$lookup": {
-              from: "mediamusic",
-              as: "music",
-              let: {
-                  localID: '$musicId'
-              },
-              pipeline: [
+          as: "comment",
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
                   {
-                      $match: 
-                      {
-                          $expr: {
-                              $eq: ['$_id', '$$localID']
-                          }
-                      }
-                  },
-                  //lookup dengan genre, theme dan mood
-                  {
-                    "$lookup":
-                    {
-                      from:"genre",
-                      localField:"genre",
-                      foreignField:"_id",
-                      as:"genre_data"
+                    $expr: {
+                      $eq: ['$postID', '$$localID']
                     }
                   },
                   {
-                    "$lookup":
+                    "active": {
+                      $ne: false
+                    }
+                  },
+                ]
+              }
+            },
+            {
+              "$lookup": {
+                from: "newUserBasics",
+                as: "userComment",
+                let: {
+                  localID: '$sender'
+                },
+                pipeline: [
+                  {
+                    $match:
                     {
-                      from:"theme",
-                      localField:"theme",
-                      foreignField:"_id",
-                      as:"theme_data"
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
                     }
                   },
                   {
-                    "$lookup":
-                    {
-                      from:"mood",
-                      localField:"mood",
-                      foreignField:"_id",
-                      as:"mood_data"
+                    $project: {
+                      "username": 1
                     }
-                  },
-                  {
-                      $project: {
-                          "musicTitle": 1,
-                          "artistName": 1,
-                          "albumName": 1,
-                          "apsaraMusic": 1,
-                          "apsaraThumnail": 1,
-                          "genre": 
-                          {
-                            "$arrayElemAt":
-                            [
-                              "$genre_data.name",0
-                            ]
-                          },
-                          "theme": 
-                          {
-                            "$arrayElemAt":
-                            [
-                              "$theme_data.name",0
-                            ]
-                          },
-                          "mood": 
-                          {
-                            "$arrayElemAt":
-                            [
-                              "$mood_data.name",0
-                            ]
-                          },
-                      }
-                  },
-              ],
-          }
-      },
-      {
-          "$lookup": {
-              from: "newUserBasics",
-              as: "userTag",
-              let: {
-                  localID: '$tagPeople'
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $or: [
-                              {
-                                  $expr: {
-                                      $eq: ['$_id', "$$localID"]
-                                  }
-                              },
-                              {
-                                  $expr: {
-                                      $eq: ['$_idAuth', "$$localID.$id"]
-                                  }
-                              },
-                              
-                          ]
-                      },
-                      
-                  },
-                  {
-                      $project: {
-                          "_id": 1,
-                          "username": 1
-                      }
                   }
-              ],
-              
-          }
+                ],
+              }
+            },
+            {
+              $unwind: {
+                path: "$userComment"
+              }
+            },
+            {
+              $sort: {
+                createdAt: - 1
+              }
+            },
+
+          ]
+        },
+      },
+      {
+        "$lookup": {
+          from: "mediamusic",
+          as: "music",
+          let: {
+            localID: '$musicId'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $eq: ['$_id', '$$localID']
+                }
+              }
+            },
+            //lookup dengan genre, theme dan mood
+            {
+              "$lookup":
+              {
+                from: "genre",
+                localField: "genre",
+                foreignField: "_id",
+                as: "genre_data"
+              }
+            },
+            {
+              "$lookup":
+              {
+                from: "theme",
+                localField: "theme",
+                foreignField: "_id",
+                as: "theme_data"
+              }
+            },
+            {
+              "$lookup":
+              {
+                from: "mood",
+                localField: "mood",
+                foreignField: "_id",
+                as: "mood_data"
+              }
+            },
+            {
+              $project: {
+                "musicTitle": 1,
+                "artistName": 1,
+                "albumName": 1,
+                "apsaraMusic": 1,
+                "apsaraThumnail": 1,
+                "genre":
+                {
+                  "$arrayElemAt":
+                    [
+                      "$genre_data.name", 0
+                    ]
+                },
+                "theme":
+                {
+                  "$arrayElemAt":
+                    [
+                      "$theme_data.name", 0
+                    ]
+                },
+                "mood":
+                {
+                  "$arrayElemAt":
+                    [
+                      "$mood_data.name", 0
+                    ]
+                },
+              }
+            },
+          ],
+        }
+      },
+      {
+        "$lookup": {
+          from: "newUserBasics",
+          as: "userTag",
+          let: {
+            localID: '$tagPeople'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $or: [
+                  {
+                    $expr: {
+                      $eq: ['$_id', "$$localID"]
+                    }
+                  },
+                  {
+                    $expr: {
+                      $eq: ['$_idAuth', "$$localID.$id"]
+                    }
+                  },
+
+                ]
+              },
+
+            },
+            {
+              $project: {
+                "_id": 1,
+                "username": 1
+              }
+            }
+          ],
+
+        }
       },
       {
         "$lookup": {
@@ -34327,277 +34595,277 @@ export class NewPostService {
       },
       {
         $project: {
-            _id: 1,
-            version: {
-                $arrayElemAt: ["$setting.value", 0]
-            },
-            versionIos: {
-                $arrayElemAt: ["$setting.value", 1]
-            },
-            limitLandingpage: {
-                $arrayElemAt: ["$setting.value", 2]
-            },
-            "postID": 1,
-            musicTitle: {
-                $arrayElemAt: ["$music.musicTitle", 0]
-            },
-            "artistName": {
-                $arrayElemAt: ["$music.artistName", 0]
-            },
-            "albumName": {
-                $arrayElemAt: ["$music.albumName", 0]
-            },
-            "apsaraMusic": {
-                $arrayElemAt: ["$music.apsaraMusic", 0]
-            },
-            "apsaraThumnail": {
-                $arrayElemAt: ["$music.apsaraThumnail", 0]
-            },
-            "genre": {
-                $arrayElemAt: ["$music.genre", 0]
-            },
-            "theme": {
-                $arrayElemAt: ["$music.theme", 0]
-            },
-            "mood": {
-                $arrayElemAt: ["$music.mood", 0]
-            },
-            "tagPeople": "$userTag",
-            "mediaType": 1,
-            "postType": 1,
-            "description": 1,
-            "active": 1,
-            "createdAt": 1,
-            "updatedAt": 1,
-            "expiration": 1,
-            "visibility": 1,
-            "location": 1,
-            "tags": 1,
-            "allowComments": 1,
-            "isSafe": 1,
-            "isOwned": 1,
-            "certified": 1,
-            "saleAmount": 1,
-            "saleLike": 1,
-            "saleView": 1,
-            "isShared": 1,
-            "likes": 1,
-            "views": 1,
-            "shares": 1,
-            "userView": 1,
-            "userLike": 1,
-            "uploadSource": {
-                $arrayElemAt: ["$uploadSource.uploadSource", 0]
-            },
-            comments: {
-                $cond: {
-                    if : {
-                        $eq: ["$comment", []]
-                    },
-                    then: 0,
-                    else : {
-                        $size: "$comment"
+          _id: 1,
+          version: {
+            $arrayElemAt: ["$setting.value", 0]
+          },
+          versionIos: {
+            $arrayElemAt: ["$setting.value", 1]
+          },
+          limitLandingpage: {
+            $arrayElemAt: ["$setting.value", 2]
+          },
+          "postID": 1,
+          musicTitle: {
+            $arrayElemAt: ["$music.musicTitle", 0]
+          },
+          "artistName": {
+            $arrayElemAt: ["$music.artistName", 0]
+          },
+          "albumName": {
+            $arrayElemAt: ["$music.albumName", 0]
+          },
+          "apsaraMusic": {
+            $arrayElemAt: ["$music.apsaraMusic", 0]
+          },
+          "apsaraThumnail": {
+            $arrayElemAt: ["$music.apsaraThumnail", 0]
+          },
+          "genre": {
+            $arrayElemAt: ["$music.genre", 0]
+          },
+          "theme": {
+            $arrayElemAt: ["$music.theme", 0]
+          },
+          "mood": {
+            $arrayElemAt: ["$music.mood", 0]
+          },
+          "tagPeople": "$userTag",
+          "mediaType": 1,
+          "postType": 1,
+          "description": 1,
+          "active": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "expiration": 1,
+          "visibility": 1,
+          "location": 1,
+          "tags": 1,
+          "allowComments": 1,
+          "isSafe": 1,
+          "isOwned": 1,
+          "certified": 1,
+          "saleAmount": 1,
+          "saleLike": 1,
+          "saleView": 1,
+          "isShared": 1,
+          "likes": 1,
+          "views": 1,
+          "shares": 1,
+          "userView": 1,
+          "userLike": 1,
+          "uploadSource": {
+            $arrayElemAt: ["$uploadSource.uploadSource", 0]
+          },
+          comments: {
+            $cond: {
+              if: {
+                $eq: ["$comment", []]
+              },
+              then: 0,
+              else: {
+                $size: "$comment"
+              }
+            }
+          },
+          email: 1,
+          viewer: 1,
+          viewerCount: 1,
+          oldDate: "$oldDate",
+          selfContent: 1,
+          official:
+          {
+            $cond: {
+              if: {
+                $eq: ["$email", "hyppers@hyppe.id"]
+              },
+              then: 1,
+              else: 0
+            }
+          },
+          musik: "$music",
+          isLike:
+          {
+            $cond: {
+              if: {
+                $eq: ["$userLike", "hyppers@hyppe.id"]
+              },
+              then: true,
+              else: false
+            }
+          },
+          comment: "$comment",
+          interest: "$categoryInt",
+          friends: {
+            $arrayElemAt: ["$friend.friend", 0]
+          },
+          "insight":
+          {
+            "likes": "$likes",
+            "views": "$views",
+            "shares": "$shares",
+            "comments": "$comments",
+
+          },
+          "userProfile": "$userProfile",
+          "contentMedias": "$contentMedias",
+          "cats": "$categories",
+          "tagDescription": "$tagDescription",
+          "metadata": "$metadata",
+          "boostDate": "$boostDate",
+          "end": "$boosted.boostSession.end",
+          "start": "$boosted.boostSession.start",
+          "isBoost": "$isBoost",
+          "boostViewer": "$boostViewer",
+          "boostCount": "$boostCount",
+          "boosted":
+          {
+            $cond: {
+              if: {
+                $gt: [{
+                  "$dateToString": {
+                    "format": "%Y-%m-%d %H:%M:%S",
+                    "date": {
+                      $add: [new Date(), 25200000]
                     }
-                }
+                  }
+                }, "$boosted.boostSession.end"]
+              },
+              then: "$ilang",
+              else: "$boosted",
+
+            }
+          },
+          "contentModeration": "$contentModeration",
+          "reportedStatus": "$reportedStatus",
+          "reportedUserCount": "$reportedUserCount",
+          "contentModerationResponse": "$contentModerationResponse",
+          "reportedUser": "$reportedUser",
+          "timeStart": "$timeStart",
+          "timeEnd": "$timeEnd",
+          "apsaraId": {
+            $arrayElemAt: ["$mediaSource.apsaraId", 0]
+          },
+          "isApsara": {
+            $arrayElemAt: ["$mediaSource.isApsara", 0]
+          },
+          "apsaraThumbId": {
+            $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
+          },
+          "mediaEndpoint": {
+            $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
+          },
+          "mediaUri": {
+            $arrayElemAt: ["$mediaSource.mediaUri", 0]
+          },
+          "mediaThumbEndpoint": {
+            $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
+          },
+          "mediaThumbUri": {
+            $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
+          },
+          "fullName": {
+            $arrayElemAt: ["$userBasic.fullName", 0]
+          },
+          "username": {
+            $arrayElemAt: ["$userBasic.username", 0]
+          },
+          "avatar":
+          {
+            "mediaBasePath": { $arrayElemAt: ["$userBasic.mediaBasePath", 0] },
+            "mediaUri": { $arrayElemAt: ["$userBasic.mediaUri", 0] },
+            "originalName": { $arrayElemAt: ["$userBasic.originalName", 0] },
+            "fsSourceUri": { $arrayElemAt: ["$userBasic.fsSourceUri", 0] },
+            "fsSourceName": { $arrayElemAt: ["$userBasic.fsSourceName", 0] },
+            "fsTargetUri": { $arrayElemAt: ["$userBasic.fsTargetUri", 0] },
+            "mediaType": { $arrayElemAt: ["$userBasic.mediaType", 0] },
+            //"mediaEndpoint": {
+            //"$concat": ["/profilepict/", "$mediaUri"]
+            //}
+          },
+          "privacy": {
+            "isCelebrity": {
+              $arrayElemAt: ["$userBasic.isCelebrity", 0]
             },
-            email: 1,
-            viewer: 1,
-            viewerCount: 1,
-            oldDate: "$oldDate",
-            selfContent: 1,
-            official: 
-            {
-                $cond: {
-                    if : {
-                        $eq: ["$email", "hyppers@hyppe.id"]
-                    },
-                    then: 1,
-                    else : 0
-                }
+            "isIdVerified": {
+              $arrayElemAt: ["$userBasic.isIdVerified", 0]
             },
-            musik: "$music",
-            isLike: 
+            "isPrivate": {
+              $arrayElemAt: ["$userBasic.isPrivate", 0]
+            },
+            "isFollowPrivate": {
+              $arrayElemAt: ["$userBasic.isFollowPrivate", 0]
+            },
+            "isPostPrivate": {
+              $arrayElemAt: ["$userBasic.isPostPrivate", 0]
+            },
+
+          },
+          "verified": {
+            $arrayElemAt: ["$userBasic.fullName", 0]
+          },
+          "urluserBadge":
+          {
+            "$ifNull":
+              [
                 {
-                $cond: {
-                    if : {
-                        $eq: ["$userLike", "hyppers@hyppe.id"]
+                  "$filter":
+                  {
+                    input: {
+                      $arrayElemAt: ["$userBasic.userBadge", 0]
                     },
-                    then: true,
-                    else : false
-                }
-            },
-            comment:"$comment",
-            interest: "$categoryInt",
-            friends: {
-                $arrayElemAt: ["$friend.friend", 0]
-            },
-            "insight": 
-                {
-                "likes": "$likes",
-                "views": "$views",
-                "shares": "$shares",
-                "comments": "$comments",
-                
-            },
-            "userProfile": "$userProfile",
-            "contentMedias": "$contentMedias",
-            "cats": "$categories",
-            "tagDescription": "$tagDescription",
-            "metadata": "$metadata",
-            "boostDate": "$boostDate",
-            "end": "$boosted.boostSession.end",
-            "start": "$boosted.boostSession.start",
-            "isBoost": "$isBoost",
-            "boostViewer": "$boostViewer",
-            "boostCount": "$boostCount",
-            "boosted": 
-            {
-                $cond: {
-                    if : {
-                        $gt: [{
-                            "$dateToString": {
-                                "format": "%Y-%m-%d %H:%M:%S",
-                                "date": {
-                                    $add: [new Date(), 25200000]
-                                }
-                            }
-                        }, "$boosted.boostSession.end"]
-                    },
-                    then: "$ilang",
-                    else : "$boosted",
-                    
-                }
-            },
-            "contentModeration": "$contentModeration",
-            "reportedStatus": "$reportedStatus",
-            "reportedUserCount": "$reportedUserCount",
-            "contentModerationResponse": "$contentModerationResponse",
-            "reportedUser": "$reportedUser",
-            "timeStart": "$timeStart",
-            "timeEnd": "$timeEnd",
-            "apsaraId": {
-                $arrayElemAt: ["$mediaSource.apsaraId", 0]
-            },
-            "isApsara": {
-                $arrayElemAt: ["$mediaSource.isApsara", 0]
-            },
-            "apsaraThumbId": {
-                $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
-            },
-            "mediaEndpoint": {
-                $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
-            },
-            "mediaUri": {
-                $arrayElemAt: ["$mediaSource.mediaUri", 0]
-            },
-            "mediaThumbEndpoint": {
-                $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
-            },
-            "mediaThumbUri": {
-                $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
-            },
-            "fullName": {
-                $arrayElemAt: ["$userBasic.fullName", 0]
-            },
-            "username": {
-                $arrayElemAt: ["$userBasic.username", 0]
-            },
-            "avatar":
-                        {
-                            "mediaBasePath": {$arrayElemAt: [ "$userBasic.mediaBasePath", 0]},
-                            "mediaUri":{$arrayElemAt: [ "$userBasic.mediaUri", 0]},
-                            "originalName": {$arrayElemAt: ["$userBasic.originalName", 0]},
-                            "fsSourceUri": {$arrayElemAt: ["$userBasic.fsSourceUri", 0]},
-                            "fsSourceName":{$arrayElemAt: [ "$userBasic.fsSourceName", 0]},
-                            "fsTargetUri": {$arrayElemAt: ["$userBasic.fsTargetUri", 0]},
-                            "mediaType":{$arrayElemAt: [ "$userBasic.mediaType", 0]},
-                            //"mediaEndpoint": {
-                            //"$concat": ["/profilepict/", "$mediaUri"]
-                            //}
-                        },
-            "privacy": {
-                "isCelebrity": {
-                    $arrayElemAt: ["$userBasic.isCelebrity", 0]
-                },
-                "isIdVerified": {
-                    $arrayElemAt: ["$userBasic.isIdVerified", 0]
-                },
-                "isPrivate": {
-                    $arrayElemAt: ["$userBasic.isPrivate", 0]
-                },
-                "isFollowPrivate": {
-                    $arrayElemAt: ["$userBasic.isFollowPrivate", 0]
-                },
-                "isPostPrivate": {
-                    $arrayElemAt: ["$userBasic.isPostPrivate", 0]
-                },
-                
-            },
-            "verified": {
-                $arrayElemAt: ["$userBasic.fullName", 0]
-            },
-            "urluserBadge": 
-            {
-                "$ifNull": 
-                [
+                    as: "listbadge",
+                    cond:
                     {
-                        "$filter": 
-                        {
-                            input: {
-                                $arrayElemAt: ["$userBasic.userBadge", 0]
-                            },
-                            as: "listbadge",
-                            cond: 
-                            {
-                                "$and": 
-                                [
-                                    {
-                                        "$eq": 
-                                        [
-                                            "$$listbadge.isActive",
-                                            true
-                                        ]
-                                    },
-                                    {
-                                        "$lte": [
-                                            {
-                                                "$dateToString": {
-                                                    "format": "%Y-%m-%d %H:%M:%S",
-                                                    "date": {
-                                                        "$add": [
-                                                            new Date(),
-                                                            25200000
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "$$listbadge.endDatetime"
-                                        ]
-                                    }
-                                ]
-                            }
-                        }
-                    },
-                    null
-                ]
-            },
-            mailViewer: "$mailViewer",
-            userInterested: {
-                $arrayElemAt: ["$userInt.userInterests", 0]
-            },
-            tutor: {
-                $arrayElemAt: ["$userBasic.tutor", 0]
-            },
-            isLiked: {
-                $ifNull: ["$isLike", false]
-            },
-            
+                      "$and":
+                        [
+                          {
+                            "$eq":
+                              [
+                                "$$listbadge.isActive",
+                                true
+                              ]
+                          },
+                          {
+                            "$lte": [
+                              {
+                                "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                    "$add": [
+                                      new Date(),
+                                      25200000
+                                    ]
+                                  }
+                                }
+                              },
+                              "$$listbadge.endDatetime"
+                            ]
+                          }
+                        ]
+                    }
+                  }
+                },
+                null
+              ]
+          },
+          mailViewer: "$mailViewer",
+          userInterested: {
+            $arrayElemAt: ["$userInt.userInterests", 0]
+          },
+          tutor: {
+            $arrayElemAt: ["$userBasic.tutor", 0]
+          },
+          isLiked: {
+            $ifNull: ["$isLike", false]
+          },
+
         }
       },
     );
 
     var util = require('util');
-    console.log(util.inspect(pipeline, { depth:null, showHidden:false }));
+    console.log(util.inspect(pipeline, { depth: null, showHidden: false }));
 
     var data = await this.loaddata.aggregate(pipeline);
     return data;
@@ -34607,7 +34875,7 @@ export class NewPostService {
   async updateBoostViewer(id: string, email: string) {
     console.log("post id: " + id);
     this.loaddata.findOne({ _id: id }).exec().then((ps) => {
-      if(ps!=null){
+      if (ps != null) {
         console.log("post boost: " + ps.postID);
         let bs = ps.boosted;
         if (bs != undefined) {
@@ -34711,67 +34979,61 @@ export class NewPostService {
     return data;
   }
 
-  async getpostquery(email: string, search:string, visibility: string, postids: string, tipepost: string, activestatus: string, exptime: string, page: number, skip: number, insight: string, sorttime: string) 
-  {
+  async getpostquery(email: string, search: string, visibility: string, postids: string, tipepost: string, activestatus: string, exptime: string, page: number, skip: number, insight: string, sorttime: string) {
     var pipeline = [];
     var postmatch = [];
 
     var sortingdata = null;
     if (sorttime == 'true') {
-        sortingdata = -1;
+      sortingdata = -1;
     }
     else {
-        sortingdata = 1;
+      sortingdata = 1;
     }
 
-    if(tipepost != null && tipepost != undefined)
-    {
+    if (tipepost != null && tipepost != undefined) {
       postmatch.push(
         {
-          "postType":tipepost
+          "postType": tipepost
         }
       );
     }
 
-    if(activestatus != null && activestatus != undefined)
-    {
-      if(activestatus == "true")
-      {
+    if (activestatus != null && activestatus != undefined) {
+      if (activestatus == "true") {
         postmatch.push(
           {
-            "active":true
+            "active": true
           }
         );
       }
-      else
-      {
+      else {
         postmatch.push(
           {
-            "active":false
+            "active": false
           }
         );
       }
     }
 
-    if(exptime != null && exptime != undefined && exptime == 'true')
-    {
+    if (exptime != null && exptime != undefined && exptime == 'true') {
       pipeline.push(
         {
-            "$set":
+          "$set":
+          {
+            "yesterday":
             {
-                "yesterday":
-                {
-                    "$dateToString": {
-                        "format": "%Y-%m-%d %H:%M:%S",
-                        "date": {
-                            $add: [
-                                new Date(),
-                                86400000
-                            ]
-                        }
-                    }
+              "$dateToString": {
+                "format": "%Y-%m-%d %H:%M:%S",
+                "date": {
+                  $add: [
+                    new Date(),
+                    86400000
+                  ]
                 }
+              }
             }
+          }
         }
       );
 
@@ -34779,65 +35041,61 @@ export class NewPostService {
         {
           "createdAt":
           {
-            "$gte":"$yesterday"
+            "$gte": "$yesterday"
           }
         }
       );
     }
 
-    if(postids != null && postids != undefined)
-    {
+    if (postids != null && postids != undefined) {
       postmatch.push(
         {
-          "postID":postids
+          "postID": postids
         }
       );
     }
 
-    if(visibility != null && visibility != undefined && visibility == "PRIVATE")
-    {
+    if (visibility != null && visibility != undefined && visibility == "PRIVATE") {
       postmatch.push(
         {
-          "email":email
+          "email": email
         }
       );
     }
-    else
-    {
+    else {
       postmatch.push(
         {
-            "$or":
-                [
+          "$or":
+            [
+              {
+                "$and":
+                  [
                     {
-                        "$and":
-                            [
-                                {
-                                    "reportedUser.email": email
-                                },
-                                {
-                                    "reportedUser.active": false
-                                },
-                            ]
+                      "reportedUser.email": email
                     },
                     {
-                        "reportedUser.email":
-                        {
-                            $not:
-                            {
-                                $regex: email
-                            }
-                        }
+                      "reportedUser.active": false
                     },
-                ]
+                  ]
+              },
+              {
+                "reportedUser.email":
+                {
+                  $not:
+                  {
+                    $regex: email
+                  }
+                }
+              },
+            ]
         },
       );
     }
 
-    if(search != null && search != undefined)
-    {
+    if (search != null && search != undefined) {
       postmatch.push(
         {
-          "email":search
+          "email": search
         }
       );
     }
@@ -34846,45 +35104,44 @@ export class NewPostService {
       {
         "$match":
         {
-          "$and":postmatch
+          "$and": postmatch
         }
       },
       {
         "$sort":
         {
-            "createdAt":sortingdata
+          "createdAt": sortingdata
         }
       }
     );
 
-    if(skip != null && skip != undefined && page != null && page != undefined)
-    {
+    if (skip != null && skip != undefined && page != null && page != undefined) {
       pipeline.push(
         {
-            "$skip":(skip * page)
+          "$skip": (skip * page)
         },
         {
-            "$limit":page
+          "$limit": page
         },
       );
     }
-      
+
     pipeline.push(
       {
         "$set":
         {
-          "cleanUri": 
+          "cleanUri":
           {
-              "$arrayElemAt":
+            "$arrayElemAt":
               [
-                  "$mediaSource.mediaUri", 0
+                "$mediaSource.mediaUri", 0
               ]
           },
           "tempmediaSource":
           {
-              "$arrayElemAt":
+            "$arrayElemAt":
               [
-                  "$mediaSource", 0
+                "$mediaSource", 0
               ]
           },
         }
@@ -34892,492 +35149,492 @@ export class NewPostService {
       {
         "$project":
         {
-            "postID": 1,
-            "certified": 1,
-            "metadata": 1,
-            "category": 1,
-            "email": 1,
-            "active": 1,
-            "createdAt": 1,
-            "updatedAt": 1,
-            "description": 1,
-            "stiker": 1,
-            "location": 1,
-            "isShared":1,
-            "visibility": 1,
-            "allowComments": 1,
-            "postType": 1,
-            "isLiked": 
-            {
-              "$ifNull":
+          "postID": 1,
+          "certified": 1,
+          "metadata": 1,
+          "category": 1,
+          "email": 1,
+          "active": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "description": 1,
+          "stiker": 1,
+          "location": 1,
+          "isShared": 1,
+          "visibility": 1,
+          "allowComments": 1,
+          "postType": 1,
+          "isLiked":
+          {
+            "$ifNull":
               [
                 {
                   "$filter":
                   {
-                      input: "$userLike",
-                      as: "list",
-                      cond:
-                      {
-                          $eq:
-                              [
-                                  "$$list", email
-                              ]
-                      }
+                    input: "$userLike",
+                    as: "list",
+                    cond:
+                    {
+                      $eq:
+                        [
+                          "$$list", email
+                        ]
+                    }
                   }
                 },
                 []
               ]
-            },
-            "isViewed": 
-            {
-              "$ifNull":
+          },
+          "isViewed":
+          {
+            "$ifNull":
               [
                 {
                   "$filter":
                   {
-                      input: "$userLike",
-                      as: "list",
-                      cond:
-                      {
-                          $eq:
-                              [
-                                  "$$list", email
-                              ]
-                      }
+                    input: "$userLike",
+                    as: "list",
+                    cond:
+                    {
+                      $eq:
+                        [
+                          "$$list", email
+                        ]
+                    }
                   }
                 },
                 []
               ]
-            },
-            "insight":
+          },
+          "insight":
+          {
+            "likes":
             {
-                "likes":
-                {
-                    "$ifNull":
-                        [
-                            "$likes",
-                            0
-                        ]
-                },
-                "views":
-                {
-                    "$ifNull":
-                        [
-                            "$views",
-                            0
-                        ]
-                },
-                "shares":
-                {
-                    "$ifNull":
-                        [
-                            "$shares",
-                            0
-                        ]
-                },
-                "comments":
-                {
-                    "$ifNull":
-                        [
-                            "$comments",
-                            0
-                        ]
-                },
-            },
-            "reportedStatus": 1,
-            "saleAmount": 1,
-            "saleLike": 1,
-            "saleView": 1,
-            isApsara:
-            {
-                "$ifNull":
-                    [
-                        "$tempmediaSource.apsara",
-                        false
-                    ]
-            },
-            apsaraId:
-            {
-                "$ifNull":
-                    [
-                        "$tempmediaSource.apsaraId",
-                        null
-                    ]
-            },
-            mediaBasePath:
-            {
-                "$ifNull":
-                    [
-                        "$tempmediaSource.mediaBasePath",
-                        null
-                    ]
-            },
-            mediaUri:
-            {
-                "$ifNull":
-                    [
-                        "$tempmediaSource.mediaUri",
-                        null
-                    ]
-            },
-            mediaType:
-            {
-                "$ifNull":
-                    [
-                        "$tempmediaSource.mediaType",
-                        null
-                    ]
-            },
-            mediaThumbEndpoint:
-            {
-                "$ifNull":
-                    [
-                        "$tempmediaSource.mediaThumbEndpoint",
-                        {
-                            "$concat":
-                                [
-                                    "/thumb/",
-                                    "$cleanUri"
-                                ]
-                        }
-                    ]
-            },
-            mediaEndpoint:
-            {
-                "$ifNull":
-                    [
-                        "$tempmediaSource.mediaEndpoint",
-                        {
-                            "$cond":
-                            {
-                                if:
-                                {
-                                    "$eq":
-                                        [
-                                            "$postType", "pict"
-                                        ]
-                                },
-                                then:
-                                {
-                                    "$concat":
-                                        [
-                                            "/pict/",
-                                            "$cleanUri"
-                                        ]
-                                },
-                                else:
-                                {
-                                    "$concat":
-                                        [
-                                            "/stream/",
-                                            "$cleanUri"
-                                        ]
-                                }
-                            }
-                        }
-                    ]
-            },
-            mediaThumbUri:
-            {
-                "$ifNull":
+              "$ifNull":
                 [
-                    "$tempmediaSource.mediaThumbUri",
-                    null
+                  "$likes",
+                  0
                 ]
-            }
+            },
+            "views":
+            {
+              "$ifNull":
+                [
+                  "$views",
+                  0
+                ]
+            },
+            "shares":
+            {
+              "$ifNull":
+                [
+                  "$shares",
+                  0
+                ]
+            },
+            "comments":
+            {
+              "$ifNull":
+                [
+                  "$comments",
+                  0
+                ]
+            },
+          },
+          "reportedStatus": 1,
+          "saleAmount": 1,
+          "saleLike": 1,
+          "saleView": 1,
+          isApsara:
+          {
+            "$ifNull":
+              [
+                "$tempmediaSource.apsara",
+                false
+              ]
+          },
+          apsaraId:
+          {
+            "$ifNull":
+              [
+                "$tempmediaSource.apsaraId",
+                null
+              ]
+          },
+          mediaBasePath:
+          {
+            "$ifNull":
+              [
+                "$tempmediaSource.mediaBasePath",
+                null
+              ]
+          },
+          mediaUri:
+          {
+            "$ifNull":
+              [
+                "$tempmediaSource.mediaUri",
+                null
+              ]
+          },
+          mediaType:
+          {
+            "$ifNull":
+              [
+                "$tempmediaSource.mediaType",
+                null
+              ]
+          },
+          mediaThumbEndpoint:
+          {
+            "$ifNull":
+              [
+                "$tempmediaSource.mediaThumbEndpoint",
+                {
+                  "$concat":
+                    [
+                      "/thumb/",
+                      "$cleanUri"
+                    ]
+                }
+              ]
+          },
+          mediaEndpoint:
+          {
+            "$ifNull":
+              [
+                "$tempmediaSource.mediaEndpoint",
+                {
+                  "$cond":
+                  {
+                    if:
+                    {
+                      "$eq":
+                        [
+                          "$postType", "pict"
+                        ]
+                    },
+                    then:
+                    {
+                      "$concat":
+                        [
+                          "/pict/",
+                          "$cleanUri"
+                        ]
+                    },
+                    else:
+                    {
+                      "$concat":
+                        [
+                          "/stream/",
+                          "$cleanUri"
+                        ]
+                    }
+                  }
+                }
+              ]
+          },
+          mediaThumbUri:
+          {
+            "$ifNull":
+              [
+                "$tempmediaSource.mediaThumbUri",
+                null
+              ]
+          }
         }
       },
       {
         "$lookup":
         {
-            from:"newUserBasics",
-            as:"basic_data",
-            let:
-            {
-                email_fk:"$email"
-            },
-            pipeline:
+          from: "newUserBasics",
+          as: "basic_data",
+          let:
+          {
+            email_fk: "$email"
+          },
+          pipeline:
             [
+              {
+                "$match":
                 {
-                    "$match":
-                    {
-                        "$expr":
-                        {
-                            "$eq":
-                            [
-                                "$email", "$$email_fk"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "$project":
-                    {
-                        "username": 1,
-                        "isIdVerified": 1,
-                        "privacy":
-                        {
-                            "isPostPrivate": "$isPostPrivate",
-                            "isPrivate": "$isPrivate",
-                            "isCelebrity": "$isCelebrity",
-                            "isIdVerified": "$isIdVerified",
-                        },
-                        "avatar":
-                        {
-                            "mediaBasePath":
-                            {
-                                "$ifNull":
-                                    [
-                                        "$mediaBasePath",
-                                        null,
-                                    ]
-                            },
-                            "mediaType":
-                            {
-                                "$ifNull":
-                                    [
-                                        "$mediaType",
-                                        null,
-                                    ]
-                            },
-                            "mediaUri":
-                            {
-                                "$ifNull":
-                                    [
-                                        "$mediaUri",
-                                        null,
-                                    ]
-                            },
-                            "mediaEndpoint":
-                            {
-                                "$ifNull":
-                                    [
-                                        "$mediaEndpoint",
-                                        null,
-                                    ]
-                            },
-                        },
-                        "urluserBadge":
-                        {
-                            "$ifNull":
-                                [
-                                    {
-                                        "$filter":
-                                        {
-                                            input: "$userBadge",
-                                            as: "listbadge",
-                                            cond:
-                                            {
-                                                "$and":
-                                                    [
-                                                        {
-                                                            "$eq":
-                                                                [
-                                                                    "$$listbadge.isActive", true
-                                                                ]
-                                                        },
-                                                        {
-                                                            "$lte":
-                                                                [
-                                                                    {
-                                                                        "$dateToString":
-                                                                        {
-                                                                            "format": "%Y-%m-%d %H:%M:%S",
-                                                                            "date":
-                                                                            {
-                                                                                "$add":
-                                                                                    [
-                                                                                        new Date(),
-                                                                                        25200000
-                                                                                    ]
-                                                                            }
-                                                                        }
-                                                                    },
-                                                                    "$$listbadge.endDatetime"
-                                                                ]
-                                                        }
-                                                    ]
-                                            }
-                                        }
-                                    },
-                                    []
-                                ]
-                        },
-                        "following":
-                        {
-                            "$ifNull":
-                            [
-                                {
-                                    "$filter":
-                                    {
-                                        input: "$following",
-                                        as: "list",
-                                        cond:
-                                        {
-                                            "$eq":
-                                                [
-                                                    "$$list", email
-                                                ]
-                                        }
-                                    }
-                                },
-                                []
-                            ]
-                        }
-                    }
-                },
-                {
-                    "$project":
-                    {
-                        "username": 1,
-                        "isIdVerified": 1,
-                        "privacy": 1,
-                        "avatar": 1,
-                        "urluserBadge":
-                        {
-                            "$ifNull":
-                                [
-                                    {
-                                        "$arrayElemAt":
-                                            [
-                                                "$urluserBadge", 0
-                                            ]
-                                    },
-                                    null
-                                ]
-                        },
-                        "following":
-                        {
-                            "$cond":
-                            {
-                                "if":
-                                {
-                                    "$eq":
-                                        [
-                                            {
-                                                "$size": "$following"
-                                            },
-                                            0
-                                        ]
-                                },
-                                "then": false,
-                                "else": true
-                            }
-                        }
-                    }
+                  "$expr":
+                  {
+                    "$eq":
+                      [
+                        "$email", "$$email_fk"
+                      ]
+                  }
                 }
+              },
+              {
+                "$project":
+                {
+                  "username": 1,
+                  "isIdVerified": 1,
+                  "privacy":
+                  {
+                    "isPostPrivate": "$isPostPrivate",
+                    "isPrivate": "$isPrivate",
+                    "isCelebrity": "$isCelebrity",
+                    "isIdVerified": "$isIdVerified",
+                  },
+                  "avatar":
+                  {
+                    "mediaBasePath":
+                    {
+                      "$ifNull":
+                        [
+                          "$mediaBasePath",
+                          null,
+                        ]
+                    },
+                    "mediaType":
+                    {
+                      "$ifNull":
+                        [
+                          "$mediaType",
+                          null,
+                        ]
+                    },
+                    "mediaUri":
+                    {
+                      "$ifNull":
+                        [
+                          "$mediaUri",
+                          null,
+                        ]
+                    },
+                    "mediaEndpoint":
+                    {
+                      "$ifNull":
+                        [
+                          "$mediaEndpoint",
+                          null,
+                        ]
+                    },
+                  },
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$filter":
+                          {
+                            input: "$userBadge",
+                            as: "listbadge",
+                            cond:
+                            {
+                              "$and":
+                                [
+                                  {
+                                    "$eq":
+                                      [
+                                        "$$listbadge.isActive", true
+                                      ]
+                                  },
+                                  {
+                                    "$lte":
+                                      [
+                                        {
+                                          "$dateToString":
+                                          {
+                                            "format": "%Y-%m-%d %H:%M:%S",
+                                            "date":
+                                            {
+                                              "$add":
+                                                [
+                                                  new Date(),
+                                                  25200000
+                                                ]
+                                            }
+                                          }
+                                        },
+                                        "$$listbadge.endDatetime"
+                                      ]
+                                  }
+                                ]
+                            }
+                          }
+                        },
+                        []
+                      ]
+                  },
+                  "following":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$filter":
+                          {
+                            input: "$following",
+                            as: "list",
+                            cond:
+                            {
+                              "$eq":
+                                [
+                                  "$$list", email
+                                ]
+                            }
+                          }
+                        },
+                        []
+                      ]
+                  }
+                }
+              },
+              {
+                "$project":
+                {
+                  "username": 1,
+                  "isIdVerified": 1,
+                  "privacy": 1,
+                  "avatar": 1,
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$urluserBadge", 0
+                            ]
+                        },
+                        null
+                      ]
+                  },
+                  "following":
+                  {
+                    "$cond":
+                    {
+                      "if":
+                      {
+                        "$eq":
+                          [
+                            {
+                              "$size": "$following"
+                            },
+                            0
+                          ]
+                      },
+                      "then": false,
+                      "else": true
+                    }
+                  }
+                }
+              }
             ]
         }
-    },
-    {
+      },
+      {
         "$project":
         {
-            "isShared":1,
-            "postID": 1,
-            "email": 1,
-            "active": 1,
-            "createdAt": 1,
-            "updatedAt": 1,
-            "description": 1,
-            "stiker": 1,
-            "location": 1,
-            "visibility": 1,
-            "allowComments": 1,
-            "postType": 1,
-            "isLiked": 
+          "isShared": 1,
+          "postID": 1,
+          "email": 1,
+          "active": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "description": 1,
+          "stiker": 1,
+          "location": 1,
+          "visibility": 1,
+          "allowComments": 1,
+          "postType": 1,
+          "isLiked":
+          {
+            "$cond":
             {
-              "$cond":
+              if:
               {
-                if:
-                {
-                  "$eq":
+                "$eq":
                   [
                     {
-                      "$size":"$isLiked"
+                      "$size": "$isLiked"
                     },
                     0
                   ]
-                },
-                then:false,
-                else:true
-              }
-            },
-            "isViewed": 
+              },
+              then: false,
+              else: true
+            }
+          },
+          "isViewed":
+          {
+            "$cond":
             {
-              "$cond":
+              if:
               {
-                if:
-                {
-                  "$eq":
+                "$eq":
                   [
                     {
-                      "$size":"$isLiked"
+                      "$size": "$isLiked"
                     },
                     0
                   ]
-                },
-                then:false,
-                else:true
-              }
-            },
-            "insight": (insight == 'true' ? 1 : "$$REMOVE"),
-            "reportedStatus": 1,
-            "saleAmount": 1,
-            "saleLike": 1,
-            "saleView": 1,
-            "isApsara": 1,
-            "apsaraId": 1,
-            "mediaBasePath": 1,
-            "mediaUri": 1,
-            "mediaType": 1,
-            "mediaThumbEndpoint": 1,
-            "mediaEndpoint": 1,
-            "mediaThumbUri": 1,
-            "certified": 1,
-            "metadata": 1,
-            "cats": "$cats",
-            "username":
-            {
-                "$arrayElemAt":
-                    [
-                        "$basic_data.username", 0
-                    ]
-            },
-            "isIdVerified":
-            {
-                "$arrayElemAt":
-                    [
-                        "$basic_data.isIdVerified", 0
-                    ]
-            },
-            "privacy":
-            {
-                "$arrayElemAt":
-                    [
-                        "$basic_data.privacy", 0
-                    ]
-            },
-            "avatar":
-            {
-                "$arrayElemAt":
-                    [
-                        "$basic_data.avatar", 0
-                    ]
-            },
-            "urluserBadge":
-            {
-                "$arrayElemAt":
-                    [
-                        "$basic_data.urluserBadge", 0
-                    ]
-            },
-            "following":
-            {
-                "$arrayElemAt":
-                    [
-                        "$basic_data.following", 0
-                    ]
-            },
+              },
+              then: false,
+              else: true
+            }
+          },
+          "insight": (insight == 'true' ? 1 : "$$REMOVE"),
+          "reportedStatus": 1,
+          "saleAmount": 1,
+          "saleLike": 1,
+          "saleView": 1,
+          "isApsara": 1,
+          "apsaraId": 1,
+          "mediaBasePath": 1,
+          "mediaUri": 1,
+          "mediaType": 1,
+          "mediaThumbEndpoint": 1,
+          "mediaEndpoint": 1,
+          "mediaThumbUri": 1,
+          "certified": 1,
+          "metadata": 1,
+          "cats": "$cats",
+          "username":
+          {
+            "$arrayElemAt":
+              [
+                "$basic_data.username", 0
+              ]
+          },
+          "isIdVerified":
+          {
+            "$arrayElemAt":
+              [
+                "$basic_data.isIdVerified", 0
+              ]
+          },
+          "privacy":
+          {
+            "$arrayElemAt":
+              [
+                "$basic_data.privacy", 0
+              ]
+          },
+          "avatar":
+          {
+            "$arrayElemAt":
+              [
+                "$basic_data.avatar", 0
+              ]
+          },
+          "urluserBadge":
+          {
+            "$arrayElemAt":
+              [
+                "$basic_data.urluserBadge", 0
+              ]
+          },
+          "following":
+          {
+            "$arrayElemAt":
+              [
+                "$basic_data.following", 0
+              ]
+          },
         }
       }
     );
