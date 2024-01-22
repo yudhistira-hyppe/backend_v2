@@ -1938,7 +1938,7 @@ export class AdsController {
         }
 
         //Validasi User
-        const data_userbasic = await this.basic2SS.findOne(headers['x-auth-user']);
+        const data_userbasic = await this.basic2SS.findBymail(headers['x-auth-user']);
         if (!(await this.utilsService.ceckData(data_userbasic))) {
             AdsLogsDto_.responseAds = JSON.stringify({ response: "Unabled to proceed User not found" });
             await this.adslogsService.create(AdsLogsDto_);

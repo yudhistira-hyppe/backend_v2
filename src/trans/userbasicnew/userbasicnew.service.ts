@@ -5982,6 +5982,7 @@ export class UserbasicnewService {
     }
 
     async getpostquery(email: string, visibility: string, postids: string, tipepost: string, activestatus: string, exptime: string, skip: number, page: number, insight: string, sorttime: string) {
+        console.log("CECK CECK CECk")
         var pipeline = [];
         var postkeyword = {};
         var postmatch = [];
@@ -7486,5 +7487,446 @@ export class UserbasicnewService {
 
         return query;
 
+    }
+
+    async listfilterInteractive(email:string, data:any[], eventType:string, isDetail:boolean)
+    {
+        var pipeline = [];
+        var eventTitle = eventType;
+        var CEmatch = [];
+        CEmatch.push(
+            {
+                "$expr":
+                {
+                    "$eq":
+                    [
+                        "$email", email
+                    ]
+                }
+            },
+            {
+                "$expr":
+                {
+                    "$eq":
+                    [
+                        "$event","ACCEPT"
+                    ]
+                } 
+            }
+        );
+
+        if(eventType == "FOLLOWING" || eventType == "VIEW")
+        {
+            CEmatch.push(
+                {
+                    "$expr":
+                    {
+                        "$eq":
+                        [
+                            "$senderParty", "$$user"
+                        ]
+                    }
+                },
+            );
+        }
+        else
+        {
+            CEmatch.push(
+                {
+                    "$expr":
+                    {
+                        "$eq":
+                        [
+                            "$receiverParty", "$$user"
+                        ]
+                    }
+                }
+            );
+        }
+
+        if(eventType == "UNFOLLOW")
+        {
+            eventTitle = "FOLLOWER";
+            CEmatch.push(
+                {
+                    "$expr":
+                    {
+                        "$eq":
+                        [
+                            "$active",false
+                        ]
+                    }
+                }
+            );
+        }
+        else
+        {
+            CEmatch.push(
+                {
+                    "$expr":
+                    {
+                        "$eq":
+                        [
+                            "$active",true
+                        ]
+                    }
+                }
+            );
+        }
+
+        pipeline.push(
+            {
+                "$match":
+                {
+                    "email":email
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from:"insights",
+                    localField:"email",
+                    foreignField:"email",
+                    as:"insight_data"
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from:"newUserBasics",
+                    let:
+                    {
+                        "listemail":data
+                    },
+                    as:"people_basic_data",
+                    pipeline:
+                    [
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$in":
+                                    [
+                                        "$email", "$$listemail"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$lookup":
+                            {
+                                from:"contentevents",
+                                as:"content_data",
+                                let:
+                                {
+                                    "user":"$email"
+                                },
+                                pipeline:
+                                [
+                                    {
+                                        "$match":
+                                        {
+                                            "$and":CEmatch
+                                        }
+                                    },
+                                    {
+                                        "$limit":1
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                "_id":1,
+                                "username":1,
+                                "fullName":1,
+                                "email":1,
+                                "avatar":
+                                {
+                                    "mediaBasePath":"$mediaBasePath",
+                                    "mediaUri":"$mediaUri",
+                                    "mediaEndpoint":"$mediaEndpoint",
+                                    "mediaType":"$mediaType",
+                                },
+                                "flowIsDone":
+                                {
+                                    "$ifNull":
+                                    [
+                                        {
+                                            "$arrayElemAt":
+                                            [
+                                                "$content_data.flowIsDone", 0
+                                            ]
+                                        },
+                                        true
+                                    ]
+                                },
+                                "createdAt":
+                                {
+                                    "$ifNull":
+                                    [
+                                        {
+                                            "$arrayElemAt":
+                                            [
+                                                "$content_data.createdAt", 0
+                                            ]
+                                        },
+                                        null
+                                    ]
+                                },
+                                "urluserBadge":
+                                {
+                                    "$ifNull":
+                                    [
+                                        {
+                                            "$filter":
+                                            {
+                                                input:"$userBadge",
+                                                as:"listbadge",
+                                                cond:
+                                                {
+                                                    "$and":
+                                                    [
+                                                        {
+                                                            "$eq":
+                                                            [
+                                                                "$$listbadge.isActive", true
+                                                            ]
+                                                        },
+                                                        {
+                                                            "$lte": [
+                                                            {
+                                                                "$dateToString": {
+                                                                "format": "%Y-%m-%d %H:%M:%S",
+                                                                "date": {
+                                                                    "$add": [
+                                                                    new Date(),
+                                                                    25200000
+                                                                    ]
+                                                                }
+                                                                }
+                                                            },
+                                                            "$$listbadge.endDatetime"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        []
+                                    ]
+                                },
+                                "eventType":
+                                {
+                                    "$ifNull":
+                                    [
+                                        {
+                                            "$arrayElemAt":
+                                            [
+                                                "$content_data.eventType", 0
+                                            ]
+                                        },
+                                        eventTitle
+                                    ]
+                                },
+                                "event":
+                                {
+                                    "$ifNull":
+                                    [
+                                        {
+                                            "$arrayElemAt":
+                                            [
+                                                "$content_data.event", 0
+                                            ]
+                                        },
+                                        "ACCEPT"
+                                    ]
+                                },
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                "_id":1,
+                                "username":1,
+                                "fullName":1,
+                                "email":1,
+                                "avatar":1,
+                                "flowIsDone":1,
+                                "createdAt":1,
+                                "eventType":1,
+                                "event":1,
+                                "urluserBadge":
+                                {
+                                    "$ifNull":
+                                    [
+                                        {
+                                            "$arrayElemAt":
+                                            [
+                                                "$urluserBadge", 0
+                                            ]
+                                        },
+                                        null
+                                    ]
+                                },
+                            }
+                        },
+                    ]
+                }
+            },
+            {
+                "$unwind":
+                {
+                    path:"$people_basic_data"
+                }
+            },
+            {
+                "$set":
+                {
+                    "setURLbadge":
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                "$filter":
+                                {
+                                    input:"$userBadge",
+                                    as:"listbadge",
+                                    cond:
+                                    {
+                                        "$and":
+                                        [
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$$listbadge.isActive", true
+                                                ]
+                                            },
+                                            {
+                                                "$lte": [
+                                                {
+                                                    "$dateToString": {
+                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                    "date": {
+                                                        "$add": [
+                                                        new Date(),
+                                                        25200000
+                                                        ]
+                                                    }
+                                                    }
+                                                },
+                                                "$$listbadge.endDatetime"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            []
+                        ]
+                    }
+                }
+            },
+            {
+                "$project":
+                {
+                    "_id":0,
+                    "createdAt":"$people_basic_data.createdAt",
+                    "flowIsDone":"$people_basic_data.flowIsDone",
+                    "eventType":"$people_basic_data.eventType",
+                    "event":"$people_basic_data.event",
+                    "email":1,
+                    "username":1,
+                    "fullName":1,
+                    "avatar":
+                    {
+                        "mediaBasePath":"$mediaBasePath",
+                        "mediaUri":"$mediaUri",
+                        "mediaEndpoint":"$mediaEndpoint",
+                        "mediaType":"$mediaType",
+                    },
+                    "profileInsight":
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                "follower":
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$insight_data.followers", 0
+                                    ]
+                                },
+                                "following":
+                                {
+                                    "$arrayElemAt":
+                                    [
+                                        "$insight_data.followings", 0
+                                    ]
+                                }
+                            },
+                            {}
+                        ]
+                    },
+                    "urluserBadge":
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$setURLbadge", 0
+                                ]
+                            },
+                            null
+                        ]
+                    },
+                    "senderOrReceiverInfo":
+                    {
+                        "fullName":"$people_basic_data.fullName",
+                        "avatar":"$people_basic_data.avatar",
+                        "urluserBadge":"$people_basic_data.urluserBadge",
+                        "email":"$people_basic_data.email",
+                        "username":"$people_basic_data.username",
+                    }
+                }
+            },
+            {
+                "$project":
+                {
+                    "_id":0,
+                    "createdAt": ((isDetail == true || isDetail.toString() == 'true') ? 1 : "$$REMOVE"),
+                    "username":((isDetail == true || isDetail.toString() == 'true') ? 1 : "$$REMOVE"),
+                    "fullName":((isDetail == true || isDetail.toString() == 'true') ? 1 : "$$REMOVE"),
+                    "profileInsight": ((isDetail == true || isDetail.toString() == 'true') ? 1 : "$$REMOVE"),
+                    "senderOrReceiverInfo": ((isDetail == true || isDetail.toString() == 'true') ? 1 : "$$REMOVE"),
+                    "email":1,
+                    "eventType": 1,
+                    "flowIsDone": 1,
+                    "event": 1,
+                    "avatar": 1,
+                    "urluserBadge":
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$urluserBadge", 0
+                                ]
+                            },
+                            null
+                        ]
+                    }
+                }
+            }
+        );
+
+        // var util = require('util');
+        // console.log(util.inspect(pipeline, { depth:null, showHidden:false }));
+        var result = await this.UserbasicnewModel.aggregate(pipeline);
+        return result;
     }
 }

@@ -1326,7 +1326,7 @@ export class UserAdsService {
     //         {
     //             "$lookup":
     //             {
-    //                 "from": "userbasics",
+    //                 "from": "newUserBasics",
     //                 "as": "recorduser",
     //                 "let": {
     //                     "userbasic_fk": "$data.userID"
@@ -1803,7 +1803,7 @@ export class UserAdsService {
             {
                 "$lookup":
                 {
-                    from:"userbasics",
+                    from:"newUserBasics",
                     let:
                     {
                         basic_fk:"$userID"
@@ -3741,7 +3741,7 @@ export class UserAdsService {
         pipelineMatch.push(
             {
                 $lookup: {
-                    from: "userbasics",
+                    from: "newUserBasics",
                     localField: "userID",
                     foreignField: "_id",
                     as: "userbasics_data"

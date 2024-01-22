@@ -51,7 +51,7 @@ export class ChallengeController {
     private readonly userbasics2SS: UserbasicnewService,
     private readonly settings2SS: Settings2Service,
     private readonly postSS: NewpostsService
-    ) { }
+  ) { }
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -1207,9 +1207,17 @@ export class ChallengeController {
   async findOne(@Param('id') id: string, @Headers() headers) {
     var timestamps_start = await this.util.getDateTimeString();
     var fullurl = headers.host + '/api/challenge/' + id;
-    var token = headers['x-auth-token'];
-    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    var email = auth.email;
+    var email = null;
+    try
+    {
+      var token = headers['x-auth-token'];
+      var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      email = auth.email;
+    }
+    catch(e)
+    {
+      //kosong aja
+    }
 
     var data = await this.challengeService.detailchallenge(id);
 
@@ -2705,6 +2713,69 @@ export class ChallengeController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('allchallenge/v2')
+  async showallchallengev2(
+    @Req() request: Request,
+    @Headers() headers
+  ) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/allchallenge/v2';
+
+    var iduser = null;
+    var page = null;
+    var limit = null;
+    var jenischallenge = null;
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+    if (request_json["iduser"] !== undefined) {
+      iduser = request_json['iduser'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, iduser field is required");
+    }
+
+    if (request_json["page"] !== undefined) {
+      page = request_json['page'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, page field is required");
+    }
+
+    if (request_json["limit"] !== undefined) {
+      limit = request_json['limit'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, limit field is required");
+    }
+
+    if (request_json["jenischallenge"] !== undefined) {
+      jenischallenge = request_json['jenischallenge'];
+    }
+
+    var data = await this.challengeService.checkallchallengev2(iduser, jenischallenge, page, limit);
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
+    return {
+      response_code: 202,
+      data: data,
+      messages: messages,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('leaderboard')
   async listingleaderboard(
     @Req() request: Request,
@@ -2846,25 +2917,20 @@ export class ChallengeController {
     var parentdata = await this.challengeService.detailchallenge(getsubid);
     var getsubdata = await this.subchallenge.subchallengedetailwithlastrank(getsubid);
     var checkpernahdikick = await this.userchallengeSS.checkUserjoinchallenge(getsubid, getuserid);
-    if(checkpernahdikick.length == 0)
-    {
+    if (checkpernahdikick.length == 0) {
       statuskick = false;
     }
-    else
-    {
-      if(checkpernahdikick[0].isActive == true)
-      {
+    else {
+      if (checkpernahdikick[0].isActive == true) {
         throw new NotAcceptableException("Unabled to proceed, user already join challenge");
       }
-      else
-      {
+      else {
         statuskick = true;
       }
     }
 
     var botdata = await this.settings2SS.findOne("6583fb37cf00baae6d0d344c");
-    if(await this.util.ceckData(botdata))
-    {
+    if (await this.util.ceckData(botdata)) {
       botmode = true;
     }
 
@@ -2883,22 +2949,18 @@ export class ChallengeController {
         createdata.maxScore = 0;
         createdata.maxDate = timestamps_start.split(" ")[0];
         var setscore = 0;
-        if(botmode == true)
-        {
+        if (botmode == true) {
           var getdetailvalue = JSON.parse(JSON.stringify(botdata.value));
 
           var checkuser = getdetailvalue.find(objs => objs.idSubChallenge.toString() === getsubdata[i]._id.toString());
-          if (checkuser != undefined) 
-          {
+          if (checkuser != undefined) {
             var listuserarr = checkuser.detail;
             var getuser = listuserarr.find(objschar => objschar.iduser.toString() === getuserid);
-            if(getuser != undefined)
-            {
+            if (getuser != undefined) {
               createdata.isBot = true;
               setscore = getuser.scoreAwal;
 
-              if(parentdata.objectChallenge == "KONTEN")
-              {
+              if (parentdata.objectChallenge == "KONTEN") {
                 var getbotpost = await this.postSS.findByPostId(getuser.postid);
                 var tambah = Number(getbotpost.likes.toString()) + Number(getuser.likeAwal);
                 var updatepost = new Newposts();
@@ -3041,25 +3103,20 @@ export class ChallengeController {
     var parentdata = await this.challengeService.detailchallenge(getsubid);
     var getsubdata = await this.subchallenge.subchallengedetailwithlastrank(getsubid);
     var checkpernahdikick = await this.userchallengeSS.checkUserjoinchallenge(getsubid, getuserid);
-    if(checkpernahdikick.length == 0)
-    {
+    if (checkpernahdikick.length == 0) {
       statuskick = false;
     }
-    else
-    {
-      if(checkpernahdikick[0].isActive == true)
-      {
+    else {
+      if (checkpernahdikick[0].isActive == true) {
         throw new NotAcceptableException("Unabled to proceed, user already join challenge");
       }
-      else
-      {
+      else {
         statuskick = true;
       }
     }
 
     var botdata = await this.settings2SS.findOne("6583fb37cf00baae6d0d344c");
-    if(await this.util.ceckData(botdata))
-    {
+    if (await this.util.ceckData(botdata)) {
       botmode = true;
     }
 
@@ -3078,22 +3135,18 @@ export class ChallengeController {
         createdata.maxScore = 0;
         createdata.maxDate = timestamps_start.split(" ")[0];
         var setscore = 0;
-        if(botmode == true)
-        {
+        if (botmode == true) {
           var getdetailvalue = JSON.parse(JSON.stringify(botdata.value));
 
           var checkuser = getdetailvalue.find(objs => objs.idSubChallenge.toString() === getsubdata[i]._id.toString());
-          if (checkuser != undefined) 
-          {
+          if (checkuser != undefined) {
             var listuserarr = checkuser.detail;
             var getuser = listuserarr.find(objschar => objschar.iduser.toString() === getuserid);
-            if(getuser != undefined)
-            {
+            if (getuser != undefined) {
               createdata.isBot = true;
               setscore = getuser.scoreAwal;
 
-              if(parentdata.objectChallenge == "KONTEN")
-              {
+              if (parentdata.objectChallenge == "KONTEN") {
                 var getbotpost = await this.postSS.findByPostId(getuser.postid);
                 var tambah = Number(getbotpost.likes.toString()) + Number(getuser.likeAwal);
                 var updatepost = new Newposts();
@@ -3751,6 +3804,58 @@ export class ChallengeController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('listbadgebyuser/v2')
+  async listbadgebyuserv2(@Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/listbadgebyuser/v2';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
+    var iduser = null;
+    var page = null;
+    var limit = null;
+    var datasession = null;
+    var data = null;
+    var totalSession = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+
+    if (request_json["iduser"] !== undefined) {
+      iduser = request_json['iduser'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, ascending field is required");
+    }
+
+    page = request_json['page'];
+    limit = request_json['limit'];
+    try {
+      data = await this.userbadgeService.getBadgeByuserV2(iduser, page, limit);
+    } catch (e) {
+      data = [];
+    }
+
+
+    const messages = {
+      "info": ["The proses successful"],
+    };
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+    return {
+      response_code: 202,
+      "data": data,
+      "page": page,
+      "limit": limit,
+      "message": messages
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('listbadgeuserdetail')
   async listbadgeuserdetail(@Req() request: Request, @Headers() headers) {
     var timestamps_start = await this.util.getDateTimeString();
@@ -3778,6 +3883,55 @@ export class ChallengeController {
     limit = request_json['limit'];
     try {
       data = await this.userbadgeService.getBadgeUserCollection(iduser, page, limit);
+    } catch (e) {
+      data = [];
+    }
+
+
+    const messages = {
+      "info": ["The proses successful"],
+    };
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
+    return {
+      response_code: 202,
+      "data": data,
+      "page": page,
+      "limit": limit,
+      "message": messages
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('listbadgeuserdetail/v2')
+  async listbadgeuserdetailv2(@Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/listbadgeuserdetail/v2';
+
+    var iduser = null;
+    var page = null;
+    var limit = null;
+    var datasession = null;
+    var data = null;
+    var totalSession = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+
+    if (request_json["iduser"] !== undefined) {
+      iduser = request_json['iduser'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, iduser, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, ascending field is required");
+    }
+
+    page = request_json['page'];
+    limit = request_json['limit'];
+    try {
+      data = await this.userbadgeService.getBadgeUserCollectionV2(iduser, page, limit);
     } catch (e) {
       data = [];
     }
@@ -5662,7 +5816,7 @@ export class ChallengeController {
 
   async beforejoinchallenge(emailuser: any, subchallenge: any) {
     var data = await this.subchallenge.getlistinsertpostchallenge(emailuser.email.toString(), subchallenge.idSubChallenge.toString());
-    
+
     if (data.length != 0) {
       var mongo = require('mongoose');
       var totalScore = subchallenge.score;
@@ -5686,26 +5840,24 @@ export class ChallengeController {
 
         setinsertactivity.push(
           {
-            "type":"posts",
-            "id":data[i]._id,
-            "desc":"POST"
+            "type": "posts",
+            "id": data[i]._id,
+            "desc": "POST"
           }
         );
 
-        if(data[i].contentEventList.length != 0)
-        {
+        if (data[i].contentEventList.length != 0) {
           var datacontentevent = data[i].contentEventList;
-          for(var loopactivity = 0; loopactivity < datacontentevent.length; loopactivity++)
-          {
+          for (var loopactivity = 0; loopactivity < datacontentevent.length; loopactivity++) {
             setinsertactivity.push(
               {
-                "type":"contentevents",
-                "id":datacontentevent[loopactivity].contentEventID,
-                "desc":datacontentevent[loopactivity].eventType
+                "type": "contentevents",
+                "id": datacontentevent[loopactivity].contentEventID,
+                "desc": datacontentevent[loopactivity].eventType
               }
             );
           }
-        } 
+        }
 
         // console.log(insertdata);
         await this.postchallengeService.create(insertdata);
@@ -5868,17 +6020,14 @@ export class ChallengeController {
       insertreject['idAdmin'] = idadmin;
       insertreject['time'] = await this.util.getDateTimeString();
       insertreject['emailAdmin'] = admin.email;
-      
+
       var insertstring = reason;
       var getdetail = await this.challengeService.findOne(idchallenge);
-      if(getdetail.objectChallenge == "KONTEN")
-      {
+      if (getdetail.objectChallenge == "KONTEN") {
         var getdata = await this.postchallengeService.findByUserandChallenge(idchallenge, exileUser._id.toString());
-        if(getdata.length != 0)
-        {
+        if (getdata.length != 0) {
           insertstring = insertstring + " total score per post before kick :";
-          for(var looppostchallenge = 0; looppostchallenge < getdata.length; looppostchallenge++)
-          {
+          for (var looppostchallenge = 0; looppostchallenge < getdata.length; looppostchallenge++) {
             insertstring = insertstring + " postID (" + getdata[looppostchallenge].postID + ") = " + getdata[looppostchallenge].score + (looppostchallenge == getdata.length - 1 ? "." : ",");
 
             await this.postchallengeService.updateByUSer(getdata[looppostchallenge]._id, getdata[looppostchallenge].idSubChallenge, getdata[looppostchallenge].idChallenge, getdata[looppostchallenge].postID);
@@ -5966,17 +6115,14 @@ export class ChallengeController {
       insertreject['idAdmin'] = idadmin;
       insertreject['time'] = await this.util.getDateTimeString();
       insertreject['emailAdmin'] = admin.email;
-      
+
       var insertstring = reason;
       var getdetail = await this.challengeService.findOne(idchallenge);
-      if(getdetail.objectChallenge == "KONTEN")
-      {
+      if (getdetail.objectChallenge == "KONTEN") {
         var getdata = await this.postchallengeService.findByUserandChallenge(idchallenge, exileUser._id.toString());
-        if(getdata.length != 0)
-        {
+        if (getdata.length != 0) {
           insertstring = insertstring + " total score per post before kick :";
-          for(var looppostchallenge = 0; looppostchallenge < getdata.length; looppostchallenge++)
-          {
+          for (var looppostchallenge = 0; looppostchallenge < getdata.length; looppostchallenge++) {
             insertstring = insertstring + " postID (" + getdata[looppostchallenge].postID + ") = " + getdata[looppostchallenge].score + (looppostchallenge == getdata.length - 1 ? "." : ",");
 
             await this.postchallengeService.updateByUSer(getdata[looppostchallenge]._id, getdata[looppostchallenge].idSubChallenge, getdata[looppostchallenge].idChallenge, getdata[looppostchallenge].postID);

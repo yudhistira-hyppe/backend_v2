@@ -79,7 +79,7 @@ export class AdsBalaceCreditService {
             },
             {
                 $lookup: {
-                    from: "userbasics",
+                    from: "newUserBasics",
                     localField: "iduserbuyer",
                     foreignField: "_id",
                     as: "userbasics_data"
