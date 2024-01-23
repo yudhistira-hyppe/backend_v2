@@ -3274,7 +3274,7 @@ export class PostsController {
                     response.send(null);
                   }
                 } else {
-                  if (dataMedia[0].mediaSource[0].fsTargetThumbUri != undefined) {
+                  if (dataMedia[0].mediaSource[0].fsTargetThumbUri != undefined && dataMedia[0].mediaSource[0].fsTargetThumbUri != null) {
                     thum_data = dataMedia[0].mediaSource[0].fsTargetThumbUri;
                   } else {
                     thum_data = dataMedia[0].mediaSource[0].fsSourceUri;
