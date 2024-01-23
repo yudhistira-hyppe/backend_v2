@@ -1146,7 +1146,7 @@ export class PostsReadController {
 
 
 
-                    if (boosted !== null || boosted.length > 0) {
+                    if (boosted !== null || boosted.length > 0 || boosted !==undefined) {
                         console.log("boosted: " + data[i].postID);
                         this.postsReadService.updateBoostViewer(data[i].postID, email);
                         //pd.boostJangkauan = this.countBoosted(obj, email);
