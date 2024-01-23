@@ -35867,37 +35867,37 @@ export class NewPostService {
             mediaEndpoint:
             {
                 "$ifNull":
-                    [
-                        "$tempmediaSource.mediaEndpoint",
+                [
+                    "$tempmediaSource.mediaEndpoint",
+                    {
+                        "$cond":
                         {
-                            "$cond":
+                            if:
                             {
-                                if:
-                                {
-                                    "$eq":
-                                        [
-                                            "$postType", "pict"
-                                        ]
-                                },
-                                then:
-                                {
-                                    "$concat":
-                                        [
-                                            "/pict/",
-                                            "$cleanUri"
-                                        ]
-                                },
-                                else:
-                                {
-                                    "$concat":
-                                        [
-                                            "/stream/",
-                                            "$cleanUri"
-                                        ]
-                                }
+                                "$eq":
+                                [
+                                    "$tempmediaSource.mediaType", "image"
+                                ]
+                            },
+                            then:
+                            {
+                                "$concat":
+                                [
+                                    "/pict/",
+                                    "$cleanUri"
+                                ]
+                            },
+                            else:
+                            {
+                                "$concat":
+                                [
+                                    "/stream/",
+                                    "$cleanUri"
+                                ]
                             }
                         }
-                    ]
+                    }
+                ]
             },
             mediaThumbUri:
             {
