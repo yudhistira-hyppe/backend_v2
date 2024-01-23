@@ -5236,7 +5236,7 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
-    @Post('api/getusercontents/searchdatanew/detailtag/v3')
+    @Post('api/getusercontents/searchdatanew/newdetailtag/v2')
     @UseGuards(JwtAuthGuard)
     async detailtagsearchnewv3(@Req() request: Request, @Headers() headers): Promise<any> {
         var timestamps_start = await this.utilsService.getDateTimeString();
