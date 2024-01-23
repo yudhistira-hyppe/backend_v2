@@ -26087,6 +26087,7 @@ export class PostsReadService {
                   },
                   {
                       $project: {
+                          "_id":1,
                           "musicTitle": 1,
                           "artistName": 1,
                           "albumName": 1,
@@ -26313,7 +26314,26 @@ export class PostsReadService {
                     else : 0
                 }
             },
-            musik: "$music",
+            "music": {
+              "_id": {
+                $arrayElemAt: ["$music._id", 0]
+              },
+              "musicTitle":{
+                $arrayElemAt: ["$music.musicTitle", 0]
+              },
+              "artistName": {
+                $arrayElemAt: ["$music.artistName", 0]
+              },
+              "albumName": {
+                $arrayElemAt: ["$music.albumName", 0]
+              },
+              "apsaraMusic": {
+                $arrayElemAt: ["$music.apsaraMusic", 0]
+              },
+              "apsaraThumnail": {
+                $arrayElemAt: ["$music.apsaraThumnail", 0]
+              },
+          },
             isLike: 
                 {
                 $cond: {
@@ -27145,6 +27165,7 @@ export class PostsReadService {
                   },
                   {
                       $project: {
+                        "_id":1,
                           "musicTitle": 1,
                           "artistName": 1,
                           "albumName": 1,
@@ -27333,7 +27354,26 @@ export class PostsReadService {
                     else : 0
                 }
             },
-            musik: "$music",
+            "music": {
+              "_id": {
+                $arrayElemAt: ["$music._id", 0]
+              },
+              "musicTitle":{
+                $arrayElemAt: ["$music.musicTitle", 0]
+              },
+              "artistName": {
+                $arrayElemAt: ["$music.artistName", 0]
+              },
+              "albumName": {
+                $arrayElemAt: ["$music.albumName", 0]
+              },
+              "apsaraMusic": {
+                $arrayElemAt: ["$music.apsaraMusic", 0]
+              },
+              "apsaraThumnail": {
+                $arrayElemAt: ["$music.apsaraThumnail", 0]
+              },
+          },
             isLike: 
                 {
                 $cond: {
@@ -28164,6 +28204,7 @@ export class PostsReadService {
                   },
                   {
                       $project: {
+                        "_id":1,
                           "musicTitle": 1,
                           "artistName": 1,
                           "albumName": 1,
@@ -28352,7 +28393,26 @@ export class PostsReadService {
                     else : 0
                 }
             },
-            musik: "$music",
+            "music": {
+              "_id": {
+                $arrayElemAt: ["$music._id", 0]
+              },
+              "musicTitle":{
+                $arrayElemAt: ["$music.musicTitle", 0]
+              },
+              "artistName": {
+                $arrayElemAt: ["$music.artistName", 0]
+              },
+              "albumName": {
+                $arrayElemAt: ["$music.albumName", 0]
+              },
+              "apsaraMusic": {
+                $arrayElemAt: ["$music.apsaraMusic", 0]
+              },
+              "apsaraThumnail": {
+                $arrayElemAt: ["$music.apsaraThumnail", 0]
+              },
+          },
             isLike: 
                 {
                 $cond: {

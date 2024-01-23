@@ -1525,7 +1525,8 @@ export class PostsReadController {
                             "VideoList": []
                         };
                     }
-                    if (boosted !== null || boosted.length > 0) {
+                    if (boosted !== null && boosted !==undefined) {
+                        if(boosted.length > 0 ){
                         console.log("boosted: " + data[i].postID);
                         this.postsReadService.updateBoostViewer(data[i].postID, email);
                         //pd.boostJangkauan = this.countBoosted(obj, email);
@@ -1543,6 +1544,7 @@ export class PostsReadController {
                             boostCount = 0;
                             boosted = [];
                         }
+                    }
                     } else {
                         boostCount = 0;
                         boosted = [];
