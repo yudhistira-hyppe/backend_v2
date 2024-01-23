@@ -23651,4 +23651,432 @@ export class TagCountService {
         const query = await this.tagcountModel.aggregate(pipeline);
         return query;
     }
+
+    async detailsearchcontenNew3(key: string, email: string, skip: number, limit: number, pict: any, vid: any, diary: any) 
+    {
+        var pipeline = [];
+        pipeline.push(
+            {
+                $match: {
+                    "_id": key
+                }
+            },
+            {
+                $lookup: {
+                    from: "newPosts",
+                    let: {
+                        localID: "$listdata.postID"
+                    },
+                    pipeline: [
+                        {
+                            $match: 
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $in: ['$postID', '$$localID']
+                                        }
+                                    },
+                                    {
+                                        "reportedStatus": {
+                                            $ne: "OWNED"
+                                        }
+                                    },
+                                    {
+                                        "visibility": "PUBLIC"
+                                    },
+                                    {
+                                        "active": true
+                                    },
+                                    {
+                                        "reportedUser.email": {
+                                            $not: {
+                                                $regex: email
+                                            }
+                                        }
+                                    },
+                                    
+                                ]
+                            },
+                            
+                        },
+                        {
+                            $project: {
+                                "boosted": 
+                                {
+                                    $cond: {
+                                        if : {
+                                            $gt: [{
+                                                "$dateToString": {
+                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                    "date": {
+                                                        $add: [new Date(), 25200000]
+                                                    }
+                                                }
+                                            }, "$boosted.boostSession.timeEnd"]
+                                        },
+                                        then: [],
+                                        else : '$boosted'
+                                    }
+                                },
+                                "reportedStatus": 1,
+                                "insight": {
+                                    "shares": "$shares",
+                                    "comments": "$comments",
+                                    "views": "$views",
+                                    "likes": "$likes",
+                                    
+                                },
+                                "comments": "$comments",
+                                "likes": "$likes",
+                                "scorePict": 1,
+                                "_id": 1,
+                                "postID": 1,
+                                "createdAt": 1,
+                                "updatedAt": 1,
+                                "email": 1,
+                                "postType": 1,
+                                "description": 1,
+                                "active": 1,
+                                "metadata": 1,
+                                "location": 1,
+                                "isOwned": 1,
+                                "visibility": 1,
+                                "isViewed": 1,
+                                "allowComments": 1,
+                                "saleAmount": 1,
+                                "isLiked": 1,
+                                "mediaSource": 1,   
+                            }
+                        }
+                    ],
+                    as: "posted"
+                },
+                
+            }
+        );
+        
+        var renderFacet = {};
+        renderFacet['tag'] = [
+            {
+                $project: {
+                    tag: "$_id",
+                    total: "$total",
+                    
+                }
+            }
+        ];
+
+        if(pict == true)
+        {
+            renderFacet['pict'] = [
+                {
+                    $project: {
+                        pict: "$posted"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$pict"
+                    }
+                },
+                {
+                    $match: {
+                        "pict.postType": "pict"
+                    }
+                },
+                {
+                    $project: {
+                        tester: "$pict.mediaSource",
+                        "apsara": {
+                            $arrayElemAt: ['$pict.mediaSource.apsara', 0]
+                        },
+                        "apsaraId": {
+                            $arrayElemAt: ['$pict.mediaSource.apsaraId', 0]
+                        },
+                        "apsaraThumbId": {
+                            $arrayElemAt: ['$pict.mediaSource.apsaraThumbId', 0]
+                        },
+                        "mediaEndpoint": {
+                            "$concat": ["/stream/", "$pict.postID"]
+                        },
+                        "mediaUri": {
+                            $arrayElemAt: ['$pict.mediaSource.mediaUri', 0]
+                        },
+                        "mediaThumbEndpoint": {
+                            "$concat": ["/thumb/", "$pict.postID"]
+                        },
+                        "mediaThumbUri": {
+                            $arrayElemAt: ['$pict.mediaSource.mediaThumUri', 0]
+                        },
+                        "mediaType": {
+                            $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
+                        },
+                        "scorePict": "$pict.scorePict",
+                        "boosted": "$pict.boosted",
+                        "reportedStatus": "$pict.reportedStatus",
+                        "_id": "$pict._id",
+                        "createdAt": "$pict.createdAt",
+                        "updatedAt": "$pict.updatedAt",
+                        "postID": "$pict.postID",
+                        "email": "$pict.postID",
+                        "postType": "$pict.postType",
+                        "description": "$pict.description",
+                        "active": "$pict.active",
+                        "metadata": "$pict.metadata",
+                        "location": "$pict.location",
+                        "isOwned": "$pict.isOwned",
+                        "visibility": "$pict.visibility",
+                        "isViewed": "$pict.isViewed",
+                        "allowComments": "$pict.allowComments",
+                        "saleAmount": "$pict.saleAmount",
+                        "monetize": 
+                        {
+                            $cond: {
+                                if : {
+                                    $gte: ["$pict.saleAmount", 1]
+                                },
+                                then: true,
+                                else : "$taslimKONAG"
+                            }
+                        },
+                        "comments": "$pict.comments",
+                        "likes": "$pict.likes",
+                        "insight": 
+                            {
+                            $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+                        },
+                        
+                    }
+                },
+                {
+                    $sort: {
+                        isApsara: - 1,
+                        scorePict: - 1,
+                        comments: - 1,
+                        likes: - 1,
+                        createdAt: - 1
+                    }
+                },
+                {
+                    $skip: (skip * limit)
+                },
+                {
+                    $limit: limit
+                }
+            ];
+        }
+
+        if(vid == true)
+        {
+            renderFacet['vid'] = [
+                {
+                    $project: {
+                        pict: "$posted"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$pict"
+                    }
+                },
+                {
+                    $match: {
+                        "pict.postType": "vid"
+                    }
+                },
+                {
+                    $project: {
+                        tester: "$pict.mediaSource",
+                        "apsara": {
+                            $arrayElemAt: ['$pict.mediaSource.apsara', 0]
+                        },
+                        "apsaraId": {
+                            $arrayElemAt: ['$pict.mediaSource.apsaraId', 0]
+                        },
+                        "apsaraThumbId": {
+                            $arrayElemAt: ['$pict.mediaSource.apsaraThumbId', 0]
+                        },
+                        "mediaEndpoint": {
+                            "$concat": ["/stream/", "$pict.postID"]
+                        },
+                        "mediaUri": {
+                            $arrayElemAt: ['$pict.mediaSource.mediaUri', 0]
+                        },
+                        "mediaThumbEndpoint": {
+                            "$concat": ["/thumb/", "$pict.postID"]
+                        },
+                        "mediaThumbUri": {
+                            $arrayElemAt: ['$pict.mediaSource.mediaThumUri', 0]
+                        },
+                        "mediaType": {
+                            $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
+                        },
+                        "scorePict": "$pict.scorePict",
+                        "boosted": "$pict.boosted",
+                        "reportedStatus": "$pict.reportedStatus",
+                        "_id": "$pict._id",
+                        "createdAt": "$pict.createdAt",
+                        "updatedAt": "$pict.updatedAt",
+                        "postID": "$pict.postID",
+                        "email": "$pict.postID",
+                        "postType": "$pict.postType",
+                        "description": "$pict.description",
+                        "active": "$pict.active",
+                        "metadata": "$pict.metadata",
+                        "location": "$pict.location",
+                        "isOwned": "$pict.isOwned",
+                        "visibility": "$pict.visibility",
+                        "isViewed": "$pict.isViewed",
+                        "allowComments": "$pict.allowComments",
+                        "saleAmount": "$pict.saleAmount",
+                        "monetize": 
+                        {
+                            $cond: {
+                                if : {
+                                    $gte: ["$pict.saleAmount", 1]
+                                },
+                                then: true,
+                                else : "$taslimKONAG"
+                            }
+                        },
+                        "comments": "$pict.comments",
+                        "likes": "$pict.likes",
+                        "insight": 
+                            {
+                            $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+                        },
+                        
+                    }
+                },
+                {
+                    $sort: {
+                        isApsara: - 1,
+                        scorePict: - 1,
+                        comments: - 1,
+                        likes: - 1,
+                        createdAt: - 1
+                    }
+                },
+                {
+                    $skip: (skip * limit)
+                },
+                {
+                    $limit: limit
+                }
+            ];
+        }
+
+        if(diary == true)
+        {
+            renderFacet['diary'] = [
+                {
+                    $project: {
+                        pict: "$posted"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$pict"
+                    }
+                },
+                {
+                    $match: {
+                        "pict.postType": "diary"
+                    }
+                },
+                {
+                    $project: {
+                        tester: "$pict.mediaSource",
+                        "apsara": {
+                            $arrayElemAt: ['$pict.mediaSource.apsara', 0]
+                        },
+                        "apsaraId": {
+                            $arrayElemAt: ['$pict.mediaSource.apsaraId', 0]
+                        },
+                        "apsaraThumbId": {
+                            $arrayElemAt: ['$pict.mediaSource.apsaraThumbId', 0]
+                        },
+                        "mediaEndpoint": {
+                            "$concat": ["/stream/", "$pict.postID"]
+                        },
+                        "mediaUri": {
+                            $arrayElemAt: ['$pict.mediaSource.mediaUri', 0]
+                        },
+                        "mediaThumbEndpoint": {
+                            "$concat": ["/thumb/", "$pict.postID"]
+                        },
+                        "mediaThumbUri": {
+                            $arrayElemAt: ['$pict.mediaSource.mediaThumUri', 0]
+                        },
+                        "mediaType": {
+                            $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
+                        },
+                        "scorePict": "$pict.scorePict",
+                        "boosted": "$pict.boosted",
+                        "reportedStatus": "$pict.reportedStatus",
+                        "_id": "$pict._id",
+                        "createdAt": "$pict.createdAt",
+                        "updatedAt": "$pict.updatedAt",
+                        "postID": "$pict.postID",
+                        "email": "$pict.postID",
+                        "postType": "$pict.postType",
+                        "description": "$pict.description",
+                        "active": "$pict.active",
+                        "metadata": "$pict.metadata",
+                        "location": "$pict.location",
+                        "isOwned": "$pict.isOwned",
+                        "visibility": "$pict.visibility",
+                        "isViewed": "$pict.isViewed",
+                        "allowComments": "$pict.allowComments",
+                        "saleAmount": "$pict.saleAmount",
+                        "monetize": 
+                        {
+                            $cond: {
+                                if : {
+                                    $gte: ["$pict.saleAmount", 1]
+                                },
+                                then: true,
+                                else : "$taslimKONAG"
+                            }
+                        },
+                        "comments": "$pict.comments",
+                        "likes": "$pict.likes",
+                        "insight": 
+                            {
+                            $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+                        },
+                        
+                    }
+                },
+                {
+                    $sort: {
+                        isApsara: - 1,
+                        scorePict: - 1,
+                        comments: - 1,
+                        likes: - 1,
+                        createdAt: - 1
+                    }
+                },
+                {
+                    $skip: (skip * limit)
+                },
+                {
+                    $limit: limit
+                }
+            ];
+        }
+
+        pipeline.push(
+            {
+                "$facet":renderFacet
+            }
+        );
+
+        // var util = require('util');
+        // console.log(util.inspect(pipeline, { depth:null, showHidden:false }));
+
+        var result = await this.tagcountModel.aggregate(pipeline);
+        return result;
+    }
 }
