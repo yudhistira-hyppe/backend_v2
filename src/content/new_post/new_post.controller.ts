@@ -1049,6 +1049,8 @@ export class NewPostController {
         var repdate = strdate.replace('T', ' ');
         var splitdate = repdate.split('.');
         var timestamps_start = splitdate[0];
+        var setPagerow = null;
+        var setPagenumber = null;
 
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
@@ -1076,61 +1078,87 @@ export class NewPostController {
             }
         }
 
-        // var data = await this.UserbasicnewService.getpostquery(email:string, visibility:string, postids: string, tipepost:string, activestatus:string, exptime:string, skip:number, page:number, insight:string, sorttime:string);
-        var data = await this.newPostService.getpostquery(auth.email, body.search, body.visibility, body.postID, body.postType, body.withActive, body.withExp, parseInt(body.pageRow), parseInt(body.pageNumber), body.withInsight, 'true');
+        if(body.pageRow != null && body.pageRow != undefined)
+        {
+            setPagerow = parseInt(body.pageRow);
+        }
 
-        var listdata = [];
+        if(body.pageNumber != null && body.pageNumber != undefined)
+        {
+            setPagenumber = parseInt(body.pageNumber);
+        }
+
+        // var data = await this.UserbasicnewService.getpostquery(email:string, visibility:string, postids: string, tipepost:string, activestatus:string, exptime:string, skip:number, page:number, insight:string, sorttime:string);
+        var data = await this.newPostService.getpostquery(auth.email, body.search, body.visibility, body.postID, body.postType, body.withActive, body.withExp, setPagerow, setPagenumber, body.withInsight, 'true');
+
+        var listdatagambar = [];
+        var listdatavideo = [];
         var listmusic = [];
         var tempresult = null;
         var tempdata = null;
-        for (var i = 0; i < data.length; i++) {
-            tempdata = data[i];
-            if (tempdata.isApsara == true) {
-                listdata.push(tempdata.apsaraId);
-            }
-            else {
-                listdata.push(undefined);
+        if(data.length != 0)
+        {
+            for (var i = 0; i < data.length; i++) {
+                tempdata = data[i];
+                if (tempdata.isApsara == true) {
+                    var gettypedata = tempdata.mediaMime.split("/")[0];
+                    if(gettypedata == "video" || gettypedata == "videos")
+                    {
+                        listdatavideo.push(tempdata.apsaraId);
+                    }
+                    else
+                    {
+                        listdatagambar.push(tempdata.apsaraId);
+                    }
+                }
+    
+                var getmusicapsara = null;
+                try {
+                    getmusicapsara = tempdata.music.apsaraThumnail;
+                }
+                catch (e) {
+                    getmusicapsara = undefined;
+                }
+                listmusic.push(getmusicapsara);
             }
 
-            var getmusicapsara = null;
-            try {
-                getmusicapsara = tempdata.music.apsaraThumnail;
-            }
-            catch (e) {
-                getmusicapsara = undefined;
-            }
-            listmusic.push(getmusicapsara);
-        }
-
-        //console.log(listdata);
-        var apsaraimagedata = await this.newPostContentService.getImageApsara(listdata);
-        // console.log(apsaraimagedata);
-        // console.log(resultdata.ImageInfo[0]);
-        tempresult = apsaraimagedata.ImageInfo;
-        for (var i = 0; i < data.length; i++) {
-            for (var j = 0; j < tempresult.length; j++) {
-                if (tempresult[j].ImageId == data[i].apsaraId) {
-                    data[i].apsaraThumbId = tempresult[j].apsaraThumbId;
+            if(listdatagambar.length != 0)
+            {
+                // console.log(listdatagambar);
+                var apsaraimagedata = await this.newPostContentService.getImageApsara(listdatagambar);
+                // console.log(apsaraimagedata);
+                // console.log(resultdata.ImageInfo[0]);
+                tempresult = apsaraimagedata.ImageInfo;
+                for (var i = 0; i < data.length; i++) {
+                    for (var j = 0; j < tempresult.length; j++) {
+                        if (tempresult[j].ImageId == data[i].apsaraId) {
+                            data[i].apsaraThumbId = tempresult[j].apsaraThumbId;
+                        }
+                    }
+                    // if (resultquery[i].apsara == false && (resultquery[i].mediaType == "image" || resultquery[i].mediaType == "images")) {
+                    //     resultquery[i].apsaraThumbId = '/thumb/' + resultquery[i].postID;
+                    // }
                 }
             }
-            // if (resultquery[i].apsara == false && (resultquery[i].mediaType == "image" || resultquery[i].mediaType == "images")) {
-            //     resultquery[i].apsaraThumbId = '/thumb/' + resultquery[i].postID;
-            // }
-        }
 
-        var apsaravideodata = await this.newPostContentService.getVideoApsara(listdata);
-        // console.log(apsaravideodata);
-        // console.log(resultdata.ImageInfo[0]);
-        tempresult = apsaravideodata.VideoList;
-        for (var i = 0; i < data.length; i++) {
-            for (var j = 0; j < tempresult.length; j++) {
-                if (tempresult[j].VideoId == data[i].apsaraId) {
-                    data[i].mediaThumbEndpoint = tempresult[j].CoverURL;
+            if(listdatavideo.length != 0)
+            {
+                // console.log(listdatavideo);
+                var apsaravideodata = await this.newPostContentService.getVideoApsara(listdatavideo);
+                // console.log(apsaravideodata);
+                // console.log(resultdata.ImageInfo[0]);
+                tempresult = apsaravideodata.VideoList;
+                for (var i = 0; i < data.length; i++) {
+                    for (var j = 0; j < tempresult.length; j++) {
+                        if (tempresult[j].VideoId == data[i].apsaraId) {
+                            data[i].mediaThumbEndpoint = tempresult[j].CoverURL;
+                        }
+                    }
+                    // if (resultquery[i].apsara == false && resultquery[i].mediaType == "video") {
+                    //     resultquery[i].mediaThumbEndpoint = '/thumb/' + resultquery[i].postID;
+                    // }
                 }
             }
-            // if (resultquery[i].apsara == false && resultquery[i].mediaType == "video") {
-            //     resultquery[i].mediaThumbEndpoint = '/thumb/' + resultquery[i].postID;
-            // }
         }
 
         // console.log(listmusic);

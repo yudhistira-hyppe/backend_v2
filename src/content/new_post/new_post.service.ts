@@ -35571,31 +35571,34 @@ export class NewPostService {
     if (exptime != null && exptime != undefined && exptime == 'true') {
       pipeline.push(
         {
-          "$set":
-          {
-            "yesterday":
+            "$set":
             {
-              "$dateToString": {
-                "format": "%Y-%m-%d %H:%M:%S",
-                "date": {
-                  $add: [
-                    new Date(),
-                    86400000
-                  ]
-                }
-              }
+                "yesterday":
+                {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d %H:%M:%S",
+                        "date": {
+                            $add: [
+                                new Date(),
+                                -61200000
+                            ]
+                        }
+                    }
+                },
             }
-          }
         }
       );
 
       postmatch.push(
         {
-          "createdAt":
-          {
-            "$gte": "$yesterday"
-          }
-        }
+					"$expr":
+					{
+						"$gte":
+						[
+							"$createdAt", "$yesterday"
+						]
+					}
+				},
       );
     }
 
@@ -35607,12 +35610,13 @@ export class NewPostService {
       );
     }
 
-    if (visibility != null && visibility != undefined && visibility == "PRIVATE") {
-      postmatch.push(
-        {
-          "email": email
-        }
-      );
+    if (visibility != null && visibility != undefined && visibility == "PRIVATE" && search == email)
+    {
+        postmatch.push(
+          {
+            "email":email
+          }
+        );
     }
     else {
       postmatch.push(
@@ -35644,7 +35648,7 @@ export class NewPostService {
       );
     }
 
-    if (search != null && search != undefined) {
+    if (search != null && search != undefined && search != email) {
       postmatch.push(
         {
           "email": search
@@ -35667,7 +35671,7 @@ export class NewPostService {
       }
     );
 
-    if(skip != null && skip != undefined && !isNaN(skip) && page != null && page != undefined && !isNaN(page))
+    if(skip != null && skip != undefined && page != null && page != undefined)
     {
       pipeline.push(
         {
@@ -35758,143 +35762,151 @@ export class NewPostService {
                 },
                 []
               ]
-          },
-          "insight":
-          {
-            "likes":
-            {
-              "$ifNull":
-                [
-                  "$likes",
-                  0
-                ]
             },
-            "views":
+            "insight":
             {
-              "$ifNull":
-                [
-                  "$views",
-                  0
-                ]
-            },
-            "shares":
-            {
-              "$ifNull":
-                [
-                  "$shares",
-                  0
-                ]
-            },
-            "comments":
-            {
-              "$ifNull":
-                [
-                  "$comments",
-                  0
-                ]
-            },
-          },
-          "reportedStatus": 1,
-          "saleAmount": 1,
-          "saleLike": 1,
-          "saleView": 1,
-          isApsara:
-          {
-            "$ifNull":
-              [
-                "$tempmediaSource.apsara",
-                false
-              ]
-          },
-          apsaraId:
-          {
-            "$ifNull":
-              [
-                "$tempmediaSource.apsaraId",
-                null
-              ]
-          },
-          mediaBasePath:
-          {
-            "$ifNull":
-              [
-                "$tempmediaSource.mediaBasePath",
-                null
-              ]
-          },
-          mediaUri:
-          {
-            "$ifNull":
-              [
-                "$tempmediaSource.mediaUri",
-                null
-              ]
-          },
-          mediaType:
-          {
-            "$ifNull":
-              [
-                "$tempmediaSource.mediaType",
-                null
-              ]
-          },
-          mediaThumbEndpoint:
-          {
-            "$ifNull":
-              [
-                "$tempmediaSource.mediaThumbEndpoint",
+                "likes":
                 {
-                  "$concat":
+                    "$ifNull":
+                        [
+                            "$likes",
+                            0
+                        ]
+                },
+                "views":
+                {
+                    "$ifNull":
+                        [
+                            "$views",
+                            0
+                        ]
+                },
+                "shares":
+                {
+                    "$ifNull":
+                        [
+                            "$shares",
+                            0
+                        ]
+                },
+                "comments":
+                {
+                    "$ifNull":
+                        [
+                            "$comments",
+                            0
+                        ]
+                },
+            },
+            "reportedStatus": 1,
+            "saleAmount": 1,
+            "saleLike": 1,
+            "saleView": 1,
+            isApsara:
+            {
+                "$ifNull":
                     [
-                      "/thumb/",
-                      "$cleanUri"
+                        "$tempmediaSource.apsara",
+                        false
                     ]
-                }
-              ]
-          },
-          mediaEndpoint:
-          {
-            "$ifNull":
-              [
-                "$tempmediaSource.mediaEndpoint",
-                {
-                  "$cond":
-                  {
-                    if:
-                    {
-                      "$eq":
-                        [
-                          "$postType", "pict"
-                        ]
-                    },
-                    then:
-                    {
-                      "$concat":
-                        [
-                          "/pict/",
-                          "$cleanUri"
-                        ]
-                    },
-                    else:
-                    {
-                      "$concat":
-                        [
-                          "/stream/",
-                          "$cleanUri"
-                        ]
-                    }
-                  }
-                }
-              ]
-          },
-          mediaThumbUri:
-          {
-            "$ifNull":
-              [
-                "$tempmediaSource.mediaThumbUri",
-                null
-              ]
-          }
+            },
+            apsaraId:
+            {
+                "$ifNull":
+                    [
+                        "$tempmediaSource.apsaraId",
+                        null
+                    ]
+            },
+            mediaBasePath:
+            {
+                "$ifNull":
+                    [
+                        "$tempmediaSource.mediaBasePath",
+                        null
+                    ]
+            },
+            mediaUri:
+            {
+                "$ifNull":
+                    [
+                        "$tempmediaSource.mediaUri",
+                        null
+                    ]
+            },
+            mediaType:
+            {
+                "$ifNull":
+                    [
+                        "$tempmediaSource.mediaType",
+                        null
+                    ]
+            },
+            mediaMime:
+            {
+                "$ifNull":
+                    [
+                        "$tempmediaSource.mediaMime",
+                        null
+                    ]
+            },
+            mediaThumbEndpoint:
+            {
+                "$ifNull":
+                    [
+                        "$tempmediaSource.mediaThumbEndpoint",
+                        {
+                            "$concat":
+                                [
+                                    "/thumb/",
+                                    "$cleanUri"
+                                ]
+                        }
+                    ]
+            },
+            mediaEndpoint:
+            {
+                "$ifNull":
+                    [
+                        "$tempmediaSource.mediaEndpoint",
+                        {
+                            "$cond":
+                            {
+                                if:
+                                {
+                                    "$eq":
+                                        [
+                                            "$postType", "pict"
+                                        ]
+                                },
+                                then:
+                                {
+                                    "$concat":
+                                        [
+                                            "/pict/",
+                                            "$cleanUri"
+                                        ]
+                                },
+                                else:
+                                {
+                                    "$concat":
+                                        [
+                                            "/stream/",
+                                            "$cleanUri"
+                                        ]
+                                }
+                            }
+                        }
+                    ]
+            },
+            mediaThumbUri:
+            {
+                "$ifNull":
+                [
+                    "$tempmediaSource.mediaThumbUri",
+                    null
+                ]
+            }
         }
       },
       {
@@ -35908,286 +35920,287 @@ export class NewPostService {
           },
           pipeline:
             [
-              {
-                "$match":
                 {
-                  "$expr":
-                  {
-                    "$eq":
-                      [
-                        "$email", "$$email_fk"
-                      ]
-                  }
-                }
-              },
-              {
-                "$project":
-                {
-                  "username": 1,
-                  "isIdVerified": 1,
-                  "privacy":
-                  {
-                    "isPostPrivate": "$isPostPrivate",
-                    "isPrivate": "$isPrivate",
-                    "isCelebrity": "$isCelebrity",
-                    "isIdVerified": "$isIdVerified",
-                  },
-                  "avatar":
-                  {
-                    "mediaBasePath":
+                    "$match":
                     {
-                      "$ifNull":
-                        [
-                          "$mediaBasePath",
-                          null,
-                        ]
-                    },
-                    "mediaType":
-                    {
-                      "$ifNull":
-                        [
-                          "$mediaType",
-                          null,
-                        ]
-                    },
-                    "mediaUri":
-                    {
-                      "$ifNull":
-                        [
-                          "$mediaUri",
-                          null,
-                        ]
-                    },
-                    "mediaEndpoint":
-                    {
-                      "$ifNull":
-                        [
-                          "$mediaEndpoint",
-                          null,
-                        ]
-                    },
-                  },
-                  "urluserBadge":
-                  {
-                    "$ifNull":
-                      [
+                        "$expr":
                         {
-                          "$filter":
-                          {
-                            input: "$userBadge",
-                            as: "listbadge",
-                            cond:
-                            {
-                              "$and":
-                                [
-                                  {
-                                    "$eq":
-                                      [
-                                        "$$listbadge.isActive", true
-                                      ]
-                                  },
-                                  {
-                                    "$lte":
-                                      [
-                                        {
-                                          "$dateToString":
-                                          {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date":
-                                            {
-                                              "$add":
-                                                [
-                                                  new Date(),
-                                                  25200000
-                                                ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                  }
-                                ]
-                            }
-                          }
-                        },
-                        []
-                      ]
-                  },
-                  "following":
-                  {
-                    "$ifNull":
-                      [
-                        {
-                          "$filter":
-                          {
-                            input: "$following",
-                            as: "list",
-                            cond:
-                            {
-                              "$eq":
-                                [
-                                  "$$list", email
-                                ]
-                            }
-                          }
-                        },
-                        []
-                      ]
-                  }
-                }
-              },
-              {
-                "$project":
-                {
-                  "username": 1,
-                  "isIdVerified": 1,
-                  "privacy": 1,
-                  "avatar": 1,
-                  "urluserBadge":
-                  {
-                    "$ifNull":
-                      [
-                        {
-                          "$arrayElemAt":
+                            "$eq":
                             [
-                              "$urluserBadge", 0
+                                "$email", "$$email_fk"
                             ]
-                        },
-                        null
-                      ]
-                  },
-                  "following":
-                  {
-                    "$cond":
-                    {
-                      "if":
-                      {
-                        "$eq":
-                          [
-                            {
-                              "$size": "$following"
-                            },
-                            0
-                          ]
-                      },
-                      "then": false,
-                      "else": true
+                        }
                     }
-                  }
+                },
+                {
+                    "$project":
+                    {
+                        "username": 1,
+                        "isIdVerified": 1,
+                        "privacy":
+                        {
+                            "isPostPrivate": "$isPostPrivate",
+                            "isPrivate": "$isPrivate",
+                            "isCelebrity": "$isCelebrity",
+                            "isIdVerified": "$isIdVerified",
+                        },
+                        "avatar":
+                        {
+                            "mediaBasePath":
+                            {
+                                "$ifNull":
+                                    [
+                                        "$mediaBasePath",
+                                        null,
+                                    ]
+                            },
+                            "mediaType":
+                            {
+                                "$ifNull":
+                                    [
+                                        "$mediaType",
+                                        null,
+                                    ]
+                            },
+                            "mediaUri":
+                            {
+                                "$ifNull":
+                                    [
+                                        "$mediaUri",
+                                        null,
+                                    ]
+                            },
+                            "mediaEndpoint":
+                            {
+                                "$ifNull":
+                                    [
+                                        "$mediaEndpoint",
+                                        null,
+                                    ]
+                            },
+                        },
+                        "urluserBadge":
+                        {
+                            "$ifNull":
+                                [
+                                    {
+                                        "$filter":
+                                        {
+                                            input: "$userBadge",
+                                            as: "listbadge",
+                                            cond:
+                                            {
+                                                "$and":
+                                                    [
+                                                        {
+                                                            "$eq":
+                                                                [
+                                                                    "$$listbadge.isActive", true
+                                                                ]
+                                                        },
+                                                        {
+                                                            "$lte":
+                                                                [
+                                                                    {
+                                                                        "$dateToString":
+                                                                        {
+                                                                            "format": "%Y-%m-%d %H:%M:%S",
+                                                                            "date":
+                                                                            {
+                                                                                "$add":
+                                                                                    [
+                                                                                        new Date(),
+                                                                                        25200000
+                                                                                    ]
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "$$listbadge.endDatetime"
+                                                                ]
+                                                        }
+                                                    ]
+                                            }
+                                        }
+                                    },
+                                    []
+                                ]
+                        },
+                        "following":
+                        {
+                            "$ifNull":
+                            [
+                                {
+                                    "$filter":
+                                    {
+                                        input: "$following",
+                                        as: "list",
+                                        cond:
+                                        {
+                                            "$eq":
+                                                [
+                                                    "$$list", email
+                                                ]
+                                        }
+                                    }
+                                },
+                                []
+                            ]
+                        }
+                    }
+                },
+                {
+                    "$project":
+                    {
+                        "username": 1,
+                        "isIdVerified": 1,
+                        "privacy": 1,
+                        "avatar": 1,
+                        "urluserBadge":
+                        {
+                            "$ifNull":
+                                [
+                                    {
+                                        "$arrayElemAt":
+                                            [
+                                                "$urluserBadge", 0
+                                            ]
+                                    },
+                                    null
+                                ]
+                        },
+                        "following":
+                        {
+                            "$cond":
+                            {
+                                "if":
+                                {
+                                    "$eq":
+                                        [
+                                            {
+                                                "$size": "$following"
+                                            },
+                                            0
+                                        ]
+                                },
+                                "then": false,
+                                "else": true
+                            }
+                        }
+                    }
                 }
-              }
             ]
         }
-      },
-      {
+    },
+    {
         "$project":
         {
-          "isShared": 1,
-          "postID": 1,
-          "email": 1,
-          "active": 1,
-          "createdAt": 1,
-          "updatedAt": 1,
-          "description": 1,
-          "stiker": 1,
-          "location": 1,
-          "visibility": 1,
-          "allowComments": 1,
-          "postType": 1,
-          "isLiked":
-          {
-            "$cond":
+            "isShared":1,
+            "postID": 1,
+            "email": 1,
+            "active": 1,
+            "createdAt": 1,
+            "updatedAt": 1,
+            "description": 1,
+            "stiker": 1,
+            "location": 1,
+            "visibility": 1,
+            "allowComments": 1,
+            "postType": 1,
+            "isLiked": 
             {
-              if:
+              "$cond":
               {
-                "$eq":
+                if:
+                {
+                  "$eq":
                   [
                     {
-                      "$size": "$isLiked"
+                      "$size":"$isLiked"
                     },
                     0
                   ]
-              },
-              then: false,
-              else: true
-            }
-          },
-          "isViewed":
-          {
-            "$cond":
+                },
+                then:false,
+                else:true
+              }
+            },
+            "isViewed": 
             {
-              if:
+              "$cond":
               {
-                "$eq":
+                if:
+                {
+                  "$eq":
                   [
                     {
-                      "$size": "$isLiked"
+                      "$size":"$isLiked"
                     },
                     0
                   ]
-              },
-              then: false,
-              else: true
-            }
-          },
-          "insight": (insight == 'true' ? 1 : "$$REMOVE"),
-          "reportedStatus": 1,
-          "saleAmount": 1,
-          "saleLike": 1,
-          "saleView": 1,
-          "isApsara": 1,
-          "apsaraId": 1,
-          "mediaBasePath": 1,
-          "mediaUri": 1,
-          "mediaType": 1,
-          "mediaThumbEndpoint": 1,
-          "mediaEndpoint": 1,
-          "mediaThumbUri": 1,
-          "certified": 1,
-          "metadata": 1,
-          "cats": "$cats",
-          "username":
-          {
-            "$arrayElemAt":
-              [
-                "$basic_data.username", 0
-              ]
-          },
-          "isIdVerified":
-          {
-            "$arrayElemAt":
-              [
-                "$basic_data.isIdVerified", 0
-              ]
-          },
-          "privacy":
-          {
-            "$arrayElemAt":
-              [
-                "$basic_data.privacy", 0
-              ]
-          },
-          "avatar":
-          {
-            "$arrayElemAt":
-              [
-                "$basic_data.avatar", 0
-              ]
-          },
-          "urluserBadge":
-          {
-            "$arrayElemAt":
-              [
-                "$basic_data.urluserBadge", 0
-              ]
-          },
-          "following":
-          {
-            "$arrayElemAt":
-              [
-                "$basic_data.following", 0
-              ]
-          },
+                },
+                then:false,
+                else:true
+              }
+            },
+            "insight": (insight == 'true' ? 1 : "$$REMOVE"),
+            "reportedStatus": 1,
+            "saleAmount": 1,
+            "saleLike": 1,
+            "saleView": 1,
+            "isApsara": 1,
+            "apsaraId": 1,
+            "mediaBasePath": 1,
+            "mediaUri": 1,
+            "mediaType": 1,
+            "mediaMime": 1,
+            "mediaThumbEndpoint": 1,
+            "mediaEndpoint": 1,
+            "mediaThumbUri": 1,
+            "certified": 1,
+            "metadata": 1,
+            "cats": "$cats",
+            "username":
+            {
+                "$arrayElemAt":
+                    [
+                        "$basic_data.username", 0
+                    ]
+            },
+            "isIdVerified":
+            {
+                "$arrayElemAt":
+                    [
+                        "$basic_data.isIdVerified", 0
+                    ]
+            },
+            "privacy":
+            {
+                "$arrayElemAt":
+                    [
+                        "$basic_data.privacy", 0
+                    ]
+            },
+            "avatar":
+            {
+                "$arrayElemAt":
+                    [
+                        "$basic_data.avatar", 0
+                    ]
+            },
+            "urluserBadge":
+            {
+                "$arrayElemAt":
+                    [
+                        "$basic_data.urluserBadge", 0
+                    ]
+            },
+            "following":
+            {
+                "$arrayElemAt":
+                    [
+                        "$basic_data.following", 0
+                    ]
+            },
         }
       }
     );
