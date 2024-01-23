@@ -6184,7 +6184,7 @@ export class PostsReadService {
             "artistName": "$musicNih.artistName",
             "albumName": "$musicNih.albumName",
             "apsaraMusic": "$musicNih.apsaraMusic",
-            "apsaraThumnail": "$musicNih.apsaraThumnail", 
+            "apsaraThumnail": "$musicNih.apsaraThumnail",
             "apsaraMusicThumnail": "$musicNih.apsaraThumnail",
             "genre": "$musicNih.genre",
             "theme": "$musicNih.theme",
@@ -18841,705 +18841,706 @@ export class PostsReadService {
       pipeline.push(
         {
           "$set": {
-              "timeStart": {
-                  "$concat": [
-                      {
-                          "$dateToString": {
-                              "format": "%Y-%m-%d",
-                              "date": new Date()
-                          }
-                      },
-                      " ",
-                      {
-                          $arrayElemAt: ["$boosted.boostSession.timeStart", 0]
-                      }
-                  ]
-              }
-          }
-      },
-      {
-          "$set": {
-              "timeEnd": {
-                  "$concat": [
-                      {
-                          "$dateToString": {
-                              "format": "%Y-%m-%d",
-                              "date": new Date()
-                          }
-                      },
-                      " ",
-                      {
-                          $arrayElemAt: ["$boosted.boostSession.timeEnd", 0]
-                      }
-                  ]
-              }
-          }
-      },
-      {
-          $set: {
-              
-              "testDate": 
-              {
+            "timeStart": {
+              "$concat": [
+                {
                   "$dateToString": {
-                      "format": "%Y-%m-%d %H:%M:%S",
-                      "date": {
-                          $add: [new Date(), 25200000]
-                      }
+                    "format": "%Y-%m-%d",
+                    "date": new Date()
                   }
-              }
-          }
-      },
-      {
-          $match: 
-          {
-              $or: [
-                  {
-                      $and: [
-                          {
-                              $expr: {
-                                  $gte: ["$createdAt", "2022-01-09 00:57:28"]
-                              }
-                          },
-                          {
-                              "reportedStatus": {
-                                  $ne: "OWNED"
-                              }
-                          },
-                          {
-                              "visibility": "PUBLIC"
-                          },
-                          {
-                              "active": true
-                          },
-                          {
-                              "postType": "pict"
-                          },
-                          {
-                              $expr: {
-                                  $lte: ["$boosted.boostSession.start", "$testDate", ]
-                              }
-                          },
-                          {
-                              $expr: {
-                                  $gt: ["$boosted.boostSession.end", "$testDate", ]
-                              }
-                          },
-                          {
-                              $expr: {
-                                  $lte: ["$timeStart", "$testDate", ]
-                              }
-                          },
-                          {
-                              $expr: {
-                                  $gt: ["$timeEnd", "$testDate", ]
-                              }
-                          },
-                          {
-                              "timeStart": {
-                                  $ne: null
-                              }
-                          },
-                          {
-                              "timeEnd": {
-                                  $ne: null
-                              }
-                          },
-                          {
-                              $or: [
-                                  {
-                                      "reportedUser": {
-                                          "$elemMatch": {
-                                              "email": email,
-                                              "active": false,
-                                              
-                                          }
-                                      }
-                                  },
-                                  {
-                                      "reportedUser.email": {
-                                          $not: {
-                                              $regex: email
-                                          }
-                                      }
-                                  },
-                                  
-                              ]
-                          },
-                          {
-                              $or: [
-                                  {
-                                      "boosted.boostViewer": {
-                                          "$elemMatch": {
-                                              "email": email,
-                                              "isLast": true,
-                                              "timeEnd": {
-                                                  $lte: {
-                                                      $add: [new Date(), 25200000]
-                                                  }
-                                              }
-                                          }
-                                      }
-                                  },
-                                  {
-                                      $and: [
-                                          {
-                                              "boosted.boostViewer.email": {
-                                                  $ne: email
-                                              }
-                                          },
-                                          
-                                      ]
-                                  }
-                              ]
-                          }
-                      ]
-                  },
-                  {
-                      $and: [
-                          {
-                              "reportedStatus": {
-                                  $ne: "OWNED"
-                              }
-                          },
-                          {
-                              "visibility": "PUBLIC"
-                          },
-                          {
-                              "active": true
-                          },
-                          {
-                              "postType": "pict"
-                          },
-                          {
-                              "timeStart": null
-                          },
-                          {
-                              $or: [
-                                  {
-                                      "reportedUser": {
-                                          "$elemMatch": {
-                                              "email": email,
-                                              "active": false,
-                                              
-                                          }
-                                      }
-                                  },
-                                  {
-                                      "reportedUser.email": {
-                                          $not: {
-                                              $regex: email,
-                                              
-                                          }
-                                      }
-                                  },
-                                  
-                              ]
-                          },
-                          
-                      ]
-                  },
-                  
+                },
+                " ",
+                {
+                  $arrayElemAt: ["$boosted.boostSession.timeStart", 0]
+                }
               ]
+            }
           }
-      },
-      {
+        },
+        {
+          "$set": {
+            "timeEnd": {
+              "$concat": [
+                {
+                  "$dateToString": {
+                    "format": "%Y-%m-%d",
+                    "date": new Date()
+                  }
+                },
+                " ",
+                {
+                  $arrayElemAt: ["$boosted.boostSession.timeEnd", 0]
+                }
+              ]
+            }
+          }
+        },
+        {
           $set: {
-              selfContents: 
+
+            "testDate":
+            {
+              "$dateToString": {
+                "format": "%Y-%m-%d %H:%M:%S",
+                "date": {
+                  $add: [new Date(), 25200000]
+                }
+              }
+            }
+          }
+        },
+        {
+          $match:
+          {
+            $or: [
               {
-                  $cond: {
-                      if : {
-                          $and: [
-                              {
-                                  $eq: ["$email", email]
-                              },
-                              {
-                                  $gt: ["$createdAt", {
-                                      "$dateToString": {
-                                          "format": "%Y-%m-%d %H:%M:%S",
-                                          "date": {
-                                              $add: [new Date(), - 30600000]
-                                          }
-                                      }
-                                  }]
+                $and: [
+                  {
+                    $expr: {
+                      $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                    }
+                  },
+                  {
+                    "reportedStatus": {
+                      $ne: "OWNED"
+                    }
+                  },
+                  {
+                    "visibility": "PUBLIC"
+                  },
+                  {
+                    "active": true
+                  },
+                  {
+                    "postType": "pict"
+                  },
+                  {
+                    $expr: {
+                      $lte: ["$boosted.boostSession.start", "$testDate",]
+                    }
+                  },
+                  {
+                    $expr: {
+                      $gt: ["$boosted.boostSession.end", "$testDate",]
+                    }
+                  },
+                  {
+                    $expr: {
+                      $lte: ["$timeStart", "$testDate",]
+                    }
+                  },
+                  {
+                    $expr: {
+                      $gt: ["$timeEnd", "$testDate",]
+                    }
+                  },
+                  {
+                    "timeStart": {
+                      $ne: null
+                    }
+                  },
+                  {
+                    "timeEnd": {
+                      $ne: null
+                    }
+                  },
+                  {
+                    $or: [
+                      {
+                        "reportedUser": {
+                          "$elemMatch": {
+                            "email": email,
+                            "active": false,
+
+                          }
+                        }
+                      },
+                      {
+                        "reportedUser.email": {
+                          $not: {
+                            $regex: email
+                          }
+                        }
+                      },
+
+                    ]
+                  },
+                  {
+                    $or: [
+                      {
+                        "boosted.boostViewer": {
+                          "$elemMatch": {
+                            "email": email,
+                            "isLast": true,
+                            "timeEnd": {
+                              $lte: {
+                                $add: [new Date(), 25200000]
                               }
-                          ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        $and: [
+                          {
+                            "boosted.boostViewer.email": {
+                              $ne: email
+                            }
+                          },
+
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                $and: [
+                  {
+                    "reportedStatus": {
+                      $ne: "OWNED"
+                    }
+                  },
+                  {
+                    "visibility": "PUBLIC"
+                  },
+                  {
+                    "active": true
+                  },
+                  {
+                    "postType": "pict"
+                  },
+                  {
+                    "timeStart": null
+                  },
+                  {
+                    $or: [
+                      {
+                        "reportedUser": {
+                          "$elemMatch": {
+                            "email": email,
+                            "active": false,
+
+                          }
+                        }
+                      },
+                      {
+                        "reportedUser.email": {
+                          $not: {
+                            $regex: email,
+
+                          }
+                        }
+                      },
+
+                    ]
+                  },
+
+                ]
+              },
+
+            ]
+          }
+        },
+        {
+          $set: {
+            selfContents:
+            {
+              $cond: {
+                if: {
+                  $and: [
+                    {
+                      $eq: ["$email", email]
+                    },
+                    {
+                      $gt: ["$createdAt", {
+                        "$dateToString": {
+                          "format": "%Y-%m-%d %H:%M:%S",
+                          "date": {
+                            $add: [new Date(), - 30600000]
+                          }
+                        }
+                      }]
+                    }
+                  ]
+                },
+                then: 1,
+                else: 0
+              }
+            },
+
+          }
+        },
+        {
+          $set: {
+            kancuts:
+            {
+              $concatArrays: [
+                '$viewer',
+                [email]
+              ]
+            },
+
+          }
+        },
+        {
+          $set: {
+            mailViewer: {
+              $filter: {
+                input: "$kancuts",
+                cond: {
+                  $eq: ["$$this", email]
+                }
+              }
+            },
+
+          }
+        },
+        {
+          $set: {
+            dodolCount: {
+              $filter: {
+                input: "$kancuts",
+                cond: {
+                  $eq: ["$$this", email]
+                }
+              }
+            },
+
+          }
+        },
+        {
+          $set: {
+            viewerCounts:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$dodolCount"
+                },
+                then:
+                {
+                  $size: "$dodolCount"
+                },
+                else: 1
+              }
+            },
+
+          }
+        },
+        {
+          $sort: {
+            viewerCounts: 1,
+            selfContents: - 1,
+            isBoost: - 1,
+            createdAt: - 1,
+
+          }
+        },
+        {
+          $skip: skip
+        },
+        {
+          $limit: valuelimit
+        },
+        {
+          "$lookup": {
+            from: "disquslogs",
+            let: {
+              localID: '$postID',
+
+            },
+            as: "comment",
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$postID', '$$localID']
+                      }
+                    },
+                    {
+                      "active": {
+                        $ne: false
+                      }
+                    },
+
+                  ]
+                }
+              },
+              {
+                "$lookup": {
+                  from: "newUserBasics",
+                  as: "userComment",
+                  let: {
+                    localID: '$sender'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $expr: {
+                          $eq: ['$email', '$$localID']
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+                        "username": 1
+                      }
+                    }
+                  ],
+
+                }
+              },
+              {
+                $unwind: {
+                  path: "$userComment"
+                }
+              },
+              {
+                $sort: {
+                  createdAt: - 1
+                }
+              },
+
+            ]
+          },
+
+        },
+        {
+          "$lookup": {
+            from: "friend_list",
+            as: "friend",
+            let: {
+              localID: '$email',
+              user: email
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $or: [
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$email', '$$localID']
+                          }
+                        },
+                        {
+                          "friendlist.email": email
+                        }
+                      ]
+                    },
+                    {
+                      $and: [
+                        {
+                          "email": email
+                        },
+                        {
+                          $expr: {
+                            $eq: ['$friendlist.email', '$$localID']
+                          }
+                        },
+
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                $project: {
+                  email: 1,
+                  friend:
+                  {
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          $size: '$friendlist'
+                        }, 0]
                       },
                       then: 1,
-                      else : 0
-                  }
+                      else: 0
+                    }
+                  },
+
+                }
               },
-              
-          }
-      },
-      {
-          $set: {
-              kancuts: 
+
+            ]
+          },
+
+        },
+        {
+          "$lookup": {
+            from: "newUserBasics",
+            as: "userBasic",
+            let: {
+              localID: '$email'
+            },
+            pipeline: [
               {
-                  $concatArrays: [
-                      '$viewer',
-                      [email]
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$email', '$$localID']
+                  }
+                }
+              },
+
+            ],
+            //
+          }
+        },
+        {
+          "$lookup": {
+            from: "newUserBasics",
+            as: "userInt",
+            let: {
+              localID: email,
+              int: "$category",
+
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    },
+
                   ]
+                },
+
               },
-              
-          }
-      },
-      {
-          $set: {
-              mailViewer: {
-                  $filter: {
-                      input: "$kancuts",
-                      cond: {
-                          $eq: ["$$this", email]
-                      }
-                  }
-              },
-              
-          }
-      },
-      {
-          $set: {
-              dodolCount: {
-                  $filter: {
-                      input: "$kancuts",
-                      cond: {
-                          $eq: ["$$this", email]
-                      }
-                  }
-              },
-              
-          }
-      },
-      {
-          $set: {
-              viewerCounts: 
               {
-                  $cond: {
-                      if : {
-                          $isArray: "$dodolCount"
-                      },
-                      then: 
-                      {
-                          $size: "$dodolCount"
-                      },
-                      else : 1
-                  }
-              },
-              
+                $project: {
+                  userInterests: "$userInterests.$id",
+
+                }
+              }
+            ],
+            //
           }
-      },
-      {
-          $sort: {
-              viewerCounts: 1,
-              selfContents: - 1,
-              isBoost: - 1,
-              createdAt: - 1,
-              
-          }
-      },
-      {
-        $skip: skip
-      },
-      {
-        $limit: valuelimit
-      },
-      {
-          "$lookup": {
-              from: "disquslogs",
-              let: {
-                  localID: '$postID',
-                  
-              },
-              as: "comment",
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $and: [
-                              {
-                                  $expr: {
-                                      $eq: ['$postID', '$$localID']
-                                  }
-                              },
-                              {
-                                  "active": {
-                                      $ne: false
-                                  }
-                              },
-                              
-                          ]
-                      }
-                  },
-                  {
-                      "$lookup": {
-                          from: "newUserBasics",
-                          as: "userComment",
-                          let: {
-                              localID: '$sender'
-                          },
-                          pipeline: [
-                              {
-                                  $match: 
-                                  {
-                                      $expr: {
-                                          $eq: ['$email', '$$localID']
-                                      }
-                                  }
-                              },
-                              {
-                                  $project: {
-                                      "username": 1
-                                  }
-                              }
-                          ],
-                          
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$userComment"
-                      }
-                  },
-                  {
-                      $sort: {
-                          createdAt: - 1
-                      }
-                  },
-                  
-              ]
-          },
-          
-      },
-      {
-          "$lookup": {
-              from: "friend_list",
-              as: "friend",
-              let: {
-                  localID: '$email',
-                  user: email
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $or: [
-                              {
-                                  $and: [
-                                      {
-                                          $expr: {
-                                              $eq: ['$email', '$$localID']
-                                          }
-                                      },
-                                      {
-                                          "friendlist.email": email
-                                      }
-                                  ]
-                              },
-                              {
-                                  $and: [
-                                      {
-                                          "email": email
-                                      },
-                                      {
-                                          $expr: {
-                                              $eq: ['$friendlist.email', '$$localID']
-                                          }
-                                      },
-                                      
-                                  ]
-                              }
-                          ]
-                      }
-                  },
-                  {
-                      $project: {
-                          email: 1,
-                          friend: 
-                          {
-                              $cond: {
-                                  if : {
-                                      $gt: [{
-                                          $size: '$friendlist'
-                                      }, 0]
-                                  },
-                                  then: 1,
-                                  else : 0
-                              }
-                          },
-                          
-                      }
-                  },
-                  
-              ]
-          },
-          
-      },
-      {
-          "$lookup": {
-              from: "newUserBasics",
-              as: "userBasic",
-              let: {
-                  localID: '$email'
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $expr: {
-                              $eq: ['$email', '$$localID']
-                          }
-                      }
-                  },
-                  
-              ],
-              //
-          }
-      },
-      {
-          "$lookup": {
-              from: "newUserBasics",
-              as: "userInt",
-              let: {
-                  localID: email,
-                  int: "$category",
-                  
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $and: [
-                              {
-                                  $expr: {
-                                      $eq: ['$email', '$$localID']
-                                  }
-                              },
-                              
-                          ]
-                      },
-                      
-                  },
-                  {
-                      $project: {
-                          userInterests: "$userInterests.$id",
-                          
-                      }
-                  }
-              ],
-              //
-          }
-      },
-      {
+        },
+        {
           $set: {
-              categoryInt: {$ifNull:["$category.$id",[]]}
+            categoryInt: { $ifNull: ["$category.$id", []] }
           }
-      },
-      {
+        },
+        {
           $set: {
-              intScore: 
+            intScore:
+            {
+              $filter: {
+                input: {
+                  $arrayElemAt: ["$userInt.userInterests", 0]
+                },
+                as: "nonok",
+                cond: {
+                  $in: ["$$nonok", "$categoryInt"]
+                }
+              }
+            },
+
+          }
+        },
+        {
+          "$lookup": {
+            from: "mediamusic",
+            as: "music",
+            let: {
+              localID: '$musicId'
+            },
+            pipeline: [
               {
-                  $filter: {
-                      input: {
-                          $arrayElemAt: ["$userInt.userInterests", 0]
-                      },
-                      as: "nonok",
-                      cond: {
-                          $in: ["$$nonok", "$categoryInt"]
-                      }
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$_id', '$$localID']
                   }
+                }
               },
-              
+              {
+                $project: {
+                  "_id":1,
+                  "musicTitle": 1,
+                  "artistName": 1,
+                  "albumName": 1,
+                  "apsaraMusic": 1,
+                  "apsaraThumnail": 1,
+                  "genre": "$genre.name",
+                  "theme": "$theme.name",
+                  "mood": "$mood.name",
+                  //
+                }
+              },
+              {
+                $unwind: {
+                  path: "$genre",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$theme",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$mood",
+                  preserveNullAndEmptyArrays: true
+                }
+              }
+            ],
+            //
           }
-      },
-      {
+        },
+
+        {
           "$lookup": {
-              from: "mediamusic",
-              as: "music",
-              let: {
-                  localID: '$musicId'
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $expr: {
-                              $eq: ['$_id', '$$localID']
-                          }
-                      }
-                  },
-                  {
-                      $project: {
-                          "musicTitle": 1,
-                          "artistName": 1,
-                          "albumName": 1,
-                          "apsaraMusic": 1,
-                          "apsaraThumnail": 1,
-                          "genre": "$genre.name",
-                          "theme": "$theme.name",
-                          "mood": "$mood.name",
-                          //
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$genre",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$theme",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$mood",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  }
-              ],
-              //
-          }
-      },
-      
-      {
-        "$lookup": {
             from: "newUserBasics",
             as: "userTag",
             let: {
-                localID:{$ifNull:[ '$tagPeople',[]]}
+              localID: { $ifNull: ['$tagPeople', []] }
             },
             pipeline: [
+              {
+                $match:
                 {
-                    $match: 
+                  $or: [
                     {
-                        $or: [
-                            {
-                                $expr: {
-                                    $in: ['$_id', "$$localID"]
-                                }
-                            },
-                            {
-                                $expr: {
-                                    $eq: ['$_id', "$$localID.$id"]
-                                }
-                            },
-                            
-                        ]
-                    },
-                    
-                },
-                {
-                    $project: {
-                        "_id": 1,
-                        "username": 1
-                    }
-                }
-            ],
-            
-        }
-    },
-  //   {
-  //     "$lookup": {
-  //         from: "newUserBasics",
-  //         as: "userTag",
-  //         let: {
-  //             localID: '$tagPeople'
-  //         },
-  //         pipeline: [
-  //             {
-  //                 $match: 
-  //                 {
-  //                     $or: [
-  //                         {
-  //                             $expr: {
-  //                                 $eq: ['$_id', "$$localID"]
-  //                             }
-  //                         },
-  //                         {
-  //                             $expr: {
-  //                                 $eq: ['$_idAuth', "$$localID.$id"]
-  //                             }
-  //                         },
-                          
-  //                     ]
-  //                 },
-                  
-  //             },
-  //             {
-  //                 $project: {
-  //                     "_id": 1,
-  //                     "username": 1
-  //                 }
-  //             }
-  //         ],
-          
-  //     }
-  // },
-      {
-          $lookup: {
-              from: "settings",
-              as: "setting",
-              pipeline: [
-                  {
-                      $match: {
-                          $or: [
-                              {
-                                  "_id": new mongoose.Types.ObjectId("62bbdb4ba7520000050077a7")
-                              },
-                              {
-                                  "_id": new mongoose.Types.ObjectId("64d06e5c451e0000bd006c62")
-                              },
-                              {
-                                  "_id": new mongoose.Types.ObjectId("645da79c295b0000520048c2")
-                              },
-                              {
-                                  "_id": new mongoose.Types.ObjectId("64e5a637227b0000d00057b8")
-                              },
-                              
-                          ]
+                      $expr: {
+                        $in: ['$_id', "$$localID"]
                       }
-                  },
-                  
-              ]
+                    },
+                    {
+                      $expr: {
+                        $eq: ['$_id', "$$localID.$id"]
+                      }
+                    },
+
+                  ]
+                },
+
+              },
+              {
+                $project: {
+                  "_id": 1,
+                  "username": 1
+                }
+              }
+            ],
+
           }
-      },
-      {
-        $project: {
+        },
+        //   {
+        //     "$lookup": {
+        //         from: "newUserBasics",
+        //         as: "userTag",
+        //         let: {
+        //             localID: '$tagPeople'
+        //         },
+        //         pipeline: [
+        //             {
+        //                 $match: 
+        //                 {
+        //                     $or: [
+        //                         {
+        //                             $expr: {
+        //                                 $eq: ['$_id', "$$localID"]
+        //                             }
+        //                         },
+        //                         {
+        //                             $expr: {
+        //                                 $eq: ['$_idAuth', "$$localID.$id"]
+        //                             }
+        //                         },
+
+        //                     ]
+        //                 },
+
+        //             },
+        //             {
+        //                 $project: {
+        //                     "_id": 1,
+        //                     "username": 1
+        //                 }
+        //             }
+        //         ],
+
+        //     }
+        // },
+        {
+          $lookup: {
+            from: "settings",
+            as: "setting",
+            pipeline: [
+              {
+                $match: {
+                  $or: [
+                    {
+                      "_id": new mongoose.Types.ObjectId("62bbdb4ba7520000050077a7")
+                    },
+                    {
+                      "_id": new mongoose.Types.ObjectId("64d06e5c451e0000bd006c62")
+                    },
+                    {
+                      "_id": new mongoose.Types.ObjectId("645da79c295b0000520048c2")
+                    },
+                    {
+                      "_id": new mongoose.Types.ObjectId("64e5a637227b0000d00057b8")
+                    },
+
+                  ]
+                }
+              },
+
+            ]
+          }
+        },
+        {
+          $project: {
             _id: 1,
             version: {
-                $arrayElemAt: ["$setting.value", 0]
+              $arrayElemAt: ["$setting.value", 0]
             },
             versionIos: {
-                $arrayElemAt: ["$setting.value", 1]
+              $arrayElemAt: ["$setting.value", 1]
             },
             limitLandingpage: {
-                $arrayElemAt: ["$setting.value", 2]
+              $arrayElemAt: ["$setting.value", 2]
             },
             "postID": 1,
             musicTitle: {
-                $arrayElemAt: ["$music.musicTitle", 0]
+              $arrayElemAt: ["$music.musicTitle", 0]
             },
             "artistName": {
-                $arrayElemAt: ["$music.artistName", 0]
+              $arrayElemAt: ["$music.artistName", 0]
             },
             "albumName": {
-                $arrayElemAt: ["$music.albumName", 0]
+              $arrayElemAt: ["$music.albumName", 0]
             },
             "apsaraMusic": {
-                $arrayElemAt: ["$music.apsaraMusic", 0]
+              $arrayElemAt: ["$music.apsaraMusic", 0]
             },
             "apsaraThumnail": {
-                $arrayElemAt: ["$music.apsaraThumnail", 0]
+              $arrayElemAt: ["$music.apsaraThumnail", 0]
             },
             "genre": {
-                $arrayElemAt: ["$music.genre", 0]
+              $arrayElemAt: ["$music.genre", 0]
             },
             "theme": {
-                $arrayElemAt: ["$music.theme", 0]
+              $arrayElemAt: ["$music.theme", 0]
             },
             "mood": {
-                $arrayElemAt: ["$music.mood", 0]
+              $arrayElemAt: ["$music.mood", 0]
             },
             "tagPeople": "$userTag",
             "mediaType": 1,
@@ -19566,79 +19567,98 @@ export class PostsReadService {
             "userView": 1,
             "userLike": 1,
             "uploadSource": {
-                $arrayElemAt: ["$uploadSource.uploadSource", 0]
+              $arrayElemAt: ["$uploadSource.uploadSource", 0]
             },
             comments: {
-                $cond: {
-                    if : {
-                        $eq: ["$comment", []]
-                    },
-                    then: 0,
-                    else : {
-                        $size: "$comment"
-                    }
+              $cond: {
+                if: {
+                  $eq: ["$comment", []]
+                },
+                then: 0,
+                else: {
+                  $size: "$comment"
                 }
+              }
             },
             email: 1,
             viewer: 1,
             viewerCount: 1,
             oldDate: "$oldDate",
             selfContent: 1,
-            official: 
+            official:
             {
-                $cond: {
-                    if : {
-                        $eq: ["$email", "hyppers@hyppe.id"]
-                    },
-                    then: 1,
-                    else : 0
-                }
+              $cond: {
+                if: {
+                  $eq: ["$email", "hyppers@hyppe.id"]
+                },
+                then: 1,
+                else: 0
+              }
             },
-            musik: "$music",
-            isLike: 
-                {
-                $cond: {
-                    if : {
-                        $eq: ["$userLike", "hyppers@hyppe.id"]
-                    },
-                    then: true,
-                    else : false
-                }
+            "music": {
+              "_id": {
+                $arrayElemAt: ["$music._id", 0]
+              },
+              "musicTitle": {
+                $arrayElemAt: ["$music.musicTitle", 0]
+              },
+              "artistName": {
+                $arrayElemAt: ["$music.artistName", 0]
+              },
+              "albumName": {
+                $arrayElemAt: ["$music.albumName", 0]
+              },
+              "apsaraMusic": {
+                $arrayElemAt: ["$music.apsaraMusic", 0]
+              },
+              "apsaraThumnail": {
+                $arrayElemAt: ["$music.apsaraThumnail", 0]
+              },
+            },
+            isLike:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$userLike", "hyppers@hyppe.id"]
+                },
+                then: true,
+                else: false
+              }
             },
             comment: "$comment",
             interest: "$categoryInt",
             friends: {
-                $arrayElemAt: ["$friend.friend", 0]
+              $arrayElemAt: ["$friend.friend", 0]
             },
-            "following": 
+            "following":
             {
-                $cond: 
+              $cond:
+              {
+                if: {
+                  $eq: ["$userBasic.follower", []]
+                },
+                then: false,
+                else:
                 {
-                    if : {
-                        $eq: ["$userBasic.follower", []]
+                  $cond:
+                  {
+                    if: {
+                      $in: ["ahmad.taslim07@gmail.com", "$userBasic.follower"]
                     },
-                    then: false,
-                    else : 
-                        {
-                        $cond: 
-                        {
-                            if : {
-                                $in: ["ahmad.taslim07@gmail.com", "$userBasic.follower"]
-                            },
-                            then: true,
-                            else : false
-                        }
-                    },
-                    
-                }
+                    then: true,
+                    else: false
+                  }
+                },
+
+              }
             },
-            "insight": 
-                {
-                "likes": "$likes",
-                "views": "$views",
-                "shares": "$shares",
-                "comments": "$comments",
-                
+            "insight":
+            {
+              "likes": "$likes",
+              "views": "$views",
+              "shares": "$shares",
+              "comments": "$comments",
+
             },
             "userProfile": "$userProfile",
             "contentMedias": "$contentMedias",
@@ -19651,23 +19671,23 @@ export class PostsReadService {
             "isBoost": "$isBoost",
             "boostViewer": "$boostViewer",
             "boostCount": "$boostCount",
-            "boosted": 
+            "boosted":
             {
-                $cond: {
-                    if : {
-                        $gt: [{
-                            "$dateToString": {
-                                "format": "%Y-%m-%d %H:%M:%S",
-                                "date": {
-                                    $add: [new Date(), 25200000]
-                                }
-                            }
-                        }, "$boosted.boostSession.end"]
-                    },
-                    then: "$ilang",
-                    else : "$boosted",
-                    
-                }
+              $cond: {
+                if: {
+                  $gt: [{
+                    "$dateToString": {
+                      "format": "%Y-%m-%d %H:%M:%S",
+                      "date": {
+                        $add: [new Date(), 25200000]
+                      }
+                    }
+                  }, "$boosted.boostSession.end"]
+                },
+                then: "$ilang",
+                else: "$boosted",
+
+              }
             },
             "contentModeration": "$contentModeration",
             "reportedStatus": "$reportedStatus",
@@ -19677,201 +19697,201 @@ export class PostsReadService {
             "timeStart": "$timeStart",
             "timeEnd": "$timeEnd",
             "apsaraId": {
-                $arrayElemAt: ["$mediaSource.apsaraId", 0]
+              $arrayElemAt: ["$mediaSource.apsaraId", 0]
             },
             "isApsara": {
-                $arrayElemAt: ["$mediaSource.apsara", 0]
+              $arrayElemAt: ["$mediaSource.apsara", 0]
             },
             "apsaraThumbId": {
-                $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
+              $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
             },
             //               "mediaEndpoint": {
             //                   $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
             //               },
-            mediaEndpoint: 
+            mediaEndpoint:
             {
-                "$ifNull": 
+              "$ifNull":
                 [
+                  {
+                    $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
+                  },
+                  {
+                    "$cond":
                     {
-                        $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
-                    },
-                    {
-                        "$cond": 
-                        {
-                            if : 
-                                {
-                                "$eq": 
-                                [
-                                    "$postType",
-                                    "pict"
-                                ]
-                            },
-                            then: 
-                            {
-                                "$concat": 
-                                [
-                                    "/pict/",
-                                    "$postID"
-                                ]
-                            },
-                            else : 
-                                {
-                                "$concat": 
-                                [
-                                    "/stream/",
-                                    "$postID"
-                                ]
-                            }
-                        }
+                      if:
+                      {
+                        "$eq":
+                          [
+                            "$postType",
+                            "pict"
+                          ]
+                      },
+                      then:
+                      {
+                        "$concat":
+                          [
+                            "/pict/",
+                            "$postID"
+                          ]
+                      },
+                      else:
+                      {
+                        "$concat":
+                          [
+                            "/stream/",
+                            "$postID"
+                          ]
+                      }
                     }
+                  }
                 ]
             },
             "mediaUri": {
-                $arrayElemAt: ["$mediaSource.mediaUri", 0]
+              $arrayElemAt: ["$mediaSource.mediaUri", 0]
             },
             //             "mediaThumbEndpoint": {
             //                 $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
             //             },
-            mediaThumbEndpoint: 
+            mediaThumbEndpoint:
             {
-                "$ifNull": 
+              "$ifNull":
                 [
+                  {
+                    $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
+                  },
+                  {
+                    "$cond":
                     {
-                        $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
-                    },
-                    {
-                        "$cond": 
-                        {
-                            if : 
-                                {
-                                "$eq": 
-                                [
-                                    "$postType",
-                                    "pict"
-                                ]
-                            },
-                            then: 
-                            {
-                                "$concat": 
-                                [
-                                    "/pict/",
-                                    "$postID"
-                                ]
-                            },
-                            else : 
-                                {
-                                "$concat": 
-                                [
-                                    "/thumb/",
-                                    "$postID"
-                                ]
-                            }
-                        }
+                      if:
+                      {
+                        "$eq":
+                          [
+                            "$postType",
+                            "pict"
+                          ]
+                      },
+                      then:
+                      {
+                        "$concat":
+                          [
+                            "/pict/",
+                            "$postID"
+                          ]
+                      },
+                      else:
+                      {
+                        "$concat":
+                          [
+                            "/thumb/",
+                            "$postID"
+                          ]
+                      }
                     }
+                  }
                 ]
             },
             "mediaThumbUri": {
-                $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
+              $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
             },
             "fullName": {
-                $arrayElemAt: ["$userBasic.fullName", 0]
+              $arrayElemAt: ["$userBasic.fullName", 0]
             },
             "username": {
-                $arrayElemAt: ["$userBasic.username", 0]
+              $arrayElemAt: ["$userBasic.username", 0]
             },
-            "avatar": 
+            "avatar":
             {
-                "mediaBasePath": {$arrayElemAt: [ "$userBasic.mediaBasePath", 0]},
-                "mediaUri":{$arrayElemAt: [ "$userBasic.mediaUri", 0]},
-                "originalName": {$arrayElemAt: ["$userBasic.originalName", 0]},
-                "fsSourceUri": {$arrayElemAt: ["$userBasic.fsSourceUri", 0]},
-                "fsSourceName":{$arrayElemAt: [ "$userBasic.fsSourceName", 0]},
-                "fsTargetUri": {$arrayElemAt: ["$userBasic.fsTargetUri", 0]},
-                "mediaType":{$arrayElemAt: [ "$userBasic.mediaType", 0]},
-                "mediaEndpoint": {$arrayElemAt: [ "$userBasic.mediaEndpoint", 0]},
+              "mediaBasePath": { $arrayElemAt: ["$userBasic.mediaBasePath", 0] },
+              "mediaUri": { $arrayElemAt: ["$userBasic.mediaUri", 0] },
+              "originalName": { $arrayElemAt: ["$userBasic.originalName", 0] },
+              "fsSourceUri": { $arrayElemAt: ["$userBasic.fsSourceUri", 0] },
+              "fsSourceName": { $arrayElemAt: ["$userBasic.fsSourceName", 0] },
+              "fsTargetUri": { $arrayElemAt: ["$userBasic.fsTargetUri", 0] },
+              "mediaType": { $arrayElemAt: ["$userBasic.mediaType", 0] },
+              "mediaEndpoint": { $arrayElemAt: ["$userBasic.mediaEndpoint", 0] },
             },
             "privacy": {
-                "isCelebrity": {
-                    $arrayElemAt: ["$userBasic.isCelebrity", 0]
-                },
-                "isIdVerified": {
-                    $arrayElemAt: ["$userBasic.isIdVerified", 0]
-                },
-                "isPrivate": {
-                    $arrayElemAt: ["$userBasic.isPrivate", 0]
-                },
-                "isFollowPrivate": {
-                    $arrayElemAt: ["$userBasic.isFollowPrivate", 0]
-                },
-                "isPostPrivate": {
-                    $arrayElemAt: ["$userBasic.isPostPrivate", 0]
-                },
-                
+              "isCelebrity": {
+                $arrayElemAt: ["$userBasic.isCelebrity", 0]
+              },
+              "isIdVerified": {
+                $arrayElemAt: ["$userBasic.isIdVerified", 0]
+              },
+              "isPrivate": {
+                $arrayElemAt: ["$userBasic.isPrivate", 0]
+              },
+              "isFollowPrivate": {
+                $arrayElemAt: ["$userBasic.isFollowPrivate", 0]
+              },
+              "isPostPrivate": {
+                $arrayElemAt: ["$userBasic.isPostPrivate", 0]
+              },
+
             },
             "verified": {
-                $arrayElemAt: ["$userBasic.fullName", 0]
+              $arrayElemAt: ["$userBasic.fullName", 0]
             },
-            "urluserBadge": 
+            "urluserBadge":
             {
-                "$ifNull": 
+              "$ifNull":
                 [
+                  {
+                    "$filter":
                     {
-                        "$filter": 
-                        {
-                            input: {
-                                $arrayElemAt: ["$userBasic.userBadge", 0]
-                            },
-                            as: "listbadge",
-                            cond: 
+                      input: {
+                        $arrayElemAt: ["$userBasic.userBadge", 0]
+                      },
+                      as: "listbadge",
+                      cond:
+                      {
+                        "$and":
+                          [
                             {
-                                "$and": 
+                              "$eq":
                                 [
-                                    {
-                                        "$eq": 
-                                        [
-                                            "$$listbadge.isActive",
-                                            true
-                                        ]
-                                    },
-                                    {
-                                        "$lte": [
-                                            {
-                                                "$dateToString": {
-                                                    "format": "%Y-%m-%d %H:%M:%S",
-                                                    "date": {
-                                                        "$add": [
-                                                            new Date(),
-                                                            25200000
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "$$listbadge.endDatetime"
-                                        ]
-                                    }
+                                  "$$listbadge.isActive",
+                                  true
                                 ]
+                            },
+                            {
+                              "$lte": [
+                                {
+                                  "$dateToString": {
+                                    "format": "%Y-%m-%d %H:%M:%S",
+                                    "date": {
+                                      "$add": [
+                                        new Date(),
+                                        25200000
+                                      ]
+                                    }
+                                  }
+                                },
+                                "$$listbadge.endDatetime"
+                              ]
                             }
-                        }
-                    },
-                    null
+                          ]
+                      }
+                    }
+                  },
+                  null
                 ]
             },
             mailViewer: "$mailViewer",
             userInterested: {
-                $arrayElemAt: ["$userInt.userInterests", 0]
+              $arrayElemAt: ["$userInt.userInterests", 0]
             },
             tutor: {
-                $arrayElemAt: ["$userBasic.tutor", 0]
+              $arrayElemAt: ["$userBasic.tutor", 0]
             },
             intScore: {
-                $size: "$intScore"
+              $size: "$intScore"
             },
             isLiked: {
-                $ifNull: ["$isLike", false]
+              $ifNull: ["$isLike", false]
             },
-            
-        }
-    },
+
+          }
+        },
       );
       pipeline.push(
         {
@@ -19894,672 +19914,673 @@ export class PostsReadService {
       pipeline.push(
         {
           "$set": {
-              "timeStart": {
-                  "$concat": [
-                      {
-                          "$dateToString": {
-                              "format": "%Y-%m-%d",
-                              "date": new Date()
-                          }
-                      },
-                      " ",
-                      {
-                          $arrayElemAt: ["$boosted.boostSession.timeStart", 0]
-                      }
-                  ]
-              }
-          }
-      },
-      {
-          "$set": {
-              "timeEnd": {
-                  "$concat": [
-                      {
-                          "$dateToString": {
-                              "format": "%Y-%m-%d",
-                              "date": new Date()
-                          }
-                      },
-                      " ",
-                      {
-                          $arrayElemAt: ["$boosted.boostSession.timeEnd", 0]
-                      }
-                  ]
-              }
-          }
-      },
-      {
-          $set: {
-              
-              "testDate": 
-              {
+            "timeStart": {
+              "$concat": [
+                {
                   "$dateToString": {
-                      "format": "%Y-%m-%d %H:%M:%S",
-                      "date": {
-                          $add: [new Date(), 25200000]
-                      }
+                    "format": "%Y-%m-%d",
+                    "date": new Date()
                   }
-              }
-          }
-      },
-      {
-          $match: 
-          {
-              $or: [
-                  {
-                      $and: [
-                          {
-                              $expr: {
-                                  $gte: ["$createdAt", "2022-01-09 00:57:28"]
-                              }
-                          },
-                          {
-                              "reportedStatus": {
-                                  $ne: "OWNED"
-                              }
-                          },
-                          {
-                              "visibility": "PUBLIC"
-                          },
-                          {
-                              "active": true
-                          },
-                          {
-                              "postType": "vid"
-                          },
-                          {
-                              $expr: {
-                                  $lte: ["$boosted.boostSession.start", "$testDate", ]
-                              }
-                          },
-                          {
-                              $expr: {
-                                  $gt: ["$boosted.boostSession.end", "$testDate", ]
-                              }
-                          },
-                          {
-                              $expr: {
-                                  $lte: ["$timeStart", "$testDate", ]
-                              }
-                          },
-                          {
-                              $expr: {
-                                  $gt: ["$timeEnd", "$testDate", ]
-                              }
-                          },
-                          {
-                              "timeStart": {
-                                  $ne: null
-                              }
-                          },
-                          {
-                              "timeEnd": {
-                                  $ne: null
-                              }
-                          },
-                          {
-                              $or: [
-                                  {
-                                      "reportedUser": {
-                                          "$elemMatch": {
-                                              "email": email,
-                                              "active": false,
-                                              
-                                          }
-                                      }
-                                  },
-                                  {
-                                      "reportedUser.email": {
-                                          $not: {
-                                              $regex: email
-                                          }
-                                      }
-                                  },
-                                  
-                              ]
-                          },
-                          {
-                              $or: [
-                                  {
-                                      "boosted.boostViewer": {
-                                          "$elemMatch": {
-                                              "email": email,
-                                              "isLast": true,
-                                              "timeEnd": {
-                                                  $lte: {
-                                                      $add: [new Date(), 25200000]
-                                                  }
-                                              }
-                                          }
-                                      }
-                                  },
-                                  {
-                                      $and: [
-                                          {
-                                              "boosted.boostViewer.email": {
-                                                  $ne: email
-                                              }
-                                          },
-                                          
-                                      ]
-                                  }
-                              ]
-                          }
-                      ]
-                  },
-                  {
-                      $and: [
-                          {
-                              "reportedStatus": {
-                                  $ne: "OWNED"
-                              }
-                          },
-                          {
-                              "visibility": "PUBLIC"
-                          },
-                          {
-                              "active": true
-                          },
-                          {
-                              "postType": "vid"
-                          },
-                          {
-                              "timeStart": null
-                          },
-                          {
-                              $or: [
-                                  {
-                                      "reportedUser": {
-                                          "$elemMatch": {
-                                              "email": email,
-                                              "active": false,
-                                              
-                                          }
-                                      }
-                                  },
-                                  {
-                                      "reportedUser.email": {
-                                          $not: {
-                                              $regex: email,
-                                              
-                                          }
-                                      }
-                                  },
-                                  
-                              ]
-                          },
-                          
-                      ]
-                  },
-                  
+                },
+                " ",
+                {
+                  $arrayElemAt: ["$boosted.boostSession.timeStart", 0]
+                }
               ]
+            }
           }
-      },
-      {
+        },
+        {
+          "$set": {
+            "timeEnd": {
+              "$concat": [
+                {
+                  "$dateToString": {
+                    "format": "%Y-%m-%d",
+                    "date": new Date()
+                  }
+                },
+                " ",
+                {
+                  $arrayElemAt: ["$boosted.boostSession.timeEnd", 0]
+                }
+              ]
+            }
+          }
+        },
+        {
           $set: {
-              selfContents: 
+
+            "testDate":
+            {
+              "$dateToString": {
+                "format": "%Y-%m-%d %H:%M:%S",
+                "date": {
+                  $add: [new Date(), 25200000]
+                }
+              }
+            }
+          }
+        },
+        {
+          $match:
+          {
+            $or: [
               {
-                  $cond: {
-                      if : {
-                          $and: [
-                              {
-                                  $eq: ["$email", email]
-                              },
-                              {
-                                  $gt: ["$createdAt", {
-                                      "$dateToString": {
-                                          "format": "%Y-%m-%d %H:%M:%S",
-                                          "date": {
-                                              $add: [new Date(), - 30600000]
-                                          }
-                                      }
-                                  }]
+                $and: [
+                  {
+                    $expr: {
+                      $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                    }
+                  },
+                  {
+                    "reportedStatus": {
+                      $ne: "OWNED"
+                    }
+                  },
+                  {
+                    "visibility": "PUBLIC"
+                  },
+                  {
+                    "active": true
+                  },
+                  {
+                    "postType": "vid"
+                  },
+                  {
+                    $expr: {
+                      $lte: ["$boosted.boostSession.start", "$testDate",]
+                    }
+                  },
+                  {
+                    $expr: {
+                      $gt: ["$boosted.boostSession.end", "$testDate",]
+                    }
+                  },
+                  {
+                    $expr: {
+                      $lte: ["$timeStart", "$testDate",]
+                    }
+                  },
+                  {
+                    $expr: {
+                      $gt: ["$timeEnd", "$testDate",]
+                    }
+                  },
+                  {
+                    "timeStart": {
+                      $ne: null
+                    }
+                  },
+                  {
+                    "timeEnd": {
+                      $ne: null
+                    }
+                  },
+                  {
+                    $or: [
+                      {
+                        "reportedUser": {
+                          "$elemMatch": {
+                            "email": email,
+                            "active": false,
+
+                          }
+                        }
+                      },
+                      {
+                        "reportedUser.email": {
+                          $not: {
+                            $regex: email
+                          }
+                        }
+                      },
+
+                    ]
+                  },
+                  {
+                    $or: [
+                      {
+                        "boosted.boostViewer": {
+                          "$elemMatch": {
+                            "email": email,
+                            "isLast": true,
+                            "timeEnd": {
+                              $lte: {
+                                $add: [new Date(), 25200000]
                               }
-                          ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        $and: [
+                          {
+                            "boosted.boostViewer.email": {
+                              $ne: email
+                            }
+                          },
+
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                $and: [
+                  {
+                    "reportedStatus": {
+                      $ne: "OWNED"
+                    }
+                  },
+                  {
+                    "visibility": "PUBLIC"
+                  },
+                  {
+                    "active": true
+                  },
+                  {
+                    "postType": "vid"
+                  },
+                  {
+                    "timeStart": null
+                  },
+                  {
+                    $or: [
+                      {
+                        "reportedUser": {
+                          "$elemMatch": {
+                            "email": email,
+                            "active": false,
+
+                          }
+                        }
+                      },
+                      {
+                        "reportedUser.email": {
+                          $not: {
+                            $regex: email,
+
+                          }
+                        }
+                      },
+
+                    ]
+                  },
+
+                ]
+              },
+
+            ]
+          }
+        },
+        {
+          $set: {
+            selfContents:
+            {
+              $cond: {
+                if: {
+                  $and: [
+                    {
+                      $eq: ["$email", email]
+                    },
+                    {
+                      $gt: ["$createdAt", {
+                        "$dateToString": {
+                          "format": "%Y-%m-%d %H:%M:%S",
+                          "date": {
+                            $add: [new Date(), - 30600000]
+                          }
+                        }
+                      }]
+                    }
+                  ]
+                },
+                then: 1,
+                else: 0
+              }
+            },
+
+          }
+        },
+        {
+          $set: {
+            kancuts:
+            {
+              $concatArrays: [
+                '$viewer',
+                [email]
+              ]
+            },
+
+          }
+        },
+        {
+          $set: {
+            mailViewer: {
+              $filter: {
+                input: "$kancuts",
+                cond: {
+                  $eq: ["$$this", email]
+                }
+              }
+            },
+
+          }
+        },
+        {
+          $set: {
+            dodolCount: {
+              $filter: {
+                input: "$kancuts",
+                cond: {
+                  $eq: ["$$this", email]
+                }
+              }
+            },
+
+          }
+        },
+        {
+          $set: {
+            viewerCounts:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$dodolCount"
+                },
+                then:
+                {
+                  $size: "$dodolCount"
+                },
+                else: 1
+              }
+            },
+
+          }
+        },
+        {
+          $sort: {
+            viewerCounts: 1,
+            selfContents: - 1,
+            isBoost: - 1,
+            createdAt: - 1,
+
+          }
+        },
+        {
+          $skip: skip
+        },
+        {
+          $limit: valuelimit
+        },
+        {
+          "$lookup": {
+            from: "disquslogs",
+            let: {
+              localID: '$postID',
+
+            },
+            as: "comment",
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$postID', '$$localID']
+                      }
+                    },
+                    {
+                      "active": {
+                        $ne: false
+                      }
+                    },
+
+                  ]
+                }
+              },
+              {
+                "$lookup": {
+                  from: "newUserBasics",
+                  as: "userComment",
+                  let: {
+                    localID: '$sender'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $expr: {
+                          $eq: ['$email', '$$localID']
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+                        "username": 1
+                      }
+                    }
+                  ],
+
+                }
+              },
+              {
+                $unwind: {
+                  path: "$userComment"
+                }
+              },
+              {
+                $sort: {
+                  createdAt: - 1
+                }
+              },
+
+            ]
+          },
+
+        },
+        {
+          "$lookup": {
+            from: "friend_list",
+            as: "friend",
+            let: {
+              localID: '$email',
+              user: email
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $or: [
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$email', '$$localID']
+                          }
+                        },
+                        {
+                          "friendlist.email": email
+                        }
+                      ]
+                    },
+                    {
+                      $and: [
+                        {
+                          "email": email
+                        },
+                        {
+                          $expr: {
+                            $eq: ['$friendlist.email', '$$localID']
+                          }
+                        },
+
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                $project: {
+                  email: 1,
+                  friend:
+                  {
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          $size: '$friendlist'
+                        }, 0]
                       },
                       then: 1,
-                      else : 0
-                  }
+                      else: 0
+                    }
+                  },
+
+                }
               },
-              
-          }
-      },
-      {
-          $set: {
-              kancuts: 
+
+            ]
+          },
+
+        },
+        {
+          "$lookup": {
+            from: "newUserBasics",
+            as: "userBasic",
+            let: {
+              localID: '$email'
+            },
+            pipeline: [
               {
-                  $concatArrays: [
-                      '$viewer',
-                      [email]
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$email', '$$localID']
+                  }
+                }
+              },
+
+            ],
+            //
+          }
+        },
+        {
+          "$lookup": {
+            from: "newUserBasics",
+            as: "userInt",
+            let: {
+              localID: email,
+              int: "$category",
+
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    },
+
                   ]
+                },
+
               },
-              
-          }
-      },
-      {
-          $set: {
-              mailViewer: {
-                  $filter: {
-                      input: "$kancuts",
-                      cond: {
-                          $eq: ["$$this", email]
-                      }
-                  }
-              },
-              
-          }
-      },
-      {
-          $set: {
-              dodolCount: {
-                  $filter: {
-                      input: "$kancuts",
-                      cond: {
-                          $eq: ["$$this", email]
-                      }
-                  }
-              },
-              
-          }
-      },
-      {
-          $set: {
-              viewerCounts: 
               {
-                  $cond: {
-                      if : {
-                          $isArray: "$dodolCount"
-                      },
-                      then: 
-                      {
-                          $size: "$dodolCount"
-                      },
-                      else : 1
-                  }
-              },
-              
+                $project: {
+                  userInterests: "$userInterests.$id",
+
+                }
+              }
+            ],
+            //
           }
-      },
-      {
-          $sort: {
-              viewerCounts: 1,
-              selfContents: - 1,
-              isBoost: - 1,
-              createdAt: - 1,
-              
-          }
-      },
-      {
-        $skip: skip
-      },
-      {
-        $limit: valuelimit
-      },
-      {
-          "$lookup": {
-              from: "disquslogs",
-              let: {
-                  localID: '$postID',
-                  
-              },
-              as: "comment",
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $and: [
-                              {
-                                  $expr: {
-                                      $eq: ['$postID', '$$localID']
-                                  }
-                              },
-                              {
-                                  "active": {
-                                      $ne: false
-                                  }
-                              },
-                              
-                          ]
-                      }
-                  },
-                  {
-                      "$lookup": {
-                          from: "newUserBasics",
-                          as: "userComment",
-                          let: {
-                              localID: '$sender'
-                          },
-                          pipeline: [
-                              {
-                                  $match: 
-                                  {
-                                      $expr: {
-                                          $eq: ['$email', '$$localID']
-                                      }
-                                  }
-                              },
-                              {
-                                  $project: {
-                                      "username": 1
-                                  }
-                              }
-                          ],
-                          
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$userComment"
-                      }
-                  },
-                  {
-                      $sort: {
-                          createdAt: - 1
-                      }
-                  },
-                  
-              ]
-          },
-          
-      },
-      {
-          "$lookup": {
-              from: "friend_list",
-              as: "friend",
-              let: {
-                  localID: '$email',
-                  user: email
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $or: [
-                              {
-                                  $and: [
-                                      {
-                                          $expr: {
-                                              $eq: ['$email', '$$localID']
-                                          }
-                                      },
-                                      {
-                                          "friendlist.email": email
-                                      }
-                                  ]
-                              },
-                              {
-                                  $and: [
-                                      {
-                                          "email": email
-                                      },
-                                      {
-                                          $expr: {
-                                              $eq: ['$friendlist.email', '$$localID']
-                                          }
-                                      },
-                                      
-                                  ]
-                              }
-                          ]
-                      }
-                  },
-                  {
-                      $project: {
-                          email: 1,
-                          friend: 
-                          {
-                              $cond: {
-                                  if : {
-                                      $gt: [{
-                                          $size: '$friendlist'
-                                      }, 0]
-                                  },
-                                  then: 1,
-                                  else : 0
-                              }
-                          },
-                          
-                      }
-                  },
-                  
-              ]
-          },
-          
-      },
-      {
-          "$lookup": {
-              from: "newUserBasics",
-              as: "userBasic",
-              let: {
-                  localID: '$email'
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $expr: {
-                              $eq: ['$email', '$$localID']
-                          }
-                      }
-                  },
-                  
-              ],
-              //
-          }
-      },
-      {
-          "$lookup": {
-              from: "newUserBasics",
-              as: "userInt",
-              let: {
-                  localID: email,
-                  int: "$category",
-                  
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $and: [
-                              {
-                                  $expr: {
-                                      $eq: ['$email', '$$localID']
-                                  }
-                              },
-                              
-                          ]
-                      },
-                      
-                  },
-                  {
-                      $project: {
-                          userInterests: "$userInterests.$id",
-                          
-                      }
-                  }
-              ],
-              //
-          }
-      },
-      //     {
-      //         $set: {
-      //             categoryInt: {$ifNull:["$category.$id",[]]}
-      //         }
-      //     },
-      {
+        },
+        //     {
+        //         $set: {
+        //             categoryInt: {$ifNull:["$category.$id",[]]}
+        //         }
+        //     },
+        {
           $set: {
-              categoryInt: "$category.$id"
+            categoryInt: "$category.$id"
           }
-      },
-      {
+        },
+        {
           $set: {
-              intScore: 
+            intScore:
+            {
+              $filter: {
+                input: {
+                  $arrayElemAt: ["$userInt.userInterests", 0]
+                },
+                as: "nonok",
+                cond: {
+                  $in: ["$$nonok", "$categoryInt"]
+                }
+              }
+            },
+
+          }
+        },
+        {
+          "$lookup": {
+            from: "mediamusic",
+            as: "music",
+            let: {
+              localID: '$musicId'
+            },
+            pipeline: [
               {
-                  $filter: {
-                      input: {
-                          $arrayElemAt: ["$userInt.userInterests", 0]
-                      },
-                      as: "nonok",
-                      cond: {
-                          $in: ["$$nonok", "$categoryInt"]
-                      }
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$_id', '$$localID']
                   }
+                }
               },
-              
+              {
+                $project: {
+                  "_id":1,
+                  "musicTitle": 1,
+                  "artistName": 1,
+                  "albumName": 1,
+                  "apsaraMusic": 1,
+                  "apsaraThumnail": 1,
+                  "genre": "$genre.name",
+                  "theme": "$theme.name",
+                  "mood": "$mood.name",
+                  //
+                }
+              },
+              {
+                $unwind: {
+                  path: "$genre",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$theme",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$mood",
+                  preserveNullAndEmptyArrays: true
+                }
+              }
+            ],
+            //
           }
-      },
-      {
+        },
+        {
           "$lookup": {
-              from: "mediamusic",
-              as: "music",
-              let: {
-                  localID: '$musicId'
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $expr: {
-                              $eq: ['$_id', '$$localID']
-                          }
-                      }
-                  },
-                  {
-                      $project: {
-                          "musicTitle": 1,
-                          "artistName": 1,
-                          "albumName": 1,
-                          "apsaraMusic": 1,
-                          "apsaraThumnail": 1,
-                          "genre": "$genre.name",
-                          "theme": "$theme.name",
-                          "mood": "$mood.name",
-                          //
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$genre",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$theme",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$mood",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  }
-              ],
-              //
-          }
-      },
-      {
-        "$lookup": {
             from: "newUserBasics",
             as: "userTag",
             let: {
-                localID:{$ifNull:[ '$tagPeople',[]]}
+              localID: { $ifNull: ['$tagPeople', []] }
             },
             pipeline: [
+              {
+                $match:
                 {
-                    $match: 
+                  $or: [
                     {
-                        $or: [
-                            {
-                                $expr: {
-                                    $in: ['$_id', "$$localID"]
-                                }
-                            },
-                            {
-                                $expr: {
-                                    $eq: ['$_id', "$$localID.$id"]
-                                }
-                            },
-                            
-                        ]
-                    },
-                    
-                },
-                {
-                    $project: {
-                        "_id": 1,
-                        "username": 1
-                    }
-                }
-            ],
-            
-        }
-    },
-      {
-          $lookup: {
-              from: "settings",
-              as: "setting",
-              pipeline: [
-                  {
-                      $match: {
-                          $or: [
-                              {
-                                  "_id":new mongoose.Types.ObjectId("62bbdb4ba7520000050077a7")
-                              },
-                              {
-                                  "_id": new mongoose.Types.ObjectId("64d06e5c451e0000bd006c62")
-                              },
-                              {
-                                  "_id": new mongoose.Types.ObjectId("645da79c295b0000520048c2")
-                              },
-                              {
-                                  "_id": new mongoose.Types.ObjectId("64e5a637227b0000d00057b8")
-                              },
-                              
-                          ]
+                      $expr: {
+                        $in: ['$_id', "$$localID"]
                       }
-                  },
-                  
-              ]
+                    },
+                    {
+                      $expr: {
+                        $eq: ['$_id', "$$localID.$id"]
+                      }
+                    },
+
+                  ]
+                },
+
+              },
+              {
+                $project: {
+                  "_id": 1,
+                  "username": 1
+                }
+              }
+            ],
+
           }
-      },
-      {
-        $project: {
+        },
+        {
+          $lookup: {
+            from: "settings",
+            as: "setting",
+            pipeline: [
+              {
+                $match: {
+                  $or: [
+                    {
+                      "_id": new mongoose.Types.ObjectId("62bbdb4ba7520000050077a7")
+                    },
+                    {
+                      "_id": new mongoose.Types.ObjectId("64d06e5c451e0000bd006c62")
+                    },
+                    {
+                      "_id": new mongoose.Types.ObjectId("645da79c295b0000520048c2")
+                    },
+                    {
+                      "_id": new mongoose.Types.ObjectId("64e5a637227b0000d00057b8")
+                    },
+
+                  ]
+                }
+              },
+
+            ]
+          }
+        },
+        {
+          $project: {
             _id: 1,
             version: {
-                $arrayElemAt: ["$setting.value", 0]
+              $arrayElemAt: ["$setting.value", 0]
             },
             versionIos: {
-                $arrayElemAt: ["$setting.value", 1]
+              $arrayElemAt: ["$setting.value", 1]
             },
             limitLandingpage: {
-                $arrayElemAt: ["$setting.value", 2]
+              $arrayElemAt: ["$setting.value", 2]
             },
             "postID": 1,
             musicTitle: {
-                $arrayElemAt: ["$music.musicTitle", 0]
+              $arrayElemAt: ["$music.musicTitle", 0]
             },
             "artistName": {
-                $arrayElemAt: ["$music.artistName", 0]
+              $arrayElemAt: ["$music.artistName", 0]
             },
             "albumName": {
-                $arrayElemAt: ["$music.albumName", 0]
+              $arrayElemAt: ["$music.albumName", 0]
             },
             "apsaraMusic": {
-                $arrayElemAt: ["$music.apsaraMusic", 0]
+              $arrayElemAt: ["$music.apsaraMusic", 0]
             },
             "apsaraThumnail": {
-                $arrayElemAt: ["$music.apsaraThumnail", 0]
+              $arrayElemAt: ["$music.apsaraThumnail", 0]
             },
             "genre": {
-                $arrayElemAt: ["$music.genre", 0]
+              $arrayElemAt: ["$music.genre", 0]
             },
             "theme": {
-                $arrayElemAt: ["$music.theme", 0]
+              $arrayElemAt: ["$music.theme", 0]
             },
             "mood": {
-                $arrayElemAt: ["$music.mood", 0]
+              $arrayElemAt: ["$music.mood", 0]
             },
             "tagPeople": "$userTag",
             "mediaType": 1,
@@ -20586,79 +20607,98 @@ export class PostsReadService {
             "userView": 1,
             "userLike": 1,
             "uploadSource": {
-                $arrayElemAt: ["$uploadSource.uploadSource", 0]
+              $arrayElemAt: ["$uploadSource.uploadSource", 0]
             },
             comments: {
-                $cond: {
-                    if : {
-                        $eq: ["$comment", []]
-                    },
-                    then: 0,
-                    else : {
-                        $size: "$comment"
-                    }
+              $cond: {
+                if: {
+                  $eq: ["$comment", []]
+                },
+                then: 0,
+                else: {
+                  $size: "$comment"
                 }
+              }
             },
             email: 1,
             viewer: 1,
             viewerCount: 1,
             oldDate: "$oldDate",
             selfContent: 1,
-            official: 
+            official:
             {
-                $cond: {
-                    if : {
-                        $eq: ["$email", "hyppers@hyppe.id"]
-                    },
-                    then: 1,
-                    else : 0
-                }
+              $cond: {
+                if: {
+                  $eq: ["$email", "hyppers@hyppe.id"]
+                },
+                then: 1,
+                else: 0
+              }
             },
-            musik: "$music",
-            isLike: 
-                {
-                $cond: {
-                    if : {
-                        $eq: ["$userLike", "hyppers@hyppe.id"]
-                    },
-                    then: true,
-                    else : false
-                }
+            "music": {
+              "_id": {
+                $arrayElemAt: ["$music._id", 0]
+              },
+              "musicTitle": {
+                $arrayElemAt: ["$music.musicTitle", 0]
+              },
+              "artistName": {
+                $arrayElemAt: ["$music.artistName", 0]
+              },
+              "albumName": {
+                $arrayElemAt: ["$music.albumName", 0]
+              },
+              "apsaraMusic": {
+                $arrayElemAt: ["$music.apsaraMusic", 0]
+              },
+              "apsaraThumnail": {
+                $arrayElemAt: ["$music.apsaraThumnail", 0]
+              },
+            },
+            isLike:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$userLike", "hyppers@hyppe.id"]
+                },
+                then: true,
+                else: false
+              }
             },
             comment: "$comment",
             interest: "$categoryInt",
             friends: {
-                $arrayElemAt: ["$friend.friend", 0]
+              $arrayElemAt: ["$friend.friend", 0]
             },
-            "following": 
+            "following":
             {
-                $cond: 
+              $cond:
+              {
+                if: {
+                  $eq: ["$userBasic.follower", []]
+                },
+                then: false,
+                else:
                 {
-                    if : {
-                        $eq: ["$userBasic.follower", []]
+                  $cond:
+                  {
+                    if: {
+                      $in: ["ahmad.taslim07@gmail.com", "$userBasic.follower"]
                     },
-                    then: false,
-                    else : 
-                        {
-                        $cond: 
-                        {
-                            if : {
-                                $in: ["ahmad.taslim07@gmail.com", "$userBasic.follower"]
-                            },
-                            then: true,
-                            else : false
-                        }
-                    },
-                    
-                }
+                    then: true,
+                    else: false
+                  }
+                },
+
+              }
             },
-            "insight": 
-                {
-                "likes": "$likes",
-                "views": "$views",
-                "shares": "$shares",
-                "comments": "$comments",
-                
+            "insight":
+            {
+              "likes": "$likes",
+              "views": "$views",
+              "shares": "$shares",
+              "comments": "$comments",
+
             },
             "userProfile": "$userProfile",
             "contentMedias": "$contentMedias",
@@ -20671,23 +20711,23 @@ export class PostsReadService {
             "isBoost": "$isBoost",
             "boostViewer": "$boostViewer",
             "boostCount": "$boostCount",
-            "boosted": 
+            "boosted":
             {
-                $cond: {
-                    if : {
-                        $gt: [{
-                            "$dateToString": {
-                                "format": "%Y-%m-%d %H:%M:%S",
-                                "date": {
-                                    $add: [new Date(), 25200000]
-                                }
-                            }
-                        }, "$boosted.boostSession.end"]
-                    },
-                    then: "$ilang",
-                    else : "$boosted",
-                    
-                }
+              $cond: {
+                if: {
+                  $gt: [{
+                    "$dateToString": {
+                      "format": "%Y-%m-%d %H:%M:%S",
+                      "date": {
+                        $add: [new Date(), 25200000]
+                      }
+                    }
+                  }, "$boosted.boostSession.end"]
+                },
+                then: "$ilang",
+                else: "$boosted",
+
+              }
             },
             "contentModeration": "$contentModeration",
             "reportedStatus": "$reportedStatus",
@@ -20697,201 +20737,201 @@ export class PostsReadService {
             "timeStart": "$timeStart",
             "timeEnd": "$timeEnd",
             "apsaraId": {
-                $arrayElemAt: ["$mediaSource.apsaraId", 0]
+              $arrayElemAt: ["$mediaSource.apsaraId", 0]
             },
             "isApsara": {
-                $arrayElemAt: ["$mediaSource.apsara", 0]
+              $arrayElemAt: ["$mediaSource.apsara", 0]
             },
             "apsaraThumbId": {
-                $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
+              $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
             },
             //               "mediaEndpoint": {
             //                   $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
             //               },
-            mediaEndpoint: 
+            mediaEndpoint:
             {
-                "$ifNull": 
+              "$ifNull":
                 [
+                  {
+                    $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
+                  },
+                  {
+                    "$cond":
                     {
-                        $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
-                    },
-                    {
-                        "$cond": 
-                        {
-                            if : 
-                                {
-                                "$eq": 
-                                [
-                                    "$postType",
-                                    "pict"
-                                ]
-                            },
-                            then: 
-                            {
-                                "$concat": 
-                                [
-                                    "/pict/",
-                                    "$postID"
-                                ]
-                            },
-                            else : 
-                                {
-                                "$concat": 
-                                [
-                                    "/stream/",
-                                    "$postID"
-                                ]
-                            }
-                        }
+                      if:
+                      {
+                        "$eq":
+                          [
+                            "$postType",
+                            "pict"
+                          ]
+                      },
+                      then:
+                      {
+                        "$concat":
+                          [
+                            "/pict/",
+                            "$postID"
+                          ]
+                      },
+                      else:
+                      {
+                        "$concat":
+                          [
+                            "/stream/",
+                            "$postID"
+                          ]
+                      }
                     }
+                  }
                 ]
             },
             "mediaUri": {
-                $arrayElemAt: ["$mediaSource.mediaUri", 0]
+              $arrayElemAt: ["$mediaSource.mediaUri", 0]
             },
             //             "mediaThumbEndpoint": {
             //                 $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
             //             },
-            mediaThumbEndpoint: 
+            mediaThumbEndpoint:
             {
-                "$ifNull": 
+              "$ifNull":
                 [
+                  {
+                    $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
+                  },
+                  {
+                    "$cond":
                     {
-                        $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
-                    },
-                    {
-                        "$cond": 
-                        {
-                            if : 
-                                {
-                                "$eq": 
-                                [
-                                    "$postType",
-                                    "pict"
-                                ]
-                            },
-                            then: 
-                            {
-                                "$concat": 
-                                [
-                                    "/pict/",
-                                    "$postID"
-                                ]
-                            },
-                            else : 
-                                {
-                                "$concat": 
-                                [
-                                    "/thumb/",
-                                    "$postID"
-                                ]
-                            }
-                        }
+                      if:
+                      {
+                        "$eq":
+                          [
+                            "$postType",
+                            "pict"
+                          ]
+                      },
+                      then:
+                      {
+                        "$concat":
+                          [
+                            "/pict/",
+                            "$postID"
+                          ]
+                      },
+                      else:
+                      {
+                        "$concat":
+                          [
+                            "/thumb/",
+                            "$postID"
+                          ]
+                      }
                     }
+                  }
                 ]
             },
             "mediaThumbUri": {
-                $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
+              $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
             },
             "fullName": {
-                $arrayElemAt: ["$userBasic.fullName", 0]
+              $arrayElemAt: ["$userBasic.fullName", 0]
             },
             "username": {
-                $arrayElemAt: ["$userBasic.username", 0]
+              $arrayElemAt: ["$userBasic.username", 0]
             },
-            "avatar": 
+            "avatar":
             {
-                "mediaBasePath": {$arrayElemAt: [ "$userBasic.mediaBasePath", 0]},
-                "mediaUri":{$arrayElemAt: [ "$userBasic.mediaUri", 0]},
-                "originalName": {$arrayElemAt: ["$userBasic.originalName", 0]},
-                "fsSourceUri": {$arrayElemAt: ["$userBasic.fsSourceUri", 0]},
-                "fsSourceName":{$arrayElemAt: [ "$userBasic.fsSourceName", 0]},
-                "fsTargetUri": {$arrayElemAt: ["$userBasic.fsTargetUri", 0]},
-                "mediaType":{$arrayElemAt: [ "$userBasic.mediaType", 0]},
-                "mediaEndpoint": {$arrayElemAt: [ "$userBasic.mediaEndpoint", 0]},
+              "mediaBasePath": { $arrayElemAt: ["$userBasic.mediaBasePath", 0] },
+              "mediaUri": { $arrayElemAt: ["$userBasic.mediaUri", 0] },
+              "originalName": { $arrayElemAt: ["$userBasic.originalName", 0] },
+              "fsSourceUri": { $arrayElemAt: ["$userBasic.fsSourceUri", 0] },
+              "fsSourceName": { $arrayElemAt: ["$userBasic.fsSourceName", 0] },
+              "fsTargetUri": { $arrayElemAt: ["$userBasic.fsTargetUri", 0] },
+              "mediaType": { $arrayElemAt: ["$userBasic.mediaType", 0] },
+              "mediaEndpoint": { $arrayElemAt: ["$userBasic.mediaEndpoint", 0] },
             },
             "privacy": {
-                "isCelebrity": {
-                    $arrayElemAt: ["$userBasic.isCelebrity", 0]
-                },
-                "isIdVerified": {
-                    $arrayElemAt: ["$userBasic.isIdVerified", 0]
-                },
-                "isPrivate": {
-                    $arrayElemAt: ["$userBasic.isPrivate", 0]
-                },
-                "isFollowPrivate": {
-                    $arrayElemAt: ["$userBasic.isFollowPrivate", 0]
-                },
-                "isPostPrivate": {
-                    $arrayElemAt: ["$userBasic.isPostPrivate", 0]
-                },
-                
+              "isCelebrity": {
+                $arrayElemAt: ["$userBasic.isCelebrity", 0]
+              },
+              "isIdVerified": {
+                $arrayElemAt: ["$userBasic.isIdVerified", 0]
+              },
+              "isPrivate": {
+                $arrayElemAt: ["$userBasic.isPrivate", 0]
+              },
+              "isFollowPrivate": {
+                $arrayElemAt: ["$userBasic.isFollowPrivate", 0]
+              },
+              "isPostPrivate": {
+                $arrayElemAt: ["$userBasic.isPostPrivate", 0]
+              },
+
             },
             "verified": {
-                $arrayElemAt: ["$userBasic.fullName", 0]
+              $arrayElemAt: ["$userBasic.fullName", 0]
             },
-            "urluserBadge": 
+            "urluserBadge":
             {
-                "$ifNull": 
+              "$ifNull":
                 [
+                  {
+                    "$filter":
                     {
-                        "$filter": 
-                        {
-                            input: {
-                                $arrayElemAt: ["$userBasic.userBadge", 0]
-                            },
-                            as: "listbadge",
-                            cond: 
+                      input: {
+                        $arrayElemAt: ["$userBasic.userBadge", 0]
+                      },
+                      as: "listbadge",
+                      cond:
+                      {
+                        "$and":
+                          [
                             {
-                                "$and": 
+                              "$eq":
                                 [
-                                    {
-                                        "$eq": 
-                                        [
-                                            "$$listbadge.isActive",
-                                            true
-                                        ]
-                                    },
-                                    {
-                                        "$lte": [
-                                            {
-                                                "$dateToString": {
-                                                    "format": "%Y-%m-%d %H:%M:%S",
-                                                    "date": {
-                                                        "$add": [
-                                                            new Date(),
-                                                            25200000
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "$$listbadge.endDatetime"
-                                        ]
-                                    }
+                                  "$$listbadge.isActive",
+                                  true
                                 ]
+                            },
+                            {
+                              "$lte": [
+                                {
+                                  "$dateToString": {
+                                    "format": "%Y-%m-%d %H:%M:%S",
+                                    "date": {
+                                      "$add": [
+                                        new Date(),
+                                        25200000
+                                      ]
+                                    }
+                                  }
+                                },
+                                "$$listbadge.endDatetime"
+                              ]
                             }
-                        }
-                    },
-                    null
+                          ]
+                      }
+                    }
+                  },
+                  null
                 ]
             },
             mailViewer: "$mailViewer",
             userInterested: {
-                $arrayElemAt: ["$userInt.userInterests", 0]
+              $arrayElemAt: ["$userInt.userInterests", 0]
             },
             tutor: {
-                $arrayElemAt: ["$userBasic.tutor", 0]
+              $arrayElemAt: ["$userBasic.tutor", 0]
             },
             intScore: {
-                $size: "$intScore"
+              $size: "$intScore"
             },
             isLiked: {
-                $ifNull: ["$isLike", false]
+              $ifNull: ["$isLike", false]
             },
-            
-        }
-    },
+
+          }
+        },
       );
       pipeline.push(
         {
@@ -20913,672 +20953,673 @@ export class PostsReadService {
       pipeline.push(
         {
           "$set": {
-              "timeStart": {
-                  "$concat": [
-                      {
-                          "$dateToString": {
-                              "format": "%Y-%m-%d",
-                              "date": new Date()
-                          }
-                      },
-                      " ",
-                      {
-                          $arrayElemAt: ["$boosted.boostSession.timeStart", 0]
-                      }
-                  ]
-              }
-          }
-      },
-      {
-          "$set": {
-              "timeEnd": {
-                  "$concat": [
-                      {
-                          "$dateToString": {
-                              "format": "%Y-%m-%d",
-                              "date": new Date()
-                          }
-                      },
-                      " ",
-                      {
-                          $arrayElemAt: ["$boosted.boostSession.timeEnd", 0]
-                      }
-                  ]
-              }
-          }
-      },
-      {
-          $set: {
-              
-              "testDate": 
-              {
+            "timeStart": {
+              "$concat": [
+                {
                   "$dateToString": {
-                      "format": "%Y-%m-%d %H:%M:%S",
-                      "date": {
-                          $add: [new Date(), 25200000]
-                      }
+                    "format": "%Y-%m-%d",
+                    "date": new Date()
                   }
-              }
-          }
-      },
-      {
-          $match: 
-          {
-              $or: [
-                  {
-                      $and: [
-                          {
-                              $expr: {
-                                  $gte: ["$createdAt", "2022-01-09 00:57:28"]
-                              }
-                          },
-                          {
-                              "reportedStatus": {
-                                  $ne: "OWNED"
-                              }
-                          },
-                          {
-                              "visibility": "PUBLIC"
-                          },
-                          {
-                              "active": true
-                          },
-                          {
-                              "postType": "diary"
-                          },
-                          {
-                              $expr: {
-                                  $lte: ["$boosted.boostSession.start", "$testDate", ]
-                              }
-                          },
-                          {
-                              $expr: {
-                                  $gt: ["$boosted.boostSession.end", "$testDate", ]
-                              }
-                          },
-                          {
-                              $expr: {
-                                  $lte: ["$timeStart", "$testDate", ]
-                              }
-                          },
-                          {
-                              $expr: {
-                                  $gt: ["$timeEnd", "$testDate", ]
-                              }
-                          },
-                          {
-                              "timeStart": {
-                                  $ne: null
-                              }
-                          },
-                          {
-                              "timeEnd": {
-                                  $ne: null
-                              }
-                          },
-                          {
-                              $or: [
-                                  {
-                                      "reportedUser": {
-                                          "$elemMatch": {
-                                              "email": email,
-                                              "active": false,
-                                              
-                                          }
-                                      }
-                                  },
-                                  {
-                                      "reportedUser.email": {
-                                          $not: {
-                                              $regex: email
-                                          }
-                                      }
-                                  },
-                                  
-                              ]
-                          },
-                          {
-                              $or: [
-                                  {
-                                      "boosted.boostViewer": {
-                                          "$elemMatch": {
-                                              "email": email,
-                                              "isLast": true,
-                                              "timeEnd": {
-                                                  $lte: {
-                                                      $add: [new Date(), 25200000]
-                                                  }
-                                              }
-                                          }
-                                      }
-                                  },
-                                  {
-                                      $and: [
-                                          {
-                                              "boosted.boostViewer.email": {
-                                                  $ne: email
-                                              }
-                                          },
-                                          
-                                      ]
-                                  }
-                              ]
-                          }
-                      ]
-                  },
-                  {
-                      $and: [
-                          {
-                              "reportedStatus": {
-                                  $ne: "OWNED"
-                              }
-                          },
-                          {
-                              "visibility": "PUBLIC"
-                          },
-                          {
-                              "active": true
-                          },
-                          {
-                              "postType": "diary"
-                          },
-                          {
-                              "timeStart": null
-                          },
-                          {
-                              $or: [
-                                  {
-                                      "reportedUser": {
-                                          "$elemMatch": {
-                                              "email": email,
-                                              "active": false,
-                                              
-                                          }
-                                      }
-                                  },
-                                  {
-                                      "reportedUser.email": {
-                                          $not: {
-                                              $regex:email,
-                                              
-                                          }
-                                      }
-                                  },
-                                  
-                              ]
-                          },
-                          
-                      ]
-                  },
-                  
+                },
+                " ",
+                {
+                  $arrayElemAt: ["$boosted.boostSession.timeStart", 0]
+                }
               ]
+            }
           }
-      },
-      {
+        },
+        {
+          "$set": {
+            "timeEnd": {
+              "$concat": [
+                {
+                  "$dateToString": {
+                    "format": "%Y-%m-%d",
+                    "date": new Date()
+                  }
+                },
+                " ",
+                {
+                  $arrayElemAt: ["$boosted.boostSession.timeEnd", 0]
+                }
+              ]
+            }
+          }
+        },
+        {
           $set: {
-              selfContents: 
+
+            "testDate":
+            {
+              "$dateToString": {
+                "format": "%Y-%m-%d %H:%M:%S",
+                "date": {
+                  $add: [new Date(), 25200000]
+                }
+              }
+            }
+          }
+        },
+        {
+          $match:
+          {
+            $or: [
               {
-                  $cond: {
-                      if : {
-                          $and: [
-                              {
-                                  $eq: ["$email", email]
-                              },
-                              {
-                                  $gt: ["$createdAt", {
-                                      "$dateToString": {
-                                          "format": "%Y-%m-%d %H:%M:%S",
-                                          "date": {
-                                              $add: [new Date(), - 30600000]
-                                          }
-                                      }
-                                  }]
+                $and: [
+                  {
+                    $expr: {
+                      $gte: ["$createdAt", "2022-01-09 00:57:28"]
+                    }
+                  },
+                  {
+                    "reportedStatus": {
+                      $ne: "OWNED"
+                    }
+                  },
+                  {
+                    "visibility": "PUBLIC"
+                  },
+                  {
+                    "active": true
+                  },
+                  {
+                    "postType": "diary"
+                  },
+                  {
+                    $expr: {
+                      $lte: ["$boosted.boostSession.start", "$testDate",]
+                    }
+                  },
+                  {
+                    $expr: {
+                      $gt: ["$boosted.boostSession.end", "$testDate",]
+                    }
+                  },
+                  {
+                    $expr: {
+                      $lte: ["$timeStart", "$testDate",]
+                    }
+                  },
+                  {
+                    $expr: {
+                      $gt: ["$timeEnd", "$testDate",]
+                    }
+                  },
+                  {
+                    "timeStart": {
+                      $ne: null
+                    }
+                  },
+                  {
+                    "timeEnd": {
+                      $ne: null
+                    }
+                  },
+                  {
+                    $or: [
+                      {
+                        "reportedUser": {
+                          "$elemMatch": {
+                            "email": email,
+                            "active": false,
+
+                          }
+                        }
+                      },
+                      {
+                        "reportedUser.email": {
+                          $not: {
+                            $regex: email
+                          }
+                        }
+                      },
+
+                    ]
+                  },
+                  {
+                    $or: [
+                      {
+                        "boosted.boostViewer": {
+                          "$elemMatch": {
+                            "email": email,
+                            "isLast": true,
+                            "timeEnd": {
+                              $lte: {
+                                $add: [new Date(), 25200000]
                               }
-                          ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        $and: [
+                          {
+                            "boosted.boostViewer.email": {
+                              $ne: email
+                            }
+                          },
+
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                $and: [
+                  {
+                    "reportedStatus": {
+                      $ne: "OWNED"
+                    }
+                  },
+                  {
+                    "visibility": "PUBLIC"
+                  },
+                  {
+                    "active": true
+                  },
+                  {
+                    "postType": "diary"
+                  },
+                  {
+                    "timeStart": null
+                  },
+                  {
+                    $or: [
+                      {
+                        "reportedUser": {
+                          "$elemMatch": {
+                            "email": email,
+                            "active": false,
+
+                          }
+                        }
+                      },
+                      {
+                        "reportedUser.email": {
+                          $not: {
+                            $regex: email,
+
+                          }
+                        }
+                      },
+
+                    ]
+                  },
+
+                ]
+              },
+
+            ]
+          }
+        },
+        {
+          $set: {
+            selfContents:
+            {
+              $cond: {
+                if: {
+                  $and: [
+                    {
+                      $eq: ["$email", email]
+                    },
+                    {
+                      $gt: ["$createdAt", {
+                        "$dateToString": {
+                          "format": "%Y-%m-%d %H:%M:%S",
+                          "date": {
+                            $add: [new Date(), - 30600000]
+                          }
+                        }
+                      }]
+                    }
+                  ]
+                },
+                then: 1,
+                else: 0
+              }
+            },
+
+          }
+        },
+        {
+          $set: {
+            kancuts:
+            {
+              $concatArrays: [
+                '$viewer',
+                [email]
+              ]
+            },
+
+          }
+        },
+        {
+          $set: {
+            mailViewer: {
+              $filter: {
+                input: "$kancuts",
+                cond: {
+                  $eq: ["$$this", email]
+                }
+              }
+            },
+
+          }
+        },
+        {
+          $set: {
+            dodolCount: {
+              $filter: {
+                input: "$kancuts",
+                cond: {
+                  $eq: ["$$this", email]
+                }
+              }
+            },
+
+          }
+        },
+        {
+          $set: {
+            viewerCounts:
+            {
+              $cond: {
+                if: {
+                  $isArray: "$dodolCount"
+                },
+                then:
+                {
+                  $size: "$dodolCount"
+                },
+                else: 1
+              }
+            },
+
+          }
+        },
+        {
+          $sort: {
+            viewerCounts: 1,
+            selfContents: - 1,
+            isBoost: - 1,
+            createdAt: - 1,
+
+          }
+        },
+        {
+          $skip: skip
+        },
+        {
+          $limit: valuelimit
+        },
+        {
+          "$lookup": {
+            from: "disquslogs",
+            let: {
+              localID: '$postID',
+
+            },
+            as: "comment",
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$postID', '$$localID']
+                      }
+                    },
+                    {
+                      "active": {
+                        $ne: false
+                      }
+                    },
+
+                  ]
+                }
+              },
+              {
+                "$lookup": {
+                  from: "newUserBasics",
+                  as: "userComment",
+                  let: {
+                    localID: '$sender'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $expr: {
+                          $eq: ['$email', '$$localID']
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+                        "username": 1
+                      }
+                    }
+                  ],
+
+                }
+              },
+              {
+                $unwind: {
+                  path: "$userComment"
+                }
+              },
+              {
+                $sort: {
+                  createdAt: - 1
+                }
+              },
+
+            ]
+          },
+
+        },
+        {
+          "$lookup": {
+            from: "friend_list",
+            as: "friend",
+            let: {
+              localID: '$email',
+              user: email
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $or: [
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$email', '$$localID']
+                          }
+                        },
+                        {
+                          "friendlist.email": email
+                        }
+                      ]
+                    },
+                    {
+                      $and: [
+                        {
+                          "email": email
+                        },
+                        {
+                          $expr: {
+                            $eq: ['$friendlist.email', '$$localID']
+                          }
+                        },
+
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                $project: {
+                  email: 1,
+                  friend:
+                  {
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          $size: '$friendlist'
+                        }, 0]
                       },
                       then: 1,
-                      else : 0
-                  }
+                      else: 0
+                    }
+                  },
+
+                }
               },
-              
-          }
-      },
-      {
-          $set: {
-              kancuts: 
+
+            ]
+          },
+
+        },
+        {
+          "$lookup": {
+            from: "newUserBasics",
+            as: "userBasic",
+            let: {
+              localID: '$email'
+            },
+            pipeline: [
               {
-                  $concatArrays: [
-                      '$viewer',
-                      [email]
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$email', '$$localID']
+                  }
+                }
+              },
+
+            ],
+            //
+          }
+        },
+        {
+          "$lookup": {
+            from: "newUserBasics",
+            as: "userInt",
+            let: {
+              localID: email,
+              int: "$category",
+
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    },
+
                   ]
+                },
+
               },
-              
-          }
-      },
-      {
-          $set: {
-              mailViewer: {
-                  $filter: {
-                      input: "$kancuts",
-                      cond: {
-                          $eq: ["$$this", email]
-                      }
-                  }
-              },
-              
-          }
-      },
-      {
-          $set: {
-              dodolCount: {
-                  $filter: {
-                      input: "$kancuts",
-                      cond: {
-                          $eq: ["$$this", email]
-                      }
-                  }
-              },
-              
-          }
-      },
-      {
-          $set: {
-              viewerCounts: 
               {
-                  $cond: {
-                      if : {
-                          $isArray: "$dodolCount"
-                      },
-                      then: 
-                      {
-                          $size: "$dodolCount"
-                      },
-                      else : 1
-                  }
-              },
-              
+                $project: {
+                  userInterests: "$userInterests.$id",
+
+                }
+              }
+            ],
+            //
           }
-      },
-      {
-          $sort: {
-              viewerCounts: 1,
-              selfContents: - 1,
-              isBoost: - 1,
-              createdAt: - 1,
-              
-          }
-      },
-      {
-        $skip: skip
-      },
-      {
-        $limit: valuelimit
-      },
-      {
-          "$lookup": {
-              from: "disquslogs",
-              let: {
-                  localID: '$postID',
-                  
-              },
-              as: "comment",
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $and: [
-                              {
-                                  $expr: {
-                                      $eq: ['$postID', '$$localID']
-                                  }
-                              },
-                              {
-                                  "active": {
-                                      $ne: false
-                                  }
-                              },
-                              
-                          ]
-                      }
-                  },
-                  {
-                      "$lookup": {
-                          from: "newUserBasics",
-                          as: "userComment",
-                          let: {
-                              localID: '$sender'
-                          },
-                          pipeline: [
-                              {
-                                  $match: 
-                                  {
-                                      $expr: {
-                                          $eq: ['$email', '$$localID']
-                                      }
-                                  }
-                              },
-                              {
-                                  $project: {
-                                      "username": 1
-                                  }
-                              }
-                          ],
-                          
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$userComment"
-                      }
-                  },
-                  {
-                      $sort: {
-                          createdAt: - 1
-                      }
-                  },
-                  
-              ]
-          },
-          
-      },
-      {
-          "$lookup": {
-              from: "friend_list",
-              as: "friend",
-              let: {
-                  localID: '$email',
-                  user: email
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $or: [
-                              {
-                                  $and: [
-                                      {
-                                          $expr: {
-                                              $eq: ['$email', '$$localID']
-                                          }
-                                      },
-                                      {
-                                          "friendlist.email": email
-                                      }
-                                  ]
-                              },
-                              {
-                                  $and: [
-                                      {
-                                          "email": email
-                                      },
-                                      {
-                                          $expr: {
-                                              $eq: ['$friendlist.email', '$$localID']
-                                          }
-                                      },
-                                      
-                                  ]
-                              }
-                          ]
-                      }
-                  },
-                  {
-                      $project: {
-                          email: 1,
-                          friend: 
-                          {
-                              $cond: {
-                                  if : {
-                                      $gt: [{
-                                          $size: '$friendlist'
-                                      }, 0]
-                                  },
-                                  then: 1,
-                                  else : 0
-                              }
-                          },
-                          
-                      }
-                  },
-                  
-              ]
-          },
-          
-      },
-      {
-          "$lookup": {
-              from: "newUserBasics",
-              as: "userBasic",
-              let: {
-                  localID: '$email'
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $expr: {
-                              $eq: ['$email', '$$localID']
-                          }
-                      }
-                  },
-                  
-              ],
-              //
-          }
-      },
-      {
-          "$lookup": {
-              from: "newUserBasics",
-              as: "userInt",
-              let: {
-                  localID: email,
-                  int: "$category",
-                  
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $and: [
-                              {
-                                  $expr: {
-                                      $eq: ['$email', '$$localID']
-                                  }
-                              },
-                              
-                          ]
-                      },
-                      
-                  },
-                  {
-                      $project: {
-                          userInterests: "$userInterests.$id",
-                          
-                      }
-                  }
-              ],
-              //
-          }
-      },
-      //     {
-      //         $set: {
-      //             categoryInt: {$ifNull:["$category.$id",[]]}
-      //         }
-      //     },
-      {
+        },
+        //     {
+        //         $set: {
+        //             categoryInt: {$ifNull:["$category.$id",[]]}
+        //         }
+        //     },
+        {
           $set: {
-              categoryInt: "$category.$id"
+            categoryInt: "$category.$id"
           }
-      },
-      {
+        },
+        {
           $set: {
-              intScore: 
+            intScore:
+            {
+              $filter: {
+                input: {
+                  $arrayElemAt: ["$userInt.userInterests", 0]
+                },
+                as: "nonok",
+                cond: {
+                  $in: ["$$nonok", "$categoryInt"]
+                }
+              }
+            },
+
+          }
+        },
+        {
+          "$lookup": {
+            from: "mediamusic",
+            as: "music",
+            let: {
+              localID: '$musicId'
+            },
+            pipeline: [
               {
-                  $filter: {
-                      input: {
-                          $arrayElemAt: ["$userInt.userInterests", 0]
-                      },
-                      as: "nonok",
-                      cond: {
-                          $in: ["$$nonok", "$categoryInt"]
-                      }
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$_id', '$$localID']
                   }
+                }
               },
-              
+              {
+                $project: {
+                  "_id":1,
+                  "musicTitle": 1,
+                  "artistName": 1,
+                  "albumName": 1,
+                  "apsaraMusic": 1,
+                  "apsaraThumnail": 1,
+                  "genre": "$genre.name",
+                  "theme": "$theme.name",
+                  "mood": "$mood.name",
+                  //
+                }
+              },
+              {
+                $unwind: {
+                  path: "$genre",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$theme",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$mood",
+                  preserveNullAndEmptyArrays: true
+                }
+              }
+            ],
+            //
           }
-      },
-      {
+        },
+        {
           "$lookup": {
-              from: "mediamusic",
-              as: "music",
-              let: {
-                  localID: '$musicId'
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $expr: {
-                              $eq: ['$_id', '$$localID']
-                          }
-                      }
-                  },
-                  {
-                      $project: {
-                          "musicTitle": 1,
-                          "artistName": 1,
-                          "albumName": 1,
-                          "apsaraMusic": 1,
-                          "apsaraThumnail": 1,
-                          "genre": "$genre.name",
-                          "theme": "$theme.name",
-                          "mood": "$mood.name",
-                          //
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$genre",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$theme",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$mood",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  }
-              ],
-              //
-          }
-      },
-      {
-        "$lookup": {
             from: "newUserBasics",
             as: "userTag",
             let: {
-                localID:{$ifNull:[ '$tagPeople',[]]}
+              localID: { $ifNull: ['$tagPeople', []] }
             },
             pipeline: [
+              {
+                $match:
                 {
-                    $match: 
+                  $or: [
                     {
-                        $or: [
-                            {
-                                $expr: {
-                                    $in: ['$_id', "$$localID"]
-                                }
-                            },
-                            {
-                                $expr: {
-                                    $eq: ['$_id', "$$localID.$id"]
-                                }
-                            },
-                            
-                        ]
-                    },
-                    
-                },
-                {
-                    $project: {
-                        "_id": 1,
-                        "username": 1
-                    }
-                }
-            ],
-            
-        }
-    },
-      {
-          $lookup: {
-              from: "settings",
-              as: "setting",
-              pipeline: [
-                  {
-                      $match: {
-                          $or: [
-                              {
-                                  "_id":new mongoose.Types.ObjectId("62bbdb4ba7520000050077a7")
-                              },
-                              {
-                                  "_id": new mongoose.Types.ObjectId("64d06e5c451e0000bd006c62")
-                              },
-                              {
-                                  "_id": new mongoose.Types.ObjectId("645da79c295b0000520048c2")
-                              },
-                              {
-                                  "_id": new mongoose.Types.ObjectId("64e5a637227b0000d00057b8")
-                              },
-                              
-                          ]
+                      $expr: {
+                        $in: ['$_id', "$$localID"]
                       }
-                  },
-                  
-              ]
+                    },
+                    {
+                      $expr: {
+                        $eq: ['$_id', "$$localID.$id"]
+                      }
+                    },
+
+                  ]
+                },
+
+              },
+              {
+                $project: {
+                  "_id": 1,
+                  "username": 1
+                }
+              }
+            ],
+
           }
-      },
-      {
-        $project: {
+        },
+        {
+          $lookup: {
+            from: "settings",
+            as: "setting",
+            pipeline: [
+              {
+                $match: {
+                  $or: [
+                    {
+                      "_id": new mongoose.Types.ObjectId("62bbdb4ba7520000050077a7")
+                    },
+                    {
+                      "_id": new mongoose.Types.ObjectId("64d06e5c451e0000bd006c62")
+                    },
+                    {
+                      "_id": new mongoose.Types.ObjectId("645da79c295b0000520048c2")
+                    },
+                    {
+                      "_id": new mongoose.Types.ObjectId("64e5a637227b0000d00057b8")
+                    },
+
+                  ]
+                }
+              },
+
+            ]
+          }
+        },
+        {
+          $project: {
             _id: 1,
             version: {
-                $arrayElemAt: ["$setting.value", 0]
+              $arrayElemAt: ["$setting.value", 0]
             },
             versionIos: {
-                $arrayElemAt: ["$setting.value", 1]
+              $arrayElemAt: ["$setting.value", 1]
             },
             limitLandingpage: {
-                $arrayElemAt: ["$setting.value", 2]
+              $arrayElemAt: ["$setting.value", 2]
             },
             "postID": 1,
             musicTitle: {
-                $arrayElemAt: ["$music.musicTitle", 0]
+              $arrayElemAt: ["$music.musicTitle", 0]
             },
             "artistName": {
-                $arrayElemAt: ["$music.artistName", 0]
+              $arrayElemAt: ["$music.artistName", 0]
             },
             "albumName": {
-                $arrayElemAt: ["$music.albumName", 0]
+              $arrayElemAt: ["$music.albumName", 0]
             },
             "apsaraMusic": {
-                $arrayElemAt: ["$music.apsaraMusic", 0]
+              $arrayElemAt: ["$music.apsaraMusic", 0]
             },
             "apsaraThumnail": {
-                $arrayElemAt: ["$music.apsaraThumnail", 0]
+              $arrayElemAt: ["$music.apsaraThumnail", 0]
             },
             "genre": {
-                $arrayElemAt: ["$music.genre", 0]
+              $arrayElemAt: ["$music.genre", 0]
             },
             "theme": {
-                $arrayElemAt: ["$music.theme", 0]
+              $arrayElemAt: ["$music.theme", 0]
             },
             "mood": {
-                $arrayElemAt: ["$music.mood", 0]
+              $arrayElemAt: ["$music.mood", 0]
             },
             "tagPeople": "$userTag",
             "mediaType": 1,
@@ -21605,79 +21646,98 @@ export class PostsReadService {
             "userView": 1,
             "userLike": 1,
             "uploadSource": {
-                $arrayElemAt: ["$uploadSource.uploadSource", 0]
+              $arrayElemAt: ["$uploadSource.uploadSource", 0]
             },
             comments: {
-                $cond: {
-                    if : {
-                        $eq: ["$comment", []]
-                    },
-                    then: 0,
-                    else : {
-                        $size: "$comment"
-                    }
+              $cond: {
+                if: {
+                  $eq: ["$comment", []]
+                },
+                then: 0,
+                else: {
+                  $size: "$comment"
                 }
+              }
             },
             email: 1,
             viewer: 1,
             viewerCount: 1,
             oldDate: "$oldDate",
             selfContent: 1,
-            official: 
+            official:
             {
-                $cond: {
-                    if : {
-                        $eq: ["$email", "hyppers@hyppe.id"]
-                    },
-                    then: 1,
-                    else : 0
-                }
+              $cond: {
+                if: {
+                  $eq: ["$email", "hyppers@hyppe.id"]
+                },
+                then: 1,
+                else: 0
+              }
             },
-            musik: "$music",
-            isLike: 
-                {
-                $cond: {
-                    if : {
-                        $eq: ["$userLike", "hyppers@hyppe.id"]
-                    },
-                    then: true,
-                    else : false
-                }
+            "music": {
+              "_id": {
+                $arrayElemAt: ["$music._id", 0]
+              },
+              "musicTitle": {
+                $arrayElemAt: ["$music.musicTitle", 0]
+              },
+              "artistName": {
+                $arrayElemAt: ["$music.artistName", 0]
+              },
+              "albumName": {
+                $arrayElemAt: ["$music.albumName", 0]
+              },
+              "apsaraMusic": {
+                $arrayElemAt: ["$music.apsaraMusic", 0]
+              },
+              "apsaraThumnail": {
+                $arrayElemAt: ["$music.apsaraThumnail", 0]
+              },
+            },
+            isLike:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$userLike", "hyppers@hyppe.id"]
+                },
+                then: true,
+                else: false
+              }
             },
             comment: "$comment",
             interest: "$categoryInt",
             friends: {
-                $arrayElemAt: ["$friend.friend", 0]
+              $arrayElemAt: ["$friend.friend", 0]
             },
-            "following": 
+            "following":
             {
-                $cond: 
+              $cond:
+              {
+                if: {
+                  $eq: ["$userBasic.follower", []]
+                },
+                then: false,
+                else:
                 {
-                    if : {
-                        $eq: ["$userBasic.follower", []]
+                  $cond:
+                  {
+                    if: {
+                      $in: ["ahmad.taslim07@gmail.com", "$userBasic.follower"]
                     },
-                    then: false,
-                    else : 
-                        {
-                        $cond: 
-                        {
-                            if : {
-                                $in: ["ahmad.taslim07@gmail.com", "$userBasic.follower"]
-                            },
-                            then: true,
-                            else : false
-                        }
-                    },
-                    
-                }
+                    then: true,
+                    else: false
+                  }
+                },
+
+              }
             },
-            "insight": 
-                {
-                "likes": "$likes",
-                "views": "$views",
-                "shares": "$shares",
-                "comments": "$comments",
-                
+            "insight":
+            {
+              "likes": "$likes",
+              "views": "$views",
+              "shares": "$shares",
+              "comments": "$comments",
+
             },
             "userProfile": "$userProfile",
             "contentMedias": "$contentMedias",
@@ -21690,23 +21750,23 @@ export class PostsReadService {
             "isBoost": "$isBoost",
             "boostViewer": "$boostViewer",
             "boostCount": "$boostCount",
-            "boosted": 
+            "boosted":
             {
-                $cond: {
-                    if : {
-                        $gt: [{
-                            "$dateToString": {
-                                "format": "%Y-%m-%d %H:%M:%S",
-                                "date": {
-                                    $add: [new Date(), 25200000]
-                                }
-                            }
-                        }, "$boosted.boostSession.end"]
-                    },
-                    then: "$ilang",
-                    else : "$boosted",
-                    
-                }
+              $cond: {
+                if: {
+                  $gt: [{
+                    "$dateToString": {
+                      "format": "%Y-%m-%d %H:%M:%S",
+                      "date": {
+                        $add: [new Date(), 25200000]
+                      }
+                    }
+                  }, "$boosted.boostSession.end"]
+                },
+                then: "$ilang",
+                else: "$boosted",
+
+              }
             },
             "contentModeration": "$contentModeration",
             "reportedStatus": "$reportedStatus",
@@ -21716,201 +21776,201 @@ export class PostsReadService {
             "timeStart": "$timeStart",
             "timeEnd": "$timeEnd",
             "apsaraId": {
-                $arrayElemAt: ["$mediaSource.apsaraId", 0]
+              $arrayElemAt: ["$mediaSource.apsaraId", 0]
             },
             "isApsara": {
-                $arrayElemAt: ["$mediaSource.apsara", 0]
+              $arrayElemAt: ["$mediaSource.apsara", 0]
             },
             "apsaraThumbId": {
-                $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
+              $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
             },
             //               "mediaEndpoint": {
             //                   $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
             //               },
-            mediaEndpoint: 
+            mediaEndpoint:
             {
-                "$ifNull": 
+              "$ifNull":
                 [
+                  {
+                    $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
+                  },
+                  {
+                    "$cond":
                     {
-                        $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
-                    },
-                    {
-                        "$cond": 
-                        {
-                            if : 
-                                {
-                                "$eq": 
-                                [
-                                    "$postType",
-                                    "pict"
-                                ]
-                            },
-                            then: 
-                            {
-                                "$concat": 
-                                [
-                                    "/pict/",
-                                    "$postID"
-                                ]
-                            },
-                            else : 
-                                {
-                                "$concat": 
-                                [
-                                    "/stream/",
-                                    "$postID"
-                                ]
-                            }
-                        }
+                      if:
+                      {
+                        "$eq":
+                          [
+                            "$postType",
+                            "pict"
+                          ]
+                      },
+                      then:
+                      {
+                        "$concat":
+                          [
+                            "/pict/",
+                            "$postID"
+                          ]
+                      },
+                      else:
+                      {
+                        "$concat":
+                          [
+                            "/stream/",
+                            "$postID"
+                          ]
+                      }
                     }
+                  }
                 ]
             },
             "mediaUri": {
-                $arrayElemAt: ["$mediaSource.mediaUri", 0]
+              $arrayElemAt: ["$mediaSource.mediaUri", 0]
             },
             //             "mediaThumbEndpoint": {
             //                 $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
             //             },
-            mediaThumbEndpoint: 
+            mediaThumbEndpoint:
             {
-                "$ifNull": 
+              "$ifNull":
                 [
+                  {
+                    $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
+                  },
+                  {
+                    "$cond":
                     {
-                        $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
-                    },
-                    {
-                        "$cond": 
-                        {
-                            if : 
-                                {
-                                "$eq": 
-                                [
-                                    "$postType",
-                                    "pict"
-                                ]
-                            },
-                            then: 
-                            {
-                                "$concat": 
-                                [
-                                    "/pict/",
-                                    "$postID"
-                                ]
-                            },
-                            else : 
-                                {
-                                "$concat": 
-                                [
-                                    "/thumb/",
-                                    "$postID"
-                                ]
-                            }
-                        }
+                      if:
+                      {
+                        "$eq":
+                          [
+                            "$postType",
+                            "pict"
+                          ]
+                      },
+                      then:
+                      {
+                        "$concat":
+                          [
+                            "/pict/",
+                            "$postID"
+                          ]
+                      },
+                      else:
+                      {
+                        "$concat":
+                          [
+                            "/thumb/",
+                            "$postID"
+                          ]
+                      }
                     }
+                  }
                 ]
             },
             "mediaThumbUri": {
-                $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
+              $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
             },
             "fullName": {
-                $arrayElemAt: ["$userBasic.fullName", 0]
+              $arrayElemAt: ["$userBasic.fullName", 0]
             },
             "username": {
-                $arrayElemAt: ["$userBasic.username", 0]
+              $arrayElemAt: ["$userBasic.username", 0]
             },
-            "avatar": 
+            "avatar":
             {
-                "mediaBasePath": {$arrayElemAt: [ "$userBasic.mediaBasePath", 0]},
-                "mediaUri":{$arrayElemAt: [ "$userBasic.mediaUri", 0]},
-                "originalName": {$arrayElemAt: ["$userBasic.originalName", 0]},
-                "fsSourceUri": {$arrayElemAt: ["$userBasic.fsSourceUri", 0]},
-                "fsSourceName":{$arrayElemAt: [ "$userBasic.fsSourceName", 0]},
-                "fsTargetUri": {$arrayElemAt: ["$userBasic.fsTargetUri", 0]},
-                "mediaType":{$arrayElemAt: [ "$userBasic.mediaType", 0]},
-                "mediaEndpoint": {$arrayElemAt: [ "$userBasic.mediaEndpoint", 0]},
+              "mediaBasePath": { $arrayElemAt: ["$userBasic.mediaBasePath", 0] },
+              "mediaUri": { $arrayElemAt: ["$userBasic.mediaUri", 0] },
+              "originalName": { $arrayElemAt: ["$userBasic.originalName", 0] },
+              "fsSourceUri": { $arrayElemAt: ["$userBasic.fsSourceUri", 0] },
+              "fsSourceName": { $arrayElemAt: ["$userBasic.fsSourceName", 0] },
+              "fsTargetUri": { $arrayElemAt: ["$userBasic.fsTargetUri", 0] },
+              "mediaType": { $arrayElemAt: ["$userBasic.mediaType", 0] },
+              "mediaEndpoint": { $arrayElemAt: ["$userBasic.mediaEndpoint", 0] },
             },
             "privacy": {
-                "isCelebrity": {
-                    $arrayElemAt: ["$userBasic.isCelebrity", 0]
-                },
-                "isIdVerified": {
-                    $arrayElemAt: ["$userBasic.isIdVerified", 0]
-                },
-                "isPrivate": {
-                    $arrayElemAt: ["$userBasic.isPrivate", 0]
-                },
-                "isFollowPrivate": {
-                    $arrayElemAt: ["$userBasic.isFollowPrivate", 0]
-                },
-                "isPostPrivate": {
-                    $arrayElemAt: ["$userBasic.isPostPrivate", 0]
-                },
-                
+              "isCelebrity": {
+                $arrayElemAt: ["$userBasic.isCelebrity", 0]
+              },
+              "isIdVerified": {
+                $arrayElemAt: ["$userBasic.isIdVerified", 0]
+              },
+              "isPrivate": {
+                $arrayElemAt: ["$userBasic.isPrivate", 0]
+              },
+              "isFollowPrivate": {
+                $arrayElemAt: ["$userBasic.isFollowPrivate", 0]
+              },
+              "isPostPrivate": {
+                $arrayElemAt: ["$userBasic.isPostPrivate", 0]
+              },
+
             },
             "verified": {
-                $arrayElemAt: ["$userBasic.fullName", 0]
+              $arrayElemAt: ["$userBasic.fullName", 0]
             },
-            "urluserBadge": 
+            "urluserBadge":
             {
-                "$ifNull": 
+              "$ifNull":
                 [
+                  {
+                    "$filter":
                     {
-                        "$filter": 
-                        {
-                            input: {
-                                $arrayElemAt: ["$userBasic.userBadge", 0]
-                            },
-                            as: "listbadge",
-                            cond: 
+                      input: {
+                        $arrayElemAt: ["$userBasic.userBadge", 0]
+                      },
+                      as: "listbadge",
+                      cond:
+                      {
+                        "$and":
+                          [
                             {
-                                "$and": 
+                              "$eq":
                                 [
-                                    {
-                                        "$eq": 
-                                        [
-                                            "$$listbadge.isActive",
-                                            true
-                                        ]
-                                    },
-                                    {
-                                        "$lte": [
-                                            {
-                                                "$dateToString": {
-                                                    "format": "%Y-%m-%d %H:%M:%S",
-                                                    "date": {
-                                                        "$add": [
-                                                            new Date(),
-                                                            25200000
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "$$listbadge.endDatetime"
-                                        ]
-                                    }
+                                  "$$listbadge.isActive",
+                                  true
                                 ]
+                            },
+                            {
+                              "$lte": [
+                                {
+                                  "$dateToString": {
+                                    "format": "%Y-%m-%d %H:%M:%S",
+                                    "date": {
+                                      "$add": [
+                                        new Date(),
+                                        25200000
+                                      ]
+                                    }
+                                  }
+                                },
+                                "$$listbadge.endDatetime"
+                              ]
                             }
-                        }
-                    },
-                    null
+                          ]
+                      }
+                    }
+                  },
+                  null
                 ]
             },
             mailViewer: "$mailViewer",
             userInterested: {
-                $arrayElemAt: ["$userInt.userInterests", 0]
+              $arrayElemAt: ["$userInt.userInterests", 0]
             },
             tutor: {
-                $arrayElemAt: ["$userBasic.tutor", 0]
+              $arrayElemAt: ["$userBasic.tutor", 0]
             },
             intScore: {
-                $size: "$intScore"
+              $size: "$intScore"
             },
             isLiked: {
-                $ifNull: ["$isLike", false]
+              $ifNull: ["$isLike", false]
             },
-            
-        }
-    },
+
+          }
+        },
       );
       pipeline.push(
         {

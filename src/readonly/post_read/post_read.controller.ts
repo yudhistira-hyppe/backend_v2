@@ -1146,23 +1146,27 @@ export class PostsReadController {
 
 
 
-                    if (boosted !== null || boosted.length > 0 || boosted !==undefined) {
-                        console.log("boosted: " + data[i].postID);
-                        this.postsReadService.updateBoostViewer(data[i].postID, email);
-                        //pd.boostJangkauan = this.countBoosted(obj, email);
-                        if (boosted.length > 0) {
-                            if (boosted[0] != undefined) {
-                                boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
-                                boosted = boosted;
-                                await this.postsReadService.updateBoostCount(data[i].postID, boostCount + 1);
+                    if (boosted !== null && boosted !==undefined) {
+
+                        if(boosted.length > 0 ){
+                            console.log("boosted: " + data[i].postID);
+                            this.postsReadService.updateBoostViewer(data[i].postID, email);
+                            //pd.boostJangkauan = this.countBoosted(obj, email);
+                            if (boosted.length > 0) {
+                                if (boosted[0] != undefined) {
+                                    boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
+                                    boosted = boosted;
+                                    await this.postsReadService.updateBoostCount(data[i].postID, boostCount + 1);
+                                } else {
+                                    boostCount = 0;
+                                    boosted = [];
+                                }
                             } else {
                                 boostCount = 0;
                                 boosted = [];
                             }
-                        } else {
-                            boostCount = 0;
-                            boosted = [];
                         }
+                      
                     } else {
                         boostCount = 0;
                         boosted = [];
