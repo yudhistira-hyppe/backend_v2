@@ -3227,19 +3227,19 @@ export class PostsController {
             if (dataMedia.mediaSource.length>0) {
               if (dataMedia.mediaSource[0].uploadSource !== undefined) {
                 console.log("OSS");
-                if (dataMedia[0].mediaSource[0].uploadSource == "OSS") {
+                if (dataMedia.mediaSource[0].uploadSource == "OSS") {
                   var mediaMime = "";
-                  if (dataMedia[0].mediaSource[0].mediaMime != undefined) {
-                    mediaMime = dataMedia[0].mediaSource[0].mediaMime.toString();
+                  if (dataMedia.mediaSource[0].mediaMime != undefined) {
+                    mediaMime = dataMedia.mediaSource[0].mediaMime.toString();
                   } else {
                     mediaMime = "image/jpeg";
                   }
 
                   var path = "";
-                  if (dataMedia[0].mediaSource[0].mediaThumBasePath != undefined) {
-                    path = dataMedia[0].mediaSource[0].mediaThumBasePath.toString();
+                  if (dataMedia.mediaSource[0].mediaThumBasePath != undefined) {
+                    path = dataMedia.mediaSource[0].mediaThumBasePath.toString();
                   } else {
-                    path = dataMedia[0].mediaSource[0].mediaBasePath.toString();
+                    path = dataMedia.mediaSource[0].mediaBasePath.toString();
                   }
                   console.log(path);
 
@@ -3277,14 +3277,14 @@ export class PostsController {
                   let thum=null;
 
                   try{
-                    thum=dataMedia[0].mediaSource[0].fsTargetThumbUri;
+                    thum=dataMedia.mediaSource[0].fsTargetThumbUri;
                   }catch(e){
                     thum=null
                   }
                   if (thum != undefined && thum != null) {
-                    thum_data = dataMedia[0].mediaSource[0].fsTargetThumbUri;
+                    thum_data = dataMedia.mediaSource[0].fsTargetThumbUri;
                   } else {
-                    thum_data = dataMedia[0].mediaSource[0].fsSourceUri;
+                    thum_data = dataMedia.mediaSource[0].fsSourceUri;
                   }
                   if (thum_data != '') {
                     var data = await this.PostsService.thum(thum_data);
