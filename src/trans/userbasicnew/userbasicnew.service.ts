@@ -217,6 +217,23 @@ export class UserbasicnewService {
         ).exec();
     }
 
+    async findbyidboth(id: string): Promise<Userbasicnew> {
+        var mongo = require('mongoose');
+        return this.UserbasicnewModel.findOne(
+            {
+                "$or":
+                [
+                    {
+                        "_id": new mongo.Types.ObjectId(id)
+                    },
+                    {
+                        "_idAuth": new mongo.Types.ObjectId(id)
+                    }
+                ]
+            }
+        ).exec();
+    }
+
     async findGuestUser(): Promise<Userbasicnew[]> {
         return this.UserbasicnewModel.find({ guestMode: true }).exec();
     }
@@ -6157,7 +6174,82 @@ export class UserbasicnewService {
                 {
                     _id: 1,
                     email: 1,
-                    username: 1
+                    username: 1,
+                    fullName:1,
+                    mediaBasePath:1,
+                    mediaUri:1,
+                    mediaType:1,
+                    mediaEndpoint:1,
+                    urluserBadge:
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                "$filter":
+                                {
+                                    input: "$userBadge",
+                                    as: "listuserbadge",
+                                    cond:
+                                    {
+                                        "$and":
+                                            [
+                                                {
+                                                    "$eq":
+                                                        [
+                                                            "$$listuserbadge.isActive",
+                                                            true
+                                                        ]
+                                                },
+                                                {
+                                                    "$lte":
+                                                        [
+                                                            {
+                                                                "$dateToString": {
+                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                    "date": {
+                                                                        $add: [new Date(), 25200000]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "$$listuserbadge.endDatetime",
+
+                                                        ]
+                                                }
+                                            ]
+                                    },
+
+                                }
+                            },
+                            []
+                        ]
+                    }
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: 1,
+                    email: 1,
+                    username: 1,
+                    fullName:1,
+                    mediaBasePath:1,
+                    mediaUri:1,
+                    mediaType:1,
+                    mediaEndpoint:1,
+                    urluserBadge:
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                "$arrayElemAt":
+                                [
+                                    "$urluserBadge",0
+                                ]
+                            },
+
+                            null
+                        ]
+                    }
                 }
             }
         ]);

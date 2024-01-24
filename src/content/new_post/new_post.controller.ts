@@ -3347,7 +3347,7 @@ export class NewPostController {
                     let tp = atp[x];
                     if (tp?.namespace) {
                         let oid = tp.oid;
-                        let ua = await this.basic2SS.findbyidauth(oid.toString());
+                        let ua = await this.basic2SS.findbyidboth(oid.toString());
                         if (ua != undefined) {
                             let tp1 = new TagPeople();
                             tp1.email = String(ua.email);
