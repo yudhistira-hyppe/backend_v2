@@ -691,10 +691,9 @@ export class NewpostService {
                             ]
                     },
                     "statusCB": 1,
-                    "mediaEndpoint":
-                    {
-                        "$arrayElemAt": ["$userBasic.mediaEndpoint", 0]
-                    },
+                    mediaEndpoint: {
+                        "$concat": ["/pict/", "$postID"]
+                      },
                     "privacy": {
                         "isCelebrity":
                         {
