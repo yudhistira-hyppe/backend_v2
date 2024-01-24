@@ -7051,8 +7051,8 @@ export class NewPostService {
       {
         '$lookup': {
           from: 'newUserBasics',
-          localField: 'idUser',
-          foreignField: '_id',
+          localField: 'email',
+          foreignField: 'email',
           as: 'basicdata'
         }
       },
@@ -7898,8 +7898,8 @@ export class NewPostService {
         "$lookup":
         {
           from: "newUserBasics",
-          localField: "idUser",
-          foreignField: "_id",
+          localField: "email",
+          foreignField: "email",
           as: "basicdata",
         }
       },
@@ -8638,8 +8638,8 @@ export class NewPostService {
         $lookup:
         {
           from: 'newUserBasics',
-          localField: 'idUser',
-          foreignField: '_id',
+          localField: 'email',
+          foreignField: 'email',
           as: 'basicdata',
         }
       },
@@ -9305,19 +9305,13 @@ export class NewPostService {
             {
               "$unwind":
               {
-                path: "$viewerdata"
-              }
-            },
-            {
-              "$unwind":
-              {
-                path: "$viewerdata"
+                path: "$userView"
               }
             },
             {
               "$group":
               {
-                _id: "$viewerdata",
+                _id: "$userView",
                 totEmail: {
                   "$sum": 1
                 }
@@ -35689,10 +35683,37 @@ export class NewPostService {
         {
           "cleanUri":
           {
-            "$arrayElemAt":
-              [
-                "$mediaSource.mediaUri", 0
-              ]
+            "$cond":
+            {
+              if:
+              {
+                "$eq":
+                [
+                  {
+                    "$arrayElemAt":
+                    [
+                      "$mediaSource.apsara", 0
+                    ]
+                  },
+                  true
+                ]  
+              },
+              then:null,
+              else:
+              {
+                "$substr":
+                [
+                  {
+                    "$arrayElemAt":
+                    [
+                      "$mediaSource.mediaUri", 0
+                    ]
+                  },
+                  0, 
+                  36
+                ]
+              }
+            }
           },
           "tempmediaSource":
           {
