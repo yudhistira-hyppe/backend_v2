@@ -4480,6 +4480,38 @@ export class PostContentService {
     return file_commpress;
   }
 
+  async generate_upload_noresize(file: Express.Multer.File, format: string) {
+
+    //Get Image Information
+    var image_information = await sharp(file.buffer).metadata();
+    console.log("IMAGE INFORMATION", image_information);
+
+    // var image_height = image_information.height;
+    // var image_width = image_information.width;
+    // var image_size = image_information.size;
+    var image_format = image_information.format;
+    // var image_orientation = image_information.orientation;
+
+    var file_resize = null;
+    if (image_format == "heif") {
+      console.log("heif", "true");
+      file_resize = await convert({
+        buffer: file.buffer,
+        format: 'JPEG',
+        quality: 1
+      });
+    } else {
+      console.log("heif", "false");
+      file_resize = file;
+    }
+
+    //Convert Image
+    const buffers_file = await webp.buffer2webpbuffer(file_resize.buffer, format, "-q 70", this.configService.get("PATH_UPLOAD"));
+    var file_commpress = buffers_file;
+
+    return file_commpress;
+  }
+
   async generate_thumnail_buffer(buffer: Buffer, format: string) {
     var SIZE_IMAGE_UPLOAD = this.configService.get("SIZE_IMAGE_UPLOAD");
     var SIZE_IMAGE_RESIZE = this.configService.get("SIZE_IMAGE_RESIZE");

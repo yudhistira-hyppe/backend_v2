@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Headers, Get, Param, HttpStatus, Post, UseGuards, Logger, Query, UseInterceptors, UploadedFile, Res, Request } from '@nestjs/common';
+import { Body, Controller, HttpCode, Headers, Get, Param, HttpStatus, Post, UseGuards, Logger, Query, UseInterceptors, UploadedFile, Res, Request, UploadedFiles } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { AdsAction, AdsDto } from './dto/ads.dto';
 import { UtilsService } from '../../../utils/utils.service';
@@ -18,7 +18,7 @@ import { MediaprofilepictsService } from '../../../content/mediaprofilepicts/med
 import { AdsplacesService } from '../../../trans/adsplaces/adsplaces.service';
 import { AdstypesService } from '../../../trans/adstypes/adstypes.service';
 import { PostContentService } from '../../../content/posts/postcontent.service';
-import { FileInterceptor } from '@nestjs/platform-express/multer';
+import { FileInterceptor, AnyFilesInterceptor, FileFieldsInterceptor } from '@nestjs/platform-express/multer';
 import { OssContentPictService } from '../../../content/posts/osscontentpict.service';
 import { AdsLogsDto } from '../adslog/dto/adslog.dto';
 import { AdslogsService } from '../adslog/adslog.service';
@@ -58,7 +58,7 @@ export class AdsController {
         private adsBalaceCreditService: AdsBalaceCreditService,
         private readonly adsPriceCreditsService: AdsPriceCreditsService,
         private readonly uservouchersService: UservouchersService,
-        private readonly adsRewardsService: AdsRewardsService, 
+        private readonly adsRewardsService: AdsRewardsService,
         private readonly adsService: AdsService) {
         this.locks = new Map();
     }
@@ -180,6 +180,225 @@ export class AdsController {
                 height: Number(New_height),
                 width: Number(New_width)
             }
+            );
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/image/upload/v2')
+    @HttpCode(HttpStatus.ACCEPTED)
+    @UseInterceptors(AnyFilesInterceptor())
+    async imageAdsUploadV2(@UploadedFiles() files: Array<Express.Multer.File>, @Headers() headers, @Body() body) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/adsv2/ads/image/upload/v2';
+        var bodydata = body.imageAds
+
+        if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unauthorized',
+            );
+        }
+
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+            await this.errorHandler.generateNotAcceptableException(
+                'Unable to proceed, email header and token do not match',
+            );
+        }
+
+        var return_data = {
+            mediaBasePath: null,
+            mediaUri: null,
+            mediaThumBasePath: null,
+            mediaThumUri: null,
+            height: null,
+            width: null,
+            mediaPortraitBasePath: null,
+            mediaPortraitUri: null,
+            mediaPortraitThumBasePath: null,
+            mediaPortraitThumUri: null,
+            heightPortrait: null,
+            widthPortrait: null,
+            mediaLandscapeBasePath: null,
+            mediaLandscapeUri: null,
+            mediaLandscapeThumBasePath: null,
+            mediaLandscapeThumUri: null,
+            heightLandscape: null,
+            widthLandscape: null
+        }
+
+        var id = new mongoose.Types.ObjectId();
+        var extension = "jpg";
+
+        if (files != undefined && files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                var image_information = await sharp(files[i].buffer).metadata();
+                console.log("IMAGE INFORMATION", image_information);
+
+                var image_height = image_information.height;
+                var image_width = image_information.width;
+                var image_size = image_information.size;
+                var image_format = image_information.format;
+                var image_orientation = image_information.orientation;
+                console.log(image_information);
+
+                if (bodydata[i].type == "DEFAULT") {
+                    var filename = id + "." + extension;
+                    var filename_thum = id + "_thum." + extension;
+                    var filename_original = id + "_original." + extension;
+
+                    var path_file = "ads/" + id + "/" + filename;
+                    var path_file_thumb = "ads/" + id + "/" + filename_thum;
+                    var path_file_original = "ads/" + id + "/" + filename_original;
+
+                    var file_upload = await this.postContentService.generate_upload_noresize(files[i], "jpg");
+                    var file_thumnail = await this.postContentService.generate_thumnail(files[i], "jpg");
+
+                    var upload_file_upload = await this.adsService.uploadOss(file_upload, path_file);
+                    var upload_file_thumnail = await this.adsService.uploadOss(file_thumnail, path_file_thumb);
+                    this.adsService.uploadOss(file_thumnail, path_file_original);
+
+                    var url_filename = "";
+                    var url_filename_thum = "";
+
+                    if (upload_file_upload != undefined) {
+                        if (upload_file_upload.res != undefined) {
+                            if (upload_file_upload.res.statusCode != undefined) {
+                                if (upload_file_upload.res.statusCode == 200) {
+                                    url_filename = upload_file_upload.res.requestUrls[0];
+                                }
+                            }
+                        }
+                    }
+
+                    if (upload_file_thumnail != undefined) {
+                        if (upload_file_thumnail.res != undefined) {
+                            if (upload_file_thumnail.res.statusCode != undefined) {
+                                if (upload_file_thumnail.res.statusCode == 200) {
+                                    url_filename_thum = upload_file_thumnail.res.requestUrls[0];
+                                }
+                            }
+                        }
+                    }
+
+                    return_data = {
+                        ...return_data,
+                        mediaBasePath: path_file,
+                        mediaUri: url_filename,
+                        mediaThumBasePath: path_file_thumb,
+                        mediaThumUri: url_filename_thum,
+                        height: image_height,
+                        width: image_width
+                    }
+                } else if (bodydata[i].type == "PORTRAIT") {
+                    var filename = id + "_portrait." + extension;
+                    var filename_thum = id + "_portrait_thum." + extension;
+                    var filename_original = id + "_portrait_original." + extension;
+
+                    var path_file = "ads/" + id + "/" + filename;
+                    var path_file_thumb = "ads/" + id + "/" + filename_thum;
+                    var path_file_original = "ads/" + id + "/" + filename_original;
+
+                    var file_upload = await this.postContentService.generate_upload_noresize(files[i], "jpg");
+                    var file_thumnail = await this.postContentService.generate_thumnail(files[i], "jpg");
+
+                    var upload_file_upload = await this.adsService.uploadOss(file_upload, path_file);
+                    var upload_file_thumnail = await this.adsService.uploadOss(file_thumnail, path_file_thumb);
+                    this.adsService.uploadOss(file_thumnail, path_file_original);
+
+                    var url_filename = "";
+                    var url_filename_thum = "";
+
+                    if (upload_file_upload != undefined) {
+                        if (upload_file_upload.res != undefined) {
+                            if (upload_file_upload.res.statusCode != undefined) {
+                                if (upload_file_upload.res.statusCode == 200) {
+                                    url_filename = upload_file_upload.res.requestUrls[0];
+                                }
+                            }
+                        }
+                    }
+
+                    if (upload_file_thumnail != undefined) {
+                        if (upload_file_thumnail.res != undefined) {
+                            if (upload_file_thumnail.res.statusCode != undefined) {
+                                if (upload_file_thumnail.res.statusCode == 200) {
+                                    url_filename_thum = upload_file_thumnail.res.requestUrls[0];
+                                }
+                            }
+                        }
+                    }
+
+                    return_data = {
+                        ...return_data,
+                        mediaPortraitBasePath: path_file,
+                        mediaPortraitUri: url_filename,
+                        mediaPortraitThumBasePath: path_file_thumb,
+                        mediaPortraitThumUri: url_filename_thum,
+                        heightPortrait: image_height,
+                        widthPortrait: image_width
+                    }
+                } else if (bodydata[i].type == "LANDSCAPE") {
+                    var filename = id + "_landscape." + extension;
+                    var filename_thum = id + "_landscape_thum." + extension;
+                    var filename_original = id + "_landscape_original." + extension;
+
+                    var path_file = "ads/" + id + "/" + filename;
+                    var path_file_thumb = "ads/" + id + "/" + filename_thum;
+                    var path_file_original = "ads/" + id + "/" + filename_original;
+
+                    var file_upload = await this.postContentService.generate_upload_noresize(files[i], "jpg");
+                    var file_thumnail = await this.postContentService.generate_thumnail(files[i], "jpg");
+
+                    var upload_file_upload = await this.adsService.uploadOss(file_upload, path_file);
+                    var upload_file_thumnail = await this.adsService.uploadOss(file_thumnail, path_file_thumb);
+                    this.adsService.uploadOss(file_thumnail, path_file_original);
+
+                    var url_filename = "";
+                    var url_filename_thum = "";
+
+                    if (upload_file_upload != undefined) {
+                        if (upload_file_upload.res != undefined) {
+                            if (upload_file_upload.res.statusCode != undefined) {
+                                if (upload_file_upload.res.statusCode == 200) {
+                                    url_filename = upload_file_upload.res.requestUrls[0];
+                                }
+                            }
+                        }
+                    }
+
+                    if (upload_file_thumnail != undefined) {
+                        if (upload_file_thumnail.res != undefined) {
+                            if (upload_file_thumnail.res.statusCode != undefined) {
+                                if (upload_file_thumnail.res.statusCode == 200) {
+                                    url_filename_thum = upload_file_thumnail.res.requestUrls[0];
+                                }
+                            }
+                        }
+                    }
+
+                    return_data = {
+                        ...return_data,
+                        mediaLandscapeBasePath: path_file,
+                        mediaLandscapeUri: url_filename,
+                        mediaLandscapeThumBasePath: path_file_thumb,
+                        mediaLandscapeThumUri: url_filename_thum,
+                        heightLandscape: image_height,
+                        widthLandscape: image_width
+                    }
+                }
+            }
+
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+            return await this.errorHandler.generateAcceptResponseCodeWithData(
+                "Succesfully uploaded", return_data
             );
         }
     }
@@ -1742,9 +1961,9 @@ export class AdsController {
                 CreateUserAdsDto_.liveTypeuserads = data_ads[0].liveTypeAds;
                 CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_ads[0].typeAdsID);
                 CreateUserAdsDto_.nameType = data_ads[0].nameType;
-                if (data_ads[0].audiensFrekuensi==1) {
+                if (data_ads[0].audiensFrekuensi == 1) {
                     CreateUserAdsDto_.isActive = false;
-                }else{
+                } else {
                     CreateUserAdsDto_.isActive = true;
                 }
                 CreateUserAdsDto_.scoreAge = data_ads[0].scoreUmur;
@@ -1985,23 +2204,19 @@ export class AdsController {
             var get_profilePict = {};
             const data_userbasic_ads = await this.basic2SS.findOne(data_ads[0].userID.toString());
             if (data_userbasic_ads.mediaBasePath != undefined || data_userbasic_ads.mediaUri != undefined || data_userbasic_ads.mediaType != undefined || data_userbasic_ads.mediaEndpoint != undefined) {
-                if(data_userbasic_ads.mediaBasePath != undefined)
-                {
+                if (data_userbasic_ads.mediaBasePath != undefined) {
                     get_profilePict['mediaBasePath'] = data_userbasic_ads.mediaBasePath;
                 }
 
-                if(data_userbasic_ads.mediaUri != undefined)
-                {
+                if (data_userbasic_ads.mediaUri != undefined) {
                     get_profilePict['mediaUri'] = data_userbasic_ads.mediaUri;
                 }
 
-                if(data_userbasic_ads.mediaType != undefined)
-                {
+                if (data_userbasic_ads.mediaType != undefined) {
                     get_profilePict['mediaType'] = data_userbasic_ads.mediaType;
                 }
 
-                if(data_userbasic_ads.mediaEndpoint != undefined)
-                {
+                if (data_userbasic_ads.mediaEndpoint != undefined) {
                     get_profilePict['mediaEndpoint'] = data_userbasic_ads.mediaEndpoint;
                 }
             }
