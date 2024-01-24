@@ -23695,7 +23695,7 @@ export class TagCountService {
                                             }
                                         }
                                     },
-                                    
+                                    { '$text': { '$search': key } }
                                 ]
                             },
                             
@@ -23729,7 +23729,7 @@ export class TagCountService {
                                 },
                                 "comments": "$comments",
                                 "likes": "$likes",
-                                "scorePict": 1,
+                                "scorePict": { '$meta': 'textScore' },
                                 "_id": 1,
                                 "postID": 1,
                                 "createdAt": 1,
@@ -23798,7 +23798,7 @@ export class TagCountService {
                             $arrayElemAt: ['$pict.mediaSource.apsaraThumbId', 0]
                         },
                         "mediaEndpoint": {
-                            "$concat": ["/stream/", "$pict.postID"]
+                            "$concat": ["/pict/", "$pict.postID"]
                         },
                         "mediaUri": {
                             $arrayElemAt: ['$pict.mediaSource.mediaUri', 0]
