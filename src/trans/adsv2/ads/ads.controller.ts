@@ -1928,7 +1928,7 @@ export class AdsController {
         }
 
         //Validasi User
-        const data_userbasic = await this.userbasicsService.findOne(headers['x-auth-user']);
+        const data_userbasic = await this.basic2SS.findBymail(headers['x-auth-user']);
         if (!(await this.utilsService.ceckData(data_userbasic))) {
             AdsLogsDto_.responseAds = JSON.stringify({ response: "Unabled to proceed User not found" });
             await this.adslogsService.create(AdsLogsDto_);
@@ -1941,6 +1941,7 @@ export class AdsController {
             );
         }
         AdsLogsDto_.iduser = new mongoose.Types.ObjectId(data_userbasic._id.toString());
+        console.log("ok")
         const data_ads = await this.adsService.getAdsUser(headers['x-auth-user'], data_userbasic._id.toString(), id);
         console.log(data_ads);
         if (await this.utilsService.ceckData(data_ads)) {
@@ -1997,14 +1998,14 @@ export class AdsController {
             await this.adsService.updateData(data_ads[0]._id.toString(), data_Update_Ads)
 
             //Get Pict User Ads
-            var get_profilePict = null;
-            const data_userbasic_ads = await this.userbasicsService.findbyid(data_ads[0].userID.toString());
-            if (data_userbasic_ads.profilePict != undefined) {
-                if (data_userbasic_ads.profilePict != null) {
-                    var mediaprofilepicts_json = JSON.parse(JSON.stringify(data_userbasic_ads.profilePict));
-                    get_profilePict = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
-                }
-            }
+            const data_userbasic_ads = await this.basic2SS.findOne(data_ads[0].userID.toString());
+            // var get_profilePict = null;
+            // if (data_userbasic_ads.profilePict != undefined) {
+            //     if (data_userbasic_ads.profilePict != null) {
+            //         var mediaprofilepicts_json = JSON.parse(JSON.stringify(data_userbasic_ads.profilePict));
+            //         get_profilePict = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
+            //     }
+            // }
 
             //Create Response
             var data_response = {};
@@ -2027,13 +2028,11 @@ export class AdsController {
             data_response['scoreMinat'] = data_ads[0].scoreMinat;
             data_response['scoreGeografis'] = data_ads[0].scoreGeografis;
             data_response['scoreTotal'] = data_ads[0].scoreTotal;
-            if (await this.utilsService.ceckData(get_profilePict)) {
-                data_response['avartar'] = {
-                    mediaBasePath: (get_profilePict.mediaBasePath != undefined) ? get_profilePict.mediaBasePath : null,
-                    mediaUri: (get_profilePict.mediaUri != undefined) ? get_profilePict.mediaUri : null,
-                    mediaType: (get_profilePict.mediaType != undefined) ? get_profilePict.mediaType : null,
-                    mediaEndpoint: (get_profilePict.mediaID != undefined) ? '/profilepict/' + get_profilePict.mediaID : null,
-                }
+            data_response['avartar'] = {
+                mediaBasePath: (data_userbasic_ads.mediaBasePath != undefined) ? data_userbasic_ads.mediaBasePath : null,
+                mediaUri: (data_userbasic_ads.mediaUri != undefined) ? data_userbasic_ads.mediaUri : null,
+                mediaType: (data_userbasic_ads.mediaType != undefined) ? data_userbasic_ads.mediaType : null,
+                mediaEndpoint: (data_userbasic_ads.mediaEndpoint != undefined) ? '/profilepict/' + data_userbasic_ads.mediaEndpoint : null,
             }
             try {
                 data_response['placingID'] = data_ads[0].placingID.toString();

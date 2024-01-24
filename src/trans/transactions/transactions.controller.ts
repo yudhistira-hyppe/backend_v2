@@ -2835,7 +2835,7 @@ export class TransactionsController {
         var bodyen = "";
 
         var email_post = "";
-        var posts = await this.postsService.findid(postID);
+        var posts = await this.posts2SS.findid(postID);
         var bodyin_get = Templates_.body_detail_id.toString();
         var bodyen_get = Templates_.body_detail.toString();
         var post_type = "";
