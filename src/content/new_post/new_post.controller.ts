@@ -3532,6 +3532,7 @@ export class NewPostController {
         @Query('pageNumber') pageNumber: number,
         @Query('pageRow') pageRow: number,
         @Headers() headers) {
+        console.log("---------------------------------------------------------------GET BOST---------------------------------------------------------------")
         const pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
         const pageRow_ = (pageRow != undefined) ? (pageRow != 0) ? pageRow : 10 : 10;
         return this.newPostContentService.getUserPostBoost(pageNumber_, pageRow_, headers);
