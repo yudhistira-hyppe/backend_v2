@@ -13441,7 +13441,9 @@ export class NewPostService {
             {
               "$ifNull":
                 [
-                  "$mediaSource.mediaBasePath",
+                  {
+                    $arrayElemAt: ["$mediaSource.mediaBasePath", 0]
+                  },
                   null
                 ]
             },
@@ -13449,7 +13451,9 @@ export class NewPostService {
             {
               "$ifNull":
                 [
-                  "$mediaSource.mediaUri",
+                  {
+                    $arrayElemAt: ["$mediaSource.mediaUri", 0]
+                  },
                   null
                 ]
             },
@@ -13457,7 +13461,9 @@ export class NewPostService {
             {
               "$ifNull":
                 [
-                  "$mediaSource.mediaType",
+                  {
+                    $arrayElemAt: ["$mediaSource.mediaType", 0]
+                  },
                   null
                 ]
             },
@@ -13465,7 +13471,9 @@ export class NewPostService {
             {
               "$ifNull":
                 [
-                  "$mediaSource.mediaThumbEndpoint",
+                  {
+                    $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
+                  },
                   {
                     "$concat":
                       [
@@ -13479,7 +13487,9 @@ export class NewPostService {
             {
               "$ifNull":
                 [
-                  "$mediaSource.mediaEndpoint",
+                  {
+                    $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
+                  },
                   {
                     "$cond":
                     {
@@ -13514,12 +13524,18 @@ export class NewPostService {
             {
               "$ifNull":
                 [
-                  "$mediaSource.mediaThumbUri",
+                  {
+                    $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
+                  },
                   null
                 ]
             },
-            apsaraId: "$mediaSource.apsaraId",
-            apsara: "$mediaSource.apsara"
+            apsaraId: {
+              $arrayElemAt: ["$mediaSource.apsaraId", 0]
+            },
+            apsara: {
+              $arrayElemAt: ["$mediaSource.apsara", 0]
+            }
 
           }
         },
