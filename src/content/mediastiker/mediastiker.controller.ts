@@ -104,7 +104,7 @@ export class MediastikerController {
 
         if (type !== "GIF") {
             try {
-                datastiker = await this.MediastikerService.findByname(name, type);
+                datastiker = await this.MediastikerService.findByname(name, type,kategori,Number(nourut));
 
             } catch (e) {
                 datastiker = null;
@@ -305,7 +305,7 @@ export class MediastikerController {
             name = request_json["name"];
 
             try {
-                datastiker = await this.MediastikerService.findByname(name, type);
+                datastiker = await this.MediastikerService.findByname(name, type,kategori,Number(nourut));
 
             } catch (e) {
                 datastiker = null;
@@ -319,8 +319,9 @@ export class MediastikerController {
             } else {
                 insertdata.name = name;
             }
+           
         }
-
+        
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);

@@ -128,7 +128,7 @@ export class Ads {
     duration: number;
     @Prop()
     sizeFile: number;
-    
+
     @Prop()
     reportedStatus: string
     @Prop()
@@ -166,6 +166,30 @@ export class Ads {
     width: number;
     @Prop()
     height: number;
+    @Prop()
+    mediaPortraitBasePath: string;
+    @Prop()
+    mediaPortraitUri: string;
+    @Prop()
+    mediaPortraitThumBasePath: string;
+    @Prop()
+    mediaPortraitThumUri: string;
+    @Prop()
+    widthPortrait: number;
+    @Prop()
+    heightPortrait: number;
+    @Prop()
+    mediaLandscapeBasePath: string;
+    @Prop()
+    mediaLandscapeUri: string;
+    @Prop()
+    mediaLandscapeThumBasePath: string;
+    @Prop()
+    mediaLandscapeThumUri: string;
+    @Prop()
+    widthLandscape: number;
+    @Prop()
+    heightLandscape: number;
     @Prop()
     idAdspricecredits: mongoose.Types.ObjectId;
     @Prop()

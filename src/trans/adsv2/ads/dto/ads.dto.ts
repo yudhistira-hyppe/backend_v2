@@ -91,6 +91,18 @@ export class AdsDto {
     mediaThumUri: string;
     width: number;
     height: number;
+    mediaPortraitBasePath?: string;
+    mediaPortraitUri?: string;
+    mediaPortraitThumBasePath?: string;
+    mediaPortraitThumUri?: string;
+    widthPortrait?: number;
+    heightPortrait?: number;
+    mediaLandscapeBasePath?: string;
+    mediaLandscapeUri?: string;
+    mediaLandscapeThumBasePath?: string;
+    mediaLandscapeThumUri?: string;
+    widthLandscape?: number;
+    heightLandscape?: number;
     idAdspricecredits: mongoose.Types.ObjectId;
     adspricecredits: number;
     CPA: number;

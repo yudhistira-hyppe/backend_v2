@@ -26,6 +26,7 @@ import { SettingsService } from '../settings/settings.service';
 import { LogapisService } from '../logapis/logapis.service';
 import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
 import { NewPostService } from 'src/content/new_post/new_post.service';
+import { CreateNewPostDTO } from 'src/content/new_post/dto/create-newPost.dto';
 @Controller('api/reportuser')
 export class ReportuserController {
 
@@ -216,6 +217,405 @@ export class ReportuserController {
                     }
 
                     this.postsService.update(postID, createPostsDto);
+                } else {
+
+                    createPostsDto.contentModeration = contentModeration;
+                    createPostsDto.contentModerationResponse = contentModerationResponse;
+                    createPostsDto.reportedUserCount = parseInt(reportedUserCount) + parseInt(lenguserreport);
+                    if (reportedUserNew.length > 0) {
+                        createPostsDto.reportedUser = reportedUserNew;
+                    } else {
+
+                    }
+                    if (status == "BLURRED") {
+                        createPostsDto.reportedStatus = "BLURRED"
+                    } else {
+                        createPostsDto.reportedStatus = reportedStatus;
+                    }
+                    this.postsService.update(postID, createPostsDto);
+                }
+
+                var data = request_json;
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+                
+                return { response_code: 202, data, messages };
+
+
+            } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+                throw new BadRequestException("postID is not found...!");
+            }
+        }
+        else if (type === "ads") {
+
+
+            let createAdsDto = new CreateAdsDto();
+
+            let postid = mongoose.Types.ObjectId(postID);
+            try {
+                datacontent = await this.adsService.findOne(postID);
+
+
+            } catch (e) {
+                datacontent = null;
+            }
+
+            if (datacontent !== null) {
+
+                var reportedUserNew = [];
+                try {
+                    reportedUserNew = datacontent.reportedUser;
+                } catch (e) {
+                    reportedUserNew = [];
+                }
+
+                if (reportedUserNew === null || reportedUserNew === undefined) {
+                    reportedUserNew = [];
+                }
+
+                try {
+                    reportedUserCount = datacontent._doc.reportedUserCount;
+                } catch (e) {
+                    reportedUserCount = 0;
+                }
+                try {
+
+                    status = datacontent._doc.reportedStatus;
+                } catch (e) {
+                    status = null;
+                }
+
+
+                if (lenguserreport > 0) {
+                    for (let i = 0; i < lenguserreport; i++) {
+
+                        let iduser = reportedUser[i].userID;
+                        let email = reportedUser[i].email;
+                        let idreason = reportedUser[i].reportReasonId;
+                        let userid = mongoose.Types.ObjectId(iduser);
+                        let description = reportedUser[i].description;
+                        let reportReasonId = mongoose.Types.ObjectId(idreason);
+                        objreportuser = {
+                            "userID": userid,
+                            "email": email,
+                            "reportReasonId": reportReasonId,
+                            "createdAt": dt.toISOString(),
+                            "active": true,
+                            "description": description,
+                            "updatedAt": dt.toISOString(),
+                        };
+                        reportedUserNew.push(objreportuser);
+                    }
+                } else {
+
+                }
+
+
+
+
+                if (reportedUserCount === 0 || reportedUserCount === undefined) {
+
+                    createAdsDto.contentModeration = contentModeration;
+                    createAdsDto.contentModerationResponse = contentModerationResponse;
+                    createAdsDto.reportedUserCount = lenguserreport;
+
+                    if (reportedUserNew.length > 0) {
+                        createAdsDto.reportedUser = reportedUserNew;
+                    } else {
+
+                    }
+                    if (status == "BLURRED") {
+                        createAdsDto.reportedStatus = "BLURRED"
+                    } else {
+                        createAdsDto.reportedStatus = reportedStatus;
+                    }
+                    this.adsService.update(postID, createAdsDto);
+                } else {
+
+                    createAdsDto.contentModeration = contentModeration;
+                    createAdsDto.contentModerationResponse = contentModerationResponse;
+                    createAdsDto.reportedUserCount = parseInt(reportedUserCount) + parseInt(lenguserreport);
+                    if (reportedUserNew.length > 0) {
+                        createAdsDto.reportedUser = reportedUserNew;
+                    } else {
+
+                    }
+                    if (status == "BLURRED") {
+                        createAdsDto.reportedStatus = "BLURRED"
+                    } else {
+                        createAdsDto.reportedStatus = reportedStatus;
+                    }
+                    this.adsService.update(postID, createAdsDto);
+                }
+
+                var data = request_json;
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+                return { response_code: 202, data, messages };
+
+
+            } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+                throw new BadRequestException("Ads ID is not found...!");
+            }
+        }
+        else if (type === "user") {
+            let createUserbasicDto = new CreateUserbasicDto();
+            let postid = mongoose.Types.ObjectId(postID);
+            try {
+                datacontent = await this.userbasicsService.findbyid(postID);
+                console.log(datacontent)
+
+            } catch (e) {
+                datacontent = null;
+            }
+
+            if (datacontent !== null) {
+                var reportedUserNew = [];
+                try {
+                    reportedUserNew = datacontent.reportedUser;
+                } catch (e) {
+                    reportedUserNew = [];
+                }
+                if (reportedUserNew === null || reportedUserNew === undefined) {
+                    reportedUserNew = [];
+                }
+
+                try {
+                    reportedUserCount = datacontent._doc.reportedUserCount;
+                } catch (e) {
+                    reportedUserCount = 0;
+                }
+                if (lenguserreport > 0) {
+                    for (let i = 0; i < lenguserreport; i++) {
+                        let description = reportedUser[i].description;
+                        let iduser = reportedUser[i].userID;
+                        let email = reportedUser[i].email;
+                        let idreason = reportedUser[i].reportReasonId;
+                        let userid = mongoose.Types.ObjectId(iduser);
+                        let reportReasonId = mongoose.Types.ObjectId(idreason);
+                        objreportuser = {
+                            "userID": userid,
+                            "email": email,
+                            "reportReasonId": reportReasonId,
+                            "createdAt": dt.toISOString(),
+                            "active": true,
+                            "description": description,
+                            "updatedAt": dt.toISOString(),
+                        };
+                        reportedUserNew.push(objreportuser);
+                    }
+                } else {
+
+                }
+
+
+                if (reportedUserCount === 0 || reportedUserCount === undefined) {
+                    createUserbasicDto.reportedStatus = reportedStatus;
+                    createUserbasicDto.reportedUserCount = lenguserreport;
+
+                    if (reportedUserNew.length > 0) {
+                        createUserbasicDto.reportedUser = reportedUserNew;
+                    } else {
+
+                    }
+
+                    this.userbasicsService.update(postID, createUserbasicDto);
+                } else {
+                    createUserbasicDto.reportedStatus = reportedStatus;
+                    createUserbasicDto.reportedUserCount = parseInt(reportedUserCount) + parseInt(lenguserreport);
+                    if (reportedUserNew.length > 0) {
+                        createUserbasicDto.reportedUser = reportedUserNew;
+                    } else {
+
+                    }
+                    this.userbasicsService.update(postID, createUserbasicDto);
+                }
+
+                var data = request_json;
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+                return { response_code: 202, data, messages };
+
+
+            } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+                throw new BadRequestException("User ID is not found...!");
+            }
+        }
+
+
+        //deletetagpeople
+
+
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('create/V2')
+    async report2(@Req() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+        
+        var reportedStatus = null;
+        var reportedUserHandle = [];
+        var postID = null;
+        var data = null;
+        var reportedUserCount = null;
+        var lenguserreport = null
+        var lengreporthandle = null
+        var reportedUser = [];
+        var dataauth = null;
+        var arrayreportedUser = [];
+        var arrayreportedHandle = [];
+        var contentModeration = null;
+        var contentModerationResponse = null;
+        var datacontent = null;
+        var objreportuser = {};
+        var objreporthandle = {};
+        var type = null;
+
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        reportedStatus = request_json["reportedStatus"];
+
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        reportedUser = request_json["reportedUser"];
+        //reportedUserHandle = request_json["reportedUserHandle"];
+        contentModeration = request_json["contentModeration"];
+        contentModerationResponse = request_json["contentModerationResponse"];
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+        var status = null;
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        try {
+            lenguserreport = reportedUser.length;
+        } catch (e) {
+            lenguserreport = 0;
+        }
+
+
+        if (type === "content") {
+            let createPostsDto = new CreateNewPostDTO();
+            try {
+                datacontent = await this.post2SS.findByPostId(postID);
+
+
+            } catch (e) {
+                datacontent = null;
+            }
+
+            if (datacontent !== null) {
+
+
+                var reportedUserNew = [];
+                try {
+                    reportedUserNew = datacontent.reportedUser;
+                } catch (e) {
+                    reportedUserNew = [];
+                }
+
+                if (reportedUserNew === null || reportedUserNew === undefined) {
+                    reportedUserNew = [];
+                }
+
+
+                try {
+                    reportedUserCount = datacontent._doc.reportedUserCount;
+                } catch (e) {
+                    reportedUserCount = 0;
+                }
+
+                try {
+
+                    status = datacontent._doc.reportedStatus;
+                } catch (e) {
+                    status = null;
+                }
+
+                if (lenguserreport > 0) {
+                    for (let i = 0; i < lenguserreport; i++) {
+
+                        let iduser = reportedUser[i].userID;
+                        let email = reportedUser[i].email;
+                        let idreason = reportedUser[i].reportReasonId;
+                        let userid = mongoose.Types.ObjectId(iduser);
+                        let description = reportedUser[i].description;
+                        let reportReasonId = mongoose.Types.ObjectId(idreason);
+                        objreportuser = {
+                            "userID": userid,
+                            "email": email,
+                            "reportReasonId": reportReasonId,
+                            "createdAt": dt.toISOString(),
+                            "active": true,
+                            "description": description,
+                            "updatedAt": dt.toISOString(),
+                        };
+                        reportedUserNew.push(objreportuser);
+
+                    }
+                } else {
+
+                }
+
+                if (reportedUserCount === 0 || reportedUserCount === undefined) {
+
+                    createPostsDto.contentModeration = contentModeration;
+                    createPostsDto.contentModerationResponse = contentModerationResponse;
+                    createPostsDto.reportedUserCount = lenguserreport;
+                    if (reportedUserNew.length > 0) {
+                        createPostsDto.reportedUser = reportedUserNew;
+                    } else {
+
+                    }
+
+                    if (status == "BLURRED") {
+                        createPostsDto.reportedStatus = "BLURRED"
+                    } else {
+                        createPostsDto.reportedStatus = reportedStatus;
+                    }
+
+                    this.post2SS.update(postID, createPostsDto);
                 } else {
 
                     createPostsDto.contentModeration = contentModeration;

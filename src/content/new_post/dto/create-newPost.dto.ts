@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Long } from "mongodb";
 
 export class CreateNewPostDTO {
   //POST
@@ -7,16 +8,16 @@ export class CreateNewPostDTO {
   email: String;
   postType: String;
   description: String;
-  active: Boolean;
+  active: boolean;
   createdAt: String;
   updatedAt: String;
   expiration: Long;
   visibility: String;
   location: String;
   tags: any[];
-  allowComments: Boolean;
-  isSafe: Boolean;
-  isOwned: Boolean;
+  allowComments: boolean;
+  isSafe: boolean;
+  isOwned: boolean;
   likes: Long;
   views: Long;
   shares: Long;
@@ -24,7 +25,7 @@ export class CreateNewPostDTO {
   reactions: Long;
   userProfile: any;
   contentMedias: any[];
-  _class: any[];
+  _class: String;
   viewer: any[];
   metadata: {
     duration: Number
@@ -37,14 +38,14 @@ export class CreateNewPostDTO {
     width: Number
     height: Number
   }
-  isCertified: Boolean;
+  isCertified: boolean;
   boosted: any[];
   isShared: boolean
   category: any[];
   certified: boolean
   saleAmount: number;
-  saleLike: Boolean;
-  saleView: Boolean;
+  saleLike: boolean;
+  saleView: boolean;
   tagDescription: any[];
   tagPeople: any[];
   contentModerationDate: string
@@ -61,6 +62,8 @@ export class CreateNewPostDTO {
   stiker: any[];
   text: any[];
   boostCount: number;
+  lat: number;
+  lon: number;
 
   //CONTENT EVENT
   userView: any[];
@@ -68,6 +71,10 @@ export class CreateNewPostDTO {
 
   //MEDIA
   mediaSource: any[];
+
+  //Guest mode
+  tempView: any[];
+  tempLike: any[];
 }
 export class CreatePostResponse {
   response_code: number;

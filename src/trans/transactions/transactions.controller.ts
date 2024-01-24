@@ -2835,7 +2835,7 @@ export class TransactionsController {
         var bodyen = "";
 
         var email_post = "";
-        var posts = await this.postsService.findid(postID);
+        var posts = await this.posts2SS.findid(postID);
         var bodyin_get = Templates_.body_detail_id.toString();
         var bodyen_get = Templates_.body_detail.toString();
         var post_type = "";
@@ -3363,7 +3363,7 @@ export class TransactionsController {
                         datawithdraw.responOy = datadisbursemen;
                         datawithdraw.statusCode = statusdisb;
                         var datatr = await this.withdrawsService.create(datawithdraw);
-
+                       
                         var timestamps_end = await this.utilsService.getDateTimeString();
                         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
 
@@ -3396,7 +3396,7 @@ export class TransactionsController {
                     datawithdraw.responOy = datadisbursemen;
                     datawithdraw.statusCode = statusdisb;
                     var datatr = await this.withdrawsService.create(datawithdraw);
-
+                   
                     var timestamps_end = await this.utilsService.getDateTimeString();
                     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, reqbody);
 
@@ -9947,7 +9947,7 @@ export class TransactionsController {
                 };
             }
             else if (type === "Sell" && jenis === "BOOST_CONTENT+OWNERSHIP") {
-                databuy = await this.transactionsService.findhistorydetailsell(idtr, type, jenis, iduser);
+                databuy = await this.transactionsService.findhistorydetailsell2(idtr, type, jenis, iduser);
                 var postid = databuy[0].postID;
 
 

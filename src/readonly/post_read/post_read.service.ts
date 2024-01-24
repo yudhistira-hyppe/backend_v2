@@ -8975,7 +8975,6 @@ export class PostsReadService {
                         []
                       ]
                   },
-
                 }
               }
             ],

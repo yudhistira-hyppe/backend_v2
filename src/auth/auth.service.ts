@@ -14402,14 +14402,14 @@ export class AuthService {
 
     //Ceck User ActivityEvent Parent
     const user_activityevents = await this.activityeventsService.findParentWitoutDevice(
-      user_email,
+      user_email_header,
       type,
       false,
     );
 
     //Ceck User Userbasics
     const datauserbasicsService = await this.basic2SS.findBymail(
-      user_email,
+      user_email_header,
     );
 
     //Ceck User Userauths
@@ -14417,22 +14417,24 @@ export class AuthService {
     //   user_email,
     // );
 
-    if (await this.utilsService.ceckData(datauserbasicsService)) {
-      var usernameExisting = datauserbasicsService.username.toString();
-      if (usernameExisting != user_username) {
-        var ceckUsername = await this.utilsService.validateUsername(user_username);
-        if (!ceckUsername) {
-          throw new NotAcceptableException({
-            response_code: 406,
-            messages: {
-              info: ['Unabled to proceed, username is already in use'],
-            },
-          });
+    if (user_username != null) {
+      if (await this.utilsService.ceckData(datauserbasicsService)) {
+        var usernameExisting = datauserbasicsService.username.toString();
+        if (usernameExisting != user_username) {
+          var ceckUsername = await this.utilsService.validateUsername(user_username);
+          if (!ceckUsername) {
+            throw new NotAcceptableException({
+              response_code: 406,
+              messages: {
+                info: ['Unabled to proceed, username is already in use'],
+              },
+            });
+          }
         }
       }
     }
 
-    if ((await this.utilsService.ceckData(datauserbasicsService)) && (await this.utilsService.ceckData(datauserbasicsService))) {
+    if ((await this.utilsService.ceckData(datauserbasicsService))) {
       var id = datauserbasicsService._id.toString();
       var Data = {
         isEmailVerified: datauserbasicsService.isEmailVerified,
@@ -14826,7 +14828,7 @@ export class AuthService {
             }
 
             if (user_area != null || user_gender != null || user_dob != null || user_country != null) {
-              await this.basic2SS.updatebyEmail(user_email, data_update_userbasict);
+              await this.basic2SS.updatebyEmail(user_email_header, data_update_userbasict);
             }
           }
 
@@ -15068,7 +15070,7 @@ export class AuthService {
               }
             }
             if (user_area != null || user_gender != null || user_dob != null || user_country != null) {
-              await this.basic2SS.updatebyEmail(user_email, data_update_userbasict);
+              await this.basic2SS.updatebyEmail(user_email_header, data_update_userbasict);
             }
           }
 

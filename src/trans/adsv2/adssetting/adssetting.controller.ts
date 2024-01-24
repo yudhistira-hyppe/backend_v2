@@ -29,11 +29,11 @@ export class AdsSettingController {
         private readonly adsTypeService: AdsTypeService,
         private readonly userbasicsService: UserbasicsService,
         private readonly adslogsService: AdslogsService,
-        private readonly configService: ConfigService, 
+        private readonly configService: ConfigService,
         private readonly adsObjectivitasService: AdsObjectivitasService,
         private readonly logapiSS: LogapisService,
         private readonly adsPriceCreditsService: AdsPriceCreditsService,
-        private readonly adsRewardsService: AdsRewardsService, 
+        private readonly adsRewardsService: AdsRewardsService,
         private readonly errorHandler: ErrorHandler) { }
 
     @UseGuards(JwtAuthGuard)
@@ -81,7 +81,7 @@ export class AdsSettingController {
         var _remark_InContentAds_CPV_Price = this.configService.get("REMARK_ADS_IN_CONTENT_CPV_PRICE");
         var _remark_InContentAds_CPA_Price = this.configService.get("REMARK_ADS_IN_CONTENT_CPA_PRICE");
         var _remark_InContentAds_Economy_Sharing = this.configService.get("REMARK_ADS_IN_CONTENT_ECONOMY_SHARING");
-        
+
         var _id_InBetweenAds = this.configService.get("ID_ADS_IN_BETWEEN");
         var _remark_InBetweenAds_Duration_Min = this.configService.get("REMARK_ADS_IN_BETWEEN_DURATION_MIN");
         var _remark_InBetweenAds_Duration_Max = this.configService.get("REMARK_ADS_IN_BETWEEN_DURATION_MAX");
@@ -138,7 +138,7 @@ export class AdsSettingController {
             var getSetting_Objectivitas_Consideration = await this.adsObjectivitasService.findOne(_id_Objectivitas_Consideration);
             var getSetting_InContentAds = await this.adsTypeService.findOne(_id_InContentAds);
             var getSetting_InBetweenAds = await this.adsTypeService.findOne(_id_InBetweenAds);
-            var getSetting_PopUpAds = await this.adsTypeService.findOne(_id_PopUpAds); 
+            var getSetting_PopUpAds = await this.adsTypeService.findOne(_id_PopUpAds);
             var getSetting_CreditPrice = await this.adsPriceCreditsService.findStatusActive();
             var getSetting_Rewards_InContentAds = await this.adsRewardsService.findStatusActive(_id_InContentAds);
             var getSetting_Rewards_InBetweenAds = await this.adsRewardsService.findStatusActive(_id_InBetweenAds);
@@ -163,7 +163,7 @@ export class AdsSettingController {
             //----------------Get Log----------------
             var AwarenessSimiliarityAudienceMin = await this.adslogsService.getLog("AwarenessSimiliarityAudienceMin");
             var AwarenessSimiliarityAudienceMax = await this.adslogsService.getLog("AwarenessSimiliarityAudienceMax");
-            
+
             var ConsiderationSimiliarityAudienceMin = await this.adslogsService.getLog("ConsiderationSimiliarityAudienceMin");
             var ConsiderationSimiliarityAudienceMax = await this.adslogsService.getLog("ConsiderationSimiliarityAudienceMax");
 
@@ -177,7 +177,7 @@ export class AdsSettingController {
             var InContentCPAPrice = await this.adslogsService.getLog("InContentCPAPrice");
             var InContentCPVPrice = await this.adslogsService.getLog("InContentCPVPrice");
             var EconomySharingInContent = await this.adslogsService.getLog("EconomySharingInContent");
-            
+
             var InBetweenAdsDurationMin = await this.adslogsService.getLog("InBetweenAdsDurationMin");
             var InBetweenAdsDurationMax = await this.adslogsService.getLog("InBetweenAdsDurationMax");
             var InBetweenAdsSkipTimeMin = await this.adslogsService.getLog("InBetweenAdsSkipTimeMin");
@@ -185,7 +185,7 @@ export class AdsSettingController {
             var InBetweenCPAPrice = await this.adslogsService.getLog("InBetweenCPAPrice");
             var InBetweenCPVPrice = await this.adslogsService.getLog("InBetweenCPVPrice");
             var EconomySharingInBetween = await this.adslogsService.getLog("EconomySharingInBetween");
-            
+
             var PopUpAdsDurationMin = await this.adslogsService.getLog("PopUpAdsDurationMin");
             var PopUpAdsDurationMax = await this.adslogsService.getLog("PopUpAdsDurationMax");
             var PopUpAdsSkipTimeMin = await this.adslogsService.getLog("PopUpAdsSkipTimeMin");
@@ -193,7 +193,7 @@ export class AdsSettingController {
             var PopUpCPAPrice = await this.adslogsService.getLog("PopUpCPAPrice");
             var PopUpCPVPrice = await this.adslogsService.getLog("PopUpCPVPrice");
             var EconomySharingSPonsorPopUp = await this.adslogsService.getLog("EconomySharingSPonsorPopUp");
-            
+
             var CreditPrice = await this.adslogsService.getLog("CreditPrice");
             var AdsDurationMin = await this.adslogsService.getLog("AdsDurationMin");
             var AdsDurationMax = await this.adslogsService.getLog("AdsDurationMax");
@@ -267,7 +267,7 @@ export class AdsSettingController {
                 },
                 {
                     Jenis: "EconomySharingInContent",
-                    Nilai: (getSetting_Rewards_InContentAds.rewardPrice != undefined) ? getSetting_Rewards_InContentAds.rewardPrice : 0,
+                    Nilai: (getSetting_Rewards_InContentAds && getSetting_Rewards_InContentAds.rewardPrice != undefined) ? getSetting_Rewards_InContentAds.rewardPrice : 0,
                     Unit: "Rupiah",
                     Aktifitas: (EconomySharingInContent.length > 0) ? EconomySharingInContent[0].userbasics_data[0].fullName : "",
                     Date: (EconomySharingInContent.length > 0) ? EconomySharingInContent[0].dateTime : "-",
@@ -324,7 +324,7 @@ export class AdsSettingController {
                 },
                 {
                     Jenis: "EconomySharingInBetween",
-                    Nilai: (getSetting_Rewards_InBetweenAds.rewardPrice != undefined) ? getSetting_Rewards_InBetweenAds.rewardPrice : 0,
+                    Nilai: (getSetting_Rewards_InBetweenAds && getSetting_Rewards_InBetweenAds.rewardPrice != undefined) ? getSetting_Rewards_InBetweenAds.rewardPrice : 0,
                     Unit: "Rupiah",
                     Aktifitas: (EconomySharingInBetween.length > 0) ? EconomySharingInBetween[0].userbasics_data[0].fullName : "",
                     Date: (EconomySharingInBetween.length > 0) ? EconomySharingInBetween[0].dateTime : "-",
@@ -381,7 +381,7 @@ export class AdsSettingController {
                 },
                 {
                     Jenis: "EconomySharingSPonsorPopUp",
-                    Nilai: (getSetting_Rewards_PopUpAds.rewardPrice != undefined) ? getSetting_Rewards_PopUpAds.rewardPrice : 0,
+                    Nilai: (getSetting_Rewards_PopUpAds && getSetting_Rewards_PopUpAds.rewardPrice != undefined) ? getSetting_Rewards_PopUpAds.rewardPrice : 0,
                     Unit: "Rupiah",
                     Aktifitas: (EconomySharingSPonsorPopUp.length > 0) ? EconomySharingSPonsorPopUp[0].userbasics_data[0].fullName : "",
                     Date: (EconomySharingSPonsorPopUp.length > 0) ? EconomySharingSPonsorPopUp[0].dateTime : "-",
@@ -537,7 +537,7 @@ export class AdsSettingController {
                 adsSettingFilter = adsSetting;
             }
 
-            if (body.sort!=undefined){
+            if (body.sort != undefined) {
                 if (body.sort == "A-Z") {
                     adsSettingFilter.sort((a, b) => (a.Jenis > b.Jenis ? 1 : -1));
                 } else if (body.sort == "Z-A") {
@@ -553,7 +553,7 @@ export class AdsSettingController {
 
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
-            
+
             return await this.errorHandler.generateAcceptResponseCodeWithData(
                 "Get setting ads succesfully", responseData
             );
@@ -578,7 +578,7 @@ export class AdsSettingController {
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
-            
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
@@ -672,7 +672,7 @@ export class AdsSettingController {
         //----------------ADS Objectivitas Action----------------
         if (
             (body.ActionSimiliarityAudienceMin != undefined) ||
-            (body.ActionSimiliarityAudienceMax != undefined) 
+            (body.ActionSimiliarityAudienceMax != undefined)
         ) {
             var AdsObjectivitasDto_ = new AdsObjectivitasDto();
             //----------------SIMILIRITY MIN----------------
@@ -802,7 +802,7 @@ export class AdsSettingController {
             (body.InContentAdsSkipTimeMin != undefined) ||
             (body.InContentAdsSkipTimeMax != undefined) ||
             (body.InContentCPAPrice != undefined) ||
-            (body.InContentCPVPrice != undefined) 
+            (body.InContentCPVPrice != undefined)
         ) {
             var AdsTypeDto_ = new AdsTypeDto();
             //----------------DURATION MIN----------------
@@ -898,7 +898,7 @@ export class AdsSettingController {
             }
         }
 
-        if ((body.EconomySharingInContent != undefined)){
+        if ((body.EconomySharingInContent != undefined)) {
             //VALIDASI PARAM value
             var ceck_EconomySharingInContent = await this.utilsService.validateParam("EconomySharingInContent", body.EconomySharingInContent, "number")
             if (ceck_EconomySharingInContent != "") {
@@ -937,7 +937,7 @@ export class AdsSettingController {
             (body.InBetweenAdsSkipTimeMin != undefined) ||
             (body.InBetweenAdsSkipTimeMax != undefined) ||
             (body.InBetweenCPAPrice != undefined) ||
-            (body.InBetweenCPVPrice != undefined) 
+            (body.InBetweenCPVPrice != undefined)
         ) {
             var AdsTypeDto_ = new AdsTypeDto();
             //----------------DURATION MIN----------------
@@ -1075,7 +1075,7 @@ export class AdsSettingController {
             (body.PopUpAdsSkipTimeMin != undefined) ||
             (body.PopUpAdsSkipTimeMax != undefined) ||
             (body.PopUpCPAPrice != undefined) ||
-            (body.PopUpCPVPrice != undefined) 
+            (body.PopUpCPVPrice != undefined)
         ) {
             var AdsTypeDto_ = new AdsTypeDto();
             //----------------DURATION MIN----------------
@@ -1397,7 +1397,7 @@ export class AdsSettingController {
                 } catch (e) {
                     var timestamps_end = await this.utilsService.getDateTimeString();
                     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
-                    
+
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed, ' + e.toString(),
                     );
@@ -2007,7 +2007,7 @@ export class AdsSettingController {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = req.get("Host") + req.originalUrl;
         var reqbody = JSON.parse(JSON.stringify(body));
-            
+
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
@@ -2175,7 +2175,7 @@ export class AdsSettingController {
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
-            
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed email header dan token not match',
             );

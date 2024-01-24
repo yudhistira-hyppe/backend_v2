@@ -2281,7 +2281,7 @@ export class PostContentService {
     let tag = Posts_.tagPeople;
     if (tag != undefined && tag.length > 0) {
       tag.forEach(el => {
-        let oid = el.oid;
+        let oid = el.$id.toString();
         this.userAuthService.findById(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
             this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString());
@@ -2294,7 +2294,7 @@ export class PostContentService {
     let tagdescription = Posts_.tagDescription;
     if (tagdescription != undefined && tagdescription.length > 0) {
       tagdescription.forEach(el => {
-        let oid = el.oid;
+        let oid = el.$id.toString();
         this.userAuthService.findById(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
             this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString())
@@ -4477,6 +4477,38 @@ export class PostContentService {
       //file_commpress = await sharp(buffers_file).resize(Math.round(New_height), Math.round(New_width)).toBuffer();
       file_commpress = buffers_file;
     }
+    return file_commpress;
+  }
+
+  async generate_upload_noresize(file: Express.Multer.File, format: string) {
+
+    //Get Image Information
+    var image_information = await sharp(file.buffer).metadata();
+    console.log("IMAGE INFORMATION", image_information);
+
+    // var image_height = image_information.height;
+    // var image_width = image_information.width;
+    // var image_size = image_information.size;
+    var image_format = image_information.format;
+    // var image_orientation = image_information.orientation;
+
+    var file_resize = null;
+    if (image_format == "heif") {
+      console.log("heif", "true");
+      file_resize = await convert({
+        buffer: file.buffer,
+        format: 'JPEG',
+        quality: 1
+      });
+    } else {
+      console.log("heif", "false");
+      file_resize = file;
+    }
+
+    //Convert Image
+    const buffers_file = await webp.buffer2webpbuffer(file_resize.buffer, format, "-q 70", this.configService.get("PATH_UPLOAD"));
+    var file_commpress = buffers_file;
+
     return file_commpress;
   }
 

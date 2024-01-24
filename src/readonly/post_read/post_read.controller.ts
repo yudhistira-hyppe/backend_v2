@@ -445,7 +445,7 @@ export class PostsReadController {
 
         try {
 
-            data = await this.postsReadService.landingpageMy2(email, postType, parseInt(pageNumber), parseInt(pageRow), emailLogin);
+            data = await this.postsReadService.landingpageMy2V2(email, postType, parseInt(pageNumber), parseInt(pageRow), emailLogin);
             lengpict = data.length;
             console.log("data", data);
         } catch (e) {
