@@ -3385,8 +3385,8 @@ export class NewPostController {
                             if (tp1.email == userEmail) {
                                 tp1.status = "UNLINK";
                             } else {
-                                var checkexist = data_userbasic.follower.filter((element) => element == tp1.email);
-                                if(checkexist.length != 0)
+                                var checkexist = data_userbasic.following.find((element) => element == tp1.email);
+                                if(checkexist != null && checkexist != undefined)
                                 {
                                     tp1.status = 'FOLLOWING'
                                 }
