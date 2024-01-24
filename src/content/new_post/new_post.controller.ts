@@ -3527,7 +3527,7 @@ export class NewPostController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('api/posts/getboost/v2')
+    @Get('posts/getboost/v2')
     async getPostBoost(
         @Query('pageNumber') pageNumber: number,
         @Query('pageRow') pageRow: number,
