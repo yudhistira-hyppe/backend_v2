@@ -9947,7 +9947,7 @@ export class TransactionsController {
                 };
             }
             else if (type === "Sell" && jenis === "BOOST_CONTENT+OWNERSHIP") {
-                databuy = await this.transactionsService.findhistorydetailsell(idtr, type, jenis, iduser);
+                databuy = await this.transactionsService.findhistorydetailsell2(idtr, type, jenis, iduser);
                 var postid = databuy[0].postID;
 
 
