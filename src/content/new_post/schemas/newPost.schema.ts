@@ -132,6 +132,8 @@ export class newPosts {
   tempView: any[];
   @Prop()
   tempLike: any[];
+  @Prop()
+  boostCount: number;
 }
 
 export const NewpostsSchema = SchemaFactory.createForClass(newPosts);

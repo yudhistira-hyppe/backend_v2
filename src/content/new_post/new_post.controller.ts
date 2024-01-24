@@ -3525,4 +3525,15 @@ export class NewPostController {
 
         return { response_code: 202, data, messages };
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('api/posts/getboost')
+    async getPostBoost(
+        @Query('pageNumber') pageNumber: number,
+        @Query('pageRow') pageRow: number,
+        @Headers() headers) {
+        const pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
+        const pageRow_ = (pageRow != undefined) ? (pageRow != 0) ? pageRow : 10 : 10;
+        return this.newPostContentService.getUserPostBoost(pageNumber_, pageRow_, headers);
+    }
 }

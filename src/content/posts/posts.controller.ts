@@ -1964,7 +1964,7 @@ export class PostsController {
   // }
 
   @UseGuards(JwtAuthGuard)
-  @Get('api/posts/getboost')
+  @Get('api/posts/getboost/backup')
   async getPostBoost(
     @Query('pageNumber') pageNumber: number,
     @Query('pageRow') pageRow: number,

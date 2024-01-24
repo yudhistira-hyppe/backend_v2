@@ -4,7 +4,7 @@ import { newPosts, NewpostsDocument } from './schemas/newPost.schema';
 import mongoose, { Model } from 'mongoose';
 import { Long } from 'mongodb';
 import axios from 'axios';
-import { ApsaraImageResponse, ApsaraPlayResponse, ApsaraVideoResponse, Avatar, Cat, CreatePostResponse, ImageInfo, InsightPost, Messages, Metadata, PostData, Privacy, TagPeople, VideoList } from './dto/create-newPost.dto';
+import { ApsaraImageResponse, ApsaraPlayResponse, ApsaraVideoResponse, Avatar, Cat, CreatePostResponse, ImageInfo, InsightPost, Messages, Metadata, PostData, PostResponseApps, Privacy, TagPeople, VideoList } from './dto/create-newPost.dto';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { ConfigService } from '@nestjs/config';
 import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema';
@@ -1864,5 +1864,424 @@ export class NewPostContentService {
     }
 
     return post;
+  }
+
+  async getUserPostBoost(pageNumber: number, pageRow: number, headers: any) {
+    var timestamps_start = await this.utilService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/getboost";
+    var setdata = {
+      "pageNumber": pageNumber,
+      "pageRow": pageRow,
+    };
+    var reqbody = JSON.parse(JSON.stringify(setdata));
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.basic2SS.findBymail(auth.email);
+
+    let res = new PostResponseApps();
+    res.response_code = 202;
+    let posts = await this.doGetUserPostBoost(pageNumber, pageRow, profile);
+    let pd = await this.loadPostBoostData(posts, profile);
+    res.data = pd;
+
+    var timestamps_end = await this.utilService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
+    return res;
+  }
+
+  private async doGetUserPostBoost(pageNumber: number, pageRow: number, whoami: Userbasicnew): Promise<newPosts[]> {
+    var currentDateString = await this.utilService.getDateTimeISOString();
+    var currentDate = new Date(currentDateString);
+    var currentDateFormat = currentDate.toISOString().split('T')[0] + " " + currentDate.toISOString().split('T')[1].split('.')[0];
+    console.log(currentDate)
+    console.log(currentDate.toISOString().split('T')[0] + " " + currentDate.toISOString().split('T')[1].split('.')[0])
+    var perPage = Math.max(0, pageRow), page = Math.max(0, pageNumber);
+
+    const query = await this.loaddata.aggregate([
+      {
+        $match: {
+          "boosted": {
+            $exists: true,
+            $ne: null
+          }
+        }
+      },
+      {
+        $addFields: {
+          coutBoost: { $size: "$boosted" },
+          mediaId: ({ $arrayElemAt: ['$contentMedias', 0] }),
+        }
+      },
+      {
+        $match: {
+          $and: [
+            {
+              coutBoost: { $gt: 0 }
+            },
+            {
+              email: whoami.email.toString()
+            },
+            {
+              active: true
+            },
+          ]
+        }
+      },
+      {
+        $addFields: {
+          mediaId: '$mediaId.$id'
+        }
+      },
+      {
+        $addFields: {
+          media: "$mediaSource"
+        }
+      },
+      {
+        $unwind: {
+          path: "$boosted"
+        }
+      },
+      {
+        $addFields: {
+          boostJangkauan: { $size: "$boosted.boostViewer" },
+          boostStart: "$boosted.boostSession.start",
+          boostEnd: "$boosted.boostSession.end",
+          boostDate: "$boosted.boostDate",
+        }
+      },
+      {
+        $addFields: {
+          status: {
+            $switch: {
+              branches: [
+                { case: { $and: [{ $lte: ["$boostStart", currentDateFormat] }, { $gte: ["$boostEnd", currentDateFormat] }] }, then: "BERLANGSUNG" },
+                { case: { $and: [{ $gte: ["$boostStart", currentDateFormat] }, { $gte: ["$boostEnd", currentDateFormat] }] }, then: "AKAN DATANG" }
+              ],
+              "default": "SELESAI"
+            }
+          },
+        }
+      },
+      { $sort: { status: -1, boostDate: -1 } },
+      { $skip: (perPage * page) },
+      { $limit: perPage },
+    ])
+    return query;
+  }
+
+  private async loadPostBoostData(posts: newPosts[], iam: Userbasicnew): Promise<PostData[]> {
+    let pd = Array<PostData>();
+    if (posts != undefined) {
+      let vids: String[] = [];
+      let pics: String[] = [];
+      let postx: string[] = [];
+      for (let i = 0; i < posts.length; i++) {
+        let ps = posts[i];
+        let pa = new PostData();
+
+        pa.active = ps.active;
+        pa.allowComments = ps.allowComments;
+        pa.certified = ps.certified;
+        pa.createdAt = String(ps.createdAt);
+        pa.updatedAt = String(ps.updatedAt);
+        pa.description = String(ps.description);
+        pa.email = String(ps.email);
+        pa.boosted = [ps.boosted];
+        pa.isBoost = ps.isBoost;
+        pa.boostJangkauan = ps['boostJangkauan'];
+        pa.statusBoost = ps['status'];
+
+        if (ps.reportedStatus != undefined) {
+          pa.reportedStatus = ps.reportedStatus;
+        }
+        if (ps.reportedUserCount != undefined) {
+          pa.reportedUserCount = Number(ps.reportedUserCount);
+        }
+        pa.username = iam.username;
+        pa.avatar = await this.getProfileAvatar(iam);
+
+        pa.isApsara = false;
+        pa.location = ps.location;
+        pa.visibility = String(ps.visibility);
+
+        if (ps.metadata != undefined) {
+          let md = ps.metadata;
+          let md1 = new Metadata();
+          md1.duration = Number(md.duration);
+          md1.email = String(md.email);
+          md1.midRoll = Number(md.midRoll);
+          md1.postID = String(md.postID);
+          md1.postRoll = Number(md.postRoll);
+          md1.postType = String(md.postType);
+          md1.preRoll = Number(md.preRoll);
+          md1.width = (md.width != undefined) ? Number(md.width) : 0;
+          md1.height = (md.height != undefined) ? Number(md.height) : 0;
+          pa.metadata = md1;
+        }
+
+        pa.postID = String(ps.postID);
+        pa.postType = String(ps.postType);
+        pa.saleAmount = ps.saleAmount;
+        pa.saleLike = ps.saleLike;
+        pa.saleView = ps.saleView;
+
+        if (ps.tagPeople != undefined && ps.tagPeople.length > 0) {
+          let atp = ps.tagPeople;
+          let atp1 = Array<TagPeople>();
+
+          for (let x = 0; x < atp.length; x++) {
+            let tp = atp[i];
+            if (tp?.namespace) {
+              let oid = tp.oid;
+              let ua = await this.basic2SS.findOne(oid.toString());
+              if (ua != undefined) {
+                let tp1 = new TagPeople();
+                tp1.email = String(ua.email);
+                tp1.username = String(ua.username);
+                tp1.avatar = await this.getProfileAvatar(ua);
+
+                tp1.status = 'TOFOLLOW';
+                if (tp1.email == pa.email) {
+                  tp1.status = "UNLINK";
+                } else {
+                  let ceckFOLLOWING = iam.following.includes(tp1.email)
+                  if (ceckFOLLOWING) {
+                    tp1.status = "FOLLOWING";
+                  }
+                }
+                atp1.push(tp1);
+              }
+            }
+          }
+          pa.tagPeople = atp1;
+        }
+
+        if (ps.category != undefined && ps.category.length > 0) {
+          let atp = ps.category;
+          let atp1 = Array<Cat>();
+
+          for (let x = 0; x < atp.length; x++) {
+            let tp = atp[i];
+            if (tp?.namespace) {
+              let oid = tp.oid;
+              let ua = await this.interestService.findOne(oid.toString());
+              if (ua != undefined) {
+                let tp1 = new Cat();
+                tp1._id = String(ua._id);
+                tp1.interestName = String(ua.interestName);
+                tp1.langIso = String(ua.langIso);
+                tp1.icon = String(ua.icon);
+                tp1.createdAt = String(ua.createdAt);
+                tp1.updatedAt = String(ua.updatedAt);
+
+                atp1.push(tp1);
+              }
+            }
+          }
+          pa.cats = atp1;
+        }
+
+        let privacy = new Privacy();
+        privacy.isPostPrivate = false;
+        privacy.isPrivate = false;
+        privacy.isCelebrity = false;
+        pa.privacy = privacy;
+
+        //MEDIA
+        let meds = ps.contentMedias;
+        if (meds != undefined) {
+          for (let i = 0; i < meds.length; i++) {
+            let med = meds[i];
+            let ns = med.namespace;
+            if (ns == 'mediavideos') {
+              if (ps.mediaSource[0].apsara == true) {
+                vids.push(ps.mediaSource[0].apsaraId);
+                pa.apsaraId = String(ps.mediaSource[0].apsaraId);
+                pa.isApsara = true;
+              } else {
+                pa.mediaThumbUri = ps.mediaSource[0].mediaThumb;
+                pa.mediaEndpoint = '/stream/' + ps.mediaSource[0].mediaUri;
+                pa.mediaThumbEndpoint = '/thumb/' + ps.mediaSource[0].postID;
+              }
+
+              //mediatype
+              pa.mediaType = 'video';
+
+              //isview
+              pa.isViewed = false;
+              if (ps.userView != undefined ) {
+                if (ps.userView.length > 0) {
+                  for (let i = 0; i < ps.userView.length; i++) {
+                    let vwt = ps.userView[i];
+                    let vw = await this.basic2SS.findBymail(vwt);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }
+
+            } else if (ns == 'mediapicts') {
+              if (ps.mediaSource[0].apsara == true) {
+                pics.push(ps.mediaSource[0].apsaraId);
+                pa.apsaraId = String(ps.mediaSource[0].apsaraId);
+                pa.isApsara = true;
+              } else {
+                pa.mediaEndpoint = '/pict/' + ps.mediaSource[0].postID;
+                pa.mediaUri = ps.mediaSource[0].mediaUri;
+              }
+
+              pa.mediaType = 'image';
+
+              //isview
+              pa.isViewed = false;
+              if (ps.userView != undefined) {
+                if (ps.userView.length > 0) {
+                  for (let i = 0; i < ps.userView.length; i++) {
+                    let vwt = ps.userView[i];
+                    let vw = await this.basic2SS.findBymail(vwt);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }
+            } else if (ns == 'mediadiaries') {
+              if (ps.mediaSource[0].apsara == true) {
+                vids.push(ps.mediaSource[0].apsaraId);
+                pa.apsaraId = String(ps.mediaSource[0].apsaraId);
+                pa.isApsara = true;
+              } else {
+                pa.mediaThumbUri = ps.mediaSource[0].mediaThumb;
+                pa.mediaEndpoint = '/stream/' + ps.mediaSource[0].mediaUri;
+                pa.mediaThumbEndpoint = '/thumb/' + ps.mediaSource[0].postID;
+              }
+
+              pa.mediaType = 'video';
+
+              //isview
+              pa.isViewed = false;
+              if (ps.userView != undefined) {
+                if (ps.userView.length > 0) {
+                  for (let i = 0; i < ps.userView.length; i++) {
+                    let vwt = ps.userView[i];
+                    let vw = await this.basic2SS.findBymail(vwt);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }
+            } else if (ns == 'mediastories') {
+              if (ps.mediaSource[0].mediaType == 'video') {
+                if (ps.mediaSource[0].apsara == true) {
+                  vids.push(ps.mediaSource[0].apsaraId);
+                  pa.apsaraId = String(ps.mediaSource[0].apsaraId);
+                  pa.isApsara = true;
+                } else {
+                  pa.mediaThumbUri = ps.mediaSource[0].mediaThumb;
+                  pa.mediaEndpoint = '/stream/' + ps.mediaSource[0].mediaUri;
+                  pa.mediaThumbEndpoint = '/thumb/' + ps.mediaSource[0].postID;
+                }
+                pa.mediaType = 'video';
+              } else {
+                if (ps.mediaSource[0].apsara == true) {
+                  pics.push(ps.mediaSource[0].apsaraId);
+                  pa.apsaraId = String(ps.mediaSource[0].apsaraId);
+                  pa.isApsara = true;
+                } else {
+                  pa.mediaThumbUri = ps.mediaSource[0].mediaThumb;
+                  pa.mediaEndpoint = '/pict/' + ps.mediaSource[0].mediaUri;
+                  pa.mediaThumbEndpoint = '/thumb/' + ps.mediaSource[0].postID;
+                }
+                pa.mediaType = 'image';
+              }
+
+              //isview
+              pa.isViewed = false;
+              if (ps.userView != undefined) {
+                if (ps.userView.length > 0) {
+                  for (let i = 0; i < ps.userView.length; i++) {
+                    let vwt = ps.userView[i];
+                    let vw = await this.basic2SS.findBymail(vwt);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        postx.push(pa.postID);
+        pd.push(pa);
+      }
+
+      let insl = await this.contentEventService.findEventByEmail(String(iam.email), postx, 'LIKE');
+      let insh = new Map();
+      for (let i = 0; i < insl.length; i++) {
+        let ins = insl[i];
+        if (insh.has(String(ins.postID)) == false) {
+          insh.set(ins.postID, ins.postID);
+        }
+      }
+
+      if (vids.length > 0) {
+        let res = await this.getVideoApsara(vids);
+        if (res != undefined && res.VideoList != undefined && res.VideoList.length > 0) {
+          for (let i = 0; i < res.VideoList.length; i++) {
+            let vi = res.VideoList[i];
+            for (let j = 0; j < pd.length; j++) {
+              let ps = pd[j];
+              if (ps.apsaraId == vi.VideoId) {
+                ps.mediaThumbEndpoint = vi.CoverURL;
+              }
+              if (insh.has(String(ps.postID))) {
+                ps.isLiked = true;
+              } else {
+                ps.isLiked = false;
+              }
+            }
+          }
+        }
+      }
+
+      if (pics.length > 0) {
+        let res = await this.getImageApsara(pics);
+        if (res != undefined && res.ImageInfo != undefined && res.ImageInfo.length > 0) {
+          for (let i = 0; i < res.ImageInfo.length; i++) {
+            let vi = res.ImageInfo[i];
+            for (let j = 0; j < pd.length; j++) {
+              let ps = pd[j];
+              if (ps.apsaraId == vi.ImageId) {
+                ps.mediaEndpoint = vi.URL;
+                ps.mediaUri = vi.URL;
+
+                ps.mediaThumbEndpoint = vi.URL;
+                ps.mediaThumbUri = vi.URL;
+              }
+
+              if (ps.apsaraThumbId == vi.ImageId) {
+                ps.mediaThumbEndpoint = vi.URL;
+                ps.mediaThumbUri = vi.URL;
+              }
+              if (insh.has(String(ps.postID))) {
+                ps.isLiked = true;
+              } else {
+                ps.isLiked = false;
+              }
+            }
+          }
+        }
+      }
+    }
+    return pd;
   }
 }
