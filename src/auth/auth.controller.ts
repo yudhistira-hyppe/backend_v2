@@ -2431,15 +2431,13 @@ export class AuthController {
       }
 
       var activityevent_process = null;
-      if(user_userbasics.guestMode == true)
-      {
+      if (user_userbasics.guestMode == true) {
         activityevent_process = 'ENROL_GUEST';
       }
-      else
-      {
+      else {
         activityevent_process = 'LOGIN';
       }
-      
+
       //Ceck User ActivityEvent Parent
       const user_activityevents = await this.activityeventsService.findParent(
         user_email,
@@ -3019,6 +3017,70 @@ export class AuthController {
               // const blob = await response_.blob();
               // const arrayBuffer = await blob.arrayBuffer();
               // const buffer = Buffer.from(arrayBuffer);
+              var data = await this.authService.profilePict(mediaproofpicts_fsSourceUri);
+              if (data != null) {
+                response.set("Content-Type", mediaMime);
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
+  }
+
+  @Get('proofpict/v2/:id')
+  @HttpCode(HttpStatus.OK)
+  async proofpictv2(
+    @Param('id') id: string,
+    @Query('x-auth-token') token: string,
+    @Query('x-auth-user') email: string, @Res() response) {
+    if ((id != undefined) && (token != undefined) && (email != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+        var userbasic = await this.basic2SS.findOne(id);
+        console.log("userbasic:", userbasic);
+        if (userbasic.kyc[0].proofpictUploadSource != undefined) {
+          if (userbasic.kyc[0].proofpictUploadSource == "OSS") {
+            if (userbasic.kyc[0].mediaMime != undefined) {
+              mediaMime = userbasic.kyc[0].mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            var data2 = await this.ossService.readFile(userbasic.kyc[0].mediaBasePath.toString());
+            if (data2 != null) {
+              response.set("Content-Type", "image/jpeg");
+              response.send(data2);
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        } else {
+          if (await this.utilsService.ceckData(userbasic.kyc[0])) {
+            var mediaproofpicts_fsSourceUri = '';
+            var mediaMime = "";
+            if (userbasic.kyc[0] != null) {
+              if (userbasic.kyc[0].fsSourceUri != null) {
+                mediaproofpicts_fsSourceUri = userbasic.kyc[0].fsSourceUri.toString();
+              }
+            }
+            if (userbasic.kyc[0].mediaMime != undefined) {
+              mediaMime = userbasic.kyc[0].mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            if (mediaproofpicts_fsSourceUri != '') {
               var data = await this.authService.profilePict(mediaproofpicts_fsSourceUri);
               if (data != null) {
                 response.set("Content-Type", mediaMime);
@@ -5096,13 +5158,13 @@ export class AuthController {
 
                 //Update ActivityEvent Parent
                 await this.activityeventsService.update(
-                    {
-                      _id: user_activityevents[0]._id,
-                    },
-                    {
-                      transitions: data_transitions,
-                    },
-                  );
+                  {
+                    _id: user_activityevents[0]._id,
+                  },
+                  {
+                    transitions: data_transitions,
+                  },
+                );
               } catch (error) {
                 var fullurl = request.get("Host") + request.originalUrl;
                 var timestamps_end = await this.utilsService.getDateTimeString();
