@@ -631,7 +631,7 @@ export class NewPostContentService {
     const lang = await this.utilService.getUserlanguages(Posts_.email.toString());
 
     //Generate Certified
-    if (Posts_.certified) {
+    if (Posts_.certified == true) {
       console.log(Posts_.certified)
       console.log("---------------------------------------------------XXX 2---------------------------------------------------")
       this.generateCertificate(String(body.postID), lang.toString(), Posts_, data_userbasics);
@@ -704,7 +704,7 @@ export class NewPostContentService {
     let post = await this.buildUpdatePost(body, headers);
     let apost = await this.loaddata.create(post);
 
-    if (body.certified && body.certified == "true") {
+    if (body.certified && body.certified == true) {
       console.log("post cert: " + opost.certified);
       if (opost.certified == undefined || opost.certified == false) {
         console.log(body.certified)
