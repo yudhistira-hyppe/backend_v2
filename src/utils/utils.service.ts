@@ -2350,7 +2350,7 @@ export class UtilsService {
         if (await this.ceckData(get_userbasic)) {
           ProfileDTO_.isIdVerified = get_userbasic.isIdVerified.toString();
         }
-        ProfileDTO_.isEmailVerified = get_userbasic.isEmailVerified.toString();
+        if (get_userbasic.isEmailVerified != undefined) { ProfileDTO_.isEmailVerified = get_userbasic.isEmailVerified.toString(); }
         if (await this.ceckData(get_userbasic)) {
           if (get_userbasic.idProofStatus != undefined) { ProfileDTO_.idProofStatus = get_userbasic.idProofStatus; }
         }
