@@ -2234,8 +2234,6 @@ export class NewPostController {
 
         }
 
-        console.log(data);
-
         var tempapsaraMusicThumbId = [];
         var tempapsaraId = [];
         var tempapsaraThumbId = [];
@@ -3361,13 +3359,10 @@ export class NewPostController {
                                 var tempprofile = tp1.avatar;
                                 try
                                 {
-                                    if(ub.mediaBasePath != null || ub.mediaUri != null || ub.mediaType != null || ub.mediaEndpoint != null)
-                                    {
-                                        tempprofile.mediaBasePath = ub.mediaBasePath;
-                                        tempprofile.mediaUri = ub.mediaUri;
-                                        tempprofile.mediaType = ub.mediaType;
-                                        tempprofile.mediaEndpoint = ub.mediaEndpoint;
-                                    }
+                                    tempprofile.mediaBasePath = ub.mediaBasePath;
+                                    tempprofile.mediaUri = ub.mediaUri;
+                                    tempprofile.mediaType = ub.mediaType;
+                                    tempprofile.mediaEndpoint = ub.mediaEndpoint;
 
                                     tp1.avatar = tempprofile;
                                 }

@@ -35192,7 +35192,7 @@ export class NewPostService {
                   "$eq":
                   [
                       {
-                      "$arrayElemAt":
+                        "$arrayElemAt":
                           [
                           "$mediaSource.apsara", 0
                           ]
@@ -35200,7 +35200,7 @@ export class NewPostService {
                       true
                   ]
               },
-              then: null,
+              then: "$postID",
               else:
               {
                   "$substr":
@@ -35527,8 +35527,8 @@ export class NewPostService {
       },
     );
 
-    var util = require('util');
-    console.log(util.inspect(pipeline, { depth: null, showHidden: false }));
+    // var util = require('util');
+    // console.log(util.inspect(pipeline, { depth: null, showHidden: false }));
 
     var data = await this.loaddata.aggregate(pipeline);
     return data;
