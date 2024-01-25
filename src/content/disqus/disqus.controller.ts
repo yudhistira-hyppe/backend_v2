@@ -1497,7 +1497,7 @@ export class DisqusController {
                 if (media.mediaSource[0].mediaType != undefined) {
                   media_["mediaType"] = media.mediaSource[0].mediaType;
                 }
-                if (media[0].mediaSource[0].mediaType != undefined) {
+                if (media.mediaSource[0].mediaType != undefined) {
                   media_["mediaThumbEndpoint"] = "/thumb/" + inDto.postContent.postID;
                 }
                 if (inDto.postContent.postID != undefined) {
