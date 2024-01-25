@@ -26344,7 +26344,7 @@ export class PostsReadService {
                   $cond:
                   {
                     if: {
-                      $in: ["ahmad.taslim07@gmail.com", "$userBasic.follower"]
+                      $in: [email, {$arrayElemAt:["$userBasic.follower",0]}]
                     },
                     then: true,
                     else: false
@@ -27367,7 +27367,7 @@ export class PostsReadService {
                   $cond:
                   {
                     if: {
-                      $in: ["ahmad.taslim07@gmail.com", "$userBasic.follower"]
+                      $in: [email, {$arrayElemAt:["$userBasic.follower",0]}]
                     },
                     then: true,
                     else: false
@@ -28389,7 +28389,7 @@ export class PostsReadService {
                   $cond:
                   {
                     if: {
-                      $in: ["ahmad.taslim07@gmail.com", "$userBasic.follower"]
+                      $in: [email, {$arrayElemAt:["$userBasic.follower",0]}]
                     },
                     then: true,
                     else: false

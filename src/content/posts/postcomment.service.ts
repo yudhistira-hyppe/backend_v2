@@ -6,6 +6,7 @@ import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, Crea
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
+
 import { Mediavideos } from '../mediavideos/schemas/mediavideos.schema';
 import { UtilsService } from '../../utils/utils.service';
 import { InterestsService } from '../../infra/interests/interests.service';
@@ -71,6 +72,70 @@ export class PostCommentService {
   ) { }
 
   async removeComment(body: any, headers: any): Promise<CreatePostResponse> {
+    var timestamps_start = await this.utilService.getDateTimeString();
+    var fullurl = headers.host + "/api/posts/removecomment";
+    var reqbody = JSON.parse(JSON.stringify(body));
+
+    this.logger.log('removeComment >>> start: ' + JSON.stringify(body));
+    var res = new CreatePostResponse();
+    res.response_code = 204;
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+    if (profile == undefined) {
+      var timestamps_end = await this.utilService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);      
+
+      let msg = new Messages();
+      msg.info = ["Email unknown"];
+      res.messages = msg;
+      return res;
+    }
+
+    let dis = await this.disqusLogService.findOne(body.disqusLogID);
+    if (dis == undefined) {
+        var timestamps_end = await this.utilService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
+        let msg = new Messages();
+        msg.info = ["Disqus ID unknown"];
+        res.messages = msg;
+        return res;        
+    }
+
+    console.log((dis.sender == profile.email || dis.receiver == profile.email));
+    if (dis.sender == profile.email || dis.receiver == profile.email) {
+      var createDisquslogsDto_ = new CreateDisquslogsDto();
+      console.log((dis.sequenceNumber));
+      console.log((dis.sequenceNumber == 0));
+      if (dis.sequenceNumber==0){
+        this.postService.updateCommentMin(profile.email.toString(), dis.postID.toString());
+        var replyLog = dis.replyLogs;
+        console.log("replyLog : ",replyLog);
+      }
+      var ByparentID = await this.disqusLogService.findByParentID(body.disqusLogID);
+      console.log(ByparentID.length);
+      if (ByparentID.length > 0) {
+        this.postService.updateCommentMin2(profile.email.toString(), dis.postID.toString(), ((ByparentID.length)*-1));
+        await this.disqusLogService.updateMany(body.disqusLogID);
+      }
+      createDisquslogsDto_.active = false;
+      await this.disqusLogService.update(body.disqusLogID, createDisquslogsDto_);
+        //this.disqusLogService.delete(String(dis._id));
+    }
+
+    var timestamps_end = await this.utilService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);
+
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    
+    return res;
+  }
+  async removeComment2(body: any, headers: any): Promise<CreatePostResponse> {
     var timestamps_start = await this.utilService.getDateTimeString();
     var fullurl = headers.host + "/api/posts/removecomment";
     var reqbody = JSON.parse(JSON.stringify(body));
