@@ -2298,36 +2298,7 @@ export class NewPostController {
                 let gettempresultpictapsara_tempapsaraId = tempapsaraId_result.ImageInfo;
                 let gettempresultpictapsara_tempapsaraThumbId = tempapsaraThumbId_result.ImageInfo;
                 let gettempresultpictapsara_tempapsaraMusicThumbId = tempapsaraMusicThumbId_result.ImageInfo;
-                // for (let i = 0; i < lengpict; i++) {
 
-                //     uploadSource = data[i].uploadSource;
-                //     try {
-                //         apsaraId = data[i].apsaraId;
-                //     } catch (e) {
-                //         apsaraId = "";
-                //     }
-                //     try {
-                //         apsaraThumbId = data[i].apsaraThumbId;
-                //     } catch (e) {
-                //         apsaraThumbId = "";
-                //     }
-
-                //     if (apsaraId !== undefined && apsaraThumbId !== undefined) {
-                //         tempdatapict.push(data[i].apsaraThumbId);
-                //         // tempdatapict.push(data[i].apsaraId);
-
-                //     }
-                //     else if (apsaraId !== undefined && apsaraThumbId === undefined) {
-                //         tempdatapict.push(data[i].apsaraId);
-
-                //     }
-                //     else if (apsaraId === undefined && apsaraThumbId !== undefined) {
-                //         tempdatapict.push(data[i].apsaraThumbId);
-
-                //     }
-                // }
-                // resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
-                // let gettempresultpictapsara = resultpictapsara.ImageInfo;
                 for (let i = 0; i < lengpict; i++) {
                     emailreceiver = data[i].email;
                     boosted = data[i].boosted;
@@ -2363,59 +2334,6 @@ export class NewPostController {
                             }
                         }
                     }
-                    // emailreceiver = data[i].email;
-                    // boosted = data[i].boosted;
-                    // boostCount = data[i].boostCount;
-                    // var checkpictketemu = false;
-                    // uploadSource = data[i].uploadSource;
-                    // var dataUpsaraThum = (data[i].apsaraThumbId != undefined);
-                    // var dataUpsara = (data[i].apsaraId != undefined);
-
-                    // if (data[i].isApsara) {
-                    //     for (var j = 0; j < gettempresultpictapsara.length; j++) {
-
-                    //         if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
-                    //             if (data[i].apsaraThumbId == data[i].apsaraId) {
-                    //                 data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
-                    //             }
-                    //             if (!dataUpsara) {
-                    //                 data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
-                    //             }
-                    //             // checkpictketemu = true;
-                    //             data[i].media =
-                    //             {
-                    //                 "ImageInfo": [gettempresultpictapsara[j]]
-                    //             }
-
-                    //             data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-
-
-                    //         }
-                    //         else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
-                    //             if (data[i].apsaraThumbId == data[i].apsaraId) {
-                    //                 data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-                    //             }
-                    //             if (!dataUpsaraThum) {
-                    //                 data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-                    //             }
-                    //             checkpictketemu = true;
-                    //             data[i].media =
-                    //             {
-                    //                 "ImageInfo": [gettempresultpictapsara[j]]
-                    //             }
-
-                    //             data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
-
-                    //         }
-                    //     }
-                    // } else {
-                    //     data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
-                    // }
-
-
-
-
                     if (boosted !== null || boosted.length > 0) {
                         console.log("boosted: " + data[i].postID);
                         if (data[i].postID != undefined) {

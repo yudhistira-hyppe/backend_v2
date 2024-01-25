@@ -35356,12 +35356,7 @@ export class NewPostService {
                     ]
                   },
                   then:
-                  {
-                    "$arrayElemAt":
-                    [
-                      "$boosted", 0
-                    ]
-                  },
+                  "$boosted",
                   else:[]
                 },
               },
