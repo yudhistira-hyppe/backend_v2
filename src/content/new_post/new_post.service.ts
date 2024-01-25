@@ -36258,7 +36258,7 @@ export class NewPostService {
 
     // var util = require('util');
     // console.log(util.inspect(pipeline, { showHidden:false, depth:null }));
-
+    console.log(JSON.stringify(pipeline))
     var result = await this.loaddata.aggregate(pipeline);
     return result;
   }

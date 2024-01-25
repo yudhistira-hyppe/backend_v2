@@ -1057,7 +1057,6 @@ export class NewPostController {
         console.log(auth);
         var profile = await this.basic2SS.findbyemail(auth.email);
         if (profile == null) {
-
             var dt = new Date(Date.now());
             dt.setHours(dt.getHours() + 7); // timestamp
             dt = new Date(dt);
