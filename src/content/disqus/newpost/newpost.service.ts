@@ -754,7 +754,7 @@ export class NewpostService {
                             "$arrayElemAt": ["$userBasic.isPrivate", 0]
                         }
                     },
-
+                    isView: 1
                 }
             },
             {
