@@ -12,13 +12,14 @@ import { NestjsFormDataModule } from 'nestjs-form-data';
 import { LogticketsModule } from '../../logtickets/logtickets.module';
 import { MediaprofilepictsModule } from '../../../content/mediaprofilepicts/mediaprofilepicts.module';
 import { OssModule } from "../../../stream/oss/oss.module";
+import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
 @Module({
 
     imports: [
 
         UserbasicsModule, OssModule, UserticketsModule, UtilsModule, SeaweedfsModule, LogticketsModule, MediaprofilepictsModule, NestjsFormDataModule, ConfigService, ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Userticketdetails.name, schema: UserticketdetailsSchema }], 'SERVER_FULL'),
-        UserticketdetailsModule
+        UserticketdetailsModule, UserbasicnewModule
     ],
     controllers: [UserticketdetailsController],
     exports: [UserticketdetailsService],

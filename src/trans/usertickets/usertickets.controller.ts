@@ -19,6 +19,7 @@ import * as fs from 'fs';
 import { CreateLogticketsDto } from '../logtickets/dto/create-logtickets.dto';
 import { OssService } from "../../stream/oss/oss.service";
 import { LogapisService } from '../logapis/logapis.service';
+import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 //import FormData from "form-data";
 const multer = require('multer');
 var FormData = require('form-data');
@@ -65,7 +66,8 @@ export class UserticketsController {
     private readonly seaweedfsService: SeaweedfsService,
     private readonly ossService: OssService,
     private readonly logticketsService: LogticketsService,
-    private readonly logapiSS: LogapisService) { }
+    private readonly logapiSS: LogapisService,
+    private readonly basic2SS: UserbasicnewService) { }
 
 
 
@@ -481,7 +483,7 @@ export class UserticketsController {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var email = auth.email;
-    
+
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
     const messages = {
@@ -596,6 +598,113 @@ export class UserticketsController {
 
       let datalogticket = new CreateLogticketsDto();
       datalogticket.userId = iduser;
+      datalogticket.createdAt = dt.toISOString();
+      datalogticket.ticketId = idusertiket;
+      datalogticket.type = "change status";
+      datalogticket.remark = remark;
+      await this.logticketsService.create(datalogticket);
+
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      return res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "message": messages
+      });
+    } catch (e) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      return res.status(HttpStatus.BAD_REQUEST).json({
+
+        "message": messagesEror
+      });
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('api/usertickets/update/v2/:id')
+  async updatedatav2(@Res() res, @Param('id') id: string, @Req() request: Request, @Headers() headers, @Body() CreateUserticketsDto: CreateUserticketsDto) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/usertickets/update/' + id;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+    const messages = {
+      "info": ["The update was successful"],
+    };
+
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+
+    var email = headers['x-auth-user'];
+
+    var ubasic = await this.basic2SS.findBymail(email);
+
+    var iduser = ubasic._id;
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var categoryTicket = null;
+    var sourceTicket = null;
+    var levelTicket = null;
+    var assignTo = null;
+    var idcategory = null;
+    var idsource = null;
+    var idlevel = null;
+    var assignto = null;
+    var idusertiket = null;
+    var remark = null;
+    var userasign = null;
+    var emailassign = null;
+    var status = CreateUserticketsDto.status;
+    try {
+      if (request_json["categoryTicket"] !== undefined) {
+        categoryTicket = request_json["categoryTicket"];
+        idcategory = mongoose.Types.ObjectId(categoryTicket);
+        CreateUserticketsDto.categoryTicket = idcategory;
+      } else {
+
+      }
+      if (request_json["sourceTicket"] !== undefined) {
+        sourceTicket = request_json["sourceTicket"];
+        idsource = mongoose.Types.ObjectId(sourceTicket);
+        CreateUserticketsDto.sourceTicket = idsource;
+      } else {
+
+      }
+
+      if (request_json["levelTicket"] !== undefined) {
+        levelTicket = request_json["levelTicket"];
+        idlevel = mongoose.Types.ObjectId(levelTicket);
+        CreateUserticketsDto.levelTicket = idlevel;
+      } else {
+
+      }
+
+      if (request_json["assignTo"] !== undefined) {
+        assignTo = request_json["assignTo"];
+        assignto = mongoose.Types.ObjectId(assignTo);
+        CreateUserticketsDto.assignTo = assignto;
+        userasign = await this.userbasicsService.findbyid(assignTo);
+        emailassign = userasign.email;
+        remark = "change status to " + status + " and change assign to " + emailassign;
+      } else {
+        remark = "change status to " + status;
+      }
+
+      var idusertiket = mongoose.Types.ObjectId(id);
+      var status = CreateUserticketsDto.status;
+      let data = await this.userticketsService.updatedata(id, CreateUserticketsDto);
+
+      let datalogticket = new CreateLogticketsDto();
+      datalogticket.userId = mongoose.Types.ObjectId(iduser.toString());
       datalogticket.createdAt = dt.toISOString();
       datalogticket.ticketId = idusertiket;
       datalogticket.type = "change status";
