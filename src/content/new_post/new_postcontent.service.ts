@@ -31,6 +31,8 @@ import { ContentModService } from '../posts/contentmod.service';
 import { TemplatesRepoService } from 'src/infra/templates_repo/templates_repo.service';
 import { NewPostService } from './new_post.service';
 import { CreateUserplaylistDto } from 'src/trans/userplaylist/dto/create-userplaylist.dto';
+import { DisqusService } from '../disqus/disqus.service';
+import { DisquslogsService } from '../disquslogs/disquslogs.service';
 
 const webp = require('webp-converter');
 const sharp = require('sharp');
@@ -61,6 +63,8 @@ export class NewPostContentService {
     private picService: MediapictsService,
     private cmodService: ContentModService,
     private templateService: TemplatesRepoService,
+    private disqusService: DisqusService,
+    private disqusLogService: DisquslogsService,
   ) { }
 
 
@@ -1998,6 +2002,7 @@ export class NewPostContentService {
         pa.isBoost = ps.isBoost;
         pa.boostJangkauan = ps['boostJangkauan'];
         pa.statusBoost = ps['status'];
+        pa.stiker = ps.stiker;
 
         if (ps.reportedStatus != undefined) {
           pa.reportedStatus = ps.reportedStatus;
@@ -2231,6 +2236,13 @@ export class NewPostContentService {
         if (ceckLike) {
           pa.isLiked = true;
         }
+
+        let InsightPost_ = new InsightPost();
+        InsightPost_.likes = Number(ps.likes);
+        InsightPost_.views = Number(ps.views);
+        InsightPost_.shares = Number(ps.shares);
+        InsightPost_.comments = Number(ps.comments);
+        pa.insight = InsightPost_;
 
         postx.push(pa.postID);
         pd.push(pa);

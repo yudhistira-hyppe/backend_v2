@@ -6,7 +6,7 @@ import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, Crea
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
-
+import { UserbasicnewService } from '../../trans/userbasicnew/userbasicnew.service';
 import { Mediavideos } from '../mediavideos/schemas/mediavideos.schema';
 import { UtilsService } from '../../utils/utils.service';
 import { InterestsService } from '../../infra/interests/interests.service';
@@ -69,6 +69,7 @@ export class PostCommentService {
     private videoService: MediavideosService,
     private errorHandler: ErrorHandler,
     private logapiSS: LogapisService,
+    private UserbasicnewService: UserbasicnewService,
   ) { }
 
   async removeComment(body: any, headers: any): Promise<CreatePostResponse> {
