@@ -2220,17 +2220,15 @@ export class NewPostContentService {
             }
           }
         }
+
+        pa.isLiked = false;
+        let ceckLike = ps.userLike.includes(iam.email)
+        if (ceckLike) {
+          pa.isLiked = true;
+        }
+
         postx.push(pa.postID);
         pd.push(pa);
-      }
-
-      let insl = await this.contentEventService.findEventByEmail(String(iam.email), postx, 'LIKE');
-      let insh = new Map();
-      for (let i = 0; i < insl.length; i++) {
-        let ins = insl[i];
-        if (insh.has(String(ins.postID)) == false) {
-          insh.set(ins.postID, ins.postID);
-        }
       }
 
       if (vids.length > 0) {
@@ -2242,11 +2240,6 @@ export class NewPostContentService {
               let ps = pd[j];
               if (ps.apsaraId == vi.VideoId) {
                 ps.mediaThumbEndpoint = vi.CoverURL;
-              }
-              if (insh.has(String(ps.postID))) {
-                ps.isLiked = true;
-              } else {
-                ps.isLiked = false;
               }
             }
           }
@@ -2271,11 +2264,6 @@ export class NewPostContentService {
               if (ps.apsaraThumbId == vi.ImageId) {
                 ps.mediaThumbEndpoint = vi.URL;
                 ps.mediaThumbUri = vi.URL;
-              }
-              if (insh.has(String(ps.postID))) {
-                ps.isLiked = true;
-              } else {
-                ps.isLiked = false;
               }
             }
           }

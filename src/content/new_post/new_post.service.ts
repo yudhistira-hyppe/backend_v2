@@ -35758,7 +35758,7 @@ export class NewPostService {
       );
     }
 
-    if (search != null && search != undefined && search != email) {
+    if (search != null && search != undefined && search != email && search != "") {
       postmatch.push(
         {
           "email": search
@@ -36343,7 +36343,7 @@ export class NewPostService {
 
     // var util = require('util');
     // console.log(util.inspect(pipeline, { showHidden:false, depth:null }));
-
+    console.log(JSON.stringify(pipeline))
     var result = await this.loaddata.aggregate(pipeline);
     return result;
   }
@@ -37175,27 +37175,19 @@ export class NewPostService {
           }
       },
       {
-          $set: 
-          {
-              media: 
-              {
-                  isApsara: '$apsara',
-                  apsaraId: 1,
-                  apsaraThumbId: 1,
-                  mediaUri: 1,
-                  postID: 1,
-                  mediaEndpoint: {
-                      '$concat': ['/pict/', '$postID']
-                  },
-                  mediaThumbEndpoint: {
-                      '$concat': ['/thumb/', '$postID']
-                  },
-                  mediaThumbUri: '$mediaThumb',
-                  mediaType: 1,
-                  uploadSource: 1,
-                  mediaThumUri: 1
-              }
-          }
+        $set:{
+            media:{
+                  apsara: {$arrayElemAt:["$mediaSource.apsara",0]},
+                  apsaraId: {$arrayElemAt:["$mediaSource.apsaraId",0]},
+                  apsaraThumbId: {$arrayElemAt:["$mediaSource.apsaraThumId",0]},
+                  mediaEndpoint: { '$concat': [ '/pict/', "$postID" ] },
+                  mediaUri: {$arrayElemAt:["$mediaSource.apsara",0]},
+                  mediaThumbEndpoint: { '$concat': [ '/thumb/', "$postID"  ] },
+                  mediaThumbUri: {$arrayElemAt:["$mediaSource.mediaThumUri",0]},
+                  mediaType: {$arrayElemAt:["$mediaSource.mediaType",0]},
+                  uploadSource: {$arrayElemAt:["$mediaSource.uploadSource",0]},
+            }
+        }
       },
       {
           '$addFields': {
@@ -37634,26 +37626,80 @@ export class NewPostService {
               reportedUser: '$reportedUser',
               timeStart: '$timeStart',
               timeEnd: '$timeEnd',
-              apsaraId: '$mediaPost.apsaraId',
-              isApsara: '$mediaPost.isApsara',
-              apsaraThumbId: '$mediaPost.apsaraThumbId',
-              mediaEndpoint: '$mediaPost.mediaEndpoint',
-              mediaUri: '$mediaPost.mediaUri',
-              mediaThumbEndpoint: '$mediaPost.mediaThumbEndpoint',
-              mediaThumbUri: '$mediaPost.mediaThumbUri',
-              fullName: '$user.fullName',
-              username: '$uName.username',
+              apsaraId: '$media.apsaraId',
+              isApsara: '$media.isApsara',
+              apsaraThumbId: '$media.apsaraThumbId',
+              mediaEndpoint: '$media.mediaEndpoint',
+              mediaUri: '$media.mediaUri',
+              mediaThumbEndpoint: '$media.mediaThumbEndpoint',
+              mediaThumbUri: '$media.mediaThumbUri',
+              fullName: 
+              {
+                "$arrayElemAt":
+                [
+                  '$userBasic.fullName', 0
+                ]
+              },
+              username:
+              {
+                "$arrayElemAt":
+                [
+                  '$userBasic.username', 0
+                ]
+              },
               avatar: '$avatar',
               privacy: {
-                  isCelebrity: '$user.isCelebrity',
-                  isIdVerified: '$user.isIdVerified',
-                  isPrivate: '$user.isPrivate',
-                  isFollowPrivate: '$user.isFollowPrivate',
-                  isPostPrivate: '$user.isPostPrivate'
+                  isCelebrity: 
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isCelebrity', 0
+                    ]
+                  },
+                  isIdVerified: 
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isIdVerified', 0
+                    ]
+                  },
+                  isPrivate:
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isPrivate', 0
+                    ]
+                  },
+                  isFollowPrivate:
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isFollowPrivate', 0
+                    ]
+                  },
+                  isPostPrivate:
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isPostPrivate', 0
+                    ]
+                  }
               },
-              verified: '$user.fullName',
+              verified:
+              {
+                "$arrayElemAt":
+                [
+                  '$userBasic.fullName', 0
+                ]
+              },
               mailViewer: '$mailViewer',
-              userInterested: '$userInterest.userInterests',
+              userInterested: 
+              {
+                "$arrayElemAt":
+                [
+                  '$userInterest.userInterests', 0
+                ]
+              },
               
           }
       },
@@ -38268,27 +38314,19 @@ export class NewPostService {
           }
       },
       {
-          $set: 
-          {
-              media: 
-              {
-                  isApsara: '$apsara',
-                  apsaraId: 1,
-                  apsaraThumbId: 1,
-                  mediaUri: 1,
-                  postID: 1,
-                  mediaEndpoint: {
-                      '$concat': ['/stream/', '$postID']
-                  },
-                  mediaThumbEndpoint: {
-                      '$concat': ['/thumb/', '$postID']
-                  },
-                  mediaThumbUri: '$mediaThumb',
-                  mediaType: 1,
-                  uploadSource: 1,
-                  mediaThumUri: 1
-              }
-          }
+        $set:{
+            media:{
+                  apsara: {$arrayElemAt:["$mediaSource.apsara",0]},
+                  apsaraId: {$arrayElemAt:["$mediaSource.apsaraId",0]},
+                  apsaraThumbId: {$arrayElemAt:["$mediaSource.apsaraThumId",0]},
+                  mediaEndpoint: { '$concat': [ '/pict/', "$postID" ] },
+                  mediaUri: {$arrayElemAt:["$mediaSource.apsara",0]},
+                  mediaThumbEndpoint: { '$concat': [ '/thumb/', "$postID"  ] },
+                  mediaThumbUri: {$arrayElemAt:["$mediaSource.mediaThumUri",0]},
+                  mediaType: {$arrayElemAt:["$mediaSource.mediaType",0]},
+                  uploadSource: {$arrayElemAt:["$mediaSource.uploadSource",0]},
+            }
+        }
       },
       {
           '$addFields': {
@@ -38727,26 +38765,80 @@ export class NewPostService {
               reportedUser: '$reportedUser',
               timeStart: '$timeStart',
               timeEnd: '$timeEnd',
-              apsaraId: '$mediaPost.apsaraId',
-              isApsara: '$mediaPost.isApsara',
-              apsaraThumbId: '$mediaPost.apsaraThumbId',
-              mediaEndpoint: '$mediaPost.mediaEndpoint',
-              mediaUri: '$mediaPost.mediaUri',
-              mediaThumbEndpoint: '$mediaPost.mediaThumbEndpoint',
-              mediaThumbUri: '$mediaPost.mediaThumbUri',
-              fullName: '$user.fullName',
-              username: '$uName.username',
+              apsaraId: '$media.apsaraId',
+              isApsara: '$media.isApsara',
+              apsaraThumbId: '$media.apsaraThumbId',
+              mediaEndpoint: '$media.mediaEndpoint',
+              mediaUri: '$media.mediaUri',
+              mediaThumbEndpoint: '$media.mediaThumbEndpoint',
+              mediaThumbUri: '$media.mediaThumbUri',
+              fullName: 
+              {
+                "$arrayElemAt":
+                [
+                  '$userBasic.fullName', 0
+                ]
+              },
+              username:
+              {
+                "$arrayElemAt":
+                [
+                  '$userBasic.username', 0
+                ]
+              },
               avatar: '$avatar',
               privacy: {
-                  isCelebrity: '$user.isCelebrity',
-                  isIdVerified: '$user.isIdVerified',
-                  isPrivate: '$user.isPrivate',
-                  isFollowPrivate: '$user.isFollowPrivate',
-                  isPostPrivate: '$user.isPostPrivate'
+                  isCelebrity: 
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isCelebrity', 0
+                    ]
+                  },
+                  isIdVerified: 
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isIdVerified', 0
+                    ]
+                  },
+                  isPrivate:
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isPrivate', 0
+                    ]
+                  },
+                  isFollowPrivate:
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isFollowPrivate', 0
+                    ]
+                  },
+                  isPostPrivate:
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isPostPrivate', 0
+                    ]
+                  }
               },
-              verified: '$user.fullName',
+              verified:
+              {
+                "$arrayElemAt":
+                [
+                  '$userBasic.fullName', 0
+                ]
+              },
               mailViewer: '$mailViewer',
-              userInterested: '$userInterest.userInterests',
+              userInterested: 
+              {
+                "$arrayElemAt":
+                [
+                  '$userInterest.userInterests', 0
+                ]
+              },
               
           }
       },
@@ -39361,27 +39453,19 @@ export class NewPostService {
           }
       },
       {
-          $set: 
-          {
-              media: 
-              {
-                  isApsara: '$apsara',
-                  apsaraId: 1,
-                  apsaraThumbId: 1,
-                  mediaUri: 1,
-                  postID: 1,
-                  mediaEndpoint: {
-                      '$concat': ['/stream/', '$postID']
-                  },
-                  mediaThumbEndpoint: {
-                      '$concat': ['/thumb/', '$postID']
-                  },
-                  mediaThumbUri: '$mediaThumb',
-                  mediaType: 1,
-                  uploadSource: 1,
-                  mediaThumUri: 1
-              }
-          }
+        $set:{
+            media:{
+                  apsara: {$arrayElemAt:["$mediaSource.apsara",0]},
+                  apsaraId: {$arrayElemAt:["$mediaSource.apsaraId",0]},
+                  apsaraThumbId: {$arrayElemAt:["$mediaSource.apsaraThumId",0]},
+                  mediaEndpoint: { '$concat': [ '/pict/', "$postID" ] },
+                  mediaUri: {$arrayElemAt:["$mediaSource.apsara",0]},
+                  mediaThumbEndpoint: { '$concat': [ '/thumb/', "$postID"  ] },
+                  mediaThumbUri: {$arrayElemAt:["$mediaSource.mediaThumUri",0]},
+                  mediaType: {$arrayElemAt:["$mediaSource.mediaType",0]},
+                  uploadSource: {$arrayElemAt:["$mediaSource.uploadSource",0]},
+            }
+        }
       },
       {
           '$addFields': {
@@ -39820,26 +39904,80 @@ export class NewPostService {
               reportedUser: '$reportedUser',
               timeStart: '$timeStart',
               timeEnd: '$timeEnd',
-              apsaraId: '$mediaPost.apsaraId',
-              isApsara: '$mediaPost.isApsara',
-              apsaraThumbId: '$mediaPost.apsaraThumbId',
-              mediaEndpoint: '$mediaPost.mediaEndpoint',
-              mediaUri: '$mediaPost.mediaUri',
-              mediaThumbEndpoint: '$mediaPost.mediaThumbEndpoint',
-              mediaThumbUri: '$mediaPost.mediaThumbUri',
-              fullName: '$user.fullName',
-              username: '$uName.username',
+              apsaraId: '$media.apsaraId',
+              isApsara: '$media.isApsara',
+              apsaraThumbId: '$media.apsaraThumbId',
+              mediaEndpoint: '$media.mediaEndpoint',
+              mediaUri: '$media.mediaUri',
+              mediaThumbEndpoint: '$media.mediaThumbEndpoint',
+              mediaThumbUri: '$media.mediaThumbUri',
+              fullName: 
+              {
+                "$arrayElemAt":
+                [
+                  '$userBasic.fullName', 0
+                ]
+              },
+              username:
+              {
+                "$arrayElemAt":
+                [
+                  '$userBasic.username', 0
+                ]
+              },
               avatar: '$avatar',
               privacy: {
-                  isCelebrity: '$user.isCelebrity',
-                  isIdVerified: '$user.isIdVerified',
-                  isPrivate: '$user.isPrivate',
-                  isFollowPrivate: '$user.isFollowPrivate',
-                  isPostPrivate: '$user.isPostPrivate'
+                  isCelebrity: 
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isCelebrity', 0
+                    ]
+                  },
+                  isIdVerified: 
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isIdVerified', 0
+                    ]
+                  },
+                  isPrivate:
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isPrivate', 0
+                    ]
+                  },
+                  isFollowPrivate:
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isFollowPrivate', 0
+                    ]
+                  },
+                  isPostPrivate:
+                  {
+                    "$arrayElemAt":
+                    [
+                      '$userBasic.isPostPrivate', 0
+                    ]
+                  }
               },
-              verified: '$user.fullName',
+              verified:
+              {
+                "$arrayElemAt":
+                [
+                  '$userBasic.fullName', 0
+                ]
+              },
               mailViewer: '$mailViewer',
-              userInterested: '$userInterest.userInterests',
+              userInterested: 
+              {
+                "$arrayElemAt":
+                [
+                  '$userInterest.userInterests', 0
+                ]
+              },
               
           }
       },
@@ -40034,7 +40172,7 @@ export class NewPostService {
 
     // var util = require('util');
     // console.log(util.inspect(renderfacet, { depth:null, showHidden:false }));
-    
+
     var data = await this.loaddata.aggregate([
       {
         "$facet":renderfacet
