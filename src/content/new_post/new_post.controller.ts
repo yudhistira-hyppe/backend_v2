@@ -2196,7 +2196,7 @@ export class NewPostController {
 
         var pageNumber = null;
         var pageRow = null;
-        var postType = null;
+        var postType = body.postType;
         var data = null;
         var datasearch = null;
         var emailreceiver = null;
@@ -2204,11 +2204,14 @@ export class NewPostController {
             pageNumber = body.pageNumber;
         }
 
-        if (body.pageRow !== undefined) {
-            pageRow = body.pageRow;
+        if(body.pageRow != null && body.pageRow != undefined)
+        {
+            pageRow = parseInt(body.pageRow);
         }
-        if (body.postType !== undefined) {
-            postType = body.postType;
+
+        if(body.pageNumber != null && body.pageNumber != undefined)
+        {
+            pageNumber = parseInt(body.pageNumber);
         }
 
 

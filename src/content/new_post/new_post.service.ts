@@ -35035,6 +35035,15 @@ export class NewPostService {
         },
       },
       {
+        "$lookup":
+        {
+          from:"newUserBasics",
+          localField:"email",
+          foreignField:"email",
+          as:"userBasic"
+        }
+      },
+      {
         "$lookup": {
           from: "mediamusic",
           as: "music",
@@ -35429,7 +35438,7 @@ export class NewPostService {
           },
           mailViewer: "$mailViewer",
           userInterested: {
-            $arrayElemAt: ["$userInt.userInterests", 0]
+            $arrayElemAt: ["$userBasic.userInterests.$id", 0]
           },
           tutor: {
             $arrayElemAt: ["$userBasic.tutor", 0]
