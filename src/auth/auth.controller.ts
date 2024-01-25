@@ -2816,6 +2816,125 @@ export class AuthController {
     }
   }
 
+  @Get('profilepict/v2/:id')
+  @HttpCode(HttpStatus.OK)
+  async profilePicV2(
+    @Param('id') id: string,
+    @Query('x-auth-token') token: string,
+    @Query('x-auth-user') email: string, @Res() response, @Req() req) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
+    if ((id != undefined) && (token != undefined) && (email != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+        var mediaprofilepicts = await this.basic2SS.findOne(id);
+        console.log(mediaprofilepicts);
+        if (await this.utilsService.ceckData(mediaprofilepicts)) {
+          if (mediaprofilepicts.uploadSource != undefined) {
+            console.log("OSS");
+            if (mediaprofilepicts.uploadSource == "OSS") {
+              if (mediaprofilepicts.mediaMime != undefined) {
+                mediaMime = mediaprofilepicts.mediaMime.toString();
+              } else {
+                mediaMime = "image/jpeg";
+              }
+
+              var path = "";
+              if (mediaprofilepicts.mediaThumBasePath != undefined) {
+                path = mediaprofilepicts.mediaThumBasePath.toString();
+              } else {
+                path = mediaprofilepicts.mediaBasePath.toString();
+              }
+              console.log(path);
+
+              var data2 = await this.ossService.readFile(path);
+              console.log(data2);
+              if (data2 != null) {
+                var fullurl = req.get("Host") + req.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                response.set("Content-Type", "image/jpeg");
+                response.send(data2);
+              } else {
+                var fullurl = req.get("Host") + req.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                response.send(null);
+              }
+            } else {
+              var fullurl = req.get("Host") + req.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+              response.send(null);
+            }
+          } else {
+            console.log("NON OSS");
+            var mediaprofilepicts_fsSourceUri = '';
+            var mediaMime = "";
+            if (mediaprofilepicts != null) {
+              if (mediaprofilepicts.fsSourceUri != null) {
+                mediaprofilepicts_fsSourceUri = mediaprofilepicts.fsSourceUri.toString();
+              }
+            }
+            if (mediaprofilepicts.mediaMime != undefined) {
+              mediaMime = mediaprofilepicts.mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            if (mediaprofilepicts_fsSourceUri != '') {
+              // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
+              // const response_ = await fetch(url);
+              // const blob = await response_.blob();
+              // const arrayBuffer = await blob.arrayBuffer();
+              // const buffer = Buffer.from(arrayBuffer);
+              var data = await this.authService.profilePict(mediaprofilepicts_fsSourceUri);
+              if (data != null) {
+                var fullurl = req.get("Host") + req.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                response.set("Content-Type", mediaMime);
+                response.send(data);
+              } else {
+                var fullurl = req.get("Host") + req.originalUrl;
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                response.send(null);
+              }
+            } else {
+              var fullurl = req.get("Host") + req.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+              response.send(null);
+            }
+          }
+        } else {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+          response.send(null);
+        }
+      } else {
+        var fullurl = req.get("Host") + req.originalUrl;
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+        response.send(null);
+      }
+    } else {
+      var fullurl = req.get("Host") + req.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, null);
+
+      response.send(null);
+    }
+  }
+
   @Get('profilepict/orignal/:id')
   @HttpCode(HttpStatus.OK)
   async profilePictOri(
@@ -2897,6 +3016,82 @@ export class AuthController {
     }
   }
 
+  @Get('profilepict/orignal/v2/:id')
+  @HttpCode(HttpStatus.OK)
+  async profilePictOriV2(
+    @Param('id') id: string,
+    @Query('x-auth-token') token: string,
+    @Query('x-auth-user') email: string, @Res() response) {
+    if ((id != undefined) && (token != undefined) && (email != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+        var mediaprofilepicts = await this.basic2SS.findOne(id);
+        console.log(mediaprofilepicts);
+        if (await this.utilsService.ceckData(mediaprofilepicts)) {
+          if (mediaprofilepicts.uploadSource != undefined) {
+            console.log("OSS");
+            if (mediaprofilepicts.uploadSource == "OSS") {
+              if (mediaprofilepicts.mediaMime != undefined) {
+                mediaMime = mediaprofilepicts.mediaMime.toString();
+              } else {
+                mediaMime = "image/jpeg";
+              }
+
+              var path = "";
+              if (mediaprofilepicts.mediaBasePath != undefined) {
+                path = mediaprofilepicts.mediaBasePath.toString();
+              } else {
+                path = mediaprofilepicts.mediaThumBasePath.toString();
+              }
+              console.log(path);
+
+              var data2 = await this.ossService.readFile(path);
+              console.log(data2);
+              if (data2 != null) {
+                response.set("Content-Type", "image/jpeg");
+                response.send(data2);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
+          } else {
+            console.log("NON OSS");
+            var mediaprofilepicts_fsSourceUri = '';
+            var mediaMime = "";
+            if (mediaprofilepicts != null) {
+              if (mediaprofilepicts.fsSourceUri != null) {
+                mediaprofilepicts_fsSourceUri = mediaprofilepicts.fsSourceUri.toString();
+              }
+            }
+            if (mediaprofilepicts.mediaMime != undefined) {
+              mediaMime = mediaprofilepicts.mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            if (mediaprofilepicts_fsSourceUri != '') {
+              var data = await this.authService.profilePict(mediaprofilepicts_fsSourceUri);
+              if (data != null) {
+                response.set("Content-Type", mediaMime);
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
+          }
+        } else {
+          response.send(null);
+        }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
+  }
+
   @Get('proofpict/thum/:id')
   @HttpCode(HttpStatus.OK)
   async proofpictThum(
@@ -2949,6 +3144,76 @@ export class AuthController {
               // const blob = await response_.blob();
               // const arrayBuffer = await blob.arrayBuffer();
               // const buffer = Buffer.from(arrayBuffer);
+              var data = await this.authService.profilePict(mediaproofpicts_fsSourceUri);
+              if (data != null) {
+                response.set("Content-Type", mediaMime);
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
+  }
+
+  @Get('proofpict/thum/v2/:id')
+  @HttpCode(HttpStatus.OK)
+  async proofpictThumV2(
+    @Param('id') id: string,
+    @Query('x-auth-token') token: string,
+    @Query('x-auth-user') email: string, @Res() response) {
+    if ((id != undefined) && (token != undefined) && (email != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+        var userbasic = await this.basic2SS.findOne(id);
+        var mediaproofpicts = userbasic.kyc[0];
+        if (mediaproofpicts.proofpictUploadSource != undefined) {
+          if (mediaproofpicts.proofpictUploadSource == "OSS") {
+            if (mediaproofpicts.mediaMime != undefined) {
+              mediaMime = mediaproofpicts.mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            var path = "";
+            if (mediaproofpicts.mediaThumBasePath != undefined) {
+              path = mediaproofpicts.mediaThumBasePath.toString();
+            } else {
+              path = mediaproofpicts.mediaBasePath.toString();
+            }
+            var data2 = await this.ossService.readFile(path);
+            if (data2 != null) {
+              response.set("Content-Type", "image/jpeg");
+              response.send(data2);
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        } else {
+          if (await this.utilsService.ceckData(mediaproofpicts)) {
+            var mediaproofpicts_fsSourceUri = '';
+            var mediaMime = "";
+            if (mediaproofpicts != null) {
+              if (mediaproofpicts.fsSourceUri != null) {
+                mediaproofpicts_fsSourceUri = mediaproofpicts.fsSourceUri.toString();
+              }
+            }
+            if (mediaproofpicts.mediaMime != undefined) {
+              mediaMime = mediaproofpicts.mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            if (mediaproofpicts_fsSourceUri != '') {
               var data = await this.authService.profilePict(mediaproofpicts_fsSourceUri);
               if (data != null) {
                 response.set("Content-Type", mediaMime);
@@ -3177,6 +3442,81 @@ export class AuthController {
     }
   }
 
+  @Get('selfiepict/thum/v2/:id')
+  @HttpCode(HttpStatus.OK)
+  async selfiepictThumV2(
+    @Param('id') id: string,
+    @Query('x-auth-token') token: string,
+    @Query('x-auth-user') email: string, @Res() response) {
+    if ((id != undefined) && (token != undefined) && (email != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+        var userbasic = await this.basic2SS.findOne(id);
+        var mediaproofpicts = userbasic.kyc[0];
+        if (mediaproofpicts.SelfieUploadSource != undefined) {
+          if (mediaproofpicts.SelfieUploadSource == "OSS") {
+            if (mediaproofpicts.mediaMime != undefined) {
+              mediaMime = mediaproofpicts.mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            var path = "";
+            if (mediaproofpicts.SelfiemediaThumBasePath != undefined) {
+              path = mediaproofpicts.SelfiemediaThumBasePath.toString();
+            } else {
+              path = mediaproofpicts.mediaSelfieBasePath.toString();
+            }
+            var data2 = await this.ossService.readFile(path);
+            if (data2 != null) {
+              response.set("Content-Type", "image/jpeg");
+              response.send(data2);
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        } else {
+          if (await this.utilsService.ceckData(mediaproofpicts)) {
+            var mediaproofpicts_SelfiefsSourceUri = '';
+            var mediaMime = "";
+            if (mediaproofpicts != null) {
+              if (mediaproofpicts.SelfiefsSourceUri != null) {
+                mediaproofpicts_SelfiefsSourceUri = mediaproofpicts.SelfiefsSourceUri.toString();
+              }
+            }
+            if (mediaproofpicts.SelfiemediaMime != undefined) {
+              mediaMime = mediaproofpicts.SelfiemediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            if (mediaproofpicts_SelfiefsSourceUri != '') {
+              // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
+              // const response_ = await fetch(url);
+              // const blob = await response_.blob();
+              // const arrayBuffer = await blob.arrayBuffer();
+              // const buffer = Buffer.from(arrayBuffer);
+              var data = await this.authService.profilePict(mediaproofpicts_SelfiefsSourceUri);
+              if (data != null) {
+                response.set("Content-Type", "image/png");
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
+  }
+
   @Get('selfiepict/:id')
   @HttpCode(HttpStatus.OK)
   async selfiepict(
@@ -3223,6 +3563,70 @@ export class AuthController {
               // const blob = await response_.blob();
               // const arrayBuffer = await blob.arrayBuffer();
               // const buffer = Buffer.from(arrayBuffer);
+              var data = await this.authService.profilePict(mediaproofpicts_SelfiefsSourceUri);
+              if (data != null) {
+                response.set("Content-Type", "image/png");
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
+  }
+
+  @Get('selfiepict/v2/:id')
+  @HttpCode(HttpStatus.OK)
+  async selfiepictv2(
+    @Param('id') id: string,
+    @Query('x-auth-token') token: string,
+    @Query('x-auth-user') email: string, @Res() response) {
+    if ((id != undefined) && (token != undefined) && (email != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+        var userbasic = await this.basic2SS.findOne(id);
+        var mediaproofpicts = userbasic.kyc[0];
+        if (mediaproofpicts.SelfieUploadSource != undefined) {
+          if (mediaproofpicts.SelfieUploadSource == "OSS") {
+            if (mediaproofpicts.mediaMime != undefined) {
+              mediaMime = mediaproofpicts.mediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            var data2 = await this.ossService.readFile(mediaproofpicts.mediaSelfieBasePath.toString());
+            if (data2 != null) {
+              response.set("Content-Type", "image/jpeg");
+              response.send(data2);
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        } else {
+          if (await this.utilsService.ceckData(mediaproofpicts)) {
+            var mediaproofpicts_SelfiefsSourceUri = '';
+            var mediaMime = "";
+            if (mediaproofpicts != null) {
+              if (mediaproofpicts.SelfiefsSourceUri != null) {
+                mediaproofpicts_SelfiefsSourceUri = mediaproofpicts.SelfiefsSourceUri.toString();
+              }
+            }
+            if (mediaproofpicts.SelfiemediaMime != undefined) {
+              mediaMime = mediaproofpicts.SelfiemediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            if (mediaproofpicts_SelfiefsSourceUri != '') {
               var data = await this.authService.profilePict(mediaproofpicts_SelfiefsSourceUri);
               if (data != null) {
                 response.set("Content-Type", "image/png");
@@ -3302,6 +3706,85 @@ export class AuthController {
             }
             if (mediaproofpicts.SupportmediaMime != undefined) {
               mediaMime = mediaproofpicts.SupportmediaMime.toString();
+            } else {
+              mediaMime = "image/jpeg";
+            }
+            if (mediaproofpicts_SupportfsSourceUri != '') {
+
+              var data = await this.authService.profilePict(mediaproofpicts_SupportfsSourceUri);
+              if (data != null) {
+                response.set("Content-Type", "image/png");
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
+  }
+
+  @Get('supportfile/v2/:id/:index')
+  @HttpCode(HttpStatus.OK)
+  async supportfilev2(
+    @Param('id') id: string,
+    @Param('index') index: number,
+    @Query('x-auth-token') token: string,
+    @Query('x-auth-user') email: string, @Res() response) {
+    if ((id != undefined) && (token != undefined) && (email != undefined) && (index != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+        var userbasic = await this.basic2SS.findOne(id);
+        var mediaproofpicts = userbasic.kyc[0];
+        var datathummb = null;
+        var data2 = null;
+        if ((mediaproofpicts.SupportUploadSource != undefined && mediaproofpicts.SupportUploadSource == "OSS") || mediaproofpicts.mediaSupportUriThumb[index].includes("oss-ap-southeast")) {
+          if (mediaproofpicts.mediaMime != undefined) {
+            mediaMime = mediaproofpicts.mediaMime;
+          } else {
+            mediaMime = "image/jpeg";
+          }
+
+          try {
+            datathummb = mediaproofpicts.mediaSupportUriThumb;
+          } catch (e) {
+            datathummb = null;
+          }
+
+          if (datathummb !== null && datathummb !== undefined && datathummb.length > 0) {
+            var mediaThumb = mediaproofpicts.mediaSupportUriThumb[index];
+            mediaThumb = mediaThumb.replace(this.configService.get("SUPPORT_FILE"), "");
+            data2 = await this.ossService.readFile(mediaThumb);
+          } else {
+            data2 = await this.ossService.readFile(mediaproofpicts.SupportfsTargetUri[index]);
+          }
+
+          if (data2 != null) {
+            response.set("Content-Type", "image/jpeg");
+            response.send(data2);
+          } else {
+            response.send(null);
+          }
+        }
+        else {
+          if (await this.utilsService.ceckData(mediaproofpicts)) {
+            var mediaproofpicts_SupportfsSourceUri = '';
+            var mediaMime = "";
+            if (mediaproofpicts != null) {
+              if (mediaproofpicts.SupportfsSourceUri != null) {
+                mediaproofpicts_SupportfsSourceUri = mediaproofpicts.SupportfsSourceUri[index]
+              }
+            }
+            if (mediaproofpicts.SupportmediaMime != undefined) {
+              mediaMime = mediaproofpicts.SupportmediaMime;
             } else {
               mediaMime = "image/jpeg";
             }
