@@ -35192,7 +35192,7 @@ export class NewPostService {
                   "$eq":
                   [
                       {
-                      "$arrayElemAt":
+                        "$arrayElemAt":
                           [
                           "$mediaSource.apsara", 0
                           ]
@@ -35200,7 +35200,7 @@ export class NewPostService {
                       true
                   ]
               },
-              then: null,
+              then: "$postID",
               else:
               {
                   "$substr":
@@ -35527,8 +35527,8 @@ export class NewPostService {
       },
     );
 
-    var util = require('util');
-    console.log(util.inspect(pipeline, { depth: null, showHidden: false }));
+    // var util = require('util');
+    // console.log(util.inspect(pipeline, { depth: null, showHidden: false }));
 
     var data = await this.loaddata.aggregate(pipeline);
     return data;
@@ -37315,7 +37315,7 @@ export class NewPostService {
                                     {
                                         "$filter":
                                         {
-                                            input:"friend",
+                                            input:"$friend",
                                             as:"listFriend",
                                             cond:
                                             {
@@ -37559,7 +37559,7 @@ export class NewPostService {
                         {
                             "$arrayElemAt":
                             [
-                                "$userBasic.friend"
+                                "$userBasic.friend", 0
                             ]
                         },
                         null
@@ -37807,7 +37807,7 @@ export class NewPostService {
 
     if(vid == true)
     {
-      renderfacet['vid'] = [
+      renderfacet['video'] = [
           {
             '$match': 
             {
@@ -38408,7 +38408,7 @@ export class NewPostService {
                                     {
                                         "$filter":
                                         {
-                                            input:"friend",
+                                            input:"$friend",
                                             as:"listFriend",
                                             cond:
                                             {
@@ -38652,7 +38652,7 @@ export class NewPostService {
                         {
                             "$arrayElemAt":
                             [
-                                "$userBasic.friend"
+                                "$userBasic.friend", 0
                             ]
                         },
                         null
@@ -39501,7 +39501,7 @@ export class NewPostService {
                                     {
                                         "$filter":
                                         {
-                                            input:"friend",
+                                            input:"$friend",
                                             as:"listFriend",
                                             cond:
                                             {
@@ -39745,7 +39745,7 @@ export class NewPostService {
                         {
                             "$arrayElemAt":
                             [
-                                "$userBasic.friend"
+                                "$userBasic.friend", 0
                             ]
                         },
                         null
@@ -40032,6 +40032,9 @@ export class NewPostService {
       }
     ];
 
+    // var util = require('util');
+    // console.log(util.inspect(renderfacet, { depth:null, showHidden:false }));
+    
     var data = await this.loaddata.aggregate([
       {
         "$facet":renderfacet
