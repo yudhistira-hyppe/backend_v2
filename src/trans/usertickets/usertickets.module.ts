@@ -17,10 +17,11 @@ import { UserauthsModule } from '../userauths/userauths.module';
 import { LogticketsModule } from '../logtickets/logtickets.module';
 import { OssModule } from "../../stream/oss/oss.module";
 import { LogapisModule } from '../logapis/logapis.module';
+import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
 @Module({
     imports: [
 
-        UserbasicsModule, OssModule, MediaprofilepictsModule, UtilsModule, SeaweedfsModule, NestjsFormDataModule, ConfigService, SettingsModule, LogticketsModule, UserauthsModule, ConfigModule.forRoot(), LogapisModule,
+        UserbasicsModule, OssModule, MediaprofilepictsModule, UtilsModule, SeaweedfsModule, NestjsFormDataModule, ConfigService, SettingsModule, LogticketsModule, UserauthsModule, ConfigModule.forRoot(), LogapisModule, UserbasicnewModule,
         MongooseModule.forFeature([{ name: Usertickets.name, schema: UserticketsSchema }], 'SERVER_FULL')
     ],
     controllers: [UserticketsController],
