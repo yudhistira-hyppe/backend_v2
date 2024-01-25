@@ -222,14 +222,14 @@ export class UserbasicnewService {
         return this.UserbasicnewModel.findOne(
             {
                 "$or":
-                [
-                    {
-                        "_id": new mongo.Types.ObjectId(id)
-                    },
-                    {
-                        "_idAuth": new mongo.Types.ObjectId(id)
-                    }
-                ]
+                    [
+                        {
+                            "_id": new mongo.Types.ObjectId(id)
+                        },
+                        {
+                            "_idAuth": new mongo.Types.ObjectId(id)
+                        }
+                    ]
             }
         ).exec();
     }
@@ -2071,7 +2071,7 @@ export class UserbasicnewService {
                                 ]
                         }
                     },
-                    friend:1,
+                    friend: 1,
                 }
             },
             {
@@ -2166,7 +2166,7 @@ export class UserbasicnewService {
                     mediaSupportUri: 1,
                     mobileNumber: 1,
                     avatar: 1,
-                    friend:1,
+                    friend: 1,
                     statusUser: {
                         $cond: {
                             if: {
@@ -2194,7 +2194,7 @@ export class UserbasicnewService {
                     isIdVerified: 1,
                     username: 1,
                     fullName: 1,
-                    friend:1,
+                    friend: 1,
                     createdAt: 1,
                     status: 1,
                     idcardnumber: 1,
@@ -6095,7 +6095,13 @@ export class UserbasicnewService {
                     createdAt: 1,
                     email: 1,
                     states: 1,
-                    gender: 1,
+                    gender: {
+                        "$ifNull":
+                            [
+                                "$gender",
+                                "Other"
+                            ]
+                    },
                     statesName:
                     {
                         "$ifNull":
@@ -6175,53 +6181,53 @@ export class UserbasicnewService {
                     _id: 1,
                     email: 1,
                     username: 1,
-                    fullName:1,
-                    mediaBasePath:1,
-                    mediaUri:1,
-                    mediaType:1,
-                    mediaEndpoint:1,
+                    fullName: 1,
+                    mediaBasePath: 1,
+                    mediaUri: 1,
+                    mediaType: 1,
+                    mediaEndpoint: 1,
                     urluserBadge:
                     {
                         "$ifNull":
-                        [
-                            {
-                                "$filter":
+                            [
                                 {
-                                    input: "$userBadge",
-                                    as: "listuserbadge",
-                                    cond:
+                                    "$filter":
                                     {
-                                        "$and":
-                                            [
-                                                {
-                                                    "$eq":
-                                                        [
-                                                            "$$listuserbadge.isActive",
-                                                            true
-                                                        ]
-                                                },
-                                                {
-                                                    "$lte":
-                                                        [
-                                                            {
-                                                                "$dateToString": {
-                                                                    "format": "%Y-%m-%d %H:%M:%S",
-                                                                    "date": {
-                                                                        $add: [new Date(), 25200000]
+                                        input: "$userBadge",
+                                        as: "listuserbadge",
+                                        cond:
+                                        {
+                                            "$and":
+                                                [
+                                                    {
+                                                        "$eq":
+                                                            [
+                                                                "$$listuserbadge.isActive",
+                                                                true
+                                                            ]
+                                                    },
+                                                    {
+                                                        "$lte":
+                                                            [
+                                                                {
+                                                                    "$dateToString": {
+                                                                        "format": "%Y-%m-%d %H:%M:%S",
+                                                                        "date": {
+                                                                            $add: [new Date(), 25200000]
+                                                                        }
                                                                     }
-                                                                }
-                                                            },
-                                                            "$$listuserbadge.endDatetime",
+                                                                },
+                                                                "$$listuserbadge.endDatetime",
 
-                                                        ]
-                                                }
-                                            ]
-                                    },
+                                                            ]
+                                                    }
+                                                ]
+                                        },
 
-                                }
-                            },
-                            []
-                        ]
+                                    }
+                                },
+                                []
+                            ]
                     }
                 }
             },
@@ -6231,24 +6237,24 @@ export class UserbasicnewService {
                     _id: 1,
                     email: 1,
                     username: 1,
-                    fullName:1,
-                    mediaBasePath:1,
-                    mediaUri:1,
-                    mediaType:1,
-                    mediaEndpoint:1,
+                    fullName: 1,
+                    mediaBasePath: 1,
+                    mediaUri: 1,
+                    mediaType: 1,
+                    mediaEndpoint: 1,
                     urluserBadge:
                     {
                         "$ifNull":
-                        [
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$urluserBadge",0
-                                ]
-                            },
+                            [
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$urluserBadge", 0
+                                        ]
+                                },
 
-                            null
-                        ]
+                                null
+                            ]
                     }
                 }
             }
@@ -6330,8 +6336,7 @@ export class UserbasicnewService {
             var filterpertemanan = listpertemanan.filter(emaildata => emaildata != email_target);
 
             var update = new CreateuserbasicnewDto();
-            if (type == "FOLLOWING") 
-            {
+            if (type == "FOLLOWING") {
                 update.following = filterpertemanan;
             }
             else {
@@ -6793,8 +6798,7 @@ export class UserbasicnewService {
 
     }
 
-    async listfilterInteractive(email:string, data:any[], eventType:string, isDetail:boolean)
-    {
+    async listfilterInteractive(email: string, data: any[], eventType: string, isDetail: boolean) {
         var pipeline = [];
         var eventTitle = eventType;
         var CEmatch = [];
@@ -6803,76 +6807,72 @@ export class UserbasicnewService {
                 "$expr":
                 {
                     "$eq":
-                    [
-                        "$email", email
-                    ]
+                        [
+                            "$email", email
+                        ]
                 }
             },
             {
                 "$expr":
                 {
                     "$eq":
-                    [
-                        "$event","ACCEPT"
-                    ]
-                } 
+                        [
+                            "$event", "ACCEPT"
+                        ]
+                }
             }
         );
 
-        if(eventType == "FOLLOWING" || eventType == "VIEW")
-        {
+        if (eventType == "FOLLOWING" || eventType == "VIEW") {
             CEmatch.push(
                 {
                     "$expr":
                     {
                         "$eq":
-                        [
-                            "$senderParty", "$$user"
-                        ]
+                            [
+                                "$senderParty", "$$user"
+                            ]
                     }
                 },
             );
         }
-        else
-        {
+        else {
             CEmatch.push(
                 {
                     "$expr":
                     {
                         "$eq":
-                        [
-                            "$receiverParty", "$$user"
-                        ]
+                            [
+                                "$receiverParty", "$$user"
+                            ]
                     }
                 }
             );
         }
 
-        if(eventType == "UNFOLLOW")
-        {
+        if (eventType == "UNFOLLOW") {
             eventTitle = "FOLLOWER";
             CEmatch.push(
                 {
                     "$expr":
                     {
                         "$eq":
-                        [
-                            "$active",false
-                        ]
+                            [
+                                "$active", false
+                            ]
                     }
                 }
             );
         }
-        else
-        {
+        else {
             CEmatch.push(
                 {
                     "$expr":
                     {
                         "$eq":
-                        [
-                            "$active",true
-                        ]
+                            [
+                                "$active", true
+                            ]
                     }
                 }
             );
@@ -6882,208 +6882,208 @@ export class UserbasicnewService {
             {
                 "$match":
                 {
-                    "email":email
+                    "email": email
                 }
             },
             {
                 "$lookup":
                 {
-                    from:"insights",
-                    localField:"email",
-                    foreignField:"email",
-                    as:"insight_data"
+                    from: "insights",
+                    localField: "email",
+                    foreignField: "email",
+                    as: "insight_data"
                 }
             },
             {
                 "$lookup":
                 {
-                    from:"newUserBasics",
+                    from: "newUserBasics",
                     let:
                     {
-                        "listemail":data
+                        "listemail": data
                     },
-                    as:"people_basic_data",
+                    as: "people_basic_data",
                     pipeline:
-                    [
-                        {
-                            "$match":
+                        [
                             {
-                                "$expr":
+                                "$match":
                                 {
-                                    "$in":
-                                    [
-                                        "$email", "$$listemail"
-                                    ]
-                                }
-                            }
-                        },
-                        {
-                            "$lookup":
-                            {
-                                from:"contentevents",
-                                as:"content_data",
-                                let:
-                                {
-                                    "user":"$email"
-                                },
-                                pipeline:
-                                [
+                                    "$expr":
                                     {
-                                        "$match":
-                                        {
-                                            "$and":CEmatch
-                                        }
-                                    },
-                                    {
-                                        "$limit":1
+                                        "$in":
+                                            [
+                                                "$email", "$$listemail"
+                                            ]
                                     }
-                                ]
-                            }
-                        },
-                        {
-                            "$project":
+                                }
+                            },
                             {
-                                "_id":1,
-                                "username":1,
-                                "fullName":1,
-                                "email":1,
-                                "avatar":
+                                "$lookup":
                                 {
-                                    "mediaBasePath":"$mediaBasePath",
-                                    "mediaUri":"$mediaUri",
-                                    "mediaEndpoint":"$mediaEndpoint",
-                                    "mediaType":"$mediaType",
-                                },
-                                "flowIsDone":
-                                {
-                                    "$ifNull":
-                                    [
-                                        {
-                                            "$arrayElemAt":
-                                            [
-                                                "$content_data.flowIsDone", 0
-                                            ]
-                                        },
-                                        true
-                                    ]
-                                },
-                                "createdAt":
-                                {
-                                    "$ifNull":
-                                    [
-                                        {
-                                            "$arrayElemAt":
-                                            [
-                                                "$content_data.createdAt", 0
-                                            ]
-                                        },
-                                        null
-                                    ]
-                                },
-                                "urluserBadge":
-                                {
-                                    "$ifNull":
-                                    [
-                                        {
-                                            "$filter":
+                                    from: "contentevents",
+                                    as: "content_data",
+                                    let:
+                                    {
+                                        "user": "$email"
+                                    },
+                                    pipeline:
+                                        [
                                             {
-                                                input:"$userBadge",
-                                                as:"listbadge",
-                                                cond:
+                                                "$match":
                                                 {
-                                                    "$and":
-                                                    [
-                                                        {
-                                                            "$eq":
-                                                            [
-                                                                "$$listbadge.isActive", true
-                                                            ]
-                                                        },
-                                                        {
-                                                            "$lte": [
-                                                            {
-                                                                "$dateToString": {
-                                                                "format": "%Y-%m-%d %H:%M:%S",
-                                                                "date": {
-                                                                    "$add": [
-                                                                    new Date(),
-                                                                    25200000
-                                                                    ]
-                                                                }
-                                                                }
-                                                            },
-                                                            "$$listbadge.endDatetime"
-                                                            ]
-                                                        }
-                                                    ]
+                                                    "$and": CEmatch
                                                 }
+                                            },
+                                            {
+                                                "$limit": 1
                                             }
-                                        },
-                                        []
-                                    ]
-                                },
-                                "eventType":
-                                {
-                                    "$ifNull":
-                                    [
-                                        {
-                                            "$arrayElemAt":
-                                            [
-                                                "$content_data.eventType", 0
-                                            ]
-                                        },
-                                        eventTitle
-                                    ]
-                                },
-                                "event":
-                                {
-                                    "$ifNull":
-                                    [
-                                        {
-                                            "$arrayElemAt":
-                                            [
-                                                "$content_data.event", 0
-                                            ]
-                                        },
-                                        "ACCEPT"
-                                    ]
-                                },
-                            }
-                        },
-                        {
-                            "$project":
+                                        ]
+                                }
+                            },
                             {
-                                "_id":1,
-                                "username":1,
-                                "fullName":1,
-                                "email":1,
-                                "avatar":1,
-                                "flowIsDone":1,
-                                "createdAt":1,
-                                "eventType":1,
-                                "event":1,
-                                "urluserBadge":
+                                "$project":
                                 {
-                                    "$ifNull":
-                                    [
-                                        {
-                                            "$arrayElemAt":
+                                    "_id": 1,
+                                    "username": 1,
+                                    "fullName": 1,
+                                    "email": 1,
+                                    "avatar":
+                                    {
+                                        "mediaBasePath": "$mediaBasePath",
+                                        "mediaUri": "$mediaUri",
+                                        "mediaEndpoint": "$mediaEndpoint",
+                                        "mediaType": "$mediaType",
+                                    },
+                                    "flowIsDone":
+                                    {
+                                        "$ifNull":
                                             [
-                                                "$urluserBadge", 0
+                                                {
+                                                    "$arrayElemAt":
+                                                        [
+                                                            "$content_data.flowIsDone", 0
+                                                        ]
+                                                },
+                                                true
                                             ]
-                                        },
-                                        null
-                                    ]
-                                },
-                            }
-                        },
-                    ]
+                                    },
+                                    "createdAt":
+                                    {
+                                        "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                        [
+                                                            "$content_data.createdAt", 0
+                                                        ]
+                                                },
+                                                null
+                                            ]
+                                    },
+                                    "urluserBadge":
+                                    {
+                                        "$ifNull":
+                                            [
+                                                {
+                                                    "$filter":
+                                                    {
+                                                        input: "$userBadge",
+                                                        as: "listbadge",
+                                                        cond:
+                                                        {
+                                                            "$and":
+                                                                [
+                                                                    {
+                                                                        "$eq":
+                                                                            [
+                                                                                "$$listbadge.isActive", true
+                                                                            ]
+                                                                    },
+                                                                    {
+                                                                        "$lte": [
+                                                                            {
+                                                                                "$dateToString": {
+                                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                                    "date": {
+                                                                                        "$add": [
+                                                                                            new Date(),
+                                                                                            25200000
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            },
+                                                                            "$$listbadge.endDatetime"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                        }
+                                                    }
+                                                },
+                                                []
+                                            ]
+                                    },
+                                    "eventType":
+                                    {
+                                        "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                        [
+                                                            "$content_data.eventType", 0
+                                                        ]
+                                                },
+                                                eventTitle
+                                            ]
+                                    },
+                                    "event":
+                                    {
+                                        "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                        [
+                                                            "$content_data.event", 0
+                                                        ]
+                                                },
+                                                "ACCEPT"
+                                            ]
+                                    },
+                                }
+                            },
+                            {
+                                "$project":
+                                {
+                                    "_id": 1,
+                                    "username": 1,
+                                    "fullName": 1,
+                                    "email": 1,
+                                    "avatar": 1,
+                                    "flowIsDone": 1,
+                                    "createdAt": 1,
+                                    "eventType": 1,
+                                    "event": 1,
+                                    "urluserBadge":
+                                    {
+                                        "$ifNull":
+                                            [
+                                                {
+                                                    "$arrayElemAt":
+                                                        [
+                                                            "$urluserBadge", 0
+                                                        ]
+                                                },
+                                                null
+                                            ]
+                                    },
+                                }
+                            },
+                        ]
                 }
             },
             {
                 "$unwind":
                 {
-                    path:"$people_basic_data"
+                    path: "$people_basic_data"
                 }
             },
             {
@@ -7092,121 +7092,121 @@ export class UserbasicnewService {
                     "setURLbadge":
                     {
                         "$ifNull":
-                        [
-                            {
-                                "$filter":
+                            [
                                 {
-                                    input:"$userBadge",
-                                    as:"listbadge",
-                                    cond:
+                                    "$filter":
                                     {
-                                        "$and":
-                                        [
-                                            {
-                                                "$eq":
+                                        input: "$userBadge",
+                                        as: "listbadge",
+                                        cond:
+                                        {
+                                            "$and":
                                                 [
-                                                    "$$listbadge.isActive", true
-                                                ]
-                                            },
-                                            {
-                                                "$lte": [
-                                                {
-                                                    "$dateToString": {
-                                                    "format": "%Y-%m-%d %H:%M:%S",
-                                                    "date": {
-                                                        "$add": [
-                                                        new Date(),
-                                                        25200000
+                                                    {
+                                                        "$eq":
+                                                            [
+                                                                "$$listbadge.isActive", true
+                                                            ]
+                                                    },
+                                                    {
+                                                        "$lte": [
+                                                            {
+                                                                "$dateToString": {
+                                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                                    "date": {
+                                                                        "$add": [
+                                                                            new Date(),
+                                                                            25200000
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "$$listbadge.endDatetime"
                                                         ]
                                                     }
-                                                    }
-                                                },
-                                                "$$listbadge.endDatetime"
                                                 ]
-                                            }
-                                        ]
+                                        }
                                     }
-                                }
-                            },
-                            []
-                        ]
+                                },
+                                []
+                            ]
                     }
                 }
             },
             {
                 "$project":
                 {
-                    "_id":0,
-                    "createdAt":"$people_basic_data.createdAt",
-                    "flowIsDone":"$people_basic_data.flowIsDone",
-                    "eventType":"$people_basic_data.eventType",
-                    "event":"$people_basic_data.event",
-                    "email":1,
-                    "username":1,
-                    "fullName":1,
+                    "_id": 0,
+                    "createdAt": "$people_basic_data.createdAt",
+                    "flowIsDone": "$people_basic_data.flowIsDone",
+                    "eventType": "$people_basic_data.eventType",
+                    "event": "$people_basic_data.event",
+                    "email": 1,
+                    "username": 1,
+                    "fullName": 1,
                     "avatar":
                     {
-                        "mediaBasePath":"$mediaBasePath",
-                        "mediaUri":"$mediaUri",
-                        "mediaEndpoint":"$mediaEndpoint",
-                        "mediaType":"$mediaType",
+                        "mediaBasePath": "$mediaBasePath",
+                        "mediaUri": "$mediaUri",
+                        "mediaEndpoint": "$mediaEndpoint",
+                        "mediaType": "$mediaType",
                     },
                     "profileInsight":
                     {
                         "$ifNull":
-                        [
-                            {
-                                "follower":
+                            [
                                 {
-                                    "$arrayElemAt":
-                                    [
-                                        "$insight_data.followers", 0
-                                    ]
+                                    "follower":
+                                    {
+                                        "$arrayElemAt":
+                                            [
+                                                "$insight_data.followers", 0
+                                            ]
+                                    },
+                                    "following":
+                                    {
+                                        "$arrayElemAt":
+                                            [
+                                                "$insight_data.followings", 0
+                                            ]
+                                    }
                                 },
-                                "following":
-                                {
-                                    "$arrayElemAt":
-                                    [
-                                        "$insight_data.followings", 0
-                                    ]
-                                }
-                            },
-                            {}
-                        ]
+                                {}
+                            ]
                     },
                     "urluserBadge":
                     {
                         "$ifNull":
-                        [
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$setURLbadge", 0
-                                ]
-                            },
-                            null
-                        ]
+                            [
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$setURLbadge", 0
+                                        ]
+                                },
+                                null
+                            ]
                     },
                     "senderOrReceiverInfo":
                     {
-                        "fullName":"$people_basic_data.fullName",
-                        "avatar":"$people_basic_data.avatar",
-                        "urluserBadge":"$people_basic_data.urluserBadge",
-                        "email":"$people_basic_data.email",
-                        "username":"$people_basic_data.username",
+                        "fullName": "$people_basic_data.fullName",
+                        "avatar": "$people_basic_data.avatar",
+                        "urluserBadge": "$people_basic_data.urluserBadge",
+                        "email": "$people_basic_data.email",
+                        "username": "$people_basic_data.username",
                     }
                 }
             },
             {
                 "$project":
                 {
-                    "_id":0,
+                    "_id": 0,
                     "createdAt": ((isDetail == true || isDetail.toString() == 'true') ? 1 : "$$REMOVE"),
-                    "username":((isDetail == true || isDetail.toString() == 'true') ? 1 : "$$REMOVE"),
-                    "fullName":((isDetail == true || isDetail.toString() == 'true') ? 1 : "$$REMOVE"),
+                    "username": ((isDetail == true || isDetail.toString() == 'true') ? 1 : "$$REMOVE"),
+                    "fullName": ((isDetail == true || isDetail.toString() == 'true') ? 1 : "$$REMOVE"),
                     "profileInsight": ((isDetail == true || isDetail.toString() == 'true') ? 1 : "$$REMOVE"),
                     "senderOrReceiverInfo": ((isDetail == true || isDetail.toString() == 'true') ? 1 : "$$REMOVE"),
-                    "email":1,
+                    "email": 1,
                     "eventType": 1,
                     "flowIsDone": 1,
                     "event": 1,
@@ -7214,15 +7214,15 @@ export class UserbasicnewService {
                     "urluserBadge":
                     {
                         "$ifNull":
-                        [
-                            {
-                                "$arrayElemAt":
-                                [
-                                    "$urluserBadge", 0
-                                ]
-                            },
-                            null
-                        ]
+                            [
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$urluserBadge", 0
+                                        ]
+                                },
+                                null
+                            ]
                     }
                 }
             }
