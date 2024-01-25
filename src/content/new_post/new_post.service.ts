@@ -35035,6 +35035,15 @@ export class NewPostService {
         },
       },
       {
+        "$lookup":
+        {
+          from:"newUserBasics",
+          localField:"email",
+          foreignField:"email",
+          as:"userBasic"
+        }
+      },
+      {
         "$lookup": {
           from: "mediamusic",
           as: "music",
@@ -35169,6 +35178,45 @@ export class NewPostService {
               }
             }
           ]
+        }
+      },
+      {
+        "$addFields":
+        {
+            "cleanUri":
+            {
+              "$cond":
+              {
+              if:
+              {
+                  "$eq":
+                  [
+                      {
+                      "$arrayElemAt":
+                          [
+                          "$mediaSource.apsara", 0
+                          ]
+                      },
+                      true
+                  ]
+              },
+              then: null,
+              else:
+              {
+                  "$substr":
+                  [
+                      {
+                      "$arrayElemAt":
+                          [
+                          "$mediaSource.mediaUri", 0
+                          ]
+                      },
+                      0,
+                      36
+                  ]
+              }
+              }
+          }
         }
       },
       {
@@ -35325,19 +35373,56 @@ export class NewPostService {
             $arrayElemAt: ["$mediaSource.apsaraId", 0]
           },
           "isApsara": {
-            $arrayElemAt: ["$mediaSource.isApsara", 0]
+            $arrayElemAt: ["$mediaSource.apsara", 0]
           },
           "apsaraThumbId": {
             $arrayElemAt: ["$mediaSource.apsaraThumbId", 0]
           },
           "mediaEndpoint": {
-            $arrayElemAt: ["$mediaSource.mediaEndpoint", 0]
+              "$cond":
+              {
+                  if:
+                  {
+                      "$eq":
+                      [
+                          "$postType", "pict"
+                      ]
+                  },
+                  then:
+                  {
+                      "$concat":
+                      [
+                          "/pict/",
+                          "$cleanUri"
+                      ]
+                  },
+                  else:
+                  {
+                      "$concat":
+                      [
+                          "/stream/",
+                          "$cleanUri"
+                      ]
+                  }
+              }
           },
           "mediaUri": {
             $arrayElemAt: ["$mediaSource.mediaUri", 0]
           },
           "mediaThumbEndpoint": {
-            $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
+            "$ifNull":
+            [
+              {
+                $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0]
+              },
+              {
+                "$concat":
+                [
+                  "/thumb/",
+                  "$postID"
+                ]
+              }
+            ]
           },
           "mediaThumbUri": {
             $arrayElemAt: ["$mediaSource.mediaThumbUri", 0]
@@ -35429,7 +35514,7 @@ export class NewPostService {
           },
           mailViewer: "$mailViewer",
           userInterested: {
-            $arrayElemAt: ["$userInt.userInterests", 0]
+            $arrayElemAt: ["$userBasic.userInterests.$id", 0]
           },
           tutor: {
             $arrayElemAt: ["$userBasic.tutor", 0]
