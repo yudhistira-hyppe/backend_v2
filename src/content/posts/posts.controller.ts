@@ -1947,7 +1947,7 @@ export class PostsController {
     this.logger.log("getUserPostLandingPage >>> start: " + JSON.stringify(body));
     //if (body.visibility == 'PUBLIC') {
 
-    return this.bootsService.getBoostV2(body, headers);
+    return this.bootsService.getBoostV2_(body, headers);
     //} else {
     //  return this.postContentService.getUserPostLandingPage(body, headers);
     //}
