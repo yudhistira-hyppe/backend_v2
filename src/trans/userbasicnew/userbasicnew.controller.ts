@@ -238,6 +238,7 @@ export class UserbasicnewController {
         var enddate = null;
         var wilayah = [];
         var dataSumwilayah = [];
+        var gender = [];
         var lengwilayah = 0;
         var sumwilayah = 0;
         const messages = {
@@ -251,10 +252,23 @@ export class UserbasicnewController {
             data = await this.UserbasicnewService.demografis(startdate, enddate);
             wilayah = data[0].wilayah;
             lengwilayah = wilayah.length;
+            gender = data[0].gender;
+            var hasEmptyGender = gender.findIndex(x => x.gender == "");
+            if (hasEmptyGender > -1) {
+                var hasOtherGender = gender.findIndex(x => x.gender == "Other");
+                if (hasOtherGender > -1) {
+                    gender[hasOtherGender].count += gender[hasEmptyGender].count;
+                    gender = gender.filter(x => x.gender != "");
+                } else {
+                    gender[hasEmptyGender].gender = "Other"
+                }
+                data[0].gender = gender;
+            }
         } catch (e) {
             data = [];
             wilayah = [];
             lengwilayah = 0;
+            gender = [];
         }
 
 
