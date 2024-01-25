@@ -461,8 +461,8 @@ export class NewPostContentService {
     const lang = await this.utilService.getUserlanguages(Posts_.email.toString());
 
     //Generate Certified
-    if (Posts_.certified) {
-      console.log(Posts_.certified)
+    if (Posts_.certified==true) {
+      console.log(Boolean(Posts_.certified))
       console.log("---------------------------------------------------XXX 1---------------------------------------------------")
       this.generateCertificate(Posts_.postID.toString(), lang.toString(), Posts_, data_userbasics);
     }
@@ -633,7 +633,7 @@ export class NewPostContentService {
     //Generate Certified
     if (Posts_.certified) {
       console.log(Posts_.certified)
-      console.log("---------------------------------------------------XXX 1---------------------------------------------------")
+      console.log("---------------------------------------------------XXX 2---------------------------------------------------")
       this.generateCertificate(String(body.postID), lang.toString(), Posts_, data_userbasics);
     }
 
@@ -708,7 +708,7 @@ export class NewPostContentService {
       console.log("post cert: " + opost.certified);
       if (opost.certified == undefined || opost.certified == false) {
         console.log(body.certified)
-        console.log("---------------------------------------------------XXX 1---------------------------------------------------")
+        console.log("---------------------------------------------------XXX 3---------------------------------------------------")
         this.generateCertificate(String(post.postID), 'id', apost, data_userbasics);
       }
     }
