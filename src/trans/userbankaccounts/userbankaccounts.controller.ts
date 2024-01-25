@@ -18,6 +18,7 @@ import { UtilsService } from "../../utils/utils.service";
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 import { start } from "repl";
 import { OssService } from "../../stream/oss/oss.service";
+import { UserbasicnewService } from "../userbasicnew/userbasicnew.service";
 
 //import FormData from "form-data";
 const multer = require('multer');
@@ -63,6 +64,7 @@ export class UserbankaccountsController {
         private readonly errorHandler: ErrorHandler,
         private readonly utilsService: UtilsService,
         private readonly ossService: OssService,
+        private readonly basic2SS: UserbasicnewService,
         private readonly seaweedfsService: SeaweedfsService) { }
 
     @UseGuards(JwtAuthGuard)
@@ -169,6 +171,177 @@ export class UserbankaccountsController {
             if (lownama === namamediaprof) {
                 try {
                     CreateUserbankaccountsDto.userId = iduser;
+                    CreateUserbankaccountsDto.noRek = noRek;
+                    CreateUserbankaccountsDto.idBank = idbank;
+                    CreateUserbankaccountsDto.createdAt = dt.toISOString();
+                    CreateUserbankaccountsDto.updatedAt = dt.toISOString();
+                    CreateUserbankaccountsDto.active = true;
+                    let data = null;
+
+                    data = await this.userbankaccountsService.create(CreateUserbankaccountsDto);
+
+                    return res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": messages
+                    });
+                } catch (e) {
+                    return res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "message": messagesEror
+                    });
+                }
+            } else {
+                return res.status(HttpStatus.OK).json({
+                    response_code: 202,
+                    "message": messageRespon
+                });
+            }
+
+        } else {
+
+
+            await this.userbankaccountsService.updateactivetrue(idakun);
+            let data = await this.userbankaccountsService.findOneid(idakun);
+            return res.status(HttpStatus.OK).json({
+                response_code: 202,
+                "data": data,
+                "message": messages
+            });
+            // throw new BadRequestException("account number already exists..!");
+        }
+
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('api/userbankaccounts/v2')
+    async create2(@Res() res, @Body() CreateUserbankaccountsDto: CreateUserbankaccountsDto, @Request() request) {
+        const messages = {
+            "info": ["The create successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+        var email = null;
+        var noRek = null;
+        var bankcode = null;
+        var nama = null;
+        var idbank = null;
+        var datamediaprof = null;
+        var datarekkembar = null;
+        var namamediaprof = null;
+        var language = null;
+        var messageRespon = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["language"] !== undefined) {
+            language = request_json["language"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        if (request_json["noRek"] !== undefined) {
+            noRek = request_json["noRek"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["bankcode"] !== undefined) {
+            bankcode = request_json["bankcode"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["nama"] !== undefined) {
+            nama = request_json["nama"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var ubasic = await this.basic2SS.findBymail(email);
+
+        var iduser = ubasic._id;
+        if(ubasic.isIdVerified == false)
+        {
+            throw new BadRequestException("Maaf Silahkan lakukan KYC dahulu !");
+        }
+        else
+        {
+            var listkyc = ubasic.kyc;
+            if(listkyc.length != 0)
+            {
+                for(var loopKyc = 0; loopKyc < listkyc.length; loopKyc++)
+                {
+                    if(listkyc[loopKyc].status == "DISETUJUI" || listkyc[loopKyc].status == "FINISH")
+                    {
+                        namamediaprof = listkyc[loopKyc].nama.toLowerCase();
+                        break;
+                    }
+                    else if(listkyc[loopKyc].kycHandle.length != 0)
+                    {
+                        var listtempKYC = listkyc[loopKyc].kycHandle;
+                        for(var loopDalam = 0; loopDalam < listtempKYC.length; loopDalam++)
+                        {
+                            if(listtempKYC[loopDalam].status == "FINISH")
+                            {
+                                try
+                                {
+                                    namamediaprof = listtempKYC[loopDalam].nama.toLowerCase();
+                                }
+                                catch(e)
+                                {
+                                    namamediaprof = listkyc[loopKyc].nama.toLowerCase();
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (language === "id") {
+            messageRespon = "Nama yang Anda masukkan salah, pastikan nama yang Anda masukkan sesuai dengan ID yang terdaftar di Hyppe, nama yang sudah terdaftar adalah " + namamediaprof.toUpperCase();;
+        }
+        else if (language === "en") {
+            messageRespon = "The name you entered is wrong, make sure the name you enter matches the ID registered on Hyppe, the registered name is " + namamediaprof.toUpperCase();;
+        }
+
+        var lownama = nama.toLowerCase();
+        var idakun = null;
+        var databank = null;
+        var namabank = "";
+        try {
+            databank = await this.banksService.findbankcode(bankcode);
+            namabank = databank._doc.bankname;
+            idbank = databank._doc._id;
+
+        } catch (e) {
+            throw new BadRequestException("Banks not found...!");
+        }
+
+        try {
+            datarekkembar = await this.userbankaccountsService.findnorek(noRek, idbank);
+            idakun = datarekkembar._id;
+        } catch (e) {
+            datarekkembar = null;
+        }
+
+        if (datarekkembar === null) {
+
+            if (lownama === namamediaprof) {
+                try {
+                    var mongo = require('mongoose');
+                    CreateUserbankaccountsDto.userId = new mongo.Types.ObjectId(iduser.toString());
                     CreateUserbankaccountsDto.noRek = noRek;
                     CreateUserbankaccountsDto.idBank = idbank;
                     CreateUserbankaccountsDto.createdAt = dt.toISOString();
@@ -558,6 +731,36 @@ export class UserbankaccountsController {
         //Ceck User Userbasics
         try {
             datauserbasicsService = await this.userbasicsService.findOne(email);
+        } catch (e) {
+            throw new BadRequestException("User not found");
+        }
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        iduser = mongoose.Types.ObjectId(datauserbasicsService._id);
+        let data = await this.userbankaccountsService.findOneUser(iduser);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @Post('api/userbankaccounts/byuser/v2')
+    @UseGuards(JwtAuthGuard)
+    async contentuser2(@Req() request: Request): Promise<any> {
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var email = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var datauserbasicsService = null;
+        var iduser = null;
+        //Ceck User Userbasics
+        try {
+            datauserbasicsService = await this.basic2SS.findbyemail(email);
         } catch (e) {
             throw new BadRequestException("User not found");
         }
