@@ -35758,7 +35758,7 @@ export class NewPostService {
       );
     }
 
-    if (search != null && search != undefined && search != email) {
+    if (search != null && search != undefined && search != email && search != "") {
       postmatch.push(
         {
           "email": search
