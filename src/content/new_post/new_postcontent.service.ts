@@ -462,6 +462,8 @@ export class NewPostContentService {
 
     //Generate Certified
     if (Posts_.certified) {
+      console.log(Posts_.certified)
+      console.log("---------------------------------------------------XXX 1---------------------------------------------------")
       this.generateCertificate(Posts_.postID.toString(), lang.toString(), Posts_, data_userbasics);
     }
 
@@ -630,6 +632,8 @@ export class NewPostContentService {
 
     //Generate Certified
     if (Posts_.certified) {
+      console.log(Posts_.certified)
+      console.log("---------------------------------------------------XXX 1---------------------------------------------------")
       this.generateCertificate(String(body.postID), lang.toString(), Posts_, data_userbasics);
     }
 
@@ -703,6 +707,8 @@ export class NewPostContentService {
     if (body.certified && body.certified == "true") {
       console.log("post cert: " + opost.certified);
       if (opost.certified == undefined || opost.certified == false) {
+        console.log(body.certified)
+        console.log("---------------------------------------------------XXX 1---------------------------------------------------")
         this.generateCertificate(String(post.postID), 'id', apost, data_userbasics);
       }
     }
