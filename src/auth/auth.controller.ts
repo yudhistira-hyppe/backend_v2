@@ -6981,6 +6981,7 @@ export class AuthController {
     var email = null;
     var emailfrend = null;
     var tempatLahir = null;
+    var interests = [];
 
     try {
       datauserdetail = await this.basic2SS.detailDenganlookupLain(id, "id");
@@ -7063,6 +7064,18 @@ export class AuthController {
       }
 
       try {
+        interests = datauserdetail[0].interest;
+
+        if (interests[0].interestName === undefined) {
+          interests = [];
+        } else {
+          interests = interests;
+        }
+      } catch (e) {
+        interests = [];
+      }
+
+      try {
         //versi lama
         // datafrend = await this.contenteventsService.findfriend(email);
         // console.log(datafrend);
@@ -7100,7 +7113,7 @@ export class AuthController {
         "states": datauserdetail[0].areas,
         "cities": datauserdetail[0].city,
         "countries": datauserdetail[0].country,
-        "interests": datauserdetail[0].interest,
+        "interests": interests,
         "dokument": arrsuport,
         "avatar": datauserdetail[0].avatar,
         "mobileNumber": datauserdetail[0].mobileNumber,
