@@ -35515,7 +35515,7 @@ export class NewPostService {
           "start": "$tempboost.boostSession.start",
           "isBoost": "$isBoost",
           "boostViewer": "$tempboost.boostViewer",
-          "boostCount": "$tempboost.boostCount",
+          "boostCount": 1,
           "boosted":
           {
             $cond: {
