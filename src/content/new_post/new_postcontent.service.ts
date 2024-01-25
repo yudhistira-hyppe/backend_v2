@@ -461,6 +461,7 @@ export class NewPostContentService {
     const lang = await this.utilService.getUserlanguages(Posts_.email.toString());
 
     //Generate Certified
+    console.log(Posts_.certified.toString() == "true");
     console.log(Posts_.certified == true);
     console.log(Posts_.certified);
     console.log(typeof Posts_.certified);
