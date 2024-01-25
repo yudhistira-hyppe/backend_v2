@@ -3345,30 +3345,63 @@ export class NewPostController {
 
                 for (let x = 0; x < atp.length; x++) {
                     let tp = atp[x];
-                    if (tp?.namespace) {
-                        let oid = tp.oid;
+                    if (tp != null && tp != undefined) {
+                        let oid = null;
+                        if(tp.oid != null && tp.oid != undefined)
+                        {
+                            oid = tp.oid;
+                        }
+                        else
+                        {
+                            oid = tp;
+                        }
                         let ua = await this.basic2SS.findbyidboth(oid.toString());
-                        if (ua != undefined) {
+                        if (ua != null && ua != undefined) {
                             let tp1 = new TagPeople();
                             tp1.email = String(ua.email);
                             tp1.username = String(ua.username);
 
                             let ub = await this.basic2SS.finddetail(String(ua.email));
                             if (ub != undefined) {
-                                var tempprofile = tp1.avatar;
+                                var tempprofile = {};
+                                
                                 try
                                 {
-                                    tempprofile.mediaBasePath = ub.mediaBasePath;
-                                    tempprofile.mediaUri = ub.mediaUri;
-                                    tempprofile.mediaType = ub.mediaType;
-                                    tempprofile.mediaEndpoint = ub.mediaEndpoint;
-
-                                    tp1.avatar = tempprofile;
+                                    tempprofile['mediaBasePath'] = ub.mediaBasePath;
                                 }
                                 catch(e)
                                 {
-                                    //emang null
+                                    tempprofile['mediaBasePath'] = null;
                                 }
+
+                                try
+                                {
+                                    tempprofile['mediaUri'] = ub.mediaUri;
+                                }
+                                catch(e)
+                                {
+                                    tempprofile['mediaUri'] = null;
+                                }
+
+                                try
+                                {
+                                    tempprofile['mediaType'] = ub.mediaType;
+                                }
+                                catch(e)
+                                {
+                                    tempprofile['mediaType'] = null;
+                                }
+
+                                try
+                                {
+                                    tempprofile['mediaEndpoint'] = ub.mediaEndpoint;
+                                }
+                                catch(e)
+                                {
+                                    tempprofile['mediaEndpoint'] = null;
+                                }
+
+                                tp1.avatar = Object(tempprofile);
 
                                 if (await this.utilsService.ceckData(ub.urluserBadge)) {
                                     tp1.urluserBadge = ub.urluserBadge;
