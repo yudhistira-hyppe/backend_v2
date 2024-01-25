@@ -2196,7 +2196,7 @@ export class NewPostController {
 
         var pageNumber = null;
         var pageRow = null;
-        var postType = null;
+        var postType = body.postType;
         var data = null;
         var datasearch = null;
         var emailreceiver = null;
@@ -2204,11 +2204,14 @@ export class NewPostController {
             pageNumber = body.pageNumber;
         }
 
-        if (body.pageRow !== undefined) {
-            pageRow = body.pageRow;
+        if(body.pageRow != null && body.pageRow != undefined)
+        {
+            pageRow = parseInt(body.pageRow);
         }
-        if (body.postType !== undefined) {
-            postType = body.postType;
+
+        if(body.pageNumber != null && body.pageNumber != undefined)
+        {
+            pageNumber = parseInt(body.pageNumber);
         }
 
 
@@ -2230,8 +2233,6 @@ export class NewPostController {
             lengpict = 0;
 
         }
-
-        console.log(data);
 
         var tempapsaraMusicThumbId = [];
         var tempapsaraId = [];
@@ -3358,13 +3359,10 @@ export class NewPostController {
                                 var tempprofile = tp1.avatar;
                                 try
                                 {
-                                    if(ub.mediaBasePath != null || ub.mediaUri != null || ub.mediaType != null || ub.mediaEndpoint != null)
-                                    {
-                                        tempprofile.mediaBasePath = ub.mediaBasePath;
-                                        tempprofile.mediaUri = ub.mediaUri;
-                                        tempprofile.mediaType = ub.mediaType;
-                                        tempprofile.mediaEndpoint = ub.mediaEndpoint;
-                                    }
+                                    tempprofile.mediaBasePath = ub.mediaBasePath;
+                                    tempprofile.mediaUri = ub.mediaUri;
+                                    tempprofile.mediaType = ub.mediaType;
+                                    tempprofile.mediaEndpoint = ub.mediaEndpoint;
 
                                     tp1.avatar = tempprofile;
                                 }
