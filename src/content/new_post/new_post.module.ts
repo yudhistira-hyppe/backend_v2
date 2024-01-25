@@ -28,9 +28,12 @@ import { PostchallengeModule } from 'src/trans/postchallenge/postchallenge.modul
 import { UserchallengesModule } from 'src/trans/userchallenges/userchallenges.module';
 import { InterestCountModule } from '../interest_count/interest_count.module';
 import { InterestdayModule } from '../interestday/interestday.module';
+import { DisqusModule } from '../disqus/disqus.module';
 
 @Module({
   imports: [
+    DisqusModule, 
+    DisquslogsModule,
     TransactionsPostModule,
     ConfigModule.forRoot(),
     MediastikerModule,
