@@ -580,6 +580,52 @@ export class NewpostService {
                 }
             },
             {
+                "$lookup": {
+                  from: "contentevents",
+                  as: "isView",
+                  let: {
+        
+                    storys: '$postID',
+        
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $or: [
+        
+                          {
+                            $and: [
+                              {
+                                $expr: {
+                                  $eq: ['$postID', '$$storys']
+                                }
+                              },
+                              {
+                                "email": email,
+        
+                              },
+                              {
+                                "eventType": "VIEW"
+                              }
+                            ]
+                          },
+        
+                        ]
+                      }
+                    },
+                    {
+                      $project: {
+                        "email": 1,
+                        "postID": 1,
+        
+                      }
+                    }
+                  ],
+        
+                }
+              },
+            {
                 $project: {
                     "storyDate": 1,
                     "postID": 1,
