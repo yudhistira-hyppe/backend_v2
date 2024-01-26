@@ -5028,7 +5028,7 @@ export class UserbasicnewService {
             {
                 $match: 
                 {
-                    "email": "ilhamarahman97@gmail.com"
+                    "email": email
                 }
             },
             {
@@ -5516,7 +5516,7 @@ export class UserbasicnewService {
                                                 {
                                                     "email": 
                                                     {
-                                                        $ne: "ilhamarahman97@gmail.com"
+                                                        $ne: email
                                                     }
                                                 }
                                             ]
@@ -5548,7 +5548,7 @@ export class UserbasicnewService {
                                                 {
                                                     "email": 
                                                     {
-                                                        $ne: "ilhamarahman97@gmail.com"
+                                                        $ne: email
                                                     }
                                                 }
                                             ]
