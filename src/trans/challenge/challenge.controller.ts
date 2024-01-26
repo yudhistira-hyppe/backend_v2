@@ -1208,14 +1208,12 @@ export class ChallengeController {
     var timestamps_start = await this.util.getDateTimeString();
     var fullurl = headers.host + '/api/challenge/' + id;
     var email = null;
-    try
-    {
+    try {
       var token = headers['x-auth-token'];
       var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
       email = auth.email;
     }
-    catch(e)
-    {
+    catch (e) {
       //kosong aja
     }
 
@@ -2824,6 +2822,54 @@ export class ChallengeController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('leaderboard/v2')
+  async listingleaderboardv2(
+    @Req() request: Request,
+    @Headers() headers
+  ) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/leaderboard/v2';
+
+    var challengeId = null;
+    var userId = null;
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+    if (request_json["challengeId"] !== undefined) {
+      challengeId = request_json['challengeId'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, userId, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, challenge field is required");
+    }
+
+    if (request_json["userId"] !== undefined) {
+      userId = request_json['userId'];
+    } else {
+      var timestamps_end = await this.util.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, userId, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed, user id field is required");
+    }
+
+    var data = await this.subchallenge.listingleaderboardv2(challengeId, userId);
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, userId, null, request_json);
+
+    return {
+      response_code: 202,
+      data: data,
+      messages: messages,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('listuserwilayah/:id')
   async listuserwilayah(@Param('id') id: string, @Req() request: Request, @Headers() headers) {
     var timestamps_start = await this.util.getDateTimeString();
@@ -2851,6 +2897,45 @@ export class ChallengeController {
 
     //   data[i].userChallenge_data = setarray;
     // }
+
+    var setarray = [];
+    for (var j = 0; j < data.length; j++) {
+      var setobject = {};
+      setobject["_id"] = data[j]._id;
+      var getangka = data[j].persentase;
+      setobject["persentase"] = parseFloat(getangka.toFixed(2));
+
+      setarray.push(setobject);
+    }
+
+    data = setarray;
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    var timestamps_end = await this.util.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+    return {
+      response_code: 202,
+      data: data,
+      messages: messages,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('listuserwilayah/v2/:id')
+  async listuserwilayahv2(@Param('id') id: string, @Req() request: Request, @Headers() headers) {
+    var timestamps_start = await this.util.getDateTimeString();
+    var fullurl = headers.host + '/api/challenge/listuserwilayah/' + id;
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+
+    var challengeId = id;
+
+    var data = await this.userchallengeSS.wilayahpenggunav2(challengeId);
 
     var setarray = [];
     for (var j = 0; j < data.length; j++) {

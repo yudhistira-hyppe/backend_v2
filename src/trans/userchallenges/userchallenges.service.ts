@@ -838,6 +838,162 @@ export class UserchallengesService {
         return data
     }
 
+    async wilayahpenggunav2(id: string) {
+        var mongo = require('mongoose');
+        var data = await this.UserchallengesModel.aggregate([
+            {
+                "$match":
+                {
+                    "$and":
+                        [
+                            {
+                                idChallenge: new mongo.Types.ObjectId(id)
+                            },
+                            {
+                                isActive: true
+                            }
+                        ]
+                }
+            },
+            {
+                "$group":
+                {
+                    _id: "$idUser"
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: 'newUserBasics',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'basic_data'
+                },
+            },
+            {
+                "$project":
+                {
+                    state:
+                    {
+                        "$ifNull":
+                            [
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$basic_data.states.$id", 0
+                                        ]
+                                },
+                                null
+                            ]
+                    }
+                }
+            },
+            {
+                "$lookup":
+                {
+                    from: 'areas',
+                    localField: 'state',
+                    foreignField: '_id',
+                    as: 'wilayah'
+                },
+            },
+            {
+                "$project":
+                {
+                    stateName:
+                    {
+                        "$ifNull":
+                            [
+                                {
+                                    "$arrayElemAt":
+                                        [
+                                            "$wilayah.stateName", 0
+                                        ]
+                                },
+                                "Lainnya"
+                            ]
+                    }
+                }
+            },
+            {
+                "$group":
+                {
+                    _id: "$stateName",
+                    total:
+                    {
+                        "$sum": 1
+                    }
+                }
+            },
+            {
+                "$group":
+                {
+                    _id: null,
+                    totaldata:
+                    {
+                        "$sum": "$total"
+                    },
+                    data:
+                    {
+                        "$push":
+                        {
+                            _id: "$_id",
+                            total: "$total"
+                        }
+                    }
+                }
+            },
+            {
+                "$unwind":
+                {
+                    path: "$data"
+                }
+            },
+            {
+                "$sort":
+                {
+                    _id: 1
+                }
+            },
+            {
+                "$project":
+                {
+                    _id: "$data._id",
+                    persentase:
+                    {
+                        "$multiply":
+                            [
+                                {
+                                    "$divide":
+                                        [
+                                            "$data.total", "$totaldata"
+                                        ]
+                                }, 100
+                            ]
+                    }
+                }
+            },
+            {
+                "$group":
+                {
+                    _id: "$_id",
+                    persentase:
+                    {
+                        "$first": "$persentase"
+                    }
+                }
+            },
+            {
+                "$sort":
+                {
+                    _id: 1
+                }
+            }
+        ]);
+
+        return data
+    }
+
     async cekUserjoin(iduser: string) {
         var pipeline = [];
         pipeline.push({
