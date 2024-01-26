@@ -30,7 +30,8 @@ import { NewpostsService } from 'src/content/newposts/newposts.service';
 import { Newposts } from 'src/content/newposts/schemas/newposts.schema';
 import { Long } from 'mongodb';
 import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
-
+import { NewPost2Service } from 'src/content/new_post2/new_post2.service';
+import { newPosts2 } from 'src/content/new_post2/schemas/newPost.schema';
 
 @Controller('api/challenge')
 export class ChallengeController {
@@ -50,7 +51,8 @@ export class ChallengeController {
     private readonly userbasicsSS: UserbasicsService,
     private readonly userbasics2SS: UserbasicnewService,
     private readonly settings2SS: Settings2Service,
-    private readonly postSS: NewpostsService
+    private readonly postSS: NewpostsService,
+    private readonly post2SS: NewPost2Service
   ) { }
 
   @UseGuards(JwtAuthGuard)
@@ -3149,6 +3151,7 @@ export class ChallengeController {
     // }
   }
 
+  //tinggal query before join
   @UseGuards(JwtAuthGuard)
   @Post('join/v2')
   async joinChallenge2(@Res() res, @Req() request: Request, @Headers() headers) {
@@ -3232,12 +3235,12 @@ export class ChallengeController {
               setscore = getuser.scoreAwal;
 
               if (parentdata.objectChallenge == "KONTEN") {
-                var getbotpost = await this.postSS.findByPostId(getuser.postid);
+                var getbotpost = await this.post2SS.findByPostId(getuser.postid);
                 var tambah = Number(getbotpost.likes.toString()) + Number(getuser.likeAwal);
-                var updatepost = new Newposts();
+                var updatepost = new newPosts2();
                 updatepost.likes = Long.fromNumber(tambah);
 
-                await this.postSS.updateByPostId(getbotpost._id.toString(), updatepost);
+                await this.post2SS.updateByPostId(getbotpost._id.toString(), updatepost);
               }
             }
           }
@@ -3295,7 +3298,7 @@ export class ChallengeController {
     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, request_json['idUser'], null, request_json);
 
     if (firstdata != null && parentdata.objectChallenge == "KONTEN" && statuskick == false) {
-      this.beforejoinchallenge(getuserbasic, firstdata);
+      this.beforejoinchallenge2(getuserbasic, firstdata);
     }
 
     if (listjoin.length != 0) {
@@ -5896,6 +5899,62 @@ export class ChallengeController {
     return {
       response_code: 202,
       data: result
+    }
+  }
+
+  async beforejoinchallenge2(emailuser: any, subchallenge: any) {
+    var data = await this.subchallenge.getlistinsertpostchallenge2(emailuser.email.toString(), subchallenge.idSubChallenge.toString());
+
+    if (data.length != 0) {
+      var mongo = require('mongoose');
+      var totalScore = subchallenge.score;
+      var setinsertactivity = [];
+      for (var i = 0; i < data.length; i++) {
+        totalScore = totalScore + data[i].totalScore;
+        var insertdata = new Postchallenge();
+
+        insertdata._id = new mongo.Types.ObjectId();
+        insertdata.postID = data[i]._id;
+        insertdata.createdAt = await this.util.getDateTimeString();
+        insertdata.idChallenge = new mongo.Types.ObjectId(subchallenge.idChallenge);
+        insertdata.idSubChallenge = new mongo.Types.ObjectId(subchallenge.idSubChallenge);
+        insertdata.session = subchallenge.session;
+        insertdata.startDatetime = subchallenge.startDatetime;
+        insertdata.endDatetime = subchallenge.endDatetime;
+        insertdata.updatedAt = await this.util.getDateTimeString();
+        insertdata.idUser = new mongo.Types.ObjectId(emailuser._id);
+        insertdata.score = data[i].totalScore;
+        insertdata.postType = data[i].postType;
+
+        setinsertactivity.push(
+          {
+            "type": "posts",
+            "id": data[i]._id,
+            "desc": "POST"
+          }
+        );
+
+        if (data[i].contentEventList.length != 0) {
+          var datacontentevent = data[i].contentEventList;
+          for (var loopactivity = 0; loopactivity < datacontentevent.length; loopactivity++) {
+            setinsertactivity.push(
+              {
+                "type": "contentevents",
+                "id": datacontentevent[loopactivity].contentEventID,
+                "desc": datacontentevent[loopactivity].eventType
+              }
+            );
+          }
+        }
+
+        // console.log(insertdata);
+        await this.postchallengeService.create(insertdata);
+      }
+
+      var updatedata = new Userchallenges();
+      updatedata.score = totalScore;
+      updatedata.activity = setinsertactivity;
+      await this.userchallengeSS.update(subchallenge._id, updatedata);
     }
   }
 
