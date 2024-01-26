@@ -2303,6 +2303,9 @@ export class NewPostController {
                     emailreceiver = data[i].email;
                     boosted = data[i].boosted;
                     boostCount = data[i].boostCount;
+                    if (data[i].boostViewer != undefined) {
+                        data[i].boostJangkauan = data[i].boostViewer.length;
+                    }
                     var checkpictketemu = false;
                     uploadSource = data[i].uploadSource;
                     var dataUpsaraThum = (data[i].apsaraThumbId != undefined);
@@ -2397,6 +2400,9 @@ export class NewPostController {
                     emailreceiver = data[i].email;
                     boostCount = data[i].boostCount;
                     boosted = data[i].boosted;
+                    if (data[i].boostViewer != undefined) {
+                        data[i].boostJangkauan = data[i].boostViewer.length;
+                    }
                     var checkpictketemu = false;
                     for (var j = 0; j < gettempresultpictapsara.length; j++) {
                         if (mediaType == "image" || mediaType == "images") {

@@ -35509,7 +35509,9 @@ export class NewPostService {
           "end": "$tempboost.boostSession.end",
           "start": "$tempboost.boostSession.start",
           "isBoost": "$isBoost",
-          "boostViewer": "$tempboost.boostViewer",
+          "boostViewer": {
+            $arrayElemAt: ["$tempboost.boostViewer", 0]
+          },
           "boostCount": 1,
           "boosted":
           {
