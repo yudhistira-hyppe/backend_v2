@@ -27,6 +27,7 @@ import { GetusercontentsService } from 'src/trans/getusercontents/getusercontent
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
 import { TagPeople } from '../posts/dto/create-posts.dto'; 
 import { PostsService } from '../../content/posts/posts.service';
+import { NewPostModService } from './new_post_mod.service';
 @Controller('api/')
 export class NewPostController {
     private readonly logger = new Logger(NewPostController.name);
@@ -48,7 +49,9 @@ export class NewPostController {
         private readonly PostContentService: PostContentService,
         private readonly musicSS:MediamusicService,
         private readonly usercontentService:GetusercontentsService,
-        private readonly disqusLogSS:DisquslogsService
+        private readonly disqusLogSS: DisquslogsService,
+        private readonly newPostModService: NewPostModService
+        
     ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -2298,40 +2301,14 @@ export class NewPostController {
                 let gettempresultpictapsara_tempapsaraId = tempapsaraId_result.ImageInfo;
                 let gettempresultpictapsara_tempapsaraThumbId = tempapsaraThumbId_result.ImageInfo;
                 let gettempresultpictapsara_tempapsaraMusicThumbId = tempapsaraMusicThumbId_result.ImageInfo;
-                // for (let i = 0; i < lengpict; i++) {
 
-                //     uploadSource = data[i].uploadSource;
-                //     try {
-                //         apsaraId = data[i].apsaraId;
-                //     } catch (e) {
-                //         apsaraId = "";
-                //     }
-                //     try {
-                //         apsaraThumbId = data[i].apsaraThumbId;
-                //     } catch (e) {
-                //         apsaraThumbId = "";
-                //     }
-
-                //     if (apsaraId !== undefined && apsaraThumbId !== undefined) {
-                //         tempdatapict.push(data[i].apsaraThumbId);
-                //         // tempdatapict.push(data[i].apsaraId);
-
-                //     }
-                //     else if (apsaraId !== undefined && apsaraThumbId === undefined) {
-                //         tempdatapict.push(data[i].apsaraId);
-
-                //     }
-                //     else if (apsaraId === undefined && apsaraThumbId !== undefined) {
-                //         tempdatapict.push(data[i].apsaraThumbId);
-
-                //     }
-                // }
-                // resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
-                // let gettempresultpictapsara = resultpictapsara.ImageInfo;
                 for (let i = 0; i < lengpict; i++) {
                     emailreceiver = data[i].email;
                     boosted = data[i].boosted;
                     boostCount = data[i].boostCount;
+                    if (data[i].boostViewer != undefined) {
+                        data[i].boostJangkauan = data[i].boostViewer.length;
+                    }
                     var checkpictketemu = false;
                     uploadSource = data[i].uploadSource;
                     var dataUpsaraThum = (data[i].apsaraThumbId != undefined);
@@ -2363,59 +2340,6 @@ export class NewPostController {
                             }
                         }
                     }
-                    // emailreceiver = data[i].email;
-                    // boosted = data[i].boosted;
-                    // boostCount = data[i].boostCount;
-                    // var checkpictketemu = false;
-                    // uploadSource = data[i].uploadSource;
-                    // var dataUpsaraThum = (data[i].apsaraThumbId != undefined);
-                    // var dataUpsara = (data[i].apsaraId != undefined);
-
-                    // if (data[i].isApsara) {
-                    //     for (var j = 0; j < gettempresultpictapsara.length; j++) {
-
-                    //         if (gettempresultpictapsara[j].ImageId == data[i].apsaraThumbId) {
-                    //             if (data[i].apsaraThumbId == data[i].apsaraId) {
-                    //                 data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
-                    //             }
-                    //             if (!dataUpsara) {
-                    //                 data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
-                    //             }
-                    //             // checkpictketemu = true;
-                    //             data[i].media =
-                    //             {
-                    //                 "ImageInfo": [gettempresultpictapsara[j]]
-                    //             }
-
-                    //             data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-
-
-
-                    //         }
-                    //         else if (gettempresultpictapsara[j].ImageId == data[i].apsaraId) {
-                    //             if (data[i].apsaraThumbId == data[i].apsaraId) {
-                    //                 data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-                    //             }
-                    //             if (!dataUpsaraThum) {
-                    //                 data[i].mediaThumbEndpoint = gettempresultpictapsara[j].URL;
-                    //             }
-                    //             checkpictketemu = true;
-                    //             data[i].media =
-                    //             {
-                    //                 "ImageInfo": [gettempresultpictapsara[j]]
-                    //             }
-
-                    //             data[i].mediaEndpoint = gettempresultpictapsara[j].URL;
-
-                    //         }
-                    //     }
-                    // } else {
-                    //     data[i].mediaThumbEndpoint = data[i].mediaEndpoint;
-                    // }
-
-
-
-
                     if (boosted !== null || boosted.length > 0) {
                         console.log("boosted: " + data[i].postID);
                         if (data[i].postID != undefined) {
@@ -2479,6 +2403,9 @@ export class NewPostController {
                     emailreceiver = data[i].email;
                     boostCount = data[i].boostCount;
                     boosted = data[i].boosted;
+                    if (data[i].boostViewer != undefined) {
+                        data[i].boostJangkauan = data[i].boostViewer.length;
+                    }
                     var checkpictketemu = false;
                     for (var j = 0; j < gettempresultpictapsara.length; j++) {
                         if (mediaType == "image" || mediaType == "images") {
@@ -3345,30 +3272,63 @@ export class NewPostController {
 
                 for (let x = 0; x < atp.length; x++) {
                     let tp = atp[x];
-                    if (tp?.namespace) {
-                        let oid = tp.oid;
+                    if (tp != null && tp != undefined) {
+                        let oid = null;
+                        if(tp.oid != null && tp.oid != undefined)
+                        {
+                            oid = tp.oid;
+                        }
+                        else
+                        {
+                            oid = tp;
+                        }
                         let ua = await this.basic2SS.findbyidboth(oid.toString());
-                        if (ua != undefined) {
+                        if (ua != null && ua != undefined) {
                             let tp1 = new TagPeople();
                             tp1.email = String(ua.email);
                             tp1.username = String(ua.username);
 
                             let ub = await this.basic2SS.finddetail(String(ua.email));
                             if (ub != undefined) {
-                                var tempprofile = tp1.avatar;
+                                var tempprofile = {};
+                                
                                 try
                                 {
-                                    tempprofile.mediaBasePath = ub.mediaBasePath;
-                                    tempprofile.mediaUri = ub.mediaUri;
-                                    tempprofile.mediaType = ub.mediaType;
-                                    tempprofile.mediaEndpoint = ub.mediaEndpoint;
-
-                                    tp1.avatar = tempprofile;
+                                    tempprofile['mediaBasePath'] = ub.mediaBasePath;
                                 }
                                 catch(e)
                                 {
-                                    //emang null
+                                    tempprofile['mediaBasePath'] = null;
                                 }
+
+                                try
+                                {
+                                    tempprofile['mediaUri'] = ub.mediaUri;
+                                }
+                                catch(e)
+                                {
+                                    tempprofile['mediaUri'] = null;
+                                }
+
+                                try
+                                {
+                                    tempprofile['mediaType'] = ub.mediaType;
+                                }
+                                catch(e)
+                                {
+                                    tempprofile['mediaType'] = null;
+                                }
+
+                                try
+                                {
+                                    tempprofile['mediaEndpoint'] = ub.mediaEndpoint;
+                                }
+                                catch(e)
+                                {
+                                    tempprofile['mediaEndpoint'] = null;
+                                }
+
+                                tp1.avatar = Object(tempprofile);
 
                                 if (await this.utilsService.ceckData(ub.urluserBadge)) {
                                     tp1.urluserBadge = ub.urluserBadge;
@@ -4209,5 +4169,14 @@ export class NewPostController {
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Post('api/posts/notifyapsara/cmod/image')
+    async notifyApsaraCmodImage(@Body() body, @Headers() headers) {
+        this.logger.log("notifyApsaraCmodImage >>> start: " + JSON.stringify(body));
+        this.newPostModService.cmodResponse(body);
+        let t = { 'response': 'Done' };
+        return JSON.stringify(t);
     }
 }

@@ -29,9 +29,12 @@ import { UserchallengesModule } from 'src/trans/userchallenges/userchallenges.mo
 import { InterestCountModule } from '../interest_count/interest_count.module';
 import { InterestdayModule } from '../interestday/interestday.module';
 import { DisqusModule } from '../disqus/disqus.module';
+import { NewPostModService } from './new_post_mod.service';
+import { SocketModule } from '../socket/socket.module';
 
 @Module({
   imports: [
+    SocketModule,
     DisqusModule, 
     DisquslogsModule,
     TransactionsPostModule,
@@ -61,7 +64,7 @@ import { DisqusModule } from '../disqus/disqus.module';
     MongooseModule.forFeature([{ name: newPosts.name, schema: NewpostsSchema }], 'SERVER_FULL')
   ],
   controllers: [NewPostController],
-  providers: [NewPostService, NewPostContentService],
-  exports: [NewPostService, NewPostContentService]
+  providers: [NewPostService, NewPostContentService, NewPostModService],
+  exports: [NewPostService, NewPostContentService, NewPostModService]
 })
 export class NewPostModule { }

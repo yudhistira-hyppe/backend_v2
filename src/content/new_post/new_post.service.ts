@@ -35125,7 +35125,7 @@ export class NewPostService {
           from: "newUserBasics",
           as: "userTag",
           let: {
-            localID: '$tagPeople'
+            localID: '$tagPeople.$id'
           },
           pipeline: [
             {
@@ -35134,12 +35134,12 @@ export class NewPostService {
                 $or: [
                   {
                     $expr: {
-                      $eq: ['$_id', "$$localID"]
+                      $in: ['$_id', "$$localID"]
                     }
                   },
                   {
                     $expr: {
-                      $eq: ['$_idAuth', "$$localID.$id"]
+                      $in: ['$_idAuth', "$$localID.$id"]
                     }
                   },
 
@@ -35150,11 +35150,132 @@ export class NewPostService {
             {
               $project: {
                 "_id": 1,
-                "username": 1
+                "username": 1,
+                "email":1,
+                "avatar":
+                {
+                  "$ifNull":
+                  [
+                    {
+                      "mediaBasePath": "$mediaBasePath",
+                      "mediaUri": "$mediaUri",
+                      "originalName": "$originalName",
+                      "fsSourceUri": "$fsSourceUri",
+                      "fsSourceName": "$fsSourceName",
+                      "fsTargetUri": "$fsTargetUri",
+                      "mediaType": "$mediaType",
+                      "mediaEndpoint": "$mediaEndpoint",
+                    },
+                    null
+                  ]
+                },
+                "urluserBadge":
+                {
+                  "$ifNull":
+                    [
+                      {
+                        "$arrayElemAt":
+                          [
+                            {
+                              "$filter":
+                              {
+                                input: "$userBadge",
+                                as: "listbadge",
+                                cond:
+                                {
+                                  "$and":
+                                    [
+                                      {
+                                        "$eq":
+                                          [
+                                            "$$listbadge.isActive", true
+                                          ]
+                                      },
+                                      {
+                                        "$lte":
+                                          [
+                                            {
+                                              "$dateToString": {
+                                                "format": "%Y-%m-%d %H:%M:%S",
+                                                "date": {
+                                                  "$add": [
+                                                    new Date(),
+                                                    25200000
+                                                  ]
+                                                }
+                                              }
+                                            },
+                                            "$$listbadge.endDatetime"
+                                          ]
+                                      }
+                                    ]
+                                }
+                              }
+                            }, 0
+                          ]
+                      },
+                      []
+                    ]
+                  },
+              }
+            },
+            {
+              "$project":
+              {
+                "_id": 1,
+                "username": 1,
+                "email":1,
+                "avatar": 1,
+                "urluserBadge":
+                {
+                  "$ifNull":
+                  [
+                    {
+                      "$arrayElemAt":
+                      [
+                        "$urluserBadge", 0
+                      ]
+                    },
+                    null
+                  ]
+                }
               }
             }
           ],
 
+        }
+      },
+      {
+        '$lookup': {
+            from: 'interests_repo',
+            as: 'cats',
+            let: {
+                localID: '$category.$id'
+            },
+            pipeline: [
+                {
+                    '$match': {
+                        '$expr': {
+                            '$and': [
+                                {
+                                    '$in': ['$_id', {
+                                        '$ifNull': ['$$localID', []]
+                                    }]
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    '$project': {
+                        interestName: 1,
+                        langIso: 1,
+                        icon: 1,
+                        createdAt: 1,
+                        updatedAt: 1
+                    }
+                }
+            ]
         }
       },
       {
@@ -35216,46 +35337,41 @@ export class NewPostService {
                   ]
               }
               }
-          }
-        }
+          },
+          "tempboost":
+          {
+            "$ifNull":
+            [
+              {
+                "$cond":
+                {
+                  if:
+                  {
+                    "$gte":
+                    [
+                      {
+                        "$size":"$boosted"
+                      },
+                      0
+                    ]
+                  },
+                  then:
+                    "$boosted",
+                  else:[]
+                },
+              },
+              []
+            ]
+          },
+        },
       },
-      {
-        $project: {
-          _id: 1,
+      { 
+        "$project" : 
+        {
           version: {
-            $arrayElemAt: ["$setting.value", 0]
-          },
-          versionIos: {
-            $arrayElemAt: ["$setting.value", 1]
-          },
-          limitLandingpage: {
-            $arrayElemAt: ["$setting.value", 2]
+              '$arrayElemAt': ['$setting.value', 0]
           },
           "postID": 1,
-          musicTitle: {
-            $arrayElemAt: ["$music.musicTitle", 0]
-          },
-          "artistName": {
-            $arrayElemAt: ["$music.artistName", 0]
-          },
-          "albumName": {
-            $arrayElemAt: ["$music.albumName", 0]
-          },
-          "apsaraMusic": {
-            $arrayElemAt: ["$music.apsaraMusic", 0]
-          },
-          "apsaraThumnail": {
-            $arrayElemAt: ["$music.apsaraThumnail", 0]
-          },
-          "genre": {
-            $arrayElemAt: ["$music.genre", 0]
-          },
-          "theme": {
-            $arrayElemAt: ["$music.theme", 0]
-          },
-          "mood": {
-            $arrayElemAt: ["$music.mood", 0]
-          },
           "tagPeople": "$userTag",
           "mediaType": 1,
           "postType": 1,
@@ -35283,6 +35399,16 @@ export class NewPostService {
           "uploadSource": {
             $arrayElemAt: ["$uploadSource.uploadSource", 0]
           },
+          "boostJangkauan":
+          {
+            "$ifNull":
+            [
+              {
+                "$size": "$tempboost.boostViewer"
+              },
+              0
+            ]
+          },
           comments: {
             $cond: {
               if: {
@@ -35309,7 +35435,48 @@ export class NewPostService {
               else: 0
             }
           },
-          musik: "$music",
+          music:
+          {
+            "$cond":
+            {
+              if:
+              {
+                "$eq":
+                [
+                  "$music",
+                  []
+                ]
+              },
+              then:null,
+              else:
+              {
+                "musicTitle": {
+                  $arrayElemAt: ["$music.musicTitle", 0]
+                },
+                "artistName": {
+                  $arrayElemAt: ["$music.artistName", 0]
+                },
+                "albumName": {
+                  $arrayElemAt: ["$music.albumName", 0]
+                },
+                "apsaraMusic": {
+                  $arrayElemAt: ["$music.apsaraMusic", 0]
+                },
+                "apsaraThumnail": {
+                  $arrayElemAt: ["$music.apsaraThumnail", 0]
+                },
+                "genre": {
+                  $arrayElemAt: ["$music.genre", 0]
+                },
+                "theme": {
+                  $arrayElemAt: ["$music.theme", 0]
+                },
+                "mood": {
+                  $arrayElemAt: ["$music.mood", 0]
+                },
+              }
+            }
+          },
           isLike:
           {
             $cond: {
@@ -35335,15 +35502,17 @@ export class NewPostService {
           },
           "userProfile": "$userProfile",
           "contentMedias": "$contentMedias",
-          "cats": "$categories",
+          "cats": "$cats",
           "tagDescription": "$tagDescription",
           "metadata": "$metadata",
           "boostDate": "$boostDate",
-          "end": "$boosted.boostSession.end",
-          "start": "$boosted.boostSession.start",
+          "end": "$tempboost.boostSession.end",
+          "start": "$tempboost.boostSession.start",
           "isBoost": "$isBoost",
-          "boostViewer": "$boostViewer",
-          "boostCount": "$boostCount",
+          "boostViewer": {
+            $arrayElemAt: ["$tempboost.boostViewer", 0]
+          },
+          "boostCount": 1,
           "boosted":
           {
             $cond: {
@@ -35355,10 +35524,10 @@ export class NewPostService {
                       $add: [new Date(), 25200000]
                     }
                   }
-                }, "$boosted.boostSession.end"]
+                }, "$tempboost.boostSession.end"]
               },
               then: "$ilang",
-              else: "$boosted",
+              else: "$tempboost",
 
             }
           },
@@ -35442,9 +35611,7 @@ export class NewPostService {
             "fsSourceName": { $arrayElemAt: ["$userBasic.fsSourceName", 0] },
             "fsTargetUri": { $arrayElemAt: ["$userBasic.fsTargetUri", 0] },
             "mediaType": { $arrayElemAt: ["$userBasic.mediaType", 0] },
-            //"mediaEndpoint": {
-            //"$concat": ["/profilepict/", "$mediaUri"]
-            //}
+            "mediaEndpoint": { $arrayElemAt: ["$userBasic.mediaEndpoint", 0] },
           },
           "privacy": {
             "isCelebrity": {
@@ -36391,7 +36558,7 @@ export class NewPostService {
                       apsaraId: {$arrayElemAt:["$mediaSource.apsaraId",0]},
                       apsaraThumbId: {$arrayElemAt:["$mediaSource.apsaraThumId",0]},
                       mediaEndpoint: { '$concat': [ '/pict/', "$postID" ] },
-                      mediaUri: {$arrayElemAt:["$mediaSource.apsara",0]},
+                      mediaUri: {$arrayElemAt:["$mediaSource.mediaUri",0]},
                       mediaThumbEndpoint: { '$concat': [ '/thumb/', "$postID"  ] },
                       mediaThumbUri: {$arrayElemAt:["$mediaSource.mediaThumUri",0]},
                       mediaType: {$arrayElemAt:["$mediaSource.mediaType",0]},
@@ -36492,7 +36659,7 @@ export class NewPostService {
                       apsaraId: {$arrayElemAt:["$mediaSource.apsaraId",0]},
                       apsaraThumbId: {$arrayElemAt:["$mediaSource.apsaraThumId",0]},
                       mediaEndpoint: { '$concat': [ '/pict/', "$postID" ] },
-                      mediaUri: {$arrayElemAt:["$mediaSource.apsara",0]},
+                      mediaUri: {$arrayElemAt:["$mediaSource.mediaUri",0]},
                       mediaThumbEndpoint: { '$concat': [ '/thumb/', "$postID"  ] },
                       mediaThumbUri: {$arrayElemAt:["$mediaSource.mediaThumUri",0]},
                       mediaType: {$arrayElemAt:["$mediaSource.mediaType",0]},
@@ -36593,7 +36760,7 @@ export class NewPostService {
                       apsaraId: {$arrayElemAt:["$mediaSource.apsaraId",0]},
                       apsaraThumbId: {$arrayElemAt:["$mediaSource.apsaraThumId",0]},
                       mediaEndpoint: { '$concat': [ '/pict/', "$postID" ] },
-                      mediaUri: {$arrayElemAt:["$mediaSource.apsara",0]},
+                      mediaUri: {$arrayElemAt:["$mediaSource.mediaUri",0]},
                       mediaThumbEndpoint: { '$concat': [ '/thumb/', "$postID"  ] },
                       mediaThumbUri: {$arrayElemAt:["$mediaSource.mediaThumUri",0]},
                       mediaType: {$arrayElemAt:["$mediaSource.mediaType",0]},
@@ -37181,7 +37348,7 @@ export class NewPostService {
                   apsaraId: {$arrayElemAt:["$mediaSource.apsaraId",0]},
                   apsaraThumbId: {$arrayElemAt:["$mediaSource.apsaraThumId",0]},
                   mediaEndpoint: { '$concat': [ '/pict/', "$postID" ] },
-                  mediaUri: {$arrayElemAt:["$mediaSource.apsara",0]},
+                  mediaUri: {$arrayElemAt:["$mediaSource.mediaUri",0]},
                   mediaThumbEndpoint: { '$concat': [ '/thumb/', "$postID"  ] },
                   mediaThumbUri: {$arrayElemAt:["$mediaSource.mediaThumUri",0]},
                   mediaType: {$arrayElemAt:["$mediaSource.mediaType",0]},
@@ -38319,8 +38486,8 @@ export class NewPostService {
                   apsara: {$arrayElemAt:["$mediaSource.apsara",0]},
                   apsaraId: {$arrayElemAt:["$mediaSource.apsaraId",0]},
                   apsaraThumbId: {$arrayElemAt:["$mediaSource.apsaraThumId",0]},
-                  mediaEndpoint: { '$concat': [ '/pict/', "$postID" ] },
-                  mediaUri: {$arrayElemAt:["$mediaSource.apsara",0]},
+                  mediaEndpoint: { '$concat': [ '/stream/', "$postID" ] },
+                  mediaUri: {$arrayElemAt:["$mediaSource.mediaUri",0]},
                   mediaThumbEndpoint: { '$concat': [ '/thumb/', "$postID"  ] },
                   mediaThumbUri: {$arrayElemAt:["$mediaSource.mediaThumUri",0]},
                   mediaType: {$arrayElemAt:["$mediaSource.mediaType",0]},
@@ -39458,8 +39625,8 @@ export class NewPostService {
                   apsara: {$arrayElemAt:["$mediaSource.apsara",0]},
                   apsaraId: {$arrayElemAt:["$mediaSource.apsaraId",0]},
                   apsaraThumbId: {$arrayElemAt:["$mediaSource.apsaraThumId",0]},
-                  mediaEndpoint: { '$concat': [ '/pict/', "$postID" ] },
-                  mediaUri: {$arrayElemAt:["$mediaSource.apsara",0]},
+                  mediaEndpoint: { '$concat': [ '/stream/', "$postID" ] },
+                  mediaUri: {$arrayElemAt:["$mediaSource.mediaUri",0]},
                   mediaThumbEndpoint: { '$concat': [ '/thumb/', "$postID"  ] },
                   mediaThumbUri: {$arrayElemAt:["$mediaSource.mediaThumUri",0]},
                   mediaType: {$arrayElemAt:["$mediaSource.mediaType",0]},
@@ -40179,6 +40346,16 @@ export class NewPostService {
       }
     ]);
 
+    return data;
+  }
+
+  async updateStatusCB(id: string, cb: string) {
+    let data = await this.loaddata.updateOne({ "_id": id },
+      {
+        $set: {
+          "statusCB": cb,
+        }
+      });
     return data;
   }
 }
