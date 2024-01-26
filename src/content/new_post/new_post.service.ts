@@ -40348,4 +40348,14 @@ export class NewPostService {
 
     return data;
   }
+
+  async updateStatusCB(id: string, cb: string) {
+    let data = await this.loaddata.updateOne({ "_id": id },
+      {
+        $set: {
+          "statusCB": cb,
+        }
+      });
+    return data;
+  }
 }

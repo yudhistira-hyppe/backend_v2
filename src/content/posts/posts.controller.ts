@@ -2367,14 +2367,14 @@ export class PostsController {
     return await this.bootsService.sendSoketAds(headers['x-auth-user']);
   }
 
-  @HttpCode(HttpStatus.OK)
-  @Post('api/posts/notifyapsara/cmod/image')
-  async notifyApsaraCmodImage(@Body() body, @Headers() headers) {
-    this.logger.log("notifyApsaraCmodImage >>> start: " + JSON.stringify(body));
-    this.cmodService.cmodResponse(body);
-    let t = { 'response': 'Done' };
-    return JSON.stringify(t);
-  }
+  // @HttpCode(HttpStatus.OK)
+  // @Post('api/posts/notifyapsara/cmod/image')
+  // async notifyApsaraCmodImage(@Body() body, @Headers() headers) {
+  //   this.logger.log("notifyApsaraCmodImage >>> start: " + JSON.stringify(body));
+  //   this.cmodService.cmodResponse(body);
+  //   let t = { 'response': 'Done' };
+  //   return JSON.stringify(t);
+  // }
 
   @Post('api/posts/getvideo')
   async getVideo(@Body() body, @Headers() headers) {

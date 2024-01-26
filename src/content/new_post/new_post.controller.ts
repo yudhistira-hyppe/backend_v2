@@ -27,6 +27,7 @@ import { GetusercontentsService } from 'src/trans/getusercontents/getusercontent
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
 import { TagPeople } from '../posts/dto/create-posts.dto'; 
 import { PostsService } from '../../content/posts/posts.service';
+import { NewPostModService } from './new_post_mod.service';
 @Controller('api/')
 export class NewPostController {
     private readonly logger = new Logger(NewPostController.name);
@@ -48,7 +49,9 @@ export class NewPostController {
         private readonly PostContentService: PostContentService,
         private readonly musicSS:MediamusicService,
         private readonly usercontentService:GetusercontentsService,
-        private readonly disqusLogSS:DisquslogsService
+        private readonly disqusLogSS: DisquslogsService,
+        private readonly newPostModService: NewPostModService
+        
     ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -4166,5 +4169,14 @@ export class NewPostController {
         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
         return { response_code: 202, data, messages };
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Post('api/posts/notifyapsara/cmod/image')
+    async notifyApsaraCmodImage(@Body() body, @Headers() headers) {
+        this.logger.log("notifyApsaraCmodImage >>> start: " + JSON.stringify(body));
+        this.newPostModService.cmodResponse(body);
+        let t = { 'response': 'Done' };
+        return JSON.stringify(t);
     }
 }
