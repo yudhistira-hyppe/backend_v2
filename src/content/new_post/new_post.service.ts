@@ -1619,8 +1619,8 @@ export class NewPostService {
       {
         $lookup: {
           from: 'newUserBasics',
-          localField: 'idUser',
-          foreignField: '_id',
+          localField: 'email',
+          foreignField: 'email',
           as: 'authdata',
 
         }
