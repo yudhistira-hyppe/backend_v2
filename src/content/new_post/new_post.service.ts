@@ -35538,6 +35538,7 @@ export class NewPostService {
           "reportedUser": "$reportedUser",
           "timeStart": "$timeStart",
           "timeEnd": "$timeEnd",
+          "stiker": "$stiker",
           "apsaraId": {
             $arrayElemAt: ["$mediaSource.apsaraId", 0]
           },
