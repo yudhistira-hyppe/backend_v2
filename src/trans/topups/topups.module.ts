@@ -9,12 +9,14 @@ import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { UserauthsModule } from '../userauths/userauths.module';
 import { AccountbalancesModule } from '../accountbalances/accountbalances.module';
 import { UtilsModule } from 'src/utils/utils.module';
+import { UserbasicnewModule } from '../userbasicnew/userbasicnew.module';
 
 @Module({
   imports: [
+    UserbasicnewModule,
     UtilsModule,
     AccountbalancesModule,
-    UserbasicsModule,
+    //UserbasicsModule,
     UserauthsModule,
     ConfigModule.forRoot(),
     MongooseModule.forFeature([{ name: Topups.name, schema: TopupsSchema }], 'SERVER_FULL')
