@@ -1592,7 +1592,7 @@ export class ReportuserController {
             if (reportedUserHandle.length > 0) {
                 await this.post2SS.updateFlaging(postID, dt.toISOString());
                 await this.post2SS.nonactive(postID, dt.toISOString());
-                this.sendReportAppealFCM(name, event, tipe, postID);
+                this.sendReportAppealFCMV2(name, event, tipe, postID);
 
             } else {
 
@@ -1606,7 +1606,7 @@ export class ReportuserController {
 
                 await this.post2SS.updateFlagingEmpty(postID, dt.toISOString(), arrayreportedHandle);
                 await this.post2SS.nonactive(postID, dt.toISOString());
-                this.sendReportAppealFCM(name, event, tipe, postID);
+                this.sendReportAppealFCMV2(name, event, tipe, postID);
             }
 
         }
@@ -5533,6 +5533,26 @@ export class ReportuserController {
         var titleen = Templates_.subject.toString();
         var email_post = "";
         var posts = await this.postsService.findid(postID);
+        var bodyin_get = Templates_.body_detail_id.toString();
+        var bodyen_get = Templates_.body_detail.toString();
+        var post_type = "";
+        if (await this.utilsService.ceckData(posts)) {
+            post_type = posts.postType.toString();
+            email_post = posts.email.toString();
+        }
+
+        var eventType = type.toString();
+        await this.utilsService.sendFcm(email_post, titlein, titleen, bodyin_get, bodyen_get, eventType, event, postID, post_type, undefined, "APPEAL");
+    }
+
+    async sendReportAppealFCMV2(name: string, event: string, type: string, postID: string) {
+        var Templates_ = new TemplatesRepo();
+        Templates_ = await this.utilsService.getTemplateAppealReport(name, event, 'NOTIFICATION');
+
+        var titlein = Templates_.subject_id.toString();
+        var titleen = Templates_.subject.toString();
+        var email_post = "";
+        var posts = await this.post2SS.findid(postID);
         var bodyin_get = Templates_.body_detail_id.toString();
         var bodyen_get = Templates_.body_detail.toString();
         var post_type = "";
