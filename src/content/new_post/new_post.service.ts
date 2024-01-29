@@ -35340,38 +35340,24 @@ export class NewPostService {
           },
           "tempboost":
           {
-            "$ifNull":
-            [
-              {
-                "$cond":
-                {
-                  if:
+            $filter: {
+              input: "$boosted",
+              as: "item",
+              cond: {
+                $gte: [
+                  "$$item.boostSession.end",
                   {
-                    "$gte":
-                    [
-                      {
-                        "$size":"$boosted"
-                      },
-                      0
-                    ]
-                  },
-                  then:
-                    "$boosted",
-                  else:[]
-                },
-              },
-              []
-            ]
-          },
-          "datenow":
-            {
-              "$dateToString": {
-                "format": "%Y-%m-%d %H:%M:%S",
-                "date": {
-                  $add: [new Date(), + 25200000]
-                }
+                    "$dateToString": {
+                      "format": "%Y-%m-%d %H:%M:%S",
+                      "date": {
+                        $add: [new Date(), 25200000]
+                      }
+                    }
+                  } 
+                ]
               }
-            },
+            }
+          },
         },
       },
       { 
@@ -35407,16 +35393,6 @@ export class NewPostService {
           "userLike": 1,
           "uploadSource": {
             $arrayElemAt: ["$uploadSource.uploadSource", 0]
-          },
-          "boostJangkauan":
-          {
-            "$ifNull":
-            [
-              {
-                "$size": "$tempboost.boostViewer"
-              },
-              0
-            ]
           },
           comments: {
             $cond: {
@@ -35518,77 +35494,66 @@ export class NewPostService {
           "end": "$tempboost.boostSession.end",
           "start": "$tempboost.boostSession.start",
           "isBoost": "$isBoost",
+          "datenow": "$datenow",
+          "tempboost":1,
+          "boostJangkauan":{
+            "$size": "$tempboost.boostViewer"
+          },
           "boostViewer": {
             $arrayElemAt: ["$tempboost.boostViewer", 0]
           },
           "boostCount": 1,
-          "boosted":
-          {
-            $cond: {
-              if: {
-                $gt: [{
-                  "$dateToString": {
-                    "format": "%Y-%m-%d %H:%M:%S",
-                    "date": {
-                      $add: [new Date(), 25200000]
-                    }
-                  }
-                }, "$tempboost.boostSession.end"]
-              },
-              then: "$ilang",
-              else: "$tempboost",
-
-            }
-          },
+          "boosted":"$tempboost",
           "statusBoost":
           {
-            $switch:
-            {
-              branches:
-                [
-                  {
-                    case:
-                    {
-                      $and:
-                        [
-                          {
-                            $lte:
-                              [
-                                "$tempboost.boostSession.start", "$nowDate"
-                              ]
-                          },
-                          {
-                            $gte:
-                              [
-                                "$tempboost.boostSession.end", "$nowDate"
-                              ]
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $and: [{
+                      $lte: [{
+                        $arrayElemAt: ["$tempboost.boostSession.start", 0]
+                      }, {
+                        "$dateToString": {
+                          "format": "%Y-%m-%d %H:%M:%S",
+                          "date": {
+                            $add: [new Date(), 25200000]
                           }
-                        ]
-                    },
-                    then: "BERLANGSUNG"
-                  },
-                  {
-                    case:
-                    {
-                      $and:
-                        [
-                          {
-                            $gte:
-                              [
-                                "$tempboost.boostSession.start", "$nowDate"
-                              ]
-                          },
-                          {
-                            $gte:
-                              [
-                                "$tempboost.boostSession.end", "$nowDate"
-                              ]
+                        }
+                      }]
+                    }, {
+                      $gte: [{
+                        $arrayElemAt: ["$tempboost.boostSession.end", 0]
+                      }, {
+                        "$dateToString": {
+                          "format": "%Y-%m-%d %H:%M:%S",
+                          "date": {
+                            $add: [new Date(), 25200000]
                           }
-                        ]
-                    },
-                    then: "AKAN DATANG"
-                  },
-                ],
+                        }
+                      }] }] }, then: "BERLANGSUNG" },
+                { case: { $and: [{ $gte: [{
+                  $arrayElemAt: ["$tempboost.boostSession.start", 0]
+                      }, {
+                    "$dateToString": {
+                      "format": "%Y-%m-%d %H:%M:%S",
+                      "date": {
+                        $add: [new Date(), 25200000]
+                      }
+                    }
+                }]
+                }, {
+                  $gte: [{
+                    $arrayElemAt: ["$tempboost.boostSession.end", 0]
+                  }, {
+                    "$dateToString": {
+                      "format": "%Y-%m-%d %H:%M:%S",
+                      "date": {
+                        $add: [new Date(), 25200000]
+                      }
+                    }
+                  }] }] }, then: "AKAN DATANG" }
+              ],
               "default": "SELESAI"
             }
           },
