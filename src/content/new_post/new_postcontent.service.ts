@@ -1142,10 +1142,10 @@ export class NewPostContentService {
       let atp = Posts_.tagPeople;
       let atp1 = Array<TagPeople>();
       for (let x = 0; x < atp.length; x++) {
-        let tp = atp[x];
-        if (tp?.namespace) {
+        let tp = atp[x].toString();
+        //if (tp?.namespace) {
           let oid = tp.oid;
-          let ua = await this.basic2SS.findOne(oid.toString());
+        let ua = await this.basic2SS.findOne(tp);
           if (ua != undefined) {
             let tp1 = new TagPeople();
             tp1.email = String(ua.email);
@@ -1163,7 +1163,7 @@ export class NewPostContentService {
             }
             atp1.push(tp1);
           }
-        }
+        //}
       }
       PostData_.tagPeople = atp1;
     }
@@ -1417,7 +1417,7 @@ export class NewPostContentService {
       for (var i = 0; i < tagPeopleSplit.length; i++) {
         let getUserauth = await this.basic2SS.findOneUsername(tagPeopleSplit[i].toString());
         if (await this.utilService.ceckData(getUserauth)) {
-          tagPeople_array.push({ "$ref": "userauths", "$id": new mongoose.Types.ObjectId(getUserauth._id.toString()), "$db": "hyppe_trans_db" });
+          tagPeople_array.push(new mongoose.Types.ObjectId(getUserauth._id.toString()));
           //tagPeople_array.push(new mongoose.Types.ObjectId(getUserauth._id.toString()));
         }
       }
@@ -1429,7 +1429,7 @@ export class NewPostContentService {
       for (var i = 0; i < tagDescriptionSplit.length; i++) {
         let getUserauth = await this.basic2SS.findOneUsername(tagDescriptionSplit[i].toString());
         if (await this.utilService.ceckData(getUserauth)) {
-          tagDescription_array.push({ "$ref": "userauths", "$id": new mongoose.Types.ObjectId(getUserauth._id.toString()), "$db": "hyppe_trans_db" });
+          tagDescription_array.push(new mongoose.Types.ObjectId(getUserauth._id.toString()));
           //tagDescription_array.push(new mongoose.Types.ObjectId(getUserauth._id.toString()));
         }
       }

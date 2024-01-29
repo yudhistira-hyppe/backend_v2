@@ -34915,8 +34915,7 @@ export class NewPostService {
           }
         },
       );
-    }
-    else {
+    } else {
       pipeline.push(
         {
           "$match": {
