@@ -9526,7 +9526,7 @@ export class AuthService {
           var idref = insertdata._id;
 
           let userid = null;
-          const databasics = await this.userbasicsService.findOne(
+          const databasics = await this.basic2SS.findBymail(
             user_email_parent
           );
           if (databasics !== null) {
@@ -9620,46 +9620,8 @@ export class AuthService {
           await this.contenteventsService.create(CreateContenteventsDto4);
           await this.insightsService.updateFollower(user_email_parent);
           await this.insightsService.updateFollowing(user_email_children);
-
-          //data following x-auth-user bertambah satu
-          var cekfollow = false;
-          var updatedata = new CreateuserbasicnewDto();
-          var temparray = null;
-          if(detaildata.guestMode == false)
-          {
-            temparray = detaildata.following;
-          }
-          else
-          {
-            temparray = detaildata.tempfollowing;
-          }
-          try
-          {
-              var getrole = temparray.find((element) => element == user_email_parent);
-              if(getrole != null && getrole != undefined)
-              {
-                cekfollow = true;
-              }
-          }
-          catch(e)
-          {
-            cekfollow = false;
-          } 
-
-          if(cekfollow == false)
-          {
-            temparray.push(user_email_parent);
-            if(detaildata.guestMode == true)
-            {
-              updatedata.tempfollowing = temparray;
-            }
-            else
-            {
-              updatedata.following = temparray;
-            }
-
-            await this.basic2SS.update(detaildata._id.toString(), updatedata);
-          }
+          await this.basic2SS.updatefollowSystem(user_email_parent, user_email_children, "FOLLOWING");
+          await this.basic2SS.updatefollowSystem(user_email_children, user_email_parent, "FOLLOWER");
 
           if (useLanguage == "id") {
             errorMessages = "Selamat kode referral berhasil digunakan";
