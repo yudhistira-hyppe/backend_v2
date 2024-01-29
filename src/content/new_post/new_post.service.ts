@@ -35125,7 +35125,8 @@ export class NewPostService {
           from: "newUserBasics",
           as: "userTag",
           let: {
-            localID: '$tagPeople.$id'
+            localID: '$tagPeople.$id',
+            localID2: '$tagPeople'
           },
           pipeline: [
             {
@@ -35134,7 +35135,7 @@ export class NewPostService {
                 $or: [
                   {
                     $expr: {
-                      $in: ['$_id', "$$localID"]
+                      $in: ['$_id', "$$localID2"]
                     }
                   },
                   {
