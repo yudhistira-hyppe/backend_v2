@@ -7140,11 +7140,26 @@ export class NewPostService {
         {
           "cleanUri":
           {
-            $replaceOne:
+            "$cond": 
             {
-              input: "$mediaSource.mediaUri",
-              find: "_0001.jpeg",
-              replacement: ""
+              if:
+              {
+                  "$eq":
+                  [
+                      "$mediaSource.apsara",
+                      true
+                  ]
+              },
+              then: null,
+              else:
+              {
+                  "$substr":
+                  [
+                      "$mediaSource.mediaUri",
+                      0,
+                      36
+                  ]
+              }
             }
           }
         }
