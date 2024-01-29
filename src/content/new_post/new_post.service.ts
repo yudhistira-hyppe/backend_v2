@@ -35140,7 +35140,12 @@ export class NewPostService {
                   },
                   {
                     $expr: {
-                      $in: ['$_idAuth', "$$localID.$id"]
+                      $in: ['$_id', "$$localID"]
+                    }
+                  },
+                  {
+                    $expr: {
+                      $in: ['$_idAuth', "$$localID"]
                     }
                   },
 
