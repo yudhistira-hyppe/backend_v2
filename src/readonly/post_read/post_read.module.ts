@@ -11,6 +11,7 @@ import { PostsModule } from 'src/content/posts/posts.module';
 import { ContenteventsModule } from 'src/content/contentevents/contentevents.module';
 import { NotificationReadService } from './notification_read.service';
 import { NotificationsRead, NotificationsReadSchema } from './schema/notifications_read.schema';
+import { NewPostModule } from 'src/content/new_post/new_post.module';
 
 @Module({
     imports: [
@@ -20,6 +21,7 @@ import { NotificationsRead, NotificationsReadSchema } from './schema/notificatio
         ContenteventsModule,
         //NotificationReadModule,
         UtilsModule,
+        NewPostModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([
             { name: NotificationsRead.name, schema: NotificationsReadSchema },
