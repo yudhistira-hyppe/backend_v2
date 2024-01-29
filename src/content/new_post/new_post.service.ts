@@ -35304,7 +35304,7 @@ export class NewPostService {
       {
         "$addFields":
         {
-            "cleanUri":
+          "cleanUri":
             {
               "$cond":
               {
@@ -35363,6 +35363,15 @@ export class NewPostService {
               []
             ]
           },
+          "datenow":
+            {
+              "$dateToString": {
+                "format": "%Y-%m-%d %H:%M:%S",
+                "date": {
+                  $add: [new Date(), + 25200000]
+                }
+              }
+            },
         },
       },
       { 
@@ -35529,6 +35538,58 @@ export class NewPostService {
               then: "$ilang",
               else: "$tempboost",
 
+            }
+          },
+          "statusBoost":
+          {
+            $switch:
+            {
+              branches:
+                [
+                  {
+                    case:
+                    {
+                      $and:
+                        [
+                          {
+                            $lte:
+                              [
+                                "$tempboost.boostSession.start", "$nowDate"
+                              ]
+                          },
+                          {
+                            $gte:
+                              [
+                                "$tempboost.boostSession.end", "$nowDate"
+                              ]
+                          }
+                        ]
+                    },
+                    then: "BERLANGSUNG"
+                  },
+                  {
+                    case:
+                    {
+                      $and:
+                        [
+                          {
+                            $gte:
+                              [
+                                "$tempboost.boostSession.start", "$nowDate"
+                              ]
+                          },
+                          {
+                            $gte:
+                              [
+                                "$tempboost.boostSession.end", "$nowDate"
+                              ]
+                          }
+                        ]
+                    },
+                    then: "AKAN DATANG"
+                  },
+                ],
+              "default": "SELESAI"
             }
           },
           "contentModeration": "$contentModeration",
