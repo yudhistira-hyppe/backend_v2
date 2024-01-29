@@ -3283,7 +3283,6 @@ export class MediaController {
             loaddatakyc['status'] = 'DISETUJUI';
             try {
 
-                let data = await this.mediaproofpictsService.updateKyc(id, noktp, nama, tglLahir, tempatLahir, jenisKelamin, "DISETUJUI", kycHandle);
                 await this.basic2SS.updateStatusKycName(nama, jenisKelamin, email, true, "verified", tglLahir, [loaddatakyc]);
                 await this.utilsService.sendFcmV2(email.toString(), email.toString(), 'KYC', 'REQUEST', 'KYC_VERIFIED');
 
@@ -3313,7 +3312,6 @@ export class MediaController {
 
             loaddatakyc['status'] = 'FAILED';
             try {
-                let data = await this.mediaproofpictsService.updateKyc(id, noktp, nama, tglLahir, tempatLahir, jenisKelamin, "FAILED", kycHandle);
                 await this.basic2SS.updateStatusKycFailed(email, false, "unverified", [loaddatakyc]);
                 await this.utilsService.sendFcmV2(email.toString(), email.toString(), 'KYC', 'REQUEST', 'KYC_REJECT');
 

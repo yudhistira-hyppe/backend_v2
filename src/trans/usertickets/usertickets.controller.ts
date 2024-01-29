@@ -325,6 +325,259 @@ export class UserticketsController {
     }
   }
 
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/usertickets/createticket/v2')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 4 }]))
+  async upload2(
+    @UploadedFiles() files: {
+      supportFile?: Express.Multer.File[],
+
+    },
+    // @UploadedFiles() files2: Array<Express.Multer.File>,
+    @Body() CreateUserticketsDto: CreateUserticketsDto,
+    @Headers() headers, @Res() res) {
+    //  var idmediaproofpict = CreateMediaproofpictsDto_._id.toString();
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + '/api/usertickets/createticket/v2';
+    var reqbody = JSON.parse(JSON.stringify(CreateUserticketsDto));
+
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed token and email not match',
+      );
+    }
+
+    if (headers['x-auth-token'] == undefined) {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email is required',
+      );
+    }
+
+
+    var datausertiket = null;
+    //Var supportFile
+    let supportFile_data = null;
+    let supportFile_filename = '';
+    let supportFile_etx = '';
+    let supportFile_mimetype = '';
+    let supportFile_name = '';
+    let supportFile_filename_new = '';
+    let supportFile_local_path = '';
+    let supportFile_seaweedfs_path = '';
+    var arrayUri = [];
+    var arrayName = [];
+    var arraySuri = [];
+    var arraySname = [];
+    var auth = null;
+    var os = null;
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+    const messages = {
+      "info": ["The create successful"],
+    };
+
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+    //Ceck User Userbasics
+    const datauserbasicsService = await this.basic2SS.findbyemail(
+      headers['x-auth-user'],
+    );
+
+    if (await this.utilsService.ceckData(datauserbasicsService)) {
+      // var mongoose_gen_meida = new mongoose.Types.ObjectId();
+
+      //Update proofPict
+      try {
+
+
+        var email = headers['x-auth-user'];
+
+        var datatiket = await this.userticketsService.findAll();
+        var leng = datatiket.length + 1;
+
+        var curdate = new Date(Date.now());
+        var beforedate = curdate.toISOString();
+
+        var substrtahun = beforedate.substring(0, 4);
+        var numtahun = parseInt(substrtahun);
+        var url_cardPict = null;
+
+
+
+        var substrbulan = beforedate.substring(7, 5);
+        var numbulan = parseInt(substrbulan);
+        var substrtanggal = beforedate.substring(10, 8);
+        var numtanggal = parseInt(substrtanggal);
+
+        var rotahun = this.romawi(numtahun);
+        var robulan = this.romawi(numbulan);
+        var rotanggal = this.romawi(numtanggal);
+        var angka = await this.generateNumber();
+        var no = "HYPPE/" + (await rotahun).toString() + "/" + (await robulan).toString() + "/" + (await rotanggal).toString() + "/" + leng;
+
+        var ubasic = await this.basic2SS.findbyemail(email);
+
+        var iduser = ubasic._id;
+        try {
+          os = ubasic.loginSrc;
+        } catch (e) {
+          os = "";
+        }
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var idversion = "62bbdb4ba7520000050077a7";
+        var dataversion = await this.settingsService.findOne(idversion);
+        var version = dataversion.value;
+        var idcategory = mongoose.Types.ObjectId(CreateUserticketsDto.categoryTicket);
+        var idsource = mongoose.Types.ObjectId(CreateUserticketsDto.sourceTicket);
+        var idlevel = mongoose.Types.ObjectId(CreateUserticketsDto.levelTicket);
+        var status = CreateUserticketsDto.status;
+        var mongo = require('mongoose');
+        CreateUserticketsDto.IdUser = new mongo.Types.ObjectId(iduser.toString());
+        CreateUserticketsDto.datetime = dt.toISOString();
+        CreateUserticketsDto.nomortiket = no;
+        CreateUserticketsDto.active = true;
+        CreateUserticketsDto.categoryTicket = idcategory;
+        CreateUserticketsDto.sourceTicket = idsource;
+        CreateUserticketsDto.levelTicket = idlevel;
+        CreateUserticketsDto.version = version;
+        CreateUserticketsDto.OS = os;
+        datausertiket = await this.userticketsService.create(CreateUserticketsDto);
+        var IdMediaproofpictsDto = datausertiket._id.toString();
+        var objadsid = datausertiket._id;
+        var paths = IdMediaproofpictsDto;
+        var mongoose_gen_meida = paths;
+
+        let datalogticket = new CreateLogticketsDto();
+        datalogticket.userId = new mongo.Types.ObjectId(iduser.toString());
+        datalogticket.createdAt = dt.toISOString();
+        datalogticket.ticketId = objadsid;
+        datalogticket.type = "change status";
+        datalogticket.remark = "change status to " + status;
+        await this.logticketsService.create(datalogticket);
+        //Ceck supportFile
+        if (files.supportFile != undefined) {
+          var countfile = files.supportFile.length;
+
+          for (var i = 0; i < countfile; i++) {
+
+            var FormData_ = new FormData();
+            supportFile_data = files.supportFile[i];
+            supportFile_filename = files.supportFile[i].originalname;
+            supportFile_etx = '.jpeg';
+            supportFile_filename_new = IdMediaproofpictsDto + '_000' + (i + 1) + supportFile_etx;
+            supportFile_mimetype = files.supportFile[i].mimetype;
+
+            var result = await this.ossService.uploadFile(files.supportFile[i], iduser.toString() + "/ticket/supportfile/" + supportFile_filename_new);
+            console.log(result)
+            if (result != undefined) {
+              if (result.res != undefined) {
+                if (result.res.statusCode != undefined) {
+                  if (result.res.statusCode == 200) {
+                    url_cardPict = result.res.requestUrls[0];
+                  } else {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Unabled to proceed supportfile failed upload',
+                    );
+                  }
+                } else {
+                  var timestamps_end = await this.utilsService.getDateTimeString();
+                  this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed supportfile failed upload',
+                  );
+                }
+              } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed supportfile failed upload',
+                );
+              }
+            } else {
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed supportfile failed upload',
+              );
+            }
+            var pathnew = iduser.toString() + '/ticket/supportfile/' + supportFile_filename_new
+            arrayUri.push(pathnew);
+            arrayName.push(supportFile_filename);
+            arraySuri.push(url_cardPict);
+            arraySname.push(supportFile_filename);
+          }
+
+          CreateUserticketsDto.mediaType = 'supportfile';
+          CreateUserticketsDto.mediaBasePath = mongoose_gen_meida + '/supportfile/';
+          CreateUserticketsDto.UploadSource = "OSS";
+          CreateUserticketsDto.mediaUri = arrayUri;
+          CreateUserticketsDto.originalName = arrayName;
+          CreateUserticketsDto.fsSourceUri = arraySuri;
+          CreateUserticketsDto.fsSourceName = arraySname;
+          CreateUserticketsDto.fsTargetUri = arraySuri;
+          CreateUserticketsDto.mediaMime = supportFile_mimetype;
+          await this.userticketsService.updatedata(objadsid, CreateUserticketsDto);
+
+          var data = await this.userticketsService.findOne(objadsid);
+
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+          return res.status(HttpStatus.OK).json({
+            response_code: 202,
+            "data": data,
+            "message": messages
+          });
+
+
+        } else {
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+          return res.status(HttpStatus.OK).json({
+            response_code: 202,
+            "data": datausertiket,
+            "message": messages
+          });
+
+        }
+
+      } catch (err) {
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed' + err,
+        );
+      }
+
+
+    }
+    else {
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, reqbody);
+
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed user not found',
+      );
+    }
+  }
+
   @Post('api/usertickets/retrieveticket')
   @UseGuards(JwtAuthGuard)
   async retrieve(@Req() request: Request, @Headers() headers): Promise<any> {
