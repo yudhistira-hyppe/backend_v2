@@ -1,5 +1,6 @@
 import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ObjectId } from 'mongodb';
 import mongoose, { Model, Types } from 'mongoose';
 import { newPosts, NewpostsDocument } from './schemas/newPost.schema';
 import { PostContentService } from '../posts/postcontent.service';
@@ -40418,6 +40419,24 @@ export class NewPostService {
           "statusCB": cb,
         }
       });
+    return data;
+  }
+
+  async updateDitangguhkan(id: string, reason: string, updatedAt: string, reasonId: ObjectId) {
+    let data = await this.loaddata.updateMany({ "_id": id },
+      { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].reasonId": reasonId, "reportedUserHandle.$[].reasonAdmin": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
+    return data;
+  }
+
+  async updateDitangguhkanEmpty(id: string, updatedAt: string, reportedUserHandle: any[]) {
+    let data = await this.loaddata.updateMany({ "_id": id },
+      { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle": reportedUserHandle } });
+    return data;
+  }
+
+  async updateTidakditangguhkan(id: string, updatedAt: string) {
+    let data = await this.loaddata.updateMany({ "_id": id },
+      { $set: { "reportedStatus": "ALL", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle.$[].status": "TIDAK DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
     return data;
   }
 

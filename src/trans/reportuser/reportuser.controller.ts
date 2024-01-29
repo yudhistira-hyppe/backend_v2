@@ -27,6 +27,7 @@ import { LogapisService } from '../logapis/logapis.service';
 import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
 import { NewPostService } from 'src/content/new_post/new_post.service';
 import { CreateNewPostDTO } from 'src/content/new_post/dto/create-newPost.dto';
+import { CreateuserbasicnewDto } from '../userbasicnew/dto/Createuserbasicnew-dto';
 @Controller('api/reportuser')
 export class ReportuserController {
 
@@ -1200,6 +1201,529 @@ export class ReportuserController {
 
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Post('appeal/v2')
+    async reportHandle2(@Req() request) {
+        var reportedStatus = null;
+        var reportedUserHandle = [];
+        var postID = null;
+        var data = null;
+        var reportedUserCount = null;
+        var lenguserreport = null
+        var lengreporthandle = null
+        var reportedUser = [];
+        var dataauth = null;
+        var arrayreportedUser = [];
+        var arrayreportedHandle = [];
+        var contentModeration = null;
+        var contentModerationResponse = null;
+        var datacontent = null;
+        var objreportuser = {};
+        var objreporthandle = {};
+        var type = null;
+        var datahandel = null;
+        var objhandel = {};
+        var reportedHandel = null;
+        var name = "";
+        var event = "";
+        var tipe = "";
+
+        var reportCount = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        reportedStatus = request_json["reportedStatus"];
+
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        reportedUserHandle = request_json["reportedUserHandle"];
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        try {
+            lenguserreport = reportedUser.length;
+        } catch (e) {
+            lenguserreport = 0;
+        }
+
+        try {
+            lengreporthandle = reportedUserHandle.length;
+        } catch (e) {
+            lengreporthandle = 0;
+        }
+
+        if (type === "content") {
+            name = "NOTIFY_APPEAL";
+            event = "REQUEST_APPEAL";
+            tipe = "CONTENT";
+
+            let createPostsDto = new CreateNewPostDTO();
+            try {
+                datacontent = await this.post2SS.findByPostId(postID);
+
+
+            } catch (e) {
+                datacontent = null;
+            }
+
+            if (datacontent !== null) {
+
+                try {
+                    reportCount = datacontent.reportedUserCount;
+                } catch (e) {
+                    reportCount = 0;
+                }
+
+                try {
+
+                    datahandel = datacontent.reportedUserHandle;
+
+                } catch (e) {
+                    datahandel = null;
+                }
+
+                if (datahandel.length > 0) {
+                    for (let i = 0; i < datahandel.length; i++) {
+                        let status = datahandel[i].status;
+
+                        if (status === "BARU") {
+                            throw new BadRequestException("Appeal sudah diajukan...!");
+                        }
+                    }
+
+                }
+
+                // if (reportCount >= 200) {
+                //     throw new BadRequestException("Appeal tidak bisa diajukan...!");
+                // } 
+
+                // else {
+                if (lengreporthandle > 0) {
+                    for (let i = 0; i < lengreporthandle; i++) {
+
+                        let status = reportedUserHandle[i].status;
+                        let remark = reportedUserHandle[i].remark;
+                        let reason = reportedUserHandle[i].reason;
+                        // let typeAppeal = reportedUserHandle[i].typeAppeal;
+                        objreporthandle = {
+
+
+                            "reason": reason,
+                            "remark": remark,
+                            "reasonAdmin": "",
+                            "reasonId": null,
+                            "createdAt": dt.toISOString(),
+                            "updatedAt": dt.toISOString(),
+                            "status": status
+                        };
+                        arrayreportedHandle.push(objreporthandle);
+                    }
+                } else {
+
+                }
+
+
+                createPostsDto.reportedStatus = reportedStatus;
+                if (arrayreportedHandle.length > 0) {
+                    createPostsDto.reportedUserHandle = arrayreportedHandle;
+                } else {
+
+                }
+                this.post2SS.update(postID, createPostsDto);
+                this.sendReportAppealFCMV2(name, event, tipe, postID);
+                var data = request_json;
+
+                return { response_code: 202, data, messages };
+
+
+                // }
+
+
+            } else {
+                throw new BadRequestException("postID is not found...!");
+            }
+        }
+        else if (type === "ads") {
+
+
+            let createAdsDto = new CreateAdsDto();
+
+
+            try {
+                datacontent = await this.adsService.findOne(postID);
+
+
+            } catch (e) {
+                datacontent = null;
+            }
+
+            if (datacontent !== null) {
+
+                try {
+                    reportCount = datacontent.reportedUserCount;
+                } catch (e) {
+                    reportCount = 0;
+                }
+
+                try {
+
+                    datahandel = datacontent.reportedUserHandle;
+
+                } catch (e) {
+                    datahandel = null;
+                }
+
+                if (datahandel.length > 0) {
+                    for (let i = 0; i < datahandel.length; i++) {
+                        let status = datahandel[i].status;
+
+                        if (status === "BARU") {
+                            throw new BadRequestException("Appeal sudah diajukan...!");
+                        }
+                    }
+
+                }
+
+                // if (reportCount >= 200) {
+                //     throw new BadRequestException("Appeal tidak bisa diajukan...!");
+                // }
+                // else {
+                if (lengreporthandle > 0) {
+                    for (let i = 0; i < lengreporthandle; i++) {
+
+                        let status = reportedUserHandle[i].status;
+                        let remark = reportedUserHandle[i].remark;
+                        let reason = reportedUserHandle[i].reason;
+                        // let typeAppeal = reportedUserHandle[i].typeAppeal;
+                        objreporthandle = {
+
+
+                            "reason": reason,
+                            "remark": remark,
+                            "reasonAdmin": "",
+                            "reasonId": null,
+                            "createdAt": dt.toISOString(),
+                            "updatedAt": dt.toISOString(),
+                            "status": status
+                        };
+                        arrayreportedHandle.push(objreporthandle);
+                    }
+                } else {
+
+                }
+
+                if (arrayreportedHandle.length > 0) {
+                    createAdsDto.reportedUserHandle = arrayreportedHandle;
+                } else {
+
+                }
+                this.adsService.update(postID, createAdsDto);
+                var data = request_json;
+                return { response_code: 202, data, messages };
+
+                //}
+            } else {
+                throw new BadRequestException("Ads ID is not found...!");
+            }
+        }
+        else if (type === "user") {
+            let createUserbasicDto = new CreateuserbasicnewDto();
+            let postid = mongoose.Types.ObjectId(postID);
+            try {
+                datacontent = await this.basic2SS.findOne(postid);
+                console.log(datacontent)
+
+            } catch (e) {
+                datacontent = null;
+            }
+
+            if (datacontent !== null) {
+
+                try {
+                    reportCount = datacontent.reportedUserCount;
+                } catch (e) {
+                    reportCount = 0;
+                }
+
+                try {
+
+                    datahandel = datacontent.reportedUserHandle;
+
+                } catch (e) {
+                    datahandel = null;
+                }
+
+                if (datahandel.length > 0) {
+                    for (let i = 0; i < datahandel.length; i++) {
+                        let status = datahandel[i].status;
+
+                        if (status === "BARU") {
+                            throw new BadRequestException("Appeal sudah diajukan...!");
+                        }
+                    }
+
+                }
+
+                // if (reportCount >= 200) {
+                //     throw new BadRequestException("Appeal tidak bisa diajukan...!");
+                // }
+                // else {
+                if (lengreporthandle > 0) {
+                    for (let i = 0; i < lengreporthandle; i++) {
+
+                        let status = reportedUserHandle[i].status;
+                        let remark = reportedUserHandle[i].remark;
+                        let reason = reportedUserHandle[i].reason;
+                        // let typeAppeal = reportedUserHandle[i].typeAppeal;
+                        objreporthandle = {
+
+                            "reason": reason,
+                            "remark": remark,
+                            "reasonAdmin": "",
+                            "reasonId": null,
+                            "createdAt": dt.toISOString(),
+                            "updatedAt": dt.toISOString(),
+                            "status": status
+                        };
+                        arrayreportedHandle.push(objreporthandle);
+                    }
+                } else {
+
+                }
+
+
+                createUserbasicDto.reportedStatus = reportedStatus;
+
+
+                if (arrayreportedHandle.length > 0) {
+                    createUserbasicDto.reportedUserHandle = arrayreportedHandle;
+                } else {
+
+                }
+                this.basic2SS.update(postID, createUserbasicDto);
+
+
+                var data = request_json;
+                return { response_code: 202, data, messages };
+                // }
+
+
+            } else {
+                throw new BadRequestException("User ID is not found...!");
+            }
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('approval/v2')
+    async reportHandleAproval2(@Req() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
+        var postID = null;
+
+        var type = null;
+        var ditangguhkan = null;
+        var reason = null;
+        var reasonId = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["ditangguhkan"] !== undefined) {
+            ditangguhkan = request_json["ditangguhkan"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        reason = request_json["reason"];
+        reasonId = request_json["reasonId"];
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var idreason = mongoose.Types.ObjectId(reasonId);
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var datacontent = null;
+        var objreporthandle = {};
+        var arrayreportedHandle = [];
+        var reportedUserHandle = [];
+        var name = "";
+        var event = "";
+        var tipe = "";
+
+        if (type === "content") {
+            try {
+                datacontent = await this.post2SS.findByPostId(postID);
+                reportedUserHandle = datacontent._doc.reportedUserHandle;
+
+            } catch (e) {
+                datacontent = null;
+                reportedUserHandle = [];
+            }
+            if (ditangguhkan === true) {
+                name = "NOTIFY_APPEAL";
+                event = "SUSPENDED_APPEAL";
+                tipe = "CONTENT";
+
+                if (reportedUserHandle.length > 0) {
+                    await this.post2SS.updateDitangguhkan(postID, reason, dt.toISOString(), idreason);
+                    this.sendReportAppealFCMV2(name, event, tipe, postID);
+                } else {
+
+                    objreporthandle = {
+
+                        "reasonId": reasonId,
+                        "reasonAdmin": reason,
+                        "reason": "",
+                        "remark": "",
+                        "createdAt": dt.toISOString(),
+                        "updatedAt": dt.toISOString(),
+                        "status": "DITANGGUHKAN"
+                    };
+                    arrayreportedHandle.push(objreporthandle);
+
+                    await this.post2SS.updateDitangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
+                    this.sendReportAppealFCMV2(name, event, tipe, postID);
+                }
+
+
+            } else {
+                name = "NOTIFY_APPEAL";
+                event = "NOTSUSPENDED_APPEAL";
+                tipe = "CONTENT";
+                if (reportedUserHandle.length > 0) {
+                    await this.post2SS.updateTidakditangguhkan(postID, dt.toISOString());
+                    await this.post2SS.nonactive(postID, dt.toISOString());
+                    this.sendReportAppealFCMV2(name, event, tipe, postID);
+                } else {
+                    objreporthandle = {
+
+                        "reasonId": null,
+                        "reasonAdmin": "",
+                        "reason": "",
+                        "remark": "",
+                        "createdAt": dt.toISOString(),
+                        "updatedAt": dt.toISOString(),
+                        "status": "TIDAK DITANGGUHKAN"
+                    };
+                    arrayreportedHandle.push(objreporthandle);
+
+                    await this.postsService.updateTidakditangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
+                    await this.postsService.nonactive(postID, dt.toISOString());
+                    this.sendReportAppealFCMV2(name, event, tipe, postID);
+                }
+            }
+
+        }
+        else if (type === "ads") {
+            try {
+                datacontent = await this.adsService.findOne(postID);
+                reportedUserHandle = datacontent._doc.reportedUserHandle;
+
+            } catch (e) {
+                datacontent = null;
+                reportedUserHandle = [];
+            }
+            var adsId = mongoose.Types.ObjectId(postID);
+
+            if (ditangguhkan === true) {
+
+                if (reportedUserHandle.length > 0) {
+                    await this.adsService.updateDitangguhkan(adsId, reason, dt.toISOString(), idreason);
+                } else {
+
+                    objreporthandle = {
+
+                        "reasonId": reasonId,
+                        "reasonAdmin": reason,
+                        "reason": "",
+                        "remark": "",
+                        "createdAt": dt.toISOString(),
+                        "updatedAt": dt.toISOString(),
+                        "status": "DITANGGUHKAN"
+                    };
+                    arrayreportedHandle.push(objreporthandle);
+
+                    await this.adsService.updateDitangguhkanEmpty(adsId, dt.toISOString(), arrayreportedHandle);
+                }
+
+            } else {
+                objreporthandle = {
+                    "reasonId": null,
+                    "reasonAdmin": "",
+                    "reason": "",
+                    "remark": "",
+                    "createdAt": dt.toISOString(),
+                    "updatedAt": dt.toISOString(),
+                    "status": "TIDAK DITANGGUHKAN"
+                };
+                arrayreportedHandle.push(objreporthandle);
+
+                await this.adsService.updateTidakditangguhkanEmpty(adsId, dt.toISOString(), arrayreportedHandle);
+                await this.adsService.nonactive(adsId, dt.toISOString());
+
+            }
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        return { response_code: 202, messages };
+    }
 
     @UseGuards(JwtAuthGuard)
     @Post('approval')
