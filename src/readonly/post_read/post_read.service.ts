@@ -26140,7 +26140,7 @@ export class PostsReadService {
                     },
                     {
                       $expr: {
-                        $eq: ['$_id', "$$localID.$id"]
+                        $in: ['$_idAuth', "$$localID.$id"]
                       }
                     },
 
@@ -27200,7 +27200,7 @@ export class PostsReadService {
                     },
                     {
                       $expr: {
-                        $eq: ['$_id', "$$localID.$id"]
+                        $in: ['$_idAuth', "$$localID.$id"]
                       }
                     },
 
@@ -28222,7 +28222,7 @@ export class PostsReadService {
                     },
                     {
                       $expr: {
-                        $eq: ['$_id', "$$localID.$id"]
+                        $in: ['$_idAuth', "$$localID.$id"]
                       }
                     },
 

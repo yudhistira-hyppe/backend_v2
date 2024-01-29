@@ -247,5 +247,7 @@ export class PostsRead {
   tempView: any[];
   @Prop()
   tempLike: any[];
+  @Prop()
+  boostCount: number;
 }
 export const PostsReadSchema = SchemaFactory.createForClass(PostsRead);

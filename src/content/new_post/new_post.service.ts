@@ -7140,11 +7140,26 @@ export class NewPostService {
         {
           "cleanUri":
           {
-            $replaceOne:
+            "$cond": 
             {
-              input: "$mediaSource.mediaUri",
-              find: "_0001.jpeg",
-              replacement: ""
+              if:
+              {
+                  "$eq":
+                  [
+                      "$mediaSource.apsara",
+                      true
+                  ]
+              },
+              then: null,
+              else:
+              {
+                  "$substr":
+                  [
+                      "$mediaSource.mediaUri",
+                      0,
+                      36
+                  ]
+              }
             }
           }
         }
@@ -35125,7 +35140,8 @@ export class NewPostService {
           from: "newUserBasics",
           as: "userTag",
           let: {
-            localID: '$tagPeople.$id'
+            localID: '$tagPeople.$id',
+            localID2: '$tagPeople'
           },
           pipeline: [
             {
@@ -35134,12 +35150,17 @@ export class NewPostService {
                 $or: [
                   {
                     $expr: {
+                      $in: ['$_id', "$$localID2"]
+                    }
+                  },
+                  {
+                    $expr: {
                       $in: ['$_id', "$$localID"]
                     }
                   },
                   {
                     $expr: {
-                      $in: ['$_idAuth', "$$localID.$id"]
+                      $in: ['$_idAuth', "$$localID"]
                     }
                   },
 
