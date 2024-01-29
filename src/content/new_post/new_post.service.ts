@@ -40420,4 +40420,26 @@ export class NewPostService {
       });
     return data;
   }
+
+  async updateFlaging(id: string, updatedAt: string) {
+    let data = await this.loaddata.updateMany({ "_id": id },
+      { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserHandle.$[].status": "FLAGING", "reportedUserHandle.$[].updatedAt": updatedAt } });
+    return data;
+  }
+  async updateFlagingEmpty(id: string, updatedAt: string, reportedUserHandle: any[]) {
+    let data = await this.loaddata.updateMany({ "_id": id },
+      { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserHandle": reportedUserHandle } });
+    return data;
+  }
+  async nonactive(id: string, updatedAt: string) {
+    let data = await this.loaddata.updateMany({ "_id": id },
+      {
+        $set: {
+          "reportedUser.$[].active": false, "reportedUser.$[].updatedAt": updatedAt
+        }
+
+
+      });
+    return data;
+  }
 }

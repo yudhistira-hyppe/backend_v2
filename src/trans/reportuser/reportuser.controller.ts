@@ -71,7 +71,7 @@ export class ReportuserController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
-        
+
         var reportedStatus = null;
         var reportedUserHandle = [];
         var postID = null;
@@ -239,7 +239,7 @@ export class ReportuserController {
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
-                
+
                 return { response_code: 202, data, messages };
 
 
@@ -470,7 +470,7 @@ export class ReportuserController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
-        
+
         var reportedStatus = null;
         var reportedUserHandle = [];
         var postID = null;
@@ -638,7 +638,7 @@ export class ReportuserController {
 
                 var timestamps_end = await this.utilsService.getDateTimeString();
                 this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
-                
+
                 return { response_code: 202, data, messages };
 
 
@@ -1209,7 +1209,7 @@ export class ReportuserController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
-        
+
         var postID = null;
 
         var type = null;
@@ -1477,6 +1477,135 @@ export class ReportuserController {
 
                 await this.postsService.updateFlagingEmpty(postID, dt.toISOString(), arrayreportedHandle);
                 await this.postsService.nonactive(postID, dt.toISOString());
+                this.sendReportAppealFCM(name, event, tipe, postID);
+            }
+
+        }
+        else if (type === "ads") {
+            try {
+                datacontent = await this.adsService.findOne(postID);
+                reportedUserHandle = datacontent._doc.reportedUserHandle;
+
+            } catch (e) {
+                datacontent = null;
+                reportedUserHandle = [];
+            }
+            var adsId = mongoose.Types.ObjectId(postID);
+
+            if (reportedUserHandle.length > 0) {
+                await this.adsService.updateFlaging(adsId, dt.toISOString());
+                await this.adsService.nonactive(adsId, dt.toISOString());
+
+            } else {
+
+                objreporthandle = {
+
+                    "createdAt": dt.toISOString(),
+                    "updatedAt": dt.toISOString(),
+                    "status": "FLAGING"
+                };
+                arrayreportedHandle.push(objreporthandle);
+
+                await this.adsService.updateFlagingEmpty(adsId, dt.toISOString(), arrayreportedHandle);
+                await this.adsService.nonactive(adsId, dt.toISOString());
+
+            }
+
+
+        }
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+        return { response_code: 202, messages };
+    }
+    @UseGuards(JwtAuthGuard)
+    @Post('flaging/v2')
+    async reportHandleFlagingV2(@Req() request, @Headers() headers) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = request.get("Host") + request.originalUrl;
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
+        var postID = null;
+
+        var type = null;
+        var reason = null;
+        var reasonId = null;
+        var name = "";
+        var event = "";
+        var tipe = "";
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        reasonId = request_json["reasonId"];
+
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var datacontent = null;
+        var objreporthandle = {};
+        var arrayreportedHandle = [];
+        var reportedUserHandle = [];
+
+        if (type === "content") {
+            name = "NOTIFY_FLAGING";
+            event = "ADMIN_FLAGING";
+            tipe = "CONTENT";
+            try {
+                datacontent = await this.post2SS.findByPostId(postID);
+                reportedUserHandle = datacontent._doc.reportedUserHandle;
+
+            } catch (e) {
+                datacontent = null;
+                reportedUserHandle = [];
+            }
+
+            if (reportedUserHandle.length > 0) {
+                await this.post2SS.updateFlaging(postID, dt.toISOString());
+                await this.post2SS.nonactive(postID, dt.toISOString());
+                this.sendReportAppealFCM(name, event, tipe, postID);
+
+            } else {
+
+                objreporthandle = {
+
+                    "createdAt": dt.toISOString(),
+                    "updatedAt": dt.toISOString(),
+                    "status": "FLAGING"
+                };
+                arrayreportedHandle.push(objreporthandle);
+
+                await this.post2SS.updateFlagingEmpty(postID, dt.toISOString(), arrayreportedHandle);
+                await this.post2SS.nonactive(postID, dt.toISOString());
                 this.sendReportAppealFCM(name, event, tipe, postID);
             }
 
@@ -1961,7 +2090,7 @@ export class ReportuserController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
-        
+
         const messages = {
             "info": ["The process successful"],
         };
@@ -2202,7 +2331,7 @@ export class ReportuserController {
             } catch (e) {
                 datacount = null;
             }
-        
+
             // reportedUserCount hanya mengambil data yang status nya true
             for (let i = 0; i < datacount.length; i++) {
                 let mycount = datacount[i].myCount;
@@ -2237,8 +2366,7 @@ export class ReportuserController {
                 totalReport = reportedUserCount;
 
             }
-            else
-            {
+            else {
                 totalReport = 0;
             }
 
@@ -2439,7 +2567,7 @@ export class ReportuserController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
-        
+
         const messages = {
             "info": ["The process successful"],
         };
@@ -2660,7 +2788,7 @@ export class ReportuserController {
             } catch (e) {
                 datacount = null;
             }
-        
+
             // reportedUserCount hanya mengambil data yang status nya true
             for (let i = 0; i < datacount.length; i++) {
                 let mycount = datacount[i].myCount;
@@ -2695,8 +2823,7 @@ export class ReportuserController {
                 totalReport = reportedUserCount;
 
             }
-            else
-            {
+            else {
                 totalReport = 0;
             }
 
@@ -2897,7 +3024,7 @@ export class ReportuserController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
-        
+
         const messages = {
             "info": ["The process successful"],
         };
@@ -3036,8 +3163,7 @@ export class ReportuserController {
                     for (let i = 0; i < lengUser; i++) {
 
                         let cekactive = reportedUser[i].active;
-                        if(cekactive == true)
-                        {
+                        if (cekactive == true) {
                             let createdAt = reportedUser[i].createdAt;
                             let remark = reportedUser[i].description;
                             let email = reportedUser[i].email;
@@ -3248,7 +3374,7 @@ export class ReportuserController {
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
-        
+
         const messages = {
             "info": ["The process successful"],
         };
@@ -3387,12 +3513,11 @@ export class ReportuserController {
                     for (let i = 0; i < lengUser; i++) {
 
                         let cekactive = reportedUser[i].active;
-                        if(cekactive == true)
-                        {
+                        if (cekactive == true) {
                             let createdAt = reportedUser[i].createdAt;
                             let remark = reportedUser[i].description;
                             let email = reportedUser[i].email;
-                            
+
                             try {
                                 datauser = await this.basic2SS.findbyemail(email);
                             } catch (e) {
@@ -3469,18 +3594,17 @@ export class ReportuserController {
                     for (let i = 0; i < lengUser; i++) {
 
                         let cekactive = reportedUser[i].active;
-                        if(cekactive == true)
-                        {
+                        if (cekactive == true) {
                             let createdAt = reportedUser[i].createdAt;
                             let remark = reportedUser[i].description;
                             let email = reportedUser[i].email;
-                            
+
                             try {
                                 datauser = await this.basic2SS.findbyemail(email);
                             } catch (e) {
                                 datauser = null;
                             }
-                            let fullName = datauser.fullName;   
+                            let fullName = datauser.fullName;
                             mediaprofilepicts_res = {
                                 mediaBasePath: (datauser.mediaBasePath == undefined && datauser.mediaBasePath == null ? "" : datauser.mediaBasePath),
                                 mediaUri: (datauser.mediaUri == undefined && datauser.mediaUri == null ? "" : datauser.mediaUri),

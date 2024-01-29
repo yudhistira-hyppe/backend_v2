@@ -23788,7 +23788,7 @@ export class TagCountService {
                 {
                     $project: {
                         // tester: "$pict.mediaSource",
-                        "apsara": {
+                        "isApsara": {
                             $arrayElemAt: ['$pict.mediaSource.apsara', 0]
                         },
                         "apsaraId": {
@@ -23888,7 +23888,7 @@ export class TagCountService {
                 {
                     $project: {
                         // tester: "$pict.mediaSource",
-                        "apsara": {
+                        "isApsara": {
                             $arrayElemAt: ['$pict.mediaSource.apsara', 0]
                         },
                         "apsaraId": {
@@ -23988,7 +23988,7 @@ export class TagCountService {
                 {
                     $project: {
                         // tester: "$pict.mediaSource",
-                        "apsara": {
+                        "isApsara": {
                             $arrayElemAt: ['$pict.mediaSource.apsara', 0]
                         },
                         "apsaraId": {
@@ -24230,7 +24230,7 @@ export class TagCountService {
                 { $match: { "pict.postType": "pict" } },
                 {
                     $project: {
-                    tester: "$pict.mediaSource",
+                    // tester: "$pict.mediaSource",
                     apsara: { $arrayElemAt: ["$pict.mediaSource.apsara", 0] },
                     apsaraId: { $arrayElemAt: ["$pict.mediaSource.apsaraId", 0] },
                     apsaraThumbId: {
@@ -24312,7 +24312,7 @@ export class TagCountService {
                 },
                 {
                     $sort: {
-                    isApsara: -1,
+                    apsara: -1,
                     scorePict: -1,
                     comments: -1,
                     likes: -1,
@@ -24747,7 +24747,7 @@ export class TagCountService {
                 { $match: { "pict.postType": "vid" } },
                 {
                     $project: {
-                    tester: "$pict.mediaSource",
+                    // tester: "$pict.mediaSource",
                     apsara: { $arrayElemAt: ["$pict.mediaSource.apsara", 0] },
                     apsaraId: { $arrayElemAt: ["$pict.mediaSource.apsaraId", 0] },
                     apsaraThumbId: {
@@ -24829,7 +24829,7 @@ export class TagCountService {
                 },
                 {
                     $sort: {
-                    isApsara: -1,
+                    apsara: -1,
                     scorePict: -1,
                     comments: -1,
                     likes: -1,
@@ -25234,7 +25234,7 @@ export class TagCountService {
                 { $match: { "pict.postType": "diary" } },
                 {
                     $project: {
-                    tester: "$pict.mediaSource",
+                    // tester: "$pict.mediaSource",
                     apsara: { $arrayElemAt: ["$pict.mediaSource.apsara", 0] },
                     apsaraId: { $arrayElemAt: ["$pict.mediaSource.apsaraId", 0] },
                     apsaraThumbId: {
@@ -25316,7 +25316,7 @@ export class TagCountService {
                 },
                 {
                     $sort: {
-                    isApsara: -1,
+                    apsara: -1,
                     scorePict: -1,
                     comments: -1,
                     likes: -1,
