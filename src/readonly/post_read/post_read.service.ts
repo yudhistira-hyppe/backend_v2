@@ -26284,6 +26284,7 @@ export class PostsReadService {
             "shares": 1,
             "userView": 1,
             "userLike": 1,
+            "stiker":1,
             "uploadSource": {
               $arrayElemAt: ["$uploadSource.uploadSource", 0]
             },
@@ -27307,6 +27308,7 @@ export class PostsReadService {
             "shares": 1,
             "userView": 1,
             "userLike": 1,
+            "stiker":1,
             "uploadSource": {
               $arrayElemAt: ["$uploadSource.uploadSource", 0]
             },
@@ -28329,6 +28331,7 @@ export class PostsReadService {
             "shares": 1,
             "userView": 1,
             "userLike": 1,
+            "stiker":1,
             "uploadSource": {
               $arrayElemAt: ["$uploadSource.uploadSource", 0]
             },

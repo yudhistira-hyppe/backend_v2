@@ -41,7 +41,7 @@ import { DisqusService } from '../disqus/disqus.service';
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
 import { CreateDisquslogsDto } from '../disquslogs/dto/create-disquslogs.dto';
 import { LogapisService } from 'src/trans/logapis/logapis.service'; 
-
+import { NewPost2Service } from 'src/content/new_post2/new_post2.service';
 
 //import FormData from "form-data";
 var FormData = require('form-data');
@@ -70,6 +70,7 @@ export class PostCommentService {
     private errorHandler: ErrorHandler,
     private logapiSS: LogapisService,
     private UserbasicnewService: UserbasicnewService,
+    private NewPost2Service: NewPost2Service,
   ) { }
 
   async removeComment(body: any, headers: any): Promise<CreatePostResponse> {
@@ -147,7 +148,7 @@ export class PostCommentService {
 
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    var profile = await this.userService.findOne(auth.email);
+    var profile = await this.UserbasicnewService.findBymail(auth.email);
     if (profile == undefined) {
       var timestamps_end = await this.utilService.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, reqbody);      
@@ -175,14 +176,14 @@ export class PostCommentService {
       console.log((dis.sequenceNumber));
       console.log((dis.sequenceNumber == 0));
       if (dis.sequenceNumber==0){
-        this.postService.updateCommentMin(profile.email.toString(), dis.postID.toString());
+        this.NewPost2Service.updateCommentMin(profile.email.toString(), dis.postID.toString());
         var replyLog = dis.replyLogs;
         console.log("replyLog : ",replyLog);
       }
       var ByparentID = await this.disqusLogService.findByParentID(body.disqusLogID);
       console.log(ByparentID.length);
       if (ByparentID.length > 0) {
-        this.postService.updateCommentMin2(profile.email.toString(), dis.postID.toString(), ((ByparentID.length)*-1));
+        this.NewPost2Service.updateCommentMin2(profile.email.toString(), dis.postID.toString(), ((ByparentID.length)*-1));
         await this.disqusLogService.updateMany(body.disqusLogID);
       }
       createDisquslogsDto_.active = false;

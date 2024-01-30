@@ -627,7 +627,7 @@ export class PostsController {
   @UseInterceptors(FileInterceptor('postContent'))
   async removeComment(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("removeComment >>> start");
-    return this.postCommentService.removeComment(body, headers);
+    return this.postCommentService.removeComment2(body, headers);
   }
 
   @UseGuards(JwtAuthGuard)

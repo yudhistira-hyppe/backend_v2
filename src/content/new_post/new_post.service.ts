@@ -35379,6 +35379,27 @@ export class NewPostService {
               }
             }
           },
+          "isLiked":
+          {
+            "$ifNull":
+              [
+                {
+                  "$filter":
+                  {
+                    input: "$userLike",
+                    as: "list",
+                    cond:
+                    {
+                      $eq:
+                        [
+                          "$$list", emailLogin
+                        ]
+                    }
+                  }
+                },
+                []
+              ]
+          },
         },
       },
       { 
@@ -35481,16 +35502,6 @@ export class NewPostService {
                   $arrayElemAt: ["$music.mood", 0]
                 },
               }
-            }
-          },
-          isLike:
-          {
-            $cond: {
-              if: {
-                $eq: ["$userLike", "hyppers@hyppe.id"]
-              },
-              then: true,
-              else: false
             }
           },
           comment: "$comment",
@@ -35734,10 +35745,24 @@ export class NewPostService {
           tutor: {
             $arrayElemAt: ["$userBasic.tutor", 0]
           },
-          isLiked: {
-            $ifNull: ["$isLike", false]
+          "isLiked":
+          {
+            "$cond":
+            {
+              if:
+              {
+                "$eq":
+                  [
+                    {
+                      "$size": "$isLiked"
+                    },
+                    0
+                  ]
+              },
+              then: false,
+              else: true
+            }
           },
-
         }
       },
     );
