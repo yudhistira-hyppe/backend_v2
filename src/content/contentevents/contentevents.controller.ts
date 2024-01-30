@@ -40,6 +40,7 @@ import { ConfigService } from '@nestjs/config';
 import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 import { NewpostService } from '../disqus/newpost/newpost.service';
 import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema'; 
+import { Disqus } from '../disqus/schemas/disqus.schema';
 @Controller()
 export class ContenteventsController {
   private readonly logger = new Logger(ContenteventsController.name);
@@ -3045,10 +3046,7 @@ export class ContenteventsController {
       let retVal = new DisqusResDto();
 
       //CECk DISQUS CONTACT
-      var CeckDataDiscusContact = await this.disquscontactsService.findMayeEmail(email_user, email_receiverParty);
-      var id_discus_contact = "";
-      var id_discus = "";
-      var id_discus_log = "";
+      var CeckDataDiscusContact = await this.disquscontactsService.findByEmailAndMate(email_user, email_receiverParty);
 
       var post = await this.postDisqusSS.findByPostId(request.body.postID.toString());
       var media_ = {}
@@ -3108,162 +3106,86 @@ export class ContenteventsController {
         body_messages = body_.toString().replace("${emoticon}", Emote.toString())
       }
 
-      if (!(await this.utilsService.ceckData(CeckDataDiscusContact))) {
-        id_discus_contact = await this.utilsService.generateId()
-        id_discus = await this.utilsService.generateId()
-        id_discus_log = await this.utilsService.generateId()
-
-        //INSERT DISQUS CONTACT
-        var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
-        try {
-          CreateDisquscontactsDto_._id = id_discus_contact;
-          CreateDisquscontactsDto_.active = true;
-          CreateDisquscontactsDto_.email = email_user;
-          CreateDisquscontactsDto_.mate = email_receiverParty;
-          CreateDisquscontactsDto_.disqus = {
-            $ref: 'disqus',
-            $id: id_discus,
-            $db: 'hyppe_content_db',
-          };
-          CreateDisquscontactsDto_._class = "io.melody.hyppe.content.domain.DisqusContact";
-          this.disquscontactsService.create(CreateDisquscontactsDto_);
-        } catch (error) {
-          this.logger.log("ERROR INSERT DISQUS CONTACT >>>>>>>>>>>>>>>>>>> ", error);
-        }
-
-        //INSERT DISQUS
-        var CreateDisqusDto_ = new CreateDisqusDto();
-        try {
-          CreateDisqusDto_._id = id_discus;
-          CreateDisqusDto_.room = id_discus;
-          CreateDisqusDto_.disqusID = id_discus;
-          CreateDisqusDto_.active = true
-          CreateDisqusDto_.email = email_user;
-          CreateDisqusDto_.mate = email_receiverParty;
-          CreateDisqusDto_.eventType = "DIRECT_MSG";
-          CreateDisqusDto_.room = id_discus;
-          CreateDisqusDto_.createdAt = current_date;
-          CreateDisqusDto_.updatedAt = current_date;
-          CreateDisqusDto_.lastestMessage = Emote;
-          CreateDisqusDto_.emailActive = true;
-          CreateDisqusDto_.mateActive = true;
-          CreateDisqusDto_.disqusLogs = [{
-            $ref: 'disquslogs',
-            $id: id_discus_log,
-            $db: 'hyppe_content_db',
-          }];
-          CreateDisqusDto_._class = "io.melody.hyppe.content.domain.Disqus";
-          this.disqusContentEventService.create(CreateDisqusDto_);
-        } catch (error) {
-          this.logger.log("ERROR INSERT DISQUS >>>>>>>>>>>>>>>>>>> ", error);
-        }
-
-        //INSERT DISQUS LOG
-        var CreateDisquslogsDto_ = new Disquslogs();
-        try {
-          CreateDisquslogsDto_._id = id_discus_log;
-          CreateDisquslogsDto_.disqusID = id_discus;
-          CreateDisquslogsDto_.active = true;
-          CreateDisquslogsDto_.sequenceNumber = 0;
-          CreateDisquslogsDto_.postID = request.body.postID.toString();
-          CreateDisquslogsDto_.eventInsight = "REACTION";
-          CreateDisquslogsDto_.sender = email_user;
-          CreateDisquslogsDto_.receiver = email_receiverParty;
-          CreateDisquslogsDto_.postType = "txt_msg";
-          CreateDisquslogsDto_.createdAt = current_date;
-          CreateDisquslogsDto_.updatedAt = current_date;
-          CreateDisquslogsDto_.reactionUri = request.body.reactionUri;
-          CreateDisquslogsDto_.medias = [media_];
-          CreateDisquslogsDto_._class = "io.melody.hyppe.content.domain.DisqusLog";
-          CreateDisquslogsDto_.receiverActive = true;
-          CreateDisquslogsDto_.senderActive = true;
-          this.disquslogsService.create(CreateDisquslogsDto_);
-        } catch (error) {
-          this.logger.log("ERROR INSERT DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
-        }
-
-        retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_, body_messages);
-        this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
+      let dis = new Disqus();
+      if (CeckDataDiscusContact != undefined && CeckDataDiscusContact.length > 0) {
+        let ct = CeckDataDiscusContact[0];
+        dis = await this.disqusContentEventService.findById(ct.disqus_data_.disqusID);
       } else {
-        id_discus = (JSON.parse(JSON.stringify(CeckDataDiscusContact[0].disqus))).$id;
-        id_discus_log = await this.utilsService.generateId()
+        var DataId = await this.utilsService.generateId();
+        dis._id = DataId;
+        dis.room = DataId;
+        dis.disqusID = DataId;
+        dis.eventType = "DIRECT_MSG";
+        dis.email = email_user;
+        dis.mate = email_receiverParty;
+        dis.active = true;
+        dis.disqusLogs = [];
+        dis.lastestMessage = Emote.toString();
+        dis.emailActive = true;
+        dis.mateActive = true;
+        dis.createdAt = await this.utilsService.getDateTimeString();
+        dis.updatedAt = await this.utilsService.getDateTimeString();
+      }
 
-        //CECK DISQUS
-        var CreateDisqusDto_ = new CreateDisqusDto();
-        CreateDisqusDto_ = await this.disqusContentEventService.findById(id_discus);
-        if (!(await this.utilsService.ceckData(CreateDisqusDto_))) {
-          //INSERT DISQUS
-          try {
-            CreateDisqusDto_._id = id_discus;
-            CreateDisqusDto_.room = id_discus;
-            CreateDisqusDto_.disqusID = id_discus;
-            CreateDisqusDto_.active = true;
-            CreateDisqusDto_.email = email_user;
-            CreateDisqusDto_.mate = email_receiverParty;
-            CreateDisqusDto_.eventType = "DIRECT_MSG";
-            CreateDisqusDto_.room = id_discus;
-            CreateDisqusDto_.createdAt = current_date;
-            CreateDisqusDto_.updatedAt = current_date;
-            CreateDisqusDto_.lastestMessage = Emote.toString();
-            CreateDisqusDto_.emailActive = true;
-            CreateDisqusDto_.mateActive = true;
-            CreateDisqusDto_.disqusLogs = [{
-              $ref: 'disquslogs',
-              $id: id_discus_log,
-              $db: 'hyppe_content_db',
-            }];
-            CreateDisqusDto_._class = "io.melody.hyppe.content.domain.Disqus";
-            this.disqusContentEventService.create(CreateDisqusDto_);
-          } catch (error) {
-            this.logger.log("ERROR INSERT DISQUS >>>>>>>>>>>>>>>>>>> ", error);
-          }
-        } else {
-          //UPDATE DISQUS
-          try {
-            var data_disqusLogs = CreateDisqusDto_.disqusLogs;
-            data_disqusLogs.push({
-              $ref: 'disquslogs',
-              $id: id_discus_log,
-              $db: 'hyppe_content_db',
-            });
-            CreateDisqusDto_.emailActive = true;
-            CreateDisqusDto_.mateActive = true;
-            CreateDisqusDto_.updatedAt = current_date;
-            CreateDisqusDto_.disqusLogs = data_disqusLogs;
-            CreateDisqusDto_.lastestMessage = Emote.toString();
-            this.disqusContentEventService.update(id_discus, CreateDisqusDto_);
-          } catch (error) {
-            this.logger.log("ERROR UPDATE DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
-          }
-        }
+      //INSERT DISQUS LOG
+      const id_discus_log = await this.utilsService.generateId();
+      var CreateDisquslogsDto_ = new Disquslogs();
+      try {
+        CreateDisquslogsDto_._id = id_discus_log;
+        CreateDisquslogsDto_.disqusID = dis._id;
+        CreateDisquslogsDto_.active = true;
+        CreateDisquslogsDto_.sequenceNumber = 0;
+        CreateDisquslogsDto_.postID = request.body.postID.toString();
+        CreateDisquslogsDto_.eventInsight = "REACTION";
+        CreateDisquslogsDto_.sender = email_user;
+        CreateDisquslogsDto_.receiver = email_receiverParty;
+        CreateDisquslogsDto_.postType = "txt_msg";
+        CreateDisquslogsDto_.createdAt = current_date;
+        CreateDisquslogsDto_.updatedAt = current_date;
+        CreateDisquslogsDto_.reactionUri = request.body.reactionUri;
+        CreateDisquslogsDto_.medias = [media_];
+        CreateDisquslogsDto_._class = "io.melody.hyppe.content.domain.DisqusLog";
+        CreateDisquslogsDto_.receiverActive = true;
+        CreateDisquslogsDto_.senderActive = true;
+        this.disquslogsService.create(CreateDisquslogsDto_);
+      } catch (error) {
+        this.logger.log("ERROR INSERT DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
+      }
 
-        //INSERT DISQUS LOG
-        var CreateDisquslogsDto_ = new Disquslogs();
-        try {
-          CreateDisquslogsDto_._id = id_discus_log;
-          CreateDisquslogsDto_.disqusID = id_discus;
-          CreateDisquslogsDto_.active = true;
-          CreateDisquslogsDto_.sequenceNumber = 0;
-          CreateDisquslogsDto_.postID = request.body.postID.toString();
-          CreateDisquslogsDto_.eventInsight = "REACTION";
-          CreateDisquslogsDto_.sender = email_user;
-          CreateDisquslogsDto_.receiver = email_receiverParty;
-          CreateDisquslogsDto_.postType = "txt_msg";
-          CreateDisquslogsDto_.createdAt = current_date;
-          CreateDisquslogsDto_.updatedAt = current_date;
-          CreateDisquslogsDto_.reactionUri = request.body.reactionUri;
-          CreateDisquslogsDto_.medias = [media_];
-          CreateDisquslogsDto_._class = "io.melody.hyppe.content.domain.DisqusLog";
-          CreateDisquslogsDto_.receiverActive = true;
-          CreateDisquslogsDto_.senderActive = true;
-          this.disquslogsService.create(CreateDisquslogsDto_);
-        } catch (error) {
-          this.logger.log("ERROR INSERT DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
-        }
+      var data_disqusLogs = dis.disqusLogs;
+      data_disqusLogs.push({
+        $ref: 'disquslogs',
+        $id: id_discus_log,
+        $db: 'hyppe_content_db',
+      });
+      dis.emailActive = true;
+      dis.mateActive = true;
+      dis.updatedAt = current_date;
+      dis.disqusLogs = data_disqusLogs;
+      dis.lastestMessage = Emote.toString();
+      dis.updatedAt = CreateDisquslogsDto_.createdAt;
+      dis.mateActive = true;
+      dis.emailActive = true;
+      this.disqusContentEventService.create(dis);
 
-        retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_, body_messages);
-        this.logger.log("REVAL DATA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", JSON.stringify(retVal));
-        this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
+      if (CeckDataDiscusContact == undefined || CeckDataDiscusContact.length < 1) {
+        let c0 = new CreateDisquscontactsDto();
+        var usy = { "$ref": "disqus", "$id": String(dis._id), "$db": "hyppe_content_db" };
+        c0.disqus = usy;
+        var c0id = await this.utilsService.generateId();
+        c0._id = c0id;
+        c0.mate = email_receiverParty;
+        c0.email = email_user;
+        this.disquscontactsService.create(c0);
+
+        let c1 = new CreateDisquscontactsDto();
+        var usy = { "$ref": "disqus", "$id": String(dis._id), "$db": "hyppe_content_db" };
+        c1.disqus = usy;
+        var c1id = await this.utilsService.generateId();
+        c1._id = c1id;
+        c1.mate = email_receiverParty;
+        c1.email = email_user;
+        this.disquscontactsService.create(c1);
       }
 
       console.log("retVal", retVal);
