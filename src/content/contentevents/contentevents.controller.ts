@@ -40,7 +40,6 @@ import { ConfigService } from '@nestjs/config';
 import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 import { NewpostService } from '../disqus/newpost/newpost.service';
 import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema'; 
-import { Disqus } from '../disqus/schemas/disqus.schema';
 @Controller()
 export class ContenteventsController {
   private readonly logger = new Logger(ContenteventsController.name);
@@ -2277,12 +2276,12 @@ export class ContenteventsController {
           const databasic = await this.basic2SS.findbyemail(
             email_user
           );
-          var iduser = null;
-          if (databasic !== null) {
-            iduser = databasic._id;
-            // this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
-            this.scorefollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW")
-          }
+          // var iduser = null;
+          // if (databasic !== null) {
+          //   iduser = databasic._id;
+          //   // this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
+          //   this.scorefollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW")
+          // }
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2310,12 +2309,12 @@ export class ContenteventsController {
           const databasic = await this.basic2SS.findbyemail(
             email_user
           );
-          var iduser = null;
-          if (databasic !== null) {
-            iduser = databasic._id;
-            //this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
-            this.scorefollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW")
-          }
+          // var iduser = null;
+          // if (databasic !== null) {
+          //   iduser = databasic._id;
+          //   //this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
+          //   this.scorefollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW")
+          // }
 
 
         }
@@ -2625,17 +2624,17 @@ export class ContenteventsController {
               idevent1 = resultdata1._id;
               let dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
 
-              if (idevent1 !== null) {
-                try {
-                  // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
-                  this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty)
-                  console.log("sukses hitung score")
-                } catch (e) {
-                  console.log("gagal ngitung skor" + e)
-                }
+              // if (idevent1 !== null) {
+              //   try {
+              //     // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+              //     this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty)
+              //     console.log("sukses hitung score")
+              //   } catch (e) {
+              //     console.log("gagal ngitung skor" + e)
+              //   }
 
 
-              }
+              // }
 
 
             } catch (error) {
@@ -2742,7 +2741,7 @@ export class ContenteventsController {
 
           //this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
         
-           this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+          // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
@@ -2778,7 +2777,7 @@ export class ContenteventsController {
 
             // this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
 
-            this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+           // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
             var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2804,7 +2803,7 @@ export class ContenteventsController {
 
             // this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
            
-            this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+           // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
@@ -2845,7 +2844,7 @@ export class ContenteventsController {
 
           //this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
           
-          this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+          //this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2882,7 +2881,7 @@ export class ContenteventsController {
 
               // this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
              
-              this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+             // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2916,7 +2915,7 @@ export class ContenteventsController {
 
               //this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
               
-              this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+              //this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2963,7 +2962,7 @@ export class ContenteventsController {
             iduser = databasic._id;
             // this.userChallengeUnFollow(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW");
            
-            this.scoreunfollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW")
+           // this.scoreunfollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW")
           }
 
            this.checkFriendbasedString2(userbasic1, userbasic2, "delete");
@@ -3046,11 +3045,16 @@ export class ContenteventsController {
       let retVal = new DisqusResDto();
 
       //CECk DISQUS CONTACT
-      var CeckDataDiscusContact = await this.disquscontactsService.findByEmailAndMate(email_user, email_receiverParty);
+      var CeckDataDiscusContact_sender = await this.disquscontactsService.findMayeEmail(email_user, email_receiverParty);
+      var CeckDataDiscusContact_receiver = await this.disquscontactsService.findMayeEmail(email_receiverParty, email_user);
+      
+      var id_discus_contact = "";
+      var id_discus = "";
+      var id_discus_log = "";
 
       var post = await this.postDisqusSS.findByPostId(request.body.postID.toString());
       var media_ = {}
-      if (await this.utilsService.ceckData(post.mediaSource[0])) {
+      if (await this.utilsService.ceckData(post.mediaSource[0])){
         if (post.createdAt != undefined) {
           media_["createdAt"] = post.createdAt;
         }
@@ -3085,10 +3089,10 @@ export class ContenteventsController {
           media_["mediaEndpoint"] = post.mediaSource[0].mediaUri;
         }
         if (post.mediaSource[0].apsara != undefined) {
-          media_["apsara"] = post.mediaSource[0].apsara
+          media_["apsara"] = post.mediaSource[0].apsara;
         }
         if (post.mediaSource[0].apsaraId != undefined) {
-          media_["apsaraId"] = post.mediaSource[0].apsaraId
+          media_["apsaraId"] = post.mediaSource[0].apsaraId;
         }
       }
 
@@ -3106,33 +3110,12 @@ export class ContenteventsController {
         body_messages = body_.toString().replace("${emoticon}", Emote.toString())
       }
 
-      let dis = new Disqus();
-      if (CeckDataDiscusContact != undefined && CeckDataDiscusContact.length > 0) {
-        let ct = CeckDataDiscusContact[0];
-        dis = await this.disqusContentEventService.findById(ct.disqus_data_.disqusID);
-      } else {
-        var DataId = await this.utilsService.generateId();
-        dis._id = DataId;
-        dis.room = DataId;
-        dis.disqusID = DataId;
-        dis.eventType = "DIRECT_MSG";
-        dis.email = email_user;
-        dis.mate = email_receiverParty;
-        dis.active = true;
-        dis.disqusLogs = [];
-        dis.lastestMessage = Emote.toString();
-        dis.emailActive = true;
-        dis.mateActive = true;
-        dis.createdAt = await this.utilsService.getDateTimeString();
-        dis.updatedAt = await this.utilsService.getDateTimeString();
-      }
-
+      id_discus_log = await this.utilsService.generateId()
       //INSERT DISQUS LOG
-      const id_discus_log = await this.utilsService.generateId();
       var CreateDisquslogsDto_ = new Disquslogs();
       try {
         CreateDisquslogsDto_._id = id_discus_log;
-        CreateDisquslogsDto_.disqusID = dis._id;
+        CreateDisquslogsDto_.disqusID = id_discus;
         CreateDisquslogsDto_.active = true;
         CreateDisquslogsDto_.sequenceNumber = 0;
         CreateDisquslogsDto_.postID = request.body.postID.toString();
@@ -3152,40 +3135,261 @@ export class ContenteventsController {
         this.logger.log("ERROR INSERT DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
       }
 
-      var data_disqusLogs = dis.disqusLogs;
-      data_disqusLogs.push({
-        $ref: 'disquslogs',
-        $id: id_discus_log,
-        $db: 'hyppe_content_db',
-      });
-      dis.emailActive = true;
-      dis.mateActive = true;
-      dis.updatedAt = current_date;
-      dis.disqusLogs = data_disqusLogs;
-      dis.lastestMessage = Emote.toString();
-      dis.updatedAt = CreateDisquslogsDto_.createdAt;
-      dis.mateActive = true;
-      dis.emailActive = true;
-      this.disqusContentEventService.create(dis);
-
-      if (CeckDataDiscusContact == undefined || CeckDataDiscusContact.length < 1) {
-        let c0 = new CreateDisquscontactsDto();
-        var usy = { "$ref": "disqus", "$id": String(dis._id), "$db": "hyppe_content_db" };
-        c0.disqus = usy;
-        var c0id = await this.utilsService.generateId();
-        c0._id = c0id;
-        c0.mate = email_receiverParty;
-        c0.email = email_user;
-        this.disquscontactsService.create(c0);
-
-        let c1 = new CreateDisquscontactsDto();
-        var usy = { "$ref": "disqus", "$id": String(dis._id), "$db": "hyppe_content_db" };
-        c1.disqus = usy;
-        var c1id = await this.utilsService.generateId();
-        c1._id = c1id;
-        c1.mate = email_receiverParty;
-        c1.email = email_user;
-        this.disquscontactsService.create(c1);
+      //INSERT DISQUS
+      var CreateDisqusDto_ = new CreateDisqusDto();
+      if ((await this.utilsService.ceckData(CeckDataDiscusContact_sender)) && (await this.utilsService.ceckData(CeckDataDiscusContact_receiver))) {
+        id_discus = (JSON.parse(JSON.stringify(CeckDataDiscusContact_sender.disqus))).$id;
+        CreateDisqusDto_ = await this.disqusContentEventService.findById(id_discus);
+        if (!(await this.utilsService.ceckData(CreateDisqusDto_))) {
+          //INSERT DISQUS
+          try {
+            CreateDisqusDto_._id = id_discus;
+            CreateDisqusDto_.room = id_discus;
+            CreateDisqusDto_.disqusID = id_discus;
+            CreateDisqusDto_.active = true;
+            CreateDisqusDto_.email = email_user;
+            CreateDisqusDto_.mate = email_receiverParty;
+            CreateDisqusDto_.eventType = "DIRECT_MSG";
+            CreateDisqusDto_.room = id_discus;
+            CreateDisqusDto_.createdAt = current_date;
+            CreateDisqusDto_.updatedAt = current_date;
+            CreateDisqusDto_.lastestMessage = Emote.toString();
+            CreateDisqusDto_.emailActive = true;
+            CreateDisqusDto_.mateActive = true;
+            CreateDisqusDto_.disqusLogs = [{
+              $ref: 'disquslogs',
+              $id: id_discus_log,
+              $db: 'hyppe_content_db',
+            }];
+            CreateDisqusDto_._class = "io.melody.hyppe.content.domain.Disqus";
+            this.disqusContentEventService.create(CreateDisqusDto_);
+          } catch (error) {
+            this.logger.log("ERROR INSERT DISQUS >>>>>>>>>>>>>>>>>>> ", error);
+          }
+        } else {
+          //UPDATE DISQUS
+          try {
+            var data_disqusLogs = CreateDisqusDto_.disqusLogs;
+            data_disqusLogs.push({
+              $ref: 'disquslogs',
+              $id: id_discus_log,
+              $db: 'hyppe_content_db',
+            });
+            CreateDisqusDto_.emailActive = true;
+            CreateDisqusDto_.mateActive = true;
+            CreateDisqusDto_.updatedAt = current_date;
+            CreateDisqusDto_.disqusLogs = data_disqusLogs;
+            CreateDisqusDto_.lastestMessage = Emote.toString();
+            this.disqusContentEventService.update(id_discus, CreateDisqusDto_);
+          } catch (error) {
+            this.logger.log("ERROR UPDATE DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
+          }
+        }
+        retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_, body_messages);
+        this.logger.log("REVAL DATA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", JSON.stringify(retVal));
+        this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
+      } else {
+        if (!(await this.utilsService.ceckData(CeckDataDiscusContact_sender)) && !(await this.utilsService.ceckData(CeckDataDiscusContact_receiver))) {
+          //INSERT DISQUS CONTACT
+          var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
+          try {
+            CreateDisquscontactsDto_._id = id_discus_contact;
+            CreateDisquscontactsDto_.active = true;
+            CreateDisquscontactsDto_.email = email_user;
+            CreateDisquscontactsDto_.mate = email_receiverParty;
+            CreateDisquscontactsDto_.disqus = {
+              $ref: 'disqus',
+              $id: id_discus,
+              $db: 'hyppe_content_db',
+            };
+            CreateDisquscontactsDto_._class = "io.melody.hyppe.content.domain.DisqusContact";
+            this.disquscontactsService.create(CreateDisquscontactsDto_);
+          } catch (error) {
+            this.logger.log("ERROR INSERT DISQUS CONTACT >>>>>>>>>>>>>>>>>>> ", error);
+          }
+          //INSERT DISQUS CONTACT
+          var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
+          try {
+            CreateDisquscontactsDto_._id = id_discus_contact;
+            CreateDisquscontactsDto_.active = true;
+            CreateDisquscontactsDto_.email = email_receiverParty;
+            CreateDisquscontactsDto_.mate = email_user;
+            CreateDisquscontactsDto_.disqus = {
+              $ref: 'disqus',
+              $id: id_discus,
+              $db: 'hyppe_content_db',
+            };
+            CreateDisquscontactsDto_._class = "io.melody.hyppe.content.domain.DisqusContact";
+            this.disquscontactsService.create(CreateDisquscontactsDto_);
+          } catch (error) {
+            this.logger.log("ERROR INSERT DISQUS CONTACT >>>>>>>>>>>>>>>>>>> ", error);
+          }
+          id_discus = await this.utilsService.generateId();
+          //INSERT DISQUS
+          try {
+            CreateDisqusDto_._id = id_discus;
+            CreateDisqusDto_.room = id_discus;
+            CreateDisqusDto_.disqusID = id_discus;
+            CreateDisqusDto_.active = true;
+            CreateDisqusDto_.email = email_user;
+            CreateDisqusDto_.mate = email_receiverParty;
+            CreateDisqusDto_.eventType = "DIRECT_MSG";
+            CreateDisqusDto_.room = id_discus;
+            CreateDisqusDto_.createdAt = current_date;
+            CreateDisqusDto_.updatedAt = current_date;
+            CreateDisqusDto_.lastestMessage = Emote.toString();
+            CreateDisqusDto_.emailActive = true;
+            CreateDisqusDto_.mateActive = true;
+            CreateDisqusDto_.disqusLogs = [{
+              $ref: 'disquslogs',
+              $id: id_discus_log,
+              $db: 'hyppe_content_db',
+            }];
+            CreateDisqusDto_._class = "io.melody.hyppe.content.domain.Disqus";
+            this.disqusContentEventService.create(CreateDisqusDto_);
+          } catch (error) {
+            this.logger.log("ERROR INSERT DISQUS >>>>>>>>>>>>>>>>>>> ", error);
+          }
+          retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_, body_messages);
+          this.logger.log("REVAL DATA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", JSON.stringify(retVal));
+          this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
+        }else{
+          if (!(await this.utilsService.ceckData(CeckDataDiscusContact_sender))) {
+            //INSERT DISQUS CONTACT
+            var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
+            try {
+              CreateDisquscontactsDto_._id = id_discus_contact;
+              CreateDisquscontactsDto_.active = true;
+              CreateDisquscontactsDto_.email = email_user;
+              CreateDisquscontactsDto_.mate = email_receiverParty;
+              CreateDisquscontactsDto_.disqus = {
+                $ref: 'disqus',
+                $id: id_discus,
+                $db: 'hyppe_content_db',
+              };
+              CreateDisquscontactsDto_._class = "io.melody.hyppe.content.domain.DisqusContact";
+              this.disquscontactsService.create(CreateDisquscontactsDto_);
+            } catch (error) {
+              this.logger.log("ERROR INSERT DISQUS CONTACT >>>>>>>>>>>>>>>>>>> ", error);
+            }
+            id_discus = (JSON.parse(JSON.stringify(CeckDataDiscusContact_receiver.disqus))).$id;
+            CreateDisqusDto_ = await this.disqusContentEventService.findById(id_discus);
+            if (!(await this.utilsService.ceckData(CreateDisqusDto_))) {
+              //INSERT DISQUS
+              try {
+                CreateDisqusDto_._id = id_discus;
+                CreateDisqusDto_.room = id_discus;
+                CreateDisqusDto_.disqusID = id_discus;
+                CreateDisqusDto_.active = true;
+                CreateDisqusDto_.email = email_user;
+                CreateDisqusDto_.mate = email_receiverParty;
+                CreateDisqusDto_.eventType = "DIRECT_MSG";
+                CreateDisqusDto_.room = id_discus;
+                CreateDisqusDto_.createdAt = current_date;
+                CreateDisqusDto_.updatedAt = current_date;
+                CreateDisqusDto_.lastestMessage = Emote.toString();
+                CreateDisqusDto_.emailActive = true;
+                CreateDisqusDto_.mateActive = true;
+                CreateDisqusDto_.disqusLogs = [{
+                  $ref: 'disquslogs',
+                  $id: id_discus_log,
+                  $db: 'hyppe_content_db',
+                }];
+                CreateDisqusDto_._class = "io.melody.hyppe.content.domain.Disqus";
+                this.disqusContentEventService.create(CreateDisqusDto_);
+              } catch (error) {
+                this.logger.log("ERROR INSERT DISQUS >>>>>>>>>>>>>>>>>>> ", error);
+              }
+            } else {
+              //UPDATE DISQUS
+              try {
+                var data_disqusLogs = CreateDisqusDto_.disqusLogs;
+                data_disqusLogs.push({
+                  $ref: 'disquslogs',
+                  $id: id_discus_log,
+                  $db: 'hyppe_content_db',
+                });
+                CreateDisqusDto_.emailActive = true;
+                CreateDisqusDto_.mateActive = true;
+                CreateDisqusDto_.updatedAt = current_date;
+                CreateDisqusDto_.disqusLogs = data_disqusLogs;
+                CreateDisqusDto_.lastestMessage = Emote.toString();
+                this.disqusContentEventService.update(id_discus, CreateDisqusDto_);
+              } catch (error) {
+                this.logger.log("ERROR UPDATE DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
+              }
+            }
+          }
+          if (!(await this.utilsService.ceckData(CeckDataDiscusContact_receiver))) {
+            //INSERT DISQUS CONTACT
+            var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
+            try {
+              CreateDisquscontactsDto_._id = id_discus_contact;
+              CreateDisquscontactsDto_.active = true;
+              CreateDisquscontactsDto_.email = email_receiverParty;
+              CreateDisquscontactsDto_.mate = email_user;
+              CreateDisquscontactsDto_.disqus = {
+                $ref: 'disqus',
+                $id: id_discus,
+                $db: 'hyppe_content_db',
+              };
+              CreateDisquscontactsDto_._class = "io.melody.hyppe.content.domain.DisqusContact";
+              this.disquscontactsService.create(CreateDisquscontactsDto_);
+            } catch (error) {
+              this.logger.log("ERROR INSERT DISQUS CONTACT >>>>>>>>>>>>>>>>>>> ", error);
+            }
+            id_discus = (JSON.parse(JSON.stringify(CeckDataDiscusContact_sender.disqus))).$id;
+            CreateDisqusDto_ = await this.disqusContentEventService.findById(id_discus);
+            if (!(await this.utilsService.ceckData(CreateDisqusDto_))) {
+              //INSERT DISQUS
+              try {
+                CreateDisqusDto_._id = id_discus;
+                CreateDisqusDto_.room = id_discus;
+                CreateDisqusDto_.disqusID = id_discus;
+                CreateDisqusDto_.active = true;
+                CreateDisqusDto_.email = email_user;
+                CreateDisqusDto_.mate = email_receiverParty;
+                CreateDisqusDto_.eventType = "DIRECT_MSG";
+                CreateDisqusDto_.room = id_discus;
+                CreateDisqusDto_.createdAt = current_date;
+                CreateDisqusDto_.updatedAt = current_date;
+                CreateDisqusDto_.lastestMessage = Emote.toString();
+                CreateDisqusDto_.emailActive = true;
+                CreateDisqusDto_.mateActive = true;
+                CreateDisqusDto_.disqusLogs = [{
+                  $ref: 'disquslogs',
+                  $id: id_discus_log,
+                  $db: 'hyppe_content_db',
+                }];
+                CreateDisqusDto_._class = "io.melody.hyppe.content.domain.Disqus";
+                this.disqusContentEventService.create(CreateDisqusDto_);
+              } catch (error) {
+                this.logger.log("ERROR INSERT DISQUS >>>>>>>>>>>>>>>>>>> ", error);
+              }
+            } else {
+              //UPDATE DISQUS
+              try {
+                var data_disqusLogs = CreateDisqusDto_.disqusLogs;
+                data_disqusLogs.push({
+                  $ref: 'disquslogs',
+                  $id: id_discus_log,
+                  $db: 'hyppe_content_db',
+                });
+                CreateDisqusDto_.emailActive = true;
+                CreateDisqusDto_.mateActive = true;
+                CreateDisqusDto_.updatedAt = current_date;
+                CreateDisqusDto_.disqusLogs = data_disqusLogs;
+                CreateDisqusDto_.lastestMessage = Emote.toString();
+                this.disqusContentEventService.update(id_discus, CreateDisqusDto_);
+              } catch (error) {
+                this.logger.log("ERROR UPDATE DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
+              }
+            }
+          }
+          retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_, body_messages);
+          this.logger.log("REVAL DATA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", JSON.stringify(retVal));
+          this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
+        }
       }
 
       console.log("retVal", retVal);
