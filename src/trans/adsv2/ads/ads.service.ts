@@ -25,7 +25,7 @@ export class AdsService {
         private readonly AccountbalancesService: AccountbalancesService,
         private readonly userAdsService: UserAdsService,
         private readonly utilsService: UtilsService,
-        private readonly ossContentPictService: OssContentPictService, 
+        private readonly ossContentPictService: OssContentPictService,
     ) { }
 
     async create(AdsDto_: AdsDto): Promise<Ads> {
@@ -474,7 +474,7 @@ export class AdsService {
                     }
                 }
             },
-            );
+        );
         console.log(paramaggregate)
         let query = await this.adsModel.aggregate(paramaggregate);
         return query;
@@ -631,7 +631,10 @@ export class AdsService {
                         }
                     },
                     idApsara: 1,
-                    adsIdNumber: 1
+                    adsIdNumber: 1,
+                    mediaUri: 1,
+                    mediaPortraitUri: 1,
+                    mediaLandscapeUri: 1
                 }
             }
         ]);
@@ -966,7 +969,7 @@ export class AdsService {
                                                 }
                                             }, {
                                                 "$project": {
-                                                    "CPV":1,
+                                                    "CPV": 1,
                                                     "CPV_adstypes": {
                                                         "$let": {
                                                             "vars": {
@@ -1051,7 +1054,7 @@ export class AdsService {
                                                 }
                                             }, {
                                                 "$project": {
-                                                    "CPA":1,
+                                                    "CPA": 1,
                                                     "CPA_adstypes": {
                                                         "$let": {
                                                             "vars": {
@@ -9298,7 +9301,7 @@ export class AdsService {
                                 $project: {
 
                                     "email": 1,
-                                    "userName":1,
+                                    "userName": 1,
                                     // "userName":
                                     // {
                                     //     "$arrayElemAt":
@@ -11732,11 +11735,11 @@ export class AdsService {
         return result;
     }
 
-    async ceckAdsActive(){
+    async ceckAdsActive() {
         const CurrentDate = await this.utilsService.getDateString();
-        const ads = await this.adsModel.find({ liveEnd: { $lte: CurrentDate }, status:"ACTIVE" });
-        if (await this.utilsService.ceckData(ads)){
-            if (ads.length>0){
+        const ads = await this.adsModel.find({ liveEnd: { $lte: CurrentDate }, status: "ACTIVE" });
+        if (await this.utilsService.ceckData(ads)) {
+            if (ads.length > 0) {
                 for (let t = 0; t < ads.length; t++) {
                     let totalCredit = ads[t].totalCredit;
                     let totalUseCredit = ads[t].usedCredit;
@@ -11753,7 +11756,7 @@ export class AdsService {
                     AdsBalaceCreditDto_.description = "ADS REFUND REMAINING CREDIT"
                     AdsBalaceCreditDto_.idAdspricecredits = ads[t].idAdspricecredits;
                     const cecBalanceCredit = await this.adsBalaceCreditService.find(AdsBalaceCreditDto_);
-                    if (!(await this.utilsService.ceckData(cecBalanceCredit))){
+                    if (!(await this.utilsService.ceckData(cecBalanceCredit))) {
                         let _AdsBalaceCreditDto_ = new AdsBalaceCreditDto();
                         _AdsBalaceCreditDto_._id = new mongoose.Types.ObjectId();
                         _AdsBalaceCreditDto_.iduser = ads[t].userID;

@@ -7,9 +7,11 @@ import { AdsBalaceCredit, AdsBalaceCreditSchema } from './schema/adsbalacecredit
 import { UtilsModule } from '../../../utils/utils.module';
 import { UserbasicsModule } from '../../../trans/userbasics/userbasics.module';
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
+import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
 
 @Module({
     imports: [
+        UserbasicnewModule,
         LogapisModule,
         UserbasicsModule,
         UtilsModule,
