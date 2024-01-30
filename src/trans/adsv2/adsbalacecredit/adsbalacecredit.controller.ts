@@ -7,13 +7,15 @@ import { AdsBalaceCreditDto } from "./dto/adsbalacecredit.dto";
 import mongoose from "mongoose";
 import { UserbasicsService } from "../../../trans/userbasics/userbasics.service";
 import { LogapisService } from "src/trans/logapis/logapis.service";
+import { UserbasicnewService } from "src/trans/userbasicnew/userbasicnew.service";
 
 @Controller('api/adsv2/balance')
 export class AdsPurposesController {
     constructor(
         private readonly adsBalaceCreditService: AdsBalaceCreditService,
         private readonly utilsService: UtilsService,
-        private readonly userbasicsService: UserbasicsService, 
+        //private readonly userbasicsService: UserbasicsService, 
+        private readonly basic2SS: UserbasicnewService,
         private readonly errorHandler: ErrorHandler,
         private readonly logapiSS: LogapisService) { }
 
@@ -41,7 +43,7 @@ export class AdsPurposesController {
         }
 
         //--------------------GET USERID--------------------
-        const ubasic = await this.userbasicsService.findOne(headers['x-auth-user']);
+        const ubasic = await this.basic2SS.findBymail(headers['x-auth-user']);
         
         var dataBalance = await this.adsBalaceCreditService.findsaldoKredit(ubasic._id);
         if (await this.utilsService.ceckData(dataBalance)) {

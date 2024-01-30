@@ -7654,4 +7654,196 @@ export class UserbasicnewService {
         var result = await this.UserbasicnewModel.aggregate(pipeline);
         return result;
     }
+
+    async findTopFive(param): Promise<any> {
+        var aggregate = [];
+        if (param == "INTEREST") {
+            aggregate.push(
+                {
+                    $unwind: {
+                        path: "$userInterests",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$userInterests",
+                        count: { $sum: 1 },
+                    },
+                },
+                {
+                    $sort: { count: -1 }
+                },
+                {
+                    $limit: 5
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        interest: {
+                            $cond: {
+                                if: {
+                                    $eq: ["$_id", null]
+                                },
+                                then: "Lainnya",
+                                else: "$_id.$id"
+                            }
+                        }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "interests_repo",
+                        as: "interests",
+                        let: {
+                            localID: '$interest'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $expr: {
+                                        $eq: ['$_id', '$$localID']
+                                    }
+                                }
+                            },
+                        ]
+                    }
+                },
+                {
+                    $project: {
+                        _id: "$interest",
+                        interestName:
+                        {
+                            $cond: {
+                                if: {
+                                    $gt: [{ $size: "$interests" }, 0]
+                                },
+                                then: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$interests", 0] },
+                                        },
+                                        "in": "$$tmp.interestName"
+                                    }
+                                },
+                                else: "Other",
+                            }
+                        },
+                        interestNameId:
+                        {
+                            $cond: {
+                                if: {
+                                    $gt: [{ $size: "$interests" }, 0]
+                                },
+                                then: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$interests", 0] },
+                                        },
+                                        "in": "$$tmp.interestNameId"
+                                    }
+                                },
+                                else: "Lainnya",
+                            }
+                        },
+                    }
+                },);
+        } else if (param == "LOCATION") {
+            aggregate.push(
+                {
+                    $unwind: {
+                        path: "$states",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$states",
+                        count: { $sum: 1 },
+                    },
+                },
+                {
+                    $sort: { count: -1 }
+                },
+                {
+                    $limit: 5
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        location: {
+                            $cond: {
+                                if: {
+                                    $eq: ["$_id", null]
+                                },
+                                then: "Lainnya",
+                                else: "$_id.$id"
+                            }
+                        }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "areas",
+                        as: "areas",
+                        let: {
+                            localID: '$location'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $expr: {
+                                        $eq: ['$_id', '$$localID']
+                                    }
+                                }
+                            },
+                        ]
+                    }
+                },
+                {
+                    $project: {
+                        _id: "$location",
+                        stateName:
+                        {
+                            $cond: {
+                                if: {
+                                    $gt: [{ $size: "$areas" }, 0]
+                                },
+                                then: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$areas", 0] },
+                                        },
+                                        "in": "$$tmp.stateName"
+                                    }
+                                },
+                                else: "Other",
+                            }
+                        },
+                        stateID:
+                        {
+                            $cond: {
+                                if: {
+                                    $gt: [{ $size: "$areas" }, 0]
+                                },
+                                then: {
+                                    "$let": {
+                                        "vars": {
+                                            "tmp": { "$arrayElemAt": ["$areas", 0] },
+                                        },
+                                        "in": "$$tmp.stateID"
+                                    }
+                                },
+                                else: "Lainnya",
+                            }
+                        },
+                    }
+                },
+            );
+        }
+        const query = await this.UserbasicnewModel.aggregate(aggregate);
+        return query;
+    }
 }
