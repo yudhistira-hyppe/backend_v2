@@ -32,4 +32,37 @@ export class NewPost2Service {
         }
         return data;        
     }
+
+    async updateCommentMin(email: string, postID: string) {
+        this.loaddata.updateOne(
+          {
+            email: email,
+            postID: postID,
+          },
+          { $inc: { comments: -1 } },
+          function (err, docs) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(docs);
+            }
+          },
+        );
+      }
+      async updateCommentMin2(email: string, postID: string, comments: number) {
+        this.loaddata.updateOne(
+          {
+            email: email,
+            postID: postID,
+          },
+          { $inc: { comments: comments } },
+          function (err, docs) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(docs);
+            }
+          },
+        );
+      }
 }
