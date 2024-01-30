@@ -435,7 +435,7 @@ export class AdsController {
         var _id_setting_AdsPlanMax = this.configService.get("ID_SETTING_ADS_PLAN_MAX");
 
         //VALIDASI PARAM userId
-        const ubasic = await this.basic2SS.findOne(headers['x-auth-user']);
+        const ubasic = await this.basic2SS.findbyemail(headers['x-auth-user']);
         if (!(await this.utilsService.ceckData(ubasic))) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
@@ -2680,7 +2680,7 @@ export class AdsController {
 
             //Update Account Balace
             var CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
-            CreateAccountbalancesDto_.iduser = Object(data_userbasic._id.toString()) ;
+            CreateAccountbalancesDto_.iduser = Object(data_userbasic._id.toString());
             CreateAccountbalancesDto_.debet = 0;
             CreateAccountbalancesDto_.kredit = dataRewards.rewardPrice;
             CreateAccountbalancesDto_.type = "rewards";
