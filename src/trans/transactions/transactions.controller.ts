@@ -8978,7 +8978,7 @@ export class TransactionsController {
     @UseGuards(JwtAuthGuard)
     async trdetailbuysell3(@Req() request: Request, @Headers() headers): Promise<any> {
         var timestamps_start = await this.utilsService.getDateTimeString();
-        var fullurl = headers.host + '/api/transactions/historys/details/v3';
+        var fullurl = headers.host + '/api/transactions/historys/details';
         var token = headers['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var setemail = auth.email;

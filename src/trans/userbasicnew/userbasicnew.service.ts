@@ -5758,7 +5758,34 @@ export class UserbasicnewService {
                     "descriptionContent": '$tester.descriptionContent',
                     "title": '$tester.title',
                     "mediaType": '$tester.mediaType',
-                    "mediaEndpoint": '$tester.mediaEndpoint',
+                     mediaEndpoint:{
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$eq":
+                                    [
+                                        "$tester.postType", "pict"
+                                    ]
+                            },
+                            then:
+                            {
+                                "$concat":
+                                    [
+                                        "/pict/",
+                                        "$tester.postID"
+                                    ]
+                            },
+                            else:
+                            {
+                                "$concat":
+                                    [
+                                        "/stream/",
+                                        "$tester.postID"
+                                    ]
+                            }
+                        }
+                    },
                     "apsaraId": '$tester.apsaraId',
                     "apsara": '$tester.apsara',
 
