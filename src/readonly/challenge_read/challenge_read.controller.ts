@@ -53,7 +53,7 @@ export class ChallengeReadController {
 
 
     try {
-      data = await this.subChallengeReadService.getListUserChallengeNew3V2(idchallenge, iduser, status, session);
+      data = await this.subChallengeReadService.getListUserChallengeNew3(idchallenge, iduser, status, session);
     } catch (e) {
       data = [];
     }
@@ -266,7 +266,7 @@ export class ChallengeReadController {
 
 
     try {
-      data = await this.subChallengeReadService.getListUserChallengekeduaNew3(idchallenge, iduser, status, session);
+      data = await this.subChallengeReadService.getListUserChallengekeduaNew3V2(idchallenge, iduser, status, session);
     } catch (e) {
       data = [];
     }
