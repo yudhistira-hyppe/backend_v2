@@ -734,7 +734,7 @@ export class TransactionsController {
 
 
                     emailseller = "tjikaljedy@hyppe.id";
-                    ubasicseller = await this.userbasicsService.findOne(emailseller);
+                    ubasicseller = await this.basic2SS.findBymail(emailseller);
                     iduserseller = ubasicseller._id;
                     namapenjual = ubasicseller.fullName;
 
