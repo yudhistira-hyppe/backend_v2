@@ -2278,7 +2278,7 @@ export class DisqusController {
         if (media[0].mediaSource[0].mediaUri != undefined) {
           media_["mediaUri"] = media[0].mediaSource[0].mediaUri;
         }
-        if (media[0].mediaSource[0].mediaUri != undefined) {
+        if (media[0].mediaSource[0].mediaThumb != undefined) {
           media_["mediaThumbUri"] = media[0].mediaSource[0].mediaThumb;
         }
         if (post.description != undefined) {
@@ -2290,7 +2290,7 @@ export class DisqusController {
         if (media[0].mediaSource[0].mediaType != undefined) {
           media_["mediaType"] = media[0].mediaSource[0].mediaType;
         }
-        if (media[0].mediaSource[0].mediaType != undefined) {
+        if (post.postID != undefined) {
           media_["mediaThumbEndpoint"] = "/thumb/" + post.postID;
         }
         if (post.postID != undefined) {

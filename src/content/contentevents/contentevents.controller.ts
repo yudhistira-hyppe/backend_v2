@@ -3067,7 +3067,7 @@ export class ContenteventsController {
         if (post.mediaSource[0].mediaUri != undefined) {
           media_["mediaUri"] = post.mediaSource[0].mediaUri;
         }
-        if (post.mediaSource[0].mediaUri != undefined) {
+        if (post.mediaSource[0].mediaThumb != undefined) {
           media_["mediaThumbUri"] = post.mediaSource[0].mediaThumb;
         }
         if (post.description != undefined) {
@@ -3079,8 +3079,8 @@ export class ContenteventsController {
         if (post.mediaSource[0].mediaType != undefined) {
           media_["mediaType"] = post.mediaSource[0].mediaType;
         }
-        if (post.mediaSource[0].mediaType != undefined) {
-          media_["mediaThumbEndpoint"] = post.mediaSource[0].mediaType;
+        if (post.postID != undefined) {
+          media_["mediaThumbEndpoint"] = "/thumb/" + post.postID;
         }
         if (post.postID != undefined) {
           media_["postID"] = post.postID;
