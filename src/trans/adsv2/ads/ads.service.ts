@@ -631,6 +631,8 @@ export class AdsService {
                         }
                     },
                     idApsara: 1,
+                    idApsaraPortrait: 1,
+                    idApsaraLandscape: 1,
                     adsIdNumber: 1,
                     mediaUri: 1,
                     mediaPortraitUri: 1,
