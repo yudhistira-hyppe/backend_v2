@@ -1845,7 +1845,8 @@ export class SocmedService {
             isComplete: "false",
             status: "INITIAL",
             refreshToken: datajwtrefreshtoken_data.refresh_token_id,
-            tutor: arrayTutor
+            tutor: arrayTutor,
+            statusKyc: datauserbasicsService.statusKyc
           },
           version: vesion,
           version_ios : (await this.utilsService.getSetting_("645da79c295b0000520048c2")).toString(),
@@ -2415,7 +2416,8 @@ export class SocmedService {
             isComplete: "false",
             status: "INITIAL",
             refreshToken: datajwtrefreshtoken_data.refresh_token_id,
-            tutor: arrayTutor
+            tutor: arrayTutor,
+            statusKyc: data_CreateUserbasicDto.statusKyc
           },
           messages: {
             nextFlow: [
