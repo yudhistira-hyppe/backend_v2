@@ -43,6 +43,8 @@ export class CreateAdsDto {
     liveTypeAds: boolean;
     idApsara: string;
     duration: number;
+    idApsaraPortrait: string;
+    idApsaraLandscape: string;
     reportedStatus: string
     reportedUserCount: number
     reportedUser: any[];
@@ -53,14 +55,26 @@ export class CreateAdsDto {
     updatedAt: string;
     skipTime: number;
     remark: string;
-    
+
     mediaBasePath: string;
     mediaUri: string;
     mediaThumBasePath: string;
     mediaThumUri: string;
     width: number;
     height: number;
-    
+    mediaPortraitBasePath: string;
+    mediaPortraitUri: string;
+    mediaPortraitThumBasePath: string;
+    mediaPortraitThumUri: string;
+    widthPortrait: number;
+    heightPortrait: number;
+    mediaLandscapeBasePath: string;
+    mediaLandscapeUri: string;
+    mediaLandscapeThumBasePath: string;
+    mediaLandscapeThumUri: string;
+    widthLandscape: number;
+    heightLandscape: number;
+
     adspricecredits: number;
     CPA: number;
     CPV: number;
