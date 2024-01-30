@@ -2028,7 +2028,7 @@ export class DisqusService {
                 },
                 {
                     $lookup: {
-                        from: 'userbasics',
+                        from: 'newUserBasics',
                         localField: 'email',
                         foreignField: 'email',
                         as: 'userUserBasic',
@@ -2036,55 +2036,55 @@ export class DisqusService {
                     },
 
                 },
+                // {
+                //     $lookup: {
+                //         from: 'userauths',
+                //         localField: 'email',
+                //         foreignField: 'email',
+                //         as: 'userUserAuth',
+
+                //     },
+
+                // },
+                // {
+                //     "$lookup": {
+                //         from: "mediaprofilepicts",
+                //         as: "avatar",
+                //         let: {
+                //             localID: '$userUserBasic.profilePict.$id'
+                //         },
+                //         pipeline: [
+                //             {
+                //                 $match:
+                //                 {
+
+
+                //                     $expr: {
+                //                         $in: ['$mediaID', '$$localID']
+                //                     }
+                //                 }
+                //             },
+                //             {
+                //                 $project: {
+                //                     "mediaBasePath": 1,
+                //                     "mediaUri": 1,
+                //                     "originalName": 1,
+                //                     "fsSourceUri": 1,
+                //                     "fsSourceName": 1,
+                //                     "fsTargetUri": 1,
+                //                     "mediaType": 1,
+                //                     "mediaEndpoint": {
+                //                         "$concat": ["/profilepict/", "$mediaID"]
+                //                     }
+                //                 }
+                //             }
+                //         ],
+
+                //     }
+                // },
                 {
                     $lookup: {
-                        from: 'userauths',
-                        localField: 'email',
-                        foreignField: 'email',
-                        as: 'userUserAuth',
-
-                    },
-
-                },
-                {
-                    "$lookup": {
-                        from: "mediaprofilepicts",
-                        as: "avatar",
-                        let: {
-                            localID: '$userUserBasic.profilePict.$id'
-                        },
-                        pipeline: [
-                            {
-                                $match:
-                                {
-
-
-                                    $expr: {
-                                        $in: ['$mediaID', '$$localID']
-                                    }
-                                }
-                            },
-                            {
-                                $project: {
-                                    "mediaBasePath": 1,
-                                    "mediaUri": 1,
-                                    "originalName": 1,
-                                    "fsSourceUri": 1,
-                                    "fsSourceName": 1,
-                                    "fsTargetUri": 1,
-                                    "mediaType": 1,
-                                    "mediaEndpoint": {
-                                        "$concat": ["/profilepict/", "$mediaID"]
-                                    }
-                                }
-                            }
-                        ],
-
-                    }
-                },
-                {
-                    $lookup: {
-                        from: 'userbasics',
+                        from: 'newUserBasics',
                         localField: 'mate',
                         foreignField: 'email',
                         as: 'mateUserBasic',
@@ -2092,51 +2092,51 @@ export class DisqusService {
                     },
 
                 },
-                {
-                    $lookup: {
-                        from: 'userauths',
-                        localField: 'mate',
-                        foreignField: 'email',
-                        as: 'mateUserAuth',
+                // {
+                //     $lookup: {
+                //         from: 'userauths',
+                //         localField: 'mate',
+                //         foreignField: 'email',
+                //         as: 'mateUserAuth',
 
-                    },
+                //     },
 
-                },
-                {
-                    "$lookup": {
-                        from: "mediaprofilepicts",
-                        as: "mateAvatar",
-                        let: {
-                            localID: '$mateUserBasic.profilePict.$id'
-                        },
-                        pipeline: [
-                            {
-                                $match:
-                                {
+                // },
+                // {
+                //     "$lookup": {
+                //         from: "mediaprofilepicts",
+                //         as: "mateAvatar",
+                //         let: {
+                //             localID: '$mateUserBasic.profilePict.$id'
+                //         },
+                //         pipeline: [
+                //             {
+                //                 $match:
+                //                 {
 
-                                    $expr: {
-                                        $in: ['$mediaID', '$$localID']
-                                    }
-                                }
-                            },
-                            {
-                                $project: {
-                                    "mediaBasePath": 1,
-                                    "mediaUri": 1,
-                                    "originalName": 1,
-                                    "fsSourceUri": 1,
-                                    "fsSourceName": 1,
-                                    "fsTargetUri": 1,
-                                    "mediaType": 1,
-                                    "mediaEndpoint": {
-                                        "$concat": ["/profilepict/", "$mediaID"]
-                                    }
-                                }
-                            }
-                        ],
+                //                     $expr: {
+                //                         $in: ['$mediaID', '$$localID']
+                //                     }
+                //                 }
+                //             },
+                //             {
+                //                 $project: {
+                //                     "mediaBasePath": 1,
+                //                     "mediaUri": 1,
+                //                     "originalName": 1,
+                //                     "fsSourceUri": 1,
+                //                     "fsSourceName": 1,
+                //                     "fsTargetUri": 1,
+                //                     "mediaType": 1,
+                //                     "mediaEndpoint": {
+                //                         "$concat": ["/profilepict/", "$mediaID"]
+                //                     }
+                //                 }
+                //             }
+                //         ],
 
-                    }
-                },
+                //     }
+                // },
                 {
                     "$lookup": {
                         from: "disquslogs",
@@ -2253,36 +2253,36 @@ export class DisqusService {
                         preserveNullAndEmptyArrays: true
                     }
                 },
-                {
-                    $unwind: {
-                        path: "$userUserAuth",
-                        preserveNullAndEmptyArrays: true
-                    }
-                },
+                // {
+                //     $unwind: {
+                //         path: "$userUserAuth",
+                //         preserveNullAndEmptyArrays: true
+                //     }
+                // },
                 {
                     $unwind: {
                         path: "$mateUserBasic",
                         preserveNullAndEmptyArrays: true
                     }
                 },
-                {
-                    $unwind: {
-                        path: "$mateUserAuth",
-                        preserveNullAndEmptyArrays: true
-                    }
-                },
-                {
-                    $unwind: {
-                        path: "$avatar",
-                        preserveNullAndEmptyArrays: true
-                    }
-                },
-                {
-                    $unwind: {
-                        path: "$mateAvatar",
-                        preserveNullAndEmptyArrays: true
-                    }
-                },
+                // {
+                //     $unwind: {
+                //         path: "$mateUserAuth",
+                //         preserveNullAndEmptyArrays: true
+                //     }
+                // },
+                // {
+                //     $unwind: {
+                //         path: "$avatar",
+                //         preserveNullAndEmptyArrays: true
+                //     }
+                // },
+                // {
+                //     $unwind: {
+                //         path: "$mateAvatar",
+                //         preserveNullAndEmptyArrays: true
+                //     }
+                // },
                 {
                     $project: {
                         "diss": 1,
@@ -2514,7 +2514,7 @@ export class DisqusService {
                 },
                 {
                     $lookup: {
-                        from: 'userbasics',
+                        from: 'newUserBasics',
                         localField: 'email',
                         foreignField: 'email',
                         as: 'userUserBasic',
@@ -2522,55 +2522,55 @@ export class DisqusService {
                     },
 
                 },
+                // {
+                //     $lookup: {
+                //         from: 'userauths',
+                //         localField: 'email',
+                //         foreignField: 'email',
+                //         as: 'userUserAuth',
+
+                //     },
+
+                // },
+                // {
+                //     "$lookup": {
+                //         from: "mediaprofilepicts",
+                //         as: "avatar",
+                //         let: {
+                //             localID: '$userUserBasic.profilePict.$id'
+                //         },
+                //         pipeline: [
+                //             {
+                //                 $match:
+                //                 {
+
+
+                //                     $expr: {
+                //                         $in: ['$mediaID', '$$localID']
+                //                     }
+                //                 }
+                //             },
+                //             {
+                //                 $project: {
+                //                     "mediaBasePath": 1,
+                //                     "mediaUri": 1,
+                //                     "originalName": 1,
+                //                     "fsSourceUri": 1,
+                //                     "fsSourceName": 1,
+                //                     "fsTargetUri": 1,
+                //                     "mediaType": 1,
+                //                     "mediaEndpoint": {
+                //                         "$concat": ["/profilepict/", "$mediaID"]
+                //                     }
+                //                 }
+                //             }
+                //         ],
+
+                //     }
+                // },
                 {
                     $lookup: {
-                        from: 'userauths',
-                        localField: 'email',
-                        foreignField: 'email',
-                        as: 'userUserAuth',
-
-                    },
-
-                },
-                {
-                    "$lookup": {
-                        from: "mediaprofilepicts",
-                        as: "avatar",
-                        let: {
-                            localID: '$userUserBasic.profilePict.$id'
-                        },
-                        pipeline: [
-                            {
-                                $match:
-                                {
-
-
-                                    $expr: {
-                                        $in: ['$mediaID', '$$localID']
-                                    }
-                                }
-                            },
-                            {
-                                $project: {
-                                    "mediaBasePath": 1,
-                                    "mediaUri": 1,
-                                    "originalName": 1,
-                                    "fsSourceUri": 1,
-                                    "fsSourceName": 1,
-                                    "fsTargetUri": 1,
-                                    "mediaType": 1,
-                                    "mediaEndpoint": {
-                                        "$concat": ["/profilepict/", "$mediaID"]
-                                    }
-                                }
-                            }
-                        ],
-
-                    }
-                },
-                {
-                    $lookup: {
-                        from: 'userbasics',
+                        from: 'newUserBasics',
                         localField: 'mate',
                         foreignField: 'email',
                         as: 'mateUserBasic',
@@ -2578,51 +2578,51 @@ export class DisqusService {
                     },
 
                 },
-                {
-                    $lookup: {
-                        from: 'userauths',
-                        localField: 'mate',
-                        foreignField: 'email',
-                        as: 'mateUserAuth',
+                // {
+                //     $lookup: {
+                //         from: 'userauths',
+                //         localField: 'mate',
+                //         foreignField: 'email',
+                //         as: 'mateUserAuth',
 
-                    },
+                //     },
 
-                },
-                {
-                    "$lookup": {
-                        from: "mediaprofilepicts",
-                        as: "mateAvatar",
-                        let: {
-                            localID: '$mateUserBasic.profilePict.$id'
-                        },
-                        pipeline: [
-                            {
-                                $match:
-                                {
+                // },
+                // {
+                //     "$lookup": {
+                //         from: "mediaprofilepicts",
+                //         as: "mateAvatar",
+                //         let: {
+                //             localID: '$mateUserBasic.profilePict.$id'
+                //         },
+                //         pipeline: [
+                //             {
+                //                 $match:
+                //                 {
 
-                                    $expr: {
-                                        $in: ['$mediaID', '$$localID']
-                                    }
-                                }
-                            },
-                            {
-                                $project: {
-                                    "mediaBasePath": 1,
-                                    "mediaUri": 1,
-                                    "originalName": 1,
-                                    "fsSourceUri": 1,
-                                    "fsSourceName": 1,
-                                    "fsTargetUri": 1,
-                                    "mediaType": 1,
-                                    "mediaEndpoint": {
-                                        "$concat": ["/profilepict/", "$mediaID"]
-                                    }
-                                }
-                            }
-                        ],
+                //                     $expr: {
+                //                         $in: ['$mediaID', '$$localID']
+                //                     }
+                //                 }
+                //             },
+                //             {
+                //                 $project: {
+                //                     "mediaBasePath": 1,
+                //                     "mediaUri": 1,
+                //                     "originalName": 1,
+                //                     "fsSourceUri": 1,
+                //                     "fsSourceName": 1,
+                //                     "fsTargetUri": 1,
+                //                     "mediaType": 1,
+                //                     "mediaEndpoint": {
+                //                         "$concat": ["/profilepict/", "$mediaID"]
+                //                     }
+                //                 }
+                //             }
+                //         ],
 
-                    }
-                },
+                //     }
+                // },
                 {
                     "$lookup": {
                         from: "disquslogs",
@@ -2722,31 +2722,7 @@ export class DisqusService {
                 },
                 {
                     $unwind: {
-                        path: "$userUserAuth",
-                        preserveNullAndEmptyArrays: true
-                    }
-                },
-                {
-                    $unwind: {
                         path: "$mateUserBasic",
-                        preserveNullAndEmptyArrays: true
-                    }
-                },
-                {
-                    $unwind: {
-                        path: "$mateUserAuth",
-                        preserveNullAndEmptyArrays: true
-                    }
-                },
-                {
-                    $unwind: {
-                        path: "$avatar",
-                        preserveNullAndEmptyArrays: true
-                    }
-                },
-                {
-                    $unwind: {
-                        path: "$mateAvatar",
                         preserveNullAndEmptyArrays: true
                     }
                 },
@@ -2763,16 +2739,16 @@ export class DisqusService {
                                 else: '$mate'
                             }
                         },
-                        "username":
-                        {
-                            $cond: {
-                                if: {
-                                    $eq: ["$email", email]
-                                },
-                                then: "$userUserAuth.username",
-                                else: '$mateUserAuth.username'
-                            }
-                        },
+                        // "username":
+                        // {
+                        //     $cond: {
+                        //         if: {
+                        //             $eq: ["$email", email]
+                        //         },
+                        //         then: "$userUserAuth.username",
+                        //         else: '$mateUserAuth.username'
+                        //     }
+                        // },
                         "fullName":
                         {
                             $cond: {
@@ -2835,16 +2811,16 @@ export class DisqusService {
                                     []
                                 ]
                         },
-                        "avatar":
-                        {
-                            $cond: {
-                                if: {
-                                    $eq: ["$email", email]
-                                },
-                                then: "$avatar",
-                                else: '$mateAvatar'
-                            }
-                        },
+                        // "avatar":
+                        // {
+                        //     $cond: {
+                        //         if: {
+                        //             $eq: ["$email", email]
+                        //         },
+                        //         then: "$avatar",
+                        //         else: '$mateAvatar'
+                        //     }
+                        // },
                         "updatedAt": 1,
                         "lastestMessage": 1,
                         "disqusID": 1,
@@ -2867,16 +2843,16 @@ export class DisqusService {
                                     else: '$mate'
                                 }
                             },
-                            "username":
-                            {
-                                $cond: {
-                                    if: {
-                                        $eq: ["$mate", email]
-                                    },
-                                    then: "$userUserAuth.username",
-                                    else: '$mateUserAuth.username'
-                                }
-                            },
+                            // "username":
+                            // {
+                            //     $cond: {
+                            //         if: {
+                            //             $eq: ["$mate", email]
+                            //         },
+                            //         then: "$userUserAuth.username",
+                            //         else: '$mateUserAuth.username'
+                            //     }
+                            // },
                             "fullName":
                             {
                                 $cond: {
@@ -2939,16 +2915,16 @@ export class DisqusService {
                                         []
                                     ]
                             },
-                            "avatar":
-                            {
-                                $cond: {
-                                    if: {
-                                        $eq: ["$mate", email]
-                                    },
-                                    then: "$avatar",
-                                    else: '$mateAvatar'
-                                }
-                            },
+                            // "avatar":
+                            // {
+                            //     $cond: {
+                            //         if: {
+                            //             $eq: ["$mate", email]
+                            //         },
+                            //         then: "$avatar",
+                            //         else: '$mateAvatar'
+                            //     }
+                            // },
 
                         },
 

@@ -3193,6 +3193,7 @@ export class ContenteventsController {
           //INSERT DISQUS CONTACT
           var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
           try {
+            id_discus_contact = await this.utilsService.generateId();
             CreateDisquscontactsDto_._id = id_discus_contact;
             CreateDisquscontactsDto_.active = true;
             CreateDisquscontactsDto_.email = email_user;
@@ -3210,6 +3211,7 @@ export class ContenteventsController {
           //INSERT DISQUS CONTACT
           var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
           try {
+            id_discus_contact = await this.utilsService.generateId();
             CreateDisquscontactsDto_._id = id_discus_contact;
             CreateDisquscontactsDto_.active = true;
             CreateDisquscontactsDto_.email = email_receiverParty;
