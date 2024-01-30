@@ -72,6 +72,12 @@ export class AdsDto {
     duration: double;
     sizeFile: double;
 
+    idApsaraPortrait: string;
+    sizeFilePortrait: double;
+
+    idApsaraLandscape: string;
+    sizeFileLandscape: double;
+
     reportedStatus: string;
     reportedUserCount: number;
     reportedUser: any[];
@@ -91,18 +97,18 @@ export class AdsDto {
     mediaThumUri: string;
     width: number;
     height: number;
-    mediaPortraitBasePath?: string;
-    mediaPortraitUri?: string;
-    mediaPortraitThumBasePath?: string;
-    mediaPortraitThumUri?: string;
-    widthPortrait?: number;
-    heightPortrait?: number;
-    mediaLandscapeBasePath?: string;
-    mediaLandscapeUri?: string;
-    mediaLandscapeThumBasePath?: string;
-    mediaLandscapeThumUri?: string;
-    widthLandscape?: number;
-    heightLandscape?: number;
+    mediaPortraitBasePath: string;
+    mediaPortraitUri: string;
+    mediaPortraitThumBasePath: string;
+    mediaPortraitThumUri: string;
+    widthPortrait: number;
+    heightPortrait: number;
+    mediaLandscapeBasePath: string;
+    mediaLandscapeUri: string;
+    mediaLandscapeThumBasePath: string;
+    mediaLandscapeThumUri: string;
+    widthLandscape: number;
+    heightLandscape: number;
     idAdspricecredits: mongoose.Types.ObjectId;
     adspricecredits: number;
     CPA: number;

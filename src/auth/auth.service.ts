@@ -9219,12 +9219,12 @@ export class AuthService {
             userid = databasics._id;
           }
 
-          // try {
-          //   //this.userChallenge(userid.toString(), idref.toString(), "referral", "REFERAL");
-          //   this.scorereferralrequest(userid.toString(), idref.toString(), "referral", "REFERAL")
-          // } catch (e) {
+          try {
+            //this.userChallenge(userid.toString(), idref.toString(), "referral", "REFERAL");
+            this.scorereferralrequest(userid.toString(), idref.toString(), "referral", "REFERAL")
+          } catch (e) {
 
-          // }
+          }
 
 
           var _id_1 = (await this.utilsService.generateId());
@@ -9533,12 +9533,12 @@ export class AuthService {
             userid = databasics._id;
           }
 
-          // try {
-          //   //this.userChallenge(userid.toString(), idref.toString(), "referral", "REFERAL");
-          //   await this.contenteventsService.scorereferralrequest(userid.toString(), idref.toString(), "referral", "REFERAL")
-          // } catch (e) {
+          try {
+            //this.userChallenge(userid.toString(), idref.toString(), "referral", "REFERAL");
+            await this.contenteventsService.scorereferralrequest(userid.toString(), idref.toString(), "referral", "REFERAL")
+          } catch (e) {
 
-          // }
+          }
 
 
           var _id_1 = (await this.utilsService.generateId());
@@ -10325,13 +10325,13 @@ export class AuthService {
 
                         if (databasic !== null) {
                           var idref = insertdata._id;
-                          // try {
-                          //   //this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
-                          //   this.scorereferralrequest(databasic._id.toString(), idref.toString(), "referral", "REFERAL")
+                          try {
+                            //this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
+                            this.scorereferralrequest(databasic._id.toString(), idref.toString(), "referral", "REFERAL")
 
-                          // } catch (e) {
+                          } catch (e) {
 
-                          // }
+                          }
                         }
 
                         var _id_1 = (await this.utilsService.generateId());

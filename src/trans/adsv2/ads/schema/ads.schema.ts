@@ -130,6 +130,16 @@ export class Ads {
     sizeFile: number;
 
     @Prop()
+    idApsaraPortrait: string;
+    @Prop()
+    sizeFilePortrait: number;
+
+    @Prop()
+    idApsaraLandscape: string;
+    @Prop()
+    sizeFileLandscape: number;
+
+    @Prop()
     reportedStatus: string
     @Prop()
     reportedUserCount: number

@@ -1736,9 +1736,6 @@ export class PostsReadController {
 
                             }
                         }
-
-
-
                     }
                 }
                 else {
@@ -1798,9 +1795,6 @@ export class PostsReadController {
                         }
                     }
                 }
-
-
-
 
             }
 

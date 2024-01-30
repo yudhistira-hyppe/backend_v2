@@ -132,6 +132,16 @@ export class Ads {
     sizeFile: number;
 
     @Prop()
+    idApsaraPortrait: string;
+    @Prop()
+    sizeFilePortrait: number;
+
+    @Prop()
+    idApsaraLandscape: string;
+    @Prop()
+    sizeFileLandscape: number;
+
+    @Prop()
     reportedStatus: string
     @Prop()
     reportedUserCount: number
@@ -163,7 +173,7 @@ export class Ads {
     updatedAt: string;
     @Prop()
     remark: string;
-    
+
     @Prop()
     mediaBasePath: string;
     @Prop()
@@ -177,8 +187,32 @@ export class Ads {
     @Prop()
     height: number;
     @Prop()
+    mediaPortraitBasePath: string;
+    @Prop()
+    mediaPortraitUri: string;
+    @Prop()
+    mediaPortraitThumBasePath: string;
+    @Prop()
+    mediaPortraitThumUri: string;
+    @Prop()
+    widthPortrait: number;
+    @Prop()
+    heightPortrait: number;
+    @Prop()
+    mediaLandscapeBasePath: string;
+    @Prop()
+    mediaLandscapeUri: string;
+    @Prop()
+    mediaLandscapeThumBasePath: string;
+    @Prop()
+    mediaLandscapeThumUri: string;
+    @Prop()
+    widthLandscape: number;
+    @Prop()
+    heightLandscape: number;
+    @Prop()
     idAdspricecredits: mongoose.Types.ObjectId;
-    
+
     @Prop()
     adspricecredits: number;
     @Prop()

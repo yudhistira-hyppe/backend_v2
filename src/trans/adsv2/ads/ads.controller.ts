@@ -882,7 +882,7 @@ export class AdsController {
             AdsDto_.endAge = 0;
             AdsDto_.totalView = 0;
             AdsDto_.isActive = false;
-
+            
             var getSetting_CreditPrice = await this.adsPriceCreditsService.findStatusActive();
             if (await this.utilsService.ceckData(getSetting_CreditPrice)) {
                 AdsDto_.idAdspricecredits = getSetting_CreditPrice._id;
@@ -1567,6 +1567,36 @@ export class AdsController {
                     }
                 }
             }
+            var listdataPortrait = [];
+            if (ads_campaign_detail.idApsaraPortrait != undefined) {
+                listdataPortrait.push(ads_campaign_detail.idApsaraPortrait);
+            }
+            if (listdataPortrait.length > 0) {
+                var apsaravideodataportrait = await this.postContentService.getVideoApsara(listdataPortrait);
+                if (apsaravideodataportrait.VideoList.length > 0) {
+                    if (apsaravideodataportrait.VideoList[0] != undefined) {
+                        ads_campaign_detail.mediaPortrait = apsaravideodataportrait.VideoList[0];
+                    }
+                }
+            }
+            var listdataLandscape = [];
+            if (ads_campaign_detail.idApsaraLandscape != undefined) {
+                listdataLandscape.push(ads_campaign_detail.idApsaraLandscape);
+            }
+            if (listdataLandscape.length > 0) {
+                var apsaravideodatalandscape = await this.postContentService.getVideoApsara(listdataLandscape);
+                if (apsaravideodatalandscape.VideoList.length > 0) {
+                    if (apsaravideodatalandscape.VideoList[0] != undefined) {
+                        ads_campaign_detail.mediaLandscape = apsaravideodatalandscape.VideoList[0];
+                    }
+                }
+            }
+
+            var adsImageContains = [];
+            if (ads_campaign_detail.mediaUri && ads_campaign_detail.mediaUri != undefined) adsImageContains.push('DEFAULT');
+            if (ads_campaign_detail.mediaPortraitUri && ads_campaign_detail.mediaPortraitUri != undefined) adsImageContains.push('PORTRAIT');
+            if (ads_campaign_detail.mediaLandscapeUri && ads_campaign_detail.mediaLandscapeUri != undefined) adsImageContains.push('LANDSCAPE');
+            ads_campaign_detail.adsImageContains = adsImageContains;
 
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
@@ -1647,6 +1677,30 @@ export class AdsController {
                 if (apsaravideodata.VideoList.length > 0) {
                     if (apsaravideodata.VideoList[0] != undefined) {
                         ads_campaign_detail.media = apsaravideodata.VideoList[0];
+                    }
+                }
+            }
+            var listdataPortrait = [];
+            if (ads_campaign_detail.idApsaraPortrait != undefined) {
+                listdataPortrait.push(ads_campaign_detail.idApsaraPortrait);
+            }
+            if (listdataPortrait.length > 0) {
+                var apsaravideodataportrait = await this.postContentService.getVideoApsara(listdataPortrait);
+                if (apsaravideodataportrait.VideoList.length > 0) {
+                    if (apsaravideodataportrait.VideoList[0] != undefined) {
+                        ads_campaign_detail.mediaPortrait = apsaravideodataportrait.VideoList[0];
+                    }
+                }
+            }
+            var listdataLandscape = [];
+            if (ads_campaign_detail.idApsaraLandscape != undefined) {
+                listdataLandscape.push(ads_campaign_detail.idApsaraLandscape);
+            }
+            if (listdataLandscape.length > 0) {
+                var apsaravideodatalandscape = await this.postContentService.getVideoApsara(listdataLandscape);
+                if (apsaravideodatalandscape.VideoList.length > 0) {
+                    if (apsaravideodatalandscape.VideoList[0] != undefined) {
+                        ads_campaign_detail.mediaLandscape = apsaravideodatalandscape.VideoList[0];
                     }
                 }
             }
@@ -2266,12 +2320,26 @@ export class AdsController {
             data_response['ctaButton'] = data_ads[0].ctaNames;
             data_response['videoId'] = data_ads[0].idApsara;
             data_response['duration'] = data_ads[0].duration;
+            data_response['videoIdPortrait'] = data_ads[0].idApsaraPortrait;
+            data_response['videoIdLandscape'] = data_ads[0].idApsaraLandscape;
             data_response['mediaBasePath'] = data_ads[0].mediaBasePath;
             data_response['mediaUri'] = data_ads[0].mediaUri;
             data_response['mediaThumBasePath'] = data_ads[0].mediaThumBasePath;
             data_response['mediaThumUri'] = data_ads[0].mediaThumUri;
             data_response['width'] = data_ads[0].width;
             data_response['height'] = data_ads[0].height;
+            data_response['mediaPortraitBasePath'] = data_ads[0].mediaPortraitBasePath;
+            data_response['mediaPortraitUri'] = data_ads[0].mediaPortraitUri;
+            data_response['mediaPortraitThumBasePath'] = data_ads[0].mediaPortraitThumBasePath;
+            data_response['mediaPortraitThumUri'] = data_ads[0].mediaPortraitThumUri;
+            data_response['widthPortrait'] = data_ads[0].widthPortrait;
+            data_response['heightPortrait'] = data_ads[0].heightPortrait;
+            data_response['mediaLandscapeBasePath'] = data_ads[0].mediaLandscapeBasePath;
+            data_response['mediaLandscapeUri'] = data_ads[0].mediaLandscapeUri;
+            data_response['mediaLandscapeThumBasePath'] = data_ads[0].mediaLandscapeThumBasePath;
+            data_response['mediaLandscapeThumUri'] = data_ads[0].mediaLandscapeThumUri;
+            data_response['widthLandscape'] = data_ads[0].widthLandscape;
+            data_response['heightLandscape'] = data_ads[0].heightLandscape;
 
             AdsLogsDto_.responseAds = JSON.stringify(data_response);
             await this.adslogsService.create(AdsLogsDto_);
