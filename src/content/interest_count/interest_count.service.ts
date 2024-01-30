@@ -12029,4 +12029,463 @@ export class InterestCountService {
         const query = await this.interestCountModel.aggregate(pipeline);
         return query;
     }
+
+    async indexinterestmigration(keys:string, email:string, skip:number, limit:number, listpict:boolean, listvid:boolean, listdiary:boolean)
+    {
+        var mongo = require('mongoose');
+        var pipeline = [];
+        var renderfacet = {};
+
+        pipeline.push(
+            {
+                $match: {
+                    "_id": new mongo.Types.ObjectId(keys)
+                }
+            },
+            {
+                $lookup: 
+                {
+                    from: "interests_repo",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "interest"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$interest"
+                }
+            },
+            {
+                $lookup: {
+                    from: "newPosts",
+                    let: {
+                        localID: "$listdata.postID"
+                    },
+                    pipeline: [
+                        {
+                            $match: 
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $in: ['$postID', '$$localID']
+                                        }
+                                    },
+                                    {
+                                        "reportedStatus": {
+                                            $ne: "OWNED"
+                                        }
+                                    },
+                                    {
+                                        "visibility": "PUBLIC"
+                                    },
+                                    {
+                                        "active": true
+                                    },
+                                    {
+                                        "reportedUser.email": {
+                                            $not: {
+                                                $regex: email
+                                            }
+                                        }
+                                    },
+                                    
+                                ]
+                            },
+                            
+                        },
+                        {
+                            $project: {
+                                "mediaSource":1,
+                                "boosted": 
+                                {
+                                    $cond: {
+                                        if : {
+                                            $gt: [{
+                                                "$dateToString": {
+                                                    "format": "%Y-%m-%d %H:%M:%S",
+                                                    "date": {
+                                                        $add: [new Date(), 25200000]
+                                                    }
+                                                }
+                                            }, "$boosted.boostSession.timeEnd"]
+                                        },
+                                        then: [],
+                                        else : '$boosted'
+                                    }
+                                },
+                                "reportedStatus": 1,
+                                "insight": {
+                                    "shares": "$shares",
+                                    "comments": "$comments",
+                                    "views": "$views",
+                                    "likes": "$likes",
+                                    
+                                },
+                                "comments": "$comments",
+                                "likes": "$likes",
+                                "scorePict": 1,
+                                "_id": 1,
+                                "postID": 1,
+                                "createdAt": 1,
+                                "updatedAt": 1,
+                                "email": 1,
+                                "postType": 1,
+                                "description": 1,
+                                "active": 1,
+                                "metadata": 1,
+                                "location": 1,
+                                "isOwned": 1,
+                                "visibility": 1,
+                                "isViewed": 1,
+                                "allowComments": 1,
+                                "saleAmount": 1,
+                                "isLiked": 1,
+                                
+                            }
+                        }
+                    ],
+                    as: "posted"
+                },
+                
+            },
+        );
+
+        renderfacet['interest'] = [
+            {
+                $project: {
+                    _id:1,
+                    tag: "$_id",
+                    interestNameId:"$interest.interestNameId",
+                    interestNameEn:"$interest.interestName",
+                    total: "$total",
+                }
+            }
+        ];
+
+        if(listpict == true)
+        {
+            renderfacet['pict'] = [
+                {
+                    $project: {
+                        pict: "$posted"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$pict"
+                    }
+                },
+                {
+                    $match: {
+                        "pict.postType": "pict"
+                    }
+                },
+                {
+                    $set: 
+                    {
+                        media: 
+                        {
+                            isApsara:{$arrayElemAt:[ '$pict.mediaSource.apsara',0]},
+                            apsaraId: {$arrayElemAt:[ '$pict.mediaSource.apsaraId',0]},
+                            apsaraThumbId: {$arrayElemAt:[ '$pict.mediaSource.apsaraThumbId',0]},
+                            mediaUri: {$arrayElemAt:[ '$pict.mediaSource.mediaUri',0]},
+                            postID: "$pict.postID",
+                            mediaEndpoint: {
+                                '$concat': ['/pict/', '$pict.postID']
+                            },
+                            mediaThumbEndpoint: {
+                                '$concat': ['/thumb/', '$pict.postID']
+                            },
+                            mediaThumbUri:{$arrayElemAt:[ '$pict.mediaSource.mediaThumb',0]},
+                            mediaType: {$arrayElemAt:[ '$pict.mediaSource.mediaType',0]},
+                            uploadSource: {$arrayElemAt:[ '$pict.mediaSource.uploadSource',0]},
+                            mediaThumUri: {$arrayElemAt:[ '$pict.mediaSource.mediaThumUri',0]},
+                        }
+                    }
+                },
+				{
+                    $project: 
+                    {
+                        "scorePict": "$pict.scorePict",
+                        "boosted": "$pict.boosted",
+                        "reportedStatus": "$pict.reportedStatus",
+                        "_id": "$pict._id",
+                        "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
+                        "mediaEndpoint": "$media.mediaEndpoint",
+                        "mediaType": "$media.mediaType",
+                        "createdAt": "$pict.createdAt",
+                        "updatedAt": "$pict.updatedAt",
+                        "postID": "$pict.postID",
+                        "email": "$pict.postID",
+                        "postType": "$pict.postType",
+                        "description": "$pict.description",
+                        "active": "$pict.active",
+                        "metadata": "$pict.metadata",
+                        "location": "$pict.location",
+                        "isOwned": "$pict.isOwned",
+                        "visibility": "$pict.visibility",
+                        "isViewed": "$pict.isViewed",
+                        "allowComments": "$pict.allowComments",
+                        "saleAmount": "$pict.saleAmount",
+                        "monetize": 
+                        {
+                            $cond: {
+                                if : {
+                                    $gte: ["$pict.saleAmount", 1]
+                                },
+                                then: true,
+                                else : "$taslimKONAG"
+                            }
+                        },
+                        "comments": "$pict.comments",
+                        "likes": "$pict.likes",
+                        "insight": 
+                            {
+                            $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+                        },
+                        "apsaraThumbId":  "$media.apsaraThumbId",
+                        "apsaraId": "$media.apsaraId",
+                        "isApsara": "$media.isApsara",
+                    }
+                },
+                {
+                    $sort: {
+                        isApsara:-1,
+                        scorePict: - 1,
+                        comments: - 1,
+                        likes: - 1,
+                        createdAt:-1
+                    }
+                },
+                {
+                    $skip: (skip * limit)
+                },
+                {
+                    $limit: limit
+                },
+            ]
+        }
+
+        if(listvid == true)
+        {
+            renderfacet['video'] = [
+                {
+                    $project: {
+                        pict: "$posted"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$pict"
+                    }
+                },
+                {
+                    $match: {
+                        "pict.postType": "vid"
+                    }
+                },
+                {
+                    $set: 
+                    {
+                        media: 
+                        {
+                            isApsara:{$arrayElemAt:[ '$pict.mediaSource.apsara',0]},
+                            apsaraId: {$arrayElemAt:[ '$pict.mediaSource.apsaraId',0]},
+                            apsaraThumbId: {$arrayElemAt:[ '$pict.mediaSource.apsaraThumbId',0]},
+                            mediaUri: {$arrayElemAt:[ '$pict.mediaSource.mediaUri',0]},
+                            postID: "$pict.postID",
+                            mediaEndpoint: {
+                                '$concat': ['/pict/', '$pict.postID']
+                            },
+                            mediaThumbEndpoint: {
+                                '$concat': ['/thumb/', '$pict.postID']
+                            },
+                            mediaThumbUri:{$arrayElemAt:[ '$pict.mediaSource.mediaThumb',0]},
+                            mediaType: {$arrayElemAt:[ '$pict.mediaSource.mediaType',0]},
+                            uploadSource: {$arrayElemAt:[ '$pict.mediaSource.uploadSource',0]},
+                            mediaThumUri: {$arrayElemAt:[ '$pict.mediaSource.mediaThumUri',0]},
+                        }
+                    }
+                },
+				{
+                    $project: 
+                    {
+                        "scorePict": "$pict.scorePict",
+                        "boosted": "$pict.boosted",
+                        "reportedStatus": "$pict.reportedStatus",
+                        "_id": "$pict._id",
+                        "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
+                        "mediaEndpoint": "$media.mediaEndpoint",
+                        "mediaType": "$media.mediaType",
+                        "createdAt": "$pict.createdAt",
+                        "updatedAt": "$pict.updatedAt",
+                        "postID": "$pict.postID",
+                        "email": "$pict.postID",
+                        "postType": "$pict.postType",
+                        "description": "$pict.description",
+                        "active": "$pict.active",
+                        "metadata": "$pict.metadata",
+                        "location": "$pict.location",
+                        "isOwned": "$pict.isOwned",
+                        "visibility": "$pict.visibility",
+                        "isViewed": "$pict.isViewed",
+                        "allowComments": "$pict.allowComments",
+                        "saleAmount": "$pict.saleAmount",
+                        "monetize": 
+                        {
+                            $cond: {
+                                if : {
+                                    $gte: ["$pict.saleAmount", 1]
+                                },
+                                then: true,
+                                else : "$taslimKONAG"
+                            }
+                        },
+                        "comments": "$pict.comments",
+                        "likes": "$pict.likes",
+                        "insight": 
+                            {
+                            $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+                        },
+                        "apsaraThumbId":  "$media.apsaraThumbId",
+                        "apsaraId": "$media.apsaraId",
+                        "isApsara": "$media.isApsara",
+                    }
+                },
+                {
+                    $sort: {
+                        isApsara:-1,
+                        scorePict: - 1,
+                        comments: - 1,
+                        likes: - 1,
+                        createdAt:-1
+                    }
+                },
+                {
+                    $skip: (skip * limit)
+                },
+                {
+                    $limit: limit
+                },
+            ]
+        }
+
+        if(listdiary == true)
+        {
+            renderfacet['diary'] = [
+                {
+                    $project: {
+                        pict: "$posted"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$pict"
+                    }
+                },
+                {
+                    $match: {
+                        "pict.postType": "diary"
+                    }
+                },
+                {
+                    $set: 
+                    {
+                        media: 
+                        {
+                            isApsara:{$arrayElemAt:[ '$pict.mediaSource.apsara',0]},
+                            apsaraId: {$arrayElemAt:[ '$pict.mediaSource.apsaraId',0]},
+                            apsaraThumbId: {$arrayElemAt:[ '$pict.mediaSource.apsaraThumbId',0]},
+                            mediaUri: {$arrayElemAt:[ '$pict.mediaSource.mediaUri',0]},
+                            postID: "$pict.postID",
+                            mediaEndpoint: {
+                                '$concat': ['/pict/', '$pict.postID']
+                            },
+                            mediaThumbEndpoint: {
+                                '$concat': ['/thumb/', '$pict.postID']
+                            },
+                            mediaThumbUri:{$arrayElemAt:[ '$pict.mediaSource.mediaThumb',0]},
+                            mediaType: {$arrayElemAt:[ '$pict.mediaSource.mediaType',0]},
+                            uploadSource: {$arrayElemAt:[ '$pict.mediaSource.uploadSource',0]},
+                            mediaThumUri: {$arrayElemAt:[ '$pict.mediaSource.mediaThumUri',0]},
+                        }
+                    }
+                },
+				{
+                    $project: 
+                    {
+                        "scorePict": "$pict.scorePict",
+                        "boosted": "$pict.boosted",
+                        "reportedStatus": "$pict.reportedStatus",
+                        "_id": "$pict._id",
+                        "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
+                        "mediaEndpoint": "$media.mediaEndpoint",
+                        "mediaType": "$media.mediaType",
+                        "createdAt": "$pict.createdAt",
+                        "updatedAt": "$pict.updatedAt",
+                        "postID": "$pict.postID",
+                        "email": "$pict.postID",
+                        "postType": "$pict.postType",
+                        "description": "$pict.description",
+                        "active": "$pict.active",
+                        "metadata": "$pict.metadata",
+                        "location": "$pict.location",
+                        "isOwned": "$pict.isOwned",
+                        "visibility": "$pict.visibility",
+                        "isViewed": "$pict.isViewed",
+                        "allowComments": "$pict.allowComments",
+                        "saleAmount": "$pict.saleAmount",
+                        "monetize": 
+                        {
+                            $cond: {
+                                if : {
+                                    $gte: ["$pict.saleAmount", 1]
+                                },
+                                then: true,
+                                else : "$taslimKONAG"
+                            }
+                        },
+                        "comments": "$pict.comments",
+                        "likes": "$pict.likes",
+                        "insight": 
+                            {
+                            $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
+                        },
+                        "apsaraThumbId":  "$media.apsaraThumbId",
+                        "apsaraId": "$media.apsaraId",
+                        "isApsara": "$media.isApsara",
+                    }
+                },
+                {
+                    $sort: {
+                        isApsara:-1,
+                        scorePict: - 1,
+                        comments: - 1,
+                        likes: - 1,
+                        createdAt:-1
+                    }
+                },
+                {
+                    $skip: (skip * limit)
+                },
+                {
+                    $limit: limit
+                },
+            ]
+        }
+
+        pipeline.push(
+            {
+                "$facet":renderfacet
+            }
+        );
+
+        // var util = require('util');
+        // console.log(util.inspect(pipeline, { depth:null, showHidden:false }))
+
+        var data = await this.interestCountModel.aggregate(pipeline);
+        return data;
+    }
 }
