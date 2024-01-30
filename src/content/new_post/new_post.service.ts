@@ -35392,7 +35392,7 @@ export class NewPostService {
                     {
                       $eq:
                         [
-                          "$$list", email
+                          "$$list", emailLogin
                         ]
                     }
                   }
