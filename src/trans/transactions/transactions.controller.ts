@@ -12967,7 +12967,7 @@ export class TransactionsController {
 
 
         try {
-            query = await this.basic2SS.transaksiHistory(email, skip, limit, startdate, enddate, sell, buy, withdrawal, rewards, boost, voucher);
+            query = await this.basic2SS.transaksiHistoryv2(email, skip, limit, startdate, enddate, sell, buy, withdrawal, rewards, boost, voucher);
         } catch (e) {
             query = [];
         }

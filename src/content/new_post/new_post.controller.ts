@@ -3568,7 +3568,7 @@ export class NewPostController {
         var datatag = null;
 
         try {
-            datasearch = await this.newPostService.detailinterestmigration(keys, email, skip, limit, listpict, listvid, listdiary);
+            datasearch = await this.interestCountService.indexinterestmigration(keys, email, skip, limit, listpict, listvid, listdiary);
             interests = datasearch[0].interest;
 
         } catch (e) {

@@ -5026,7 +5026,7 @@ export class UserbasicnewService {
 
         pipeline.push(
             {
-                $match: 
+                $match:
                 {
                     "email": email
                 }
@@ -5034,16 +5034,16 @@ export class UserbasicnewService {
             {
                 $project: {
                     "_id": 1,
-                    "userName": 1,
+                    "userName": '$username',
                     "fullName": 1,
                     "email": 1,
-                    
+
                 }
             },
             {
-                $facet: 
+                $facet:
                 {
-                    
+
                     "balances": [
                         {
                             "$lookup": {
@@ -5054,20 +5054,20 @@ export class UserbasicnewService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
-                                            $and: 
-                                            [
-                                                {
-                                                    $expr: {
-                                                        $eq: ['$iduser', '$$localID']
-                                                    }
-                                                },
-                                                {
-                                                    "type": "rewards"
-                                                },
-                                                
-                                            ]
+                                            $and:
+                                                [
+                                                    {
+                                                        $expr: {
+                                                            $eq: ['$iduser', '$$localID']
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": "rewards"
+                                                    },
+
+                                                ]
                                         }
                                     },
                                     {
@@ -5086,15 +5086,16 @@ export class UserbasicnewService {
                                             "postid": 1,
                                             "iduserbuyer": 1,
                                             "idusersell": 1,
-                                            "debetKredit": "+",                                    
+                                            "debetKredit": "+",
                                             "fullName": "$fullName",
+
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $unwind: {
@@ -5102,6 +5103,7 @@ export class UserbasicnewService {
                                 preserveNullAndEmptyArrays: true
                             }
                         },
+
                     ],
                     "tariks": [
                         {
@@ -5113,17 +5115,17 @@ export class UserbasicnewService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
-                                            $and: 
-                                            [
-                                                {
-                                                    $expr: {
-                                                        $eq: ['$idUser', '$$localID']
-                                                    }
-                                                },
-                                                
-                                            ]
+                                            $and:
+                                                [
+                                                    {
+                                                        $expr: {
+                                                            $eq: ['$idUser', '$$localID']
+                                                        }
+                                                    },
+
+                                                ]
                                         }
                                     },
                                     {
@@ -5144,13 +5146,14 @@ export class UserbasicnewService {
                                             "idusersell": 1,
                                             "debetKredit": "-",
                                             "fullName": "$fullName",
+
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $unwind: {
@@ -5158,7 +5161,7 @@ export class UserbasicnewService {
                                 preserveNullAndEmptyArrays: true
                             }
                         },
-                        
+
                     ],
                     "transactions": [
                         {
@@ -5170,39 +5173,39 @@ export class UserbasicnewService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
-                                            $or: 
-                                            [
-                                                {
-                                                    $expr: {
-                                                        $eq: ['$iduserbuyer', '$$localID']
+                                            $or:
+                                                [
+                                                    {
+                                                        $expr: {
+                                                            $eq: ['$iduserbuyer', '$$localID']
+                                                        }
+                                                    },
+                                                    {
+                                                        $expr: {
+                                                            $eq: ['$idusersell', '$$localID']
+                                                        }
                                                     }
-                                                },
-                                                {
-                                                    $expr: {
-                                                        $eq: ['$idusersell', '$$localID']
-                                                    }
-                                                }
-                                            ]
+                                                ]
                                         }
                                     },
                                     {
                                         $project: {
                                             "jenis": "$type",
-                                            "type": 
+                                            "type":
                                             {
                                                 $cond: {
-                                                    if : {
+                                                    if: {
                                                         $eq: ['$iduserbuyer', '$$localID']
                                                     },
                                                     then: "Buy",
-                                                    else : 'Sell'
+                                                    else: 'Sell'
                                                 }
                                             },
                                             "timestamp": 1,
-                                            "timeStart": 
-                                                {
+                                            "timeStart":
+                                            {
                                                 "$dateToString": {
                                                     "format": "%Y-%m-%dT%H:%M:%S",
                                                     "date": {
@@ -5210,11 +5213,11 @@ export class UserbasicnewService {
                                                     }
                                                 }
                                             },
-                                            "status": 
+                                            "status":
                                             {
                                                 $cond: {
-                                                    if : 
-                                                        {
+                                                    if:
+                                                    {
                                                         $and: [
                                                             {
                                                                 $lt: ['$expiredtimeva', {
@@ -5224,7 +5227,7 @@ export class UserbasicnewService {
                                                                             $add: [new Date(), 25200000]
                                                                         }
                                                                     }
-                                                                }, ]
+                                                                },]
                                                             },
                                                             {
                                                                 $eq: ['$status', 'WAITING_PAYMENT']
@@ -5232,14 +5235,14 @@ export class UserbasicnewService {
                                                         ]
                                                     },
                                                     then: "Cancel",
-                                                    else : '$status'
+                                                    else: '$status'
                                                 }
                                             },
-                                            "description": 
-                                                {
+                                            "description":
+                                            {
                                                 $cond: {
-                                                    if : 
-                                                        {
+                                                    if:
+                                                    {
                                                         $and: [
                                                             {
                                                                 $lt: ['$expiredtimeva', {
@@ -5249,7 +5252,7 @@ export class UserbasicnewService {
                                                                             $add: [new Date(), 25200000]
                                                                         }
                                                                     }
-                                                                }, ]
+                                                                },]
                                                             },
                                                             {
                                                                 $eq: ['$status', 'WAITING_PAYMENT']
@@ -5257,7 +5260,7 @@ export class UserbasicnewService {
                                                         ]
                                                     },
                                                     then: "$VA expired time",
-                                                    else : 'description'
+                                                    else: 'description'
                                                 }
                                             },
                                             "noinvoice": 1,
@@ -5270,33 +5273,33 @@ export class UserbasicnewService {
                                             "iduserbuyer": 1,
                                             "idusersell": 1,
                                             "fullName": "$fullName",
-                                            
+
                                         }
                                     },
                                     // {
-                                        //     $sort: {
+                                    //     $sort: {
                                     //         "timestamp": - 1,
                                     //         
                                     //     }
                                     // },
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             "$lookup": {
-                                from: "posts",
+                                from: "newPosts",
                                 as: "post",
                                 let: {
                                     localID: '$buy-sell.postid'
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
-                                            
-                                            
+
+
                                             $expr: {
                                                 $in: ['$postID', '$$localID']
                                             }
@@ -5304,208 +5307,45 @@ export class UserbasicnewService {
                                     },
                                     {
                                         $project: {
-                                            
                                             "postID": 1,
                                             "description": 1,
                                             "postType": 1,
-                                            "certified": 1
-                                        }
-                                    }
-                                ],
-                                
-                            },
-                            
-                        },
-                        {
-                            "$lookup": {
-                                from: "mediapicts",
-                                as: "pict",
-                                let: {
-                                    localID: '$buy-sell.postid'
-                                },
-                                pipeline: [
-                                    {
-                                        $match: 
-                                        {
-                                            $and: [
-                                                {
-                                                    $expr: {
-                                                        $in: ['$postID', '$$localID']
-                                                    }
-                                                },
-                                                
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        $project: {
-                                            "postID": 1,
+                                            "certified": 1,
                                             "apsara": {
-                                                $ifNull: ["$apsara", false]
+                                                $ifNull: [{ $arrayElemAt: ["$mediaSource.apsara", 0] }, false]
                                             },
                                             "apsaraId": {
-                                                $ifNull: ["$apsaraId", false]
+                                                $ifNull: [{ $arrayElemAt: ["$mediaSource.apsaraId", 0] }, false]
                                             },
-                                            "apsaraThumbId": 
+                                            "apsaraThumbId":
                                             {
                                                 "$concat": ["/thumb/", "$postID"]
                                             },
                                             "mediaEndpoint": {
                                                 "$concat": ["/stream/", "$postID"]
                                             },
-                                            "mediaUri": 1,
-                                            "mediaThumbEndpoint": 1,
-                                            "mediaThumbUri": 1,
-                                            
+                                            "mediaUri": { $arrayElemAt: ["$mediaSource.mediaUri", 0] },
+                                            "mediaThumbEndpoint": { $arrayElemAt: ["$mediaSource.mediaThumbEndpoint", 0] },
+                                            "mediaThumbUri": { $arrayElemAt: ["$mediaSource.mediaThumbUri", 0] },
+                                            "mediaType": { $arrayElemAt: ["$mediaSource.mediaType", 0] },
+
                                         }
                                     }
                                 ],
-                                
+
                             },
-                            
-                        },
-                        {
-                            "$lookup": {
-                                from: "mediavideos",
-                                as: "video",
-                                let: {
-                                    localID: '$buy-sell.postid'
-                                },
-                                pipeline: [
-                                    {
-                                        $match: 
-                                        {
-                                            
-                                            
-                                            $expr: {
-                                                $in: ['$postID', '$$localID']
-                                            }
-                                        }
-                                    },
-                                    {
-                                        $project: {
-                                            "postID": 1,
-                                            "apsara": {
-                                                $ifNull: ["$apsara", false]
-                                            },
-                                            "apsaraId": {
-                                                $ifNull: ["$apsaraId", false]
-                                            },
-                                            "apsaraThumbId": 1,
-                                            "mediaEndpoint": {
-                                                "$concat": ["/stream/", "$postID"]
-                                            },
-                                            "mediaUri": 1,
-                                            "mediaThumbEndpoint": {
-                                                "$concat": ["/stream/", "$postID"]
-                                            },
-                                            "mediaThumbUri": 1,
-                                            
-                                        }
-                                    }
-                                ],
-                                
-                            },
-                            
-                        },
-                        {
-                            "$lookup": {
-                                from: "mediadiaries",
-                                as: "diary",
-                                let: {
-                                    localID: '$buy-sell.postid'
-                                },
-                                pipeline: [
-                                    {
-                                        $match: 
-                                        {
-                                            
-                                            
-                                            $expr: {
-                                                $in: ['$postID', '$$localID']
-                                            }
-                                        }
-                                    },
-                                    {
-                                        $project: {
-                                            "postID": 1,
-                                            "apsara": {
-                                                $ifNull: ["$apsara", false]
-                                            },
-                                            "apsaraId": {
-                                                $ifNull: ["$apsaraId", false]
-                                            },
-                                            "apsaraThumbId": 1,
-                                            "mediaEndpoint": {
-                                                "$concat": ["/stream/", "$postID"]
-                                            },
-                                            "mediaUri": 1,
-                                            "mediaThumbEndpoint": {
-                                                "$concat": ["/stream/", "$postID"]
-                                            },
-                                            "mediaThumbUri": 1,
-                                            
-                                        }
-                                    }
-                                ],
-                                
-                            },
-                            
-                        },
-                        {
-                            "$lookup": {
-                                from: "mediastories",
-                                as: "story",
-                                let: {
-                                    localID: '$buy-sell.postid'
-                                },
-                                pipeline: [
-                                    {
-                                        $match: 
-                                        {
-                                            
-                                            
-                                            $expr: {
-                                                $in: ['$postID', '$$localID']
-                                            }
-                                        }
-                                    },
-                                    {
-                                        $project: {
-                                            "postID": 1,
-                                            "apsara": {
-                                                $ifNull: ["$apsara", false]
-                                            },
-                                            "apsaraId": {
-                                                $ifNull: ["$apsaraId", false]
-                                            },
-                                            "apsaraThumbId": 1,
-                                            "mediaEndpoint": {
-                                                "$concat": ["/stream/", "$postID"]
-                                            },
-                                            "mediaUri": 1,
-                                            "mediaThumbEndpoint": {
-                                                "$concat": ["/thumb/", "$postID"]
-                                            },
-                                            "mediaThumbUri": 1,
-                                            
-                                        }
-                                    }
-                                ],
-                                
-                            },
-                            
+
                         },
                         {
                             $lookup: {
-                                from: 'userbasics',
+                                from: 'newUserBasics',
                                 as: 'penjual',
                                 let: {
                                     localID: '$buy-sell.idusersell'
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -5514,7 +5354,7 @@ export class UserbasicnewService {
                                                     }
                                                 },
                                                 {
-                                                    "email": 
+                                                    "email":
                                                     {
                                                         $ne: email
                                                     }
@@ -5522,22 +5362,22 @@ export class UserbasicnewService {
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
-                                from: 'userbasics',
+                                from: 'newUserBasics',
                                 as: 'pembeli',
                                 let: {
                                     localID: '$buy-sell.iduserbuyer'
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -5546,7 +5386,7 @@ export class UserbasicnewService {
                                                     }
                                                 },
                                                 {
-                                                    "email": 
+                                                    "email":
                                                     {
                                                         $ne: email
                                                     }
@@ -5554,65 +5394,22 @@ export class UserbasicnewService {
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
+                        },
+
+                        {
+                            $set: {
+                                penjualAuth: "$penjual.username"
+                            }
                         },
                         {
-                            $lookup: {
-                                from: 'userauths',
-                                as: 'penjualAuth',
-                                let: {
-                                    localID: '$penjual.email'
-                                },
-                                pipeline: [
-                                    {
-                                        $match: 
-                                        {
-                                            $and: [
-                                                {
-                                                    $expr: {
-                                                        $in: ['$email', '$$localID']
-                                                    }
-                                                },
-                                                
-                                            ]
-                                        }
-                                    },
-                                    
-                                ],
-                                
-                            },
-                            
-                        },
-                        {
-                            $lookup: {
-                                from: 'userauths',
-                                as: 'pembeliAuth',
-                                let: {
-                                    localID: '$pembeli.email'
-                                },
-                                pipeline: [
-                                    {
-                                        $match: 
-                                        {
-                                            $and: [
-                                                {
-                                                    $expr: {
-                                                        $in: ['$email', '$$localID']
-                                                    }
-                                                },
-                                                
-                                            ]
-                                        }
-                                    },
-                                    
-                                ],
-                                
-                            },
-                            
+                            $set: {
+                                pembeliAuth: "$penjual.username"
+                            }
                         },
                         {
                             $unwind: {
@@ -5623,10 +5420,8 @@ export class UserbasicnewService {
                         {
                             $project: {
                                 "transaction": [{
-                                    //"video": 1,
                                     "_id": "$buy-sell._id",
                                     "timestart": "$buy-sell.timeStart",
-                                    //"did": "$buy-sell.postid",
                                     "iduser": "$_id",
                                     "type": "$buy-sell.type",
                                     "jenis": "$buy-sell.jenis",
@@ -5637,28 +5432,28 @@ export class UserbasicnewService {
                                     "expiredtimeva": "$buy-sell.expiredtimeva",
                                     "bank": "$buy-sell.bank",
                                     "amount": "$buy-sell.amount",
-                                    "totalamount": 
+                                    "totalamount":
                                     {
                                         $cond: {
-                                            if : {
+                                            if: {
                                                 $eq: ["$buy-sell.type", "Sell"]
                                             },
                                             then: "$buy-sell.amount",
-                                            else : '$buy-sell.totalamount'
+                                            else: '$buy-sell.totalamount'
                                         }
                                     },
                                     "status": "$buy-sell.status",
                                     "email": "$email",
                                     "fullName": "$fullName",
                                     "username": "$fullName",
-                                    "penjual": 
-                                        {
+                                    "penjual":
+                                    {
                                         $cond: {
-                                            if : {
+                                            if: {
                                                 $eq: ["$buy-sell.type", "Sell"]
                                             },
                                             then: "$dodol",
-                                            else : {
+                                            else: {
                                                 $arrayElemAt: ['$penjual.fullName', {
                                                     "$indexOfArray": [
                                                         "$penjual._id",
@@ -5668,14 +5463,14 @@ export class UserbasicnewService {
                                             }
                                         }
                                     },
-                                    "emailpenjual": 
+                                    "emailpenjual":
                                     {
                                         $cond: {
-                                            if : {
+                                            if: {
                                                 $eq: ["$buy-sell.type", "Sell"]
                                             },
                                             then: "$dodol",
-                                            else : {
+                                            else: {
                                                 $arrayElemAt: ['$penjual.email', {
                                                     "$indexOfArray": [
                                                         "$penjual._id",
@@ -5685,14 +5480,14 @@ export class UserbasicnewService {
                                             }
                                         }
                                     },
-                                    "userNamePenjual": 
+                                    "userNamePenjual":
                                     {
                                         $cond: {
-                                            if : {
+                                            if: {
                                                 $eq: ["$buy-sell.type", "Sell"]
                                             },
                                             then: "$dodol",
-                                            else : {
+                                            else: {
                                                 $arrayElemAt: ['$penjualAuth.username', {
                                                     "$indexOfArray": [
                                                         "$penjualAuth.email",
@@ -5709,14 +5504,14 @@ export class UserbasicnewService {
                                             }
                                         }
                                     },
-                                    "pembeli": 
+                                    "pembeli":
                                     {
                                         $cond: {
-                                            if : {
+                                            if: {
                                                 $eq: ["$buy-sell.type", "Buy"]
                                             },
                                             then: "$dodol",
-                                            else : {
+                                            else: {
                                                 $arrayElemAt: ['$pembeli.fullName', {
                                                     "$indexOfArray": [
                                                         "$pembeli._id",
@@ -5726,14 +5521,14 @@ export class UserbasicnewService {
                                             }
                                         }
                                     },
-                                    "emailpembeli": 
+                                    "emailpembeli":
                                     {
                                         $cond: {
-                                            if : {
+                                            if: {
                                                 $eq: ["$buy-sell.type", "Buy"]
                                             },
                                             then: "$dodol",
-                                            else : {
+                                            else: {
                                                 $arrayElemAt: ['$pembeli.email', {
                                                     "$indexOfArray": [
                                                         "$pembeli._id",
@@ -5743,14 +5538,14 @@ export class UserbasicnewService {
                                             }
                                         }
                                     },
-                                    "userNamePembeli": 
+                                    "userNamePembeli":
                                     {
                                         $cond: {
-                                            if : {
+                                            if: {
                                                 $eq: ["$buy-sell.type", "Buy"]
                                             },
                                             then: "$dodol",
-                                            else : {
+                                            else: {
                                                 $arrayElemAt: ['$pembeliAuth.username', {
                                                     "$indexOfArray": [
                                                         "$pembeliAuth.email",
@@ -5768,7 +5563,7 @@ export class UserbasicnewService {
                                         }
                                     },
                                     "postID": "$buy-sell.postid",
-                                    "postType": 
+                                    "postType":
                                     {
                                         $arrayElemAt: ['$post.postType', {
                                             "$indexOfArray": [
@@ -5777,7 +5572,8 @@ export class UserbasicnewService {
                                             ]
                                         }]
                                     },
-                                    "certified": {
+                                    "certified":
+                                    {
                                         $arrayElemAt: ['$post.certified', {
                                             "$indexOfArray": [
                                                 "$post.postID",
@@ -5785,7 +5581,7 @@ export class UserbasicnewService {
                                             ]
                                         }]
                                     },
-                                    "descriptionContent": 
+                                    "descriptionContent":
                                     {
                                         $arrayElemAt: ['$post.description', {
                                             "$indexOfArray": [
@@ -5794,7 +5590,7 @@ export class UserbasicnewService {
                                             ]
                                         }]
                                     },
-                                    "title": 
+                                    "title":
                                     {
                                         $arrayElemAt: ['$post.title', {
                                             "$indexOfArray": [
@@ -5803,303 +5599,43 @@ export class UserbasicnewService {
                                             ]
                                         }]
                                     },
-                                    "mediaType": 
+                                    "mediaType":
                                     {
-                                        $arrayElemAt: ['$post.postType', {
+                                        $arrayElemAt: ['$post.mediaType', {
                                             "$indexOfArray": [
                                                 "$post.postID",
                                                 "$buy-sell.postid"
                                             ]
                                         }]
                                     },
-                                    // "certified": {
-                                    //     $arrayElemAt: ['$post.certified', {
-                                    //         "$indexOfArray": [
-                                    //             "$post.postID",
-                                    //             "$buy-sell.postid"
-                                    //         ]
-                                    //     }]
-                                    // },
-                                    "mediaEndpoint": 
+                                    "mediaEndpoint":
                                     {
-                                        $switch: {
-                                            branches: [
-                                                {
-                                                    case: {
-                                                        $eq: [{
-                                                            $arrayElemAt: ['$post.postType', {
-                                                                "$indexOfArray": [
-                                                                    "$post.postID",
-                                                                    "$buy-sell.postid"
-                                                                ]
-                                                            }]
-                                                        }, "vid"]
-                                                    },
-                                                    then: 
-                                                    {
-                                                        $arrayElemAt: ['$video.mediaEndpoint', {
-                                                            "$indexOfArray": [
-                                                                "$video.postID",
-                                                                "$buy-sell.postid"
-                                                            ]
-                                                        }]
-                                                    }
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: [{
-                                                            $arrayElemAt: ['$post.postType', {
-                                                                "$indexOfArray": [
-                                                                    "$post.postID",
-                                                                    "$buy-sell.postid"
-                                                                ]
-                                                            }]
-                                                        }, "pict"]
-                                                    },
-                                                    then: 
-                                                    {
-                                                        $arrayElemAt: ['$pict.mediaEndpoint', {
-                                                            "$indexOfArray": [
-                                                                "$pict.postID",
-                                                                "$buy-sell.postid"
-                                                            ]
-                                                        }]
-                                                    }
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: [{
-                                                            $arrayElemAt: ['$post.postType', {
-                                                                "$indexOfArray": [
-                                                                    "$post.postID",
-                                                                    "$buy-sell.postid"
-                                                                ]
-                                                            }]
-                                                        }, "story"]
-                                                    },
-                                                    then: 
-                                                    {
-                                                        $arrayElemAt: ['$story.mediaEndpoint', {
-                                                            "$indexOfArray": [
-                                                                "$story.postID",
-                                                                "$buy-sell.postid"
-                                                            ]
-                                                        }]
-                                                    }
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: [{
-                                                            $arrayElemAt: ['$post.postType', {
-                                                                "$indexOfArray": [
-                                                                    "$post.postID",
-                                                                    "$buy-sell.postid"
-                                                                ]
-                                                            }]
-                                                        }, "diary"]
-                                                    },
-                                                    then: 
-                                                    {
-                                                        $arrayElemAt: ['$diary.mediaEndpoint', {
-                                                            "$indexOfArray": [
-                                                                "$diary.postID",
-                                                                "$buy-sell.postid"
-                                                            ]
-                                                        }]
-                                                    }
-                                                },
-                                                
-                                            ],
-                                            "default": "$kampret"
-                                        }
+                                        $arrayElemAt: ['$post.mediaEndpoint', {
+                                            "$indexOfArray": [
+                                                "$post.postID",
+                                                "$buy-sell.postid"
+                                            ]
+                                        }]
                                     },
-                                    "apsaraId": 
+                                    "apsaraId":
                                     {
-                                        $switch: {
-                                            branches: [
-                                                {
-                                                    case: {
-                                                        $eq: [{
-                                                            $arrayElemAt: ['$post.postType', {
-                                                                "$indexOfArray": [
-                                                                    "$post.postID",
-                                                                    "$buy-sell.postid"
-                                                                ]
-                                                            }]
-                                                        }, "vid"]
-                                                    },
-                                                    then: 
-                                                    {
-                                                        $arrayElemAt: ['$video.apsaraId', {
-                                                            "$indexOfArray": [
-                                                                "$video.postID",
-                                                                "$buy-sell.postid"
-                                                            ]
-                                                        }]
-                                                    }
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: [{
-                                                            $arrayElemAt: ['$post.postType', {
-                                                                "$indexOfArray": [
-                                                                    "$post.postID",
-                                                                    "$buy-sell.postid"
-                                                                ]
-                                                            }]
-                                                        }, "pict"]
-                                                    },
-                                                    then: 
-                                                    {
-                                                        $arrayElemAt: ['$pict.apsaraId', {
-                                                            "$indexOfArray": [
-                                                                "$pict.postID",
-                                                                "$buy-sell.postid"
-                                                            ]
-                                                        }]
-                                                    }
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: [{
-                                                            $arrayElemAt: ['$post.postType', {
-                                                                "$indexOfArray": [
-                                                                    "$post.postID",
-                                                                    "$buy-sell.postid"
-                                                                ]
-                                                            }]
-                                                        }, "story"]
-                                                    },
-                                                    then: 
-                                                    {
-                                                        $arrayElemAt: ['$story.apsaraId', {
-                                                            "$indexOfArray": [
-                                                                "$story.postID",
-                                                                "$buy-sell.postid"
-                                                            ]
-                                                        }]
-                                                    }
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: [{
-                                                            $arrayElemAt: ['$post.postType', {
-                                                                "$indexOfArray": [
-                                                                    "$post.postID",
-                                                                    "$buy-sell.postid"
-                                                                ]
-                                                            }]
-                                                        }, "diary"]
-                                                    },
-                                                    then: 
-                                                    {
-                                                        $arrayElemAt: ['$diary.apsaraId', {
-                                                            "$indexOfArray": [
-                                                                "$diary.postID",
-                                                                "$buy-sell.postid"
-                                                            ]
-                                                        }]
-                                                    }
-                                                },
-                                                
-                                            ],
-                                            "default": "$kampret"
-                                        }
+                                        $arrayElemAt: ['$post.apsaraId', {
+                                            "$indexOfArray": [
+                                                "$post.postID",
+                                                "$buy-sell.postid"
+                                            ]
+                                        }]
                                     },
-                                    "apsara": 
+                                    "apsara":
                                     {
-                                        $switch: {
-                                            branches: [
-                                                {
-                                                    case: {
-                                                        $eq: [{
-                                                            $arrayElemAt: ['$post.postType', {
-                                                                "$indexOfArray": [
-                                                                    "$post.postID",
-                                                                    "$buy-sell.postid"
-                                                                ]
-                                                            }]
-                                                        }, "vid"]
-                                                    },
-                                                    then: 
-                                                    {
-                                                        $arrayElemAt: ['$video.apsara', {
-                                                            "$indexOfArray": [
-                                                                "$video.postID",
-                                                                "$buy-sell.postid"
-                                                            ]
-                                                        }]
-                                                    }
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: [{
-                                                            $arrayElemAt: ['$post.postType', {
-                                                                "$indexOfArray": [
-                                                                    "$post.postID",
-                                                                    "$buy-sell.postid"
-                                                                ]
-                                                            }]
-                                                        }, "pict"]
-                                                    },
-                                                    then: 
-                                                    {
-                                                        $arrayElemAt: ['$pict.apsara', {
-                                                            "$indexOfArray": [
-                                                                "$pict.postID",
-                                                                "$buy-sell.postid"
-                                                            ]
-                                                        }]
-                                                    }
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: [{
-                                                            $arrayElemAt: ['$post.postType', {
-                                                                "$indexOfArray": [
-                                                                    "$post.postID",
-                                                                    "$buy-sell.postid"
-                                                                ]
-                                                            }]
-                                                        }, "story"]
-                                                    },
-                                                    then: 
-                                                    {
-                                                        $arrayElemAt: ['$story.apsara', {
-                                                            "$indexOfArray": [
-                                                                "$story.postID",
-                                                                "$buy-sell.postid"
-                                                            ]
-                                                        }]
-                                                    }
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: [{
-                                                            $arrayElemAt: ['$post.postType', {
-                                                                "$indexOfArray": [
-                                                                    "$post.postID",
-                                                                    "$buy-sell.postid"
-                                                                ]
-                                                            }]
-                                                        }, "diary"]
-                                                    },
-                                                    then: 
-                                                    {
-                                                        $arrayElemAt: ['$diary.apsara', {
-                                                            "$indexOfArray": [
-                                                                "$diary.postID",
-                                                                "$buy-sell.postid"
-                                                            ]
-                                                        }]
-                                                    }
-                                                },
-                                                
-                                            ],
-                                            "default": "$kampret"
-                                        }
+                                        $arrayElemAt: ['$post.apsara', {
+                                            "$indexOfArray": [
+                                                "$post.postID",
+                                                "$buy-sell.postid"
+                                            ]
+                                        }]
                                     },
-                                    "debetKredit": 
+                                    "debetKredit":
                                     {
                                         $switch: {
                                             branches: [
@@ -6115,12 +5651,12 @@ export class UserbasicnewService {
                                                     },
                                                     then: "+"
                                                 },
-                                                
+
                                             ],
                                             "default": "$kampret"
                                         }
                                     },
-                                    
+
                                 }]
                             }
                         },
@@ -6130,171 +5666,187 @@ export class UserbasicnewService {
                                 preserveNullAndEmptyArrays: true
                             }
                         },
-                        
+
                     ],
-                    
+
                 }
             },
-           {
-               $project: {
-                   "dodol": {$arrayElemAt:[ "$balances.fullName",0]},
-                   "tester": 
-                   {
-                       $concatArrays: [
-                           '$balances.balance',
-                           '$tariks.tarik',
-                           '$transactions.transaction'
-                       ],
-                       
-                   },
-               }
-           },
-           {
-               $unwind: {
-                   path: "$tester",
-                   
-               }
-           },
-           {
-               $project: {
-                   "dodol": 1,
-                   "_id": '$tester._id',
-                   "iduser": 
-                   {
-                       $cond: {
-                           if : {
-                               $gt: ['$tester.amount', 0]
-                           },
-                           then: '$tester.iduser',
-                           else : "$kodok"
-                       }
-                   },
-                   "type": '$tester.type',
-                   "jenis": '$tester.jenis',
-                   "timestamp": '$tester.timestamp',
-                   "description": '$tester.description',
-                   "certified": '$tester.certified',
-                   "noinvoice": '$tester.noinvoice',
-                   "nova": '$tester.nova',
-                   "expiredtimeva": '$tester.expiredtimeva',
-                   "bank": '$tester.bank',
-                   "amount": '$tester.amount',
-                   "totalamount": '$tester.totalamount',
-                   "status": '$tester.status',
-                   "fullName": '$tester.fullName',
-                   "email": 
-                       {
-                       $cond: {
-                           if : {
-                               $gt: ['$tester.amount', 0]
-                           },
-                           then: '$tester.email',
-                           else : "$kodok"
-                       }
-                   },
-                   "penjual": '$tester.penjual',
-                   "emailpenjual": '$tester.emailpenjual',
-                   "userNamePenjual": '$tester.userNamePenjual',
-                   "pembeli": '$tester.pembeli',
-                   "emailpembeli": '$tester.emailpembeli',
-                   "userNamePembeli": '$tester.userNamePembeli',
-                   "postID": '$tester.postID',
-                   "postType": '$tester.postType',
-                   "descriptionContent": '$tester.descriptionContent',
-                   "title": '$tester.title',
-                   
-               }
-           },
-           {
-               $addFields: {
-                   
-                   
-                   certi: {
-                       $cmp: ["$certified", 0]
-                   },
-                   
-               }
-           },
-           {
-               $project: {
-                                "dodol":1,
-                   "_id": 1,
-                   "iduser": 1,
-                   "type": 1,
-                   "jenis": 1,
-                   "timestamp": 1,
-                   "description": 1,
-                   "certified": 
-                   {
-                       $cond: {
-                           if : {
-                               $or: [{
-                                   $eq: ["$certi", - 1]
-                               }, {
-                                   $eq: ["$certi", 0]
-                               }]
-                           },
-                           then: false,
-                           else : "$certified"
-                       }
-                   },
-                   "noinvoice": 1,
-                   "nova": 1,
-                   "expiredtimeva": 1,
-                   "bank": 1,
-                   "amount": 1,
-                   "totalamount": 1,
-                   "status": 1,
-                   "fullName": "$fullName",
-                   "email": 1,
-                   "postID": 1,
-                   "postType": 1,
-                   "descriptionContent": 1,
-                   "title": 1,
-                   
-               }
-           },
-           {
-               $project: {
-                   "_id": 1,
-                   "iduser": 1,
-                   "type": 1,
-                   "jenis": 1,
-                   "timestamp": 1,
-                   "description": 1,
-                   "noinvoice": 1,
-                   "nova": 1,
-                   "expiredtimeva": 1,
-                   "bank": 1,
-                   "amount": 1,
-                   "totalamount": 1,
-                   "status": 1,
-                   "fullName":
-                             {
-                                    $ifNull: ["$fullName","$dodol"]
-                             },
-                   "email": 1,
-                   "postID": 1,
-                   "postType": 1,
-                   "descriptionContent": 1,
-                   "title": 1,
-                   "kepemilikan": 
-                       {
-                       $cond: {
-                           if : {
-                               $or: [{
-                                   $eq: ["$certified", false]
-                               }, {
-                                   $eq: ["$certified", ""]
-                               }]
-                           },
-                           then: "TIDAK",
-                           else : "YA"
-                       }
-                   },
-                   
-               }
-           },
+            {
+                $project: {
+                    "dodol": {
+                        $arrayElemAt: ["$balances.fullName", 0]
+                    },
+                    "tester":
+                    {
+                        $concatArrays: [
+                            '$balances.balance',
+                            '$tariks.tarik',
+                            '$transactions.transaction'
+                        ],
+
+                    },
+
+                }
+            },
+            {
+                $unwind: {
+                    path: "$tester",
+
+                }
+            },
+            {
+                $project: {
+                    "dodol": 1,
+                    "_id": '$tester._id',
+                    "iduser":
+                    {
+                        $cond: {
+                            if: {
+                                $gt: ['$tester.amount', 0]
+                            },
+                            then: '$tester.iduser',
+                            else: "$kodok"
+                        }
+                    },
+                    "type": '$tester.type',
+                    "jenis": '$tester.jenis',
+                    "timestamp": '$tester.timestamp',
+                    "description": '$tester.description',
+                    "certified": '$tester.certified',
+                    "noinvoice": '$tester.noinvoice',
+                    "nova": '$tester.nova',
+                    "expiredtimeva": '$tester.expiredtimeva',
+                    "bank": '$tester.bank',
+                    "amount": '$tester.amount',
+                    "totalamount": '$tester.totalamount',
+                    "status": '$tester.status',
+                    "fullName": '$tester.fullName',
+                    "email":
+                    {
+                        $cond: {
+                            if: {
+                                $gt: ['$tester.amount', 0]
+                            },
+                            then: '$tester.email',
+                            else: "$kodok"
+                        }
+                    },
+                    "penjual": '$tester.penjual',
+                    "emailpenjual": '$tester.emailpenjual',
+                    "userNamePenjual": '$tester.userNamePenjual',
+                    "pembeli": '$tester.pembeli',
+                    "emailpembeli": '$tester.emailpembeli',
+                    "userNamePembeli": '$tester.userNamePembeli',
+                    "postID": '$tester.postID',
+                    "postType": '$tester.postType',
+                    "descriptionContent": '$tester.descriptionContent',
+                    "title": '$tester.title',
+                    "mediaType": '$tester.mediaType',
+                    "mediaEndpoint": '$tester.mediaEndpoint',
+                    "apsaraId": '$tester.apsaraId',
+                    "apsara": '$tester.apsara',
+
+                }
+            },
+            {
+                $addFields: {
+
+
+                    certi: {
+                        $cmp: ["$certified", 0]
+                    },
+
+                }
+            },
+            {
+                $project: {
+                    "dodol": 1,
+                    "_id": 1,
+                    "iduser": 1,
+                    "type": 1,
+                    "jenis": 1,
+                    "timestamp": 1,
+                    "description": 1,
+                    "certified":
+                    {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$certi", - 1]
+                                }, {
+                                    $eq: ["$certi", 0]
+                                }]
+                            },
+                            then: false,
+                            else: "$certified"
+                        }
+                    },
+                    "noinvoice": 1,
+                    "nova": 1,
+                    "expiredtimeva": 1,
+                    "bank": 1,
+                    "amount": 1,
+                    "totalamount": 1,
+                    "status": 1,
+                    "fullName": "$fullName",
+                    "email": 1,
+                    "postID": 1,
+                    "postType": 1,
+                    "descriptionContent": 1,
+                    "title": 1,
+                    "mediaType": 1,
+                    "mediaEndpoint": 1,
+                    "apsaraId": 1,
+                    "apsara": 1,
+
+                }
+            },
+            {
+                $project: {
+                    "_id": 1,
+                    "mediaType": 1,
+                    "mediaEndpoint": 1,
+                    "apsaraId": 1,
+                    "apsara": 1,
+                    "iduser": 1,
+                    "type": 1,
+                    "jenis": 1,
+                    "timestamp": 1,
+                    "description": 1,
+                    "noinvoice": 1,
+                    "nova": 1,
+                    "expiredtimeva": 1,
+                    "bank": 1,
+                    "amount": 1,
+                    "totalamount": 1,
+                    "status": 1,
+                    "fullName":
+                    {
+                        $ifNull: ["$fullName", "$dodol"]
+                    },
+                    "email": 1,
+                    "postID": 1,
+                    "postType": 1,
+                    "descriptionContent": 1,
+                    "title": 1,
+                    "kepemilikan":
+                    {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$certified", false]
+                                }, {
+                                    $eq: ["$certified", ""]
+                                }]
+                            },
+                            then: "TIDAK",
+                            else: "YA"
+                        }
+                    },
+
+                }
+            },
+
         );
 
         var matchexpr = [];
