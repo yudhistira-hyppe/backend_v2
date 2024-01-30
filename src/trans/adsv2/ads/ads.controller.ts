@@ -639,7 +639,7 @@ export class AdsController {
         const liveEnd_ = new Date(AdsDto_.liveEnd);
         const oneDay = 1000 * 60 * 60 * 24;
         const diff = liveEnd_.getTime() - liveAt_.getTime();
-        const dayCount = Math.round(diff / oneDay);
+        const dayCount = Math.round(diff / oneDay) + 1;
 
         //VALIDASI PARAM Duration Day 
         var getSetting_AdsDurationMin = await this.adssettingService.getAdsSetting(new mongoose.Types.ObjectId(_id_setting_AdsDurationMin));
