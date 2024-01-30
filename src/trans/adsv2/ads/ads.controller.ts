@@ -1651,6 +1651,12 @@ export class AdsController {
                 }
             }
 
+            var adsImageContains = [];
+            if (ads_campaign_detail.mediaUri && ads_campaign_detail.mediaUri != undefined) adsImageContains.push('DEFAULT');
+            if (ads_campaign_detail.mediaPortraitUri && ads_campaign_detail.mediaPortraitUri != undefined) adsImageContains.push('PORTRAIT');
+            if (ads_campaign_detail.mediaLandscapeUri && ads_campaign_detail.mediaLandscapeUri != undefined) adsImageContains.push('LANDSCAPE');
+            ads_campaign_detail.adsImageContains = adsImageContains;
+
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
 
@@ -2770,6 +2776,112 @@ export class AdsController {
             response.send(null);
         }
     }
+    @Get('image/read/portrait/:id')
+    @HttpCode(HttpStatus.OK)
+    async imageReadPortrait(
+        @Param('id') id: string,
+        @Query('x-auth-token') token: string,
+        @Query('x-auth-user') email: string, @Res() response, @Request() req) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+
+        if ((id != undefined) && (token != undefined) && (email != undefined)) {
+            if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+                var dataAds = await this.adsService.findOne(id);
+                if (await this.utilsService.ceckData(dataAds)) {
+                    if (dataAds.mediaPortraitBasePath != undefined) {
+                        var data = await this.ossContentPictService.readFile(dataAds.mediaPortraitBasePath);
+                        if (data != null) {
+                            response.set("Content-Type", "image/jpeg");
+
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                            response.send(data);
+                        } else {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                            response.send(null);
+                        }
+                    } else {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                        response.send(null);
+                    }
+                } else {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                    response.send(null);
+                }
+            } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                response.send(null);
+            }
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+            response.send(null);
+        }
+    }
+    @Get('image/read/landscape/:id')
+    @HttpCode(HttpStatus.OK)
+    async imageReadLandscape(
+        @Param('id') id: string,
+        @Query('x-auth-token') token: string,
+        @Query('x-auth-user') email: string, @Res() response, @Request() req) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+
+        if ((id != undefined) && (token != undefined) && (email != undefined)) {
+            if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+                var dataAds = await this.adsService.findOne(id);
+                if (await this.utilsService.ceckData(dataAds)) {
+                    if (dataAds.mediaLandscapeBasePath != undefined) {
+                        var data = await this.ossContentPictService.readFile(dataAds.mediaLandscapeBasePath);
+                        if (data != null) {
+                            response.set("Content-Type", "image/jpeg");
+
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                            response.send(data);
+                        } else {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                            response.send(null);
+                        }
+                    } else {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                        response.send(null);
+                    }
+                } else {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                    response.send(null);
+                }
+            } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                response.send(null);
+            }
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+            response.send(null);
+        }
+    }
 
     @Get('image/thumb/read/:id')
     @HttpCode(HttpStatus.OK)
@@ -2786,6 +2898,112 @@ export class AdsController {
                 if (await this.utilsService.ceckData(dataAds)) {
                     if (dataAds.mediaThumBasePath != undefined) {
                         var data = await this.ossContentPictService.readFile(dataAds.mediaThumBasePath);
+                        if (data != null) {
+                            response.set("Content-Type", "image/jpeg");
+
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                            response.send(data);
+                        } else {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                            response.send(null);
+                        }
+                    } else {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                        response.send(null);
+                    }
+                } else {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                    response.send(null);
+                }
+            } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                response.send(null);
+            }
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+            response.send(null);
+        }
+    }
+    @Get('image/thumb/read/portrait/:id')
+    @HttpCode(HttpStatus.OK)
+    async imagePortraitThumbRead(
+        @Param('id') id: string,
+        @Query('x-auth-token') token: string,
+        @Query('x-auth-user') email: string, @Res() response, @Request() req) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+
+        if ((id != undefined) && (token != undefined) && (email != undefined)) {
+            if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+                var dataAds = await this.adsService.findOne(id);
+                if (await this.utilsService.ceckData(dataAds)) {
+                    if (dataAds.mediaPortraitThumBasePath != undefined) {
+                        var data = await this.ossContentPictService.readFile(dataAds.mediaPortraitThumBasePath);
+                        if (data != null) {
+                            response.set("Content-Type", "image/jpeg");
+
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                            response.send(data);
+                        } else {
+                            var timestamps_end = await this.utilsService.getDateTimeString();
+                            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                            response.send(null);
+                        }
+                    } else {
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                        response.send(null);
+                    }
+                } else {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                    response.send(null);
+                }
+            } else {
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+                response.send(null);
+            }
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+
+            response.send(null);
+        }
+    }
+    @Get('image/thumb/read/landscape/:id')
+    @HttpCode(HttpStatus.OK)
+    async imageLandscapeThumbRead(
+        @Param('id') id: string,
+        @Query('x-auth-token') token: string,
+        @Query('x-auth-user') email: string, @Res() response, @Request() req) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = req.get("Host") + req.originalUrl;
+
+        if ((id != undefined) && (token != undefined) && (email != undefined)) {
+            if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+                var dataAds = await this.adsService.findOne(id);
+                if (await this.utilsService.ceckData(dataAds)) {
+                    if (dataAds.mediaLandscapeThumBasePath != undefined) {
+                        var data = await this.ossContentPictService.readFile(dataAds.mediaLandscapeThumBasePath);
                         if (data != null) {
                             response.set("Content-Type", "image/jpeg");
 
