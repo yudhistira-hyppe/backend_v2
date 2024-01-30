@@ -5418,6 +5418,20 @@ export class UserbasicnewService {
                             }
                         },
                         {
+                            $lookup: {
+                                from: "settings",
+                                as: "setting",
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            "_id": new Types.ObjectId("648ae670766c00007d004a82")
+                                        }
+                                    },
+                                ]
+                            }
+                        },
+                        {
                             $project: {
                                 "transaction": [{
                                     "_id": "$buy-sell._id",
@@ -5446,6 +5460,7 @@ export class UserbasicnewService {
                                     "email": "$email",
                                     "fullName": "$fullName",
                                     "username": "$fullName",
+                                    "iconVoucher": { $arrayElemAt: ['$setting.value', 0] },
                                     "penjual":
                                     {
                                         $cond: {
@@ -5721,6 +5736,7 @@ export class UserbasicnewService {
                     "totalamount": '$tester.totalamount',
                     "status": '$tester.status',
                     "fullName": '$tester.fullName',
+                    "iconVoucher": '$tester.iconVoucher',
                     "email":
                     {
                         $cond: {
@@ -5742,7 +5758,34 @@ export class UserbasicnewService {
                     "descriptionContent": '$tester.descriptionContent',
                     "title": '$tester.title',
                     "mediaType": '$tester.mediaType',
-                    "mediaEndpoint": '$tester.mediaEndpoint',
+                     mediaEndpoint:{
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$eq":
+                                    [
+                                        "$tester.postType", "pict"
+                                    ]
+                            },
+                            then:
+                            {
+                                "$concat":
+                                    [
+                                        "/pict/",
+                                        "$tester.postID"
+                                    ]
+                            },
+                            else:
+                            {
+                                "$concat":
+                                    [
+                                        "/stream/",
+                                        "$tester.postID"
+                                    ]
+                            }
+                        }
+                    },
                     "apsaraId": '$tester.apsaraId',
                     "apsara": '$tester.apsara',
 
@@ -5798,6 +5841,7 @@ export class UserbasicnewService {
                     "mediaEndpoint": 1,
                     "apsaraId": 1,
                     "apsara": 1,
+                    iconVoucher:1
 
                 }
             },
@@ -5829,6 +5873,7 @@ export class UserbasicnewService {
                     "postType": 1,
                     "descriptionContent": 1,
                     "title": 1,
+                    iconVoucher:1,
                     "kepemilikan":
                     {
                         $cond: {
