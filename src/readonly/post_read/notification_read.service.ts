@@ -893,9 +893,9 @@ export class NotificationReadService {
                         },
 
                     },
-                    boosted: "$post.boosted",
-                    boostCount: "$post.boostCount",
-                    isBoost: "$post.isBoost",
+                    // boosted: "$post.boosted",
+                    // boostCount: "$post.boostCount",
+                    // isBoost: "$post.isBoost",
                 }
             },
             {
@@ -905,36 +905,36 @@ export class NotificationReadService {
                     }
                 }
             },
-            {
-                "$addFields":
-                {
-                    "tempboost":
-                    {
-                        "$ifNull":
-                            [
-                                {
-                                    "$cond":
-                                    {
-                                        if:
-                                        {
-                                            "$gte":
-                                                [
-                                                    {
-                                                        "$size": "$boosted"
-                                                    },
-                                                    0
-                                                ]
-                                        },
-                                        then:
-                                            "$boosted",
-                                        else: []
-                                    },
-                                },
-                                []
-                            ]
-                    },
-                },
-            },
+            // {
+            //     "$addFields":
+            //     {
+            //         "tempboost":
+            //         {
+            //             "$ifNull":
+            //                 [
+            //                     {
+            //                         "$cond":
+            //                         {
+            //                             if:
+            //                             {
+            //                                 "$gte":
+            //                                     [
+            //                                         {
+            //                                             "$size": "$boosted"
+            //                                         },
+            //                                         0
+            //                                     ]
+            //                             },
+            //                             then:
+            //                                 "$boosted",
+            //                             else: []
+            //                         },
+            //                     },
+            //                     []
+            //                 ]
+            //         },
+            //     },
+            // },
             {
                 $project: {
                     active: 1,
@@ -976,39 +976,39 @@ export class NotificationReadService {
                             else: "$content"
                         }
                     },
-                    "boostJangkauan":
-                    {
-                        "$ifNull":
-                            [
-                                {
-                                    "$size": "$tempboost.boostViewer"
-                                },
-                                0
-                            ]
-                    },
-                    "isBoost": "$isBoost",
-                    "boostViewer": {
-                        $arrayElemAt: ["$tempboost.boostViewer", 0]
-                    },
-                    "boostCount": 1,
-                    "boosted":
-                    {
-                        $cond: {
-                            if: {
-                                $gt: [{
-                                    "$dateToString": {
-                                        "format": "%Y-%m-%d %H:%M:%S",
-                                        "date": {
-                                            $add: [new Date(), 25200000]
-                                        }
-                                    }
-                                }, "$tempboost.boostSession.end"]
-                            },
-                            then: "$ilang",
-                            else: "$tempboost",
+                    // "boostJangkauan":
+                    // {
+                    //     "$ifNull":
+                    //         [
+                    //             {
+                    //                 "$size": "$tempboost.boostViewer"
+                    //             },
+                    //             0
+                    //         ]
+                    // },
+                    // "isBoost": "$isBoost",
+                    // "boostViewer": {
+                    //     $arrayElemAt: ["$tempboost.boostViewer", 0]
+                    // },
+                    // "boostCount": 1,
+                    // "boosted":
+                    // {
+                    //     $cond: {
+                    //         if: {
+                    //             $gt: [{
+                    //                 "$dateToString": {
+                    //                     "format": "%Y-%m-%d %H:%M:%S",
+                    //                     "date": {
+                    //                         $add: [new Date(), 25200000]
+                    //                     }
+                    //                 }
+                    //             }, "$tempboost.boostSession.end"]
+                    //         },
+                    //         then: "$ilang",
+                    //         else: "$tempboost",
 
-                        }
-                    },
+                    //     }
+                    // },
                 }
             }
         );

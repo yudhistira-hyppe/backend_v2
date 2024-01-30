@@ -9061,7 +9061,7 @@ export class subChallengeService {
             {
                 "$lookup":
                 {
-                    from: "userbasics",
+                    from: "newUserBasics",
                     let:
                     {
                         user: "$idUser",

@@ -25,6 +25,7 @@ import { Settings2Module } from '../settings2/settings2.module';
 import { NewpostsModule } from 'src/content/newposts/newposts.module';
 import { UserbasicnewModule } from '../userbasicnew/userbasicnew.module';
 import { NewPost2Module } from 'src/content/new_post2/new_post2.module';
+
 @Module({
   imports: [
     NewPost2Module,

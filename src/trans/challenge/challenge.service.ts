@@ -16,7 +16,7 @@ import { UserchallengesService } from '../userchallenges/userchallenges.service'
 import { BadgeService } from '../badge/badge.service';
 import { Pipeline } from 'ioredis';
 import { NotificationsService } from "src/content/notifications/notifications.service";
-
+import { UserbasicnewService } from '../../trans/userbasicnew/userbasicnew.service';
 @Injectable()
 export class ChallengeService {
   constructor(
@@ -31,6 +31,7 @@ export class ChallengeService {
     private readonly UserchallengesService: UserchallengesService,
     private readonly BadgeService: BadgeService,
     private readonly NotificationsService: NotificationsService,
+    private readonly UserbasicnewService: UserbasicnewService,
   ) { }
 
   async create(Challenge_: CreateChallengeDto) {
@@ -5487,7 +5488,7 @@ export class ChallengeService {
             }
             else {
               try {
-                databasic = await this.userbasicsSS.findOne(email);
+                databasic = await this.UserbasicnewService.findBymail(email);
               } catch (e) {
                 databasic = null;
               }
