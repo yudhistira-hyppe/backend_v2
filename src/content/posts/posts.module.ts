@@ -49,9 +49,11 @@ import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { MediastikerModule } from '../mediastiker/mediastiker.module';
 import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
 import { NewpostModule } from '../disqus/newpost/newpost.module';
+import { NewPost2Module } from 'src/content/new_post2/new_post2.module';
 @Module({
 
     imports: [
+        NewPost2Module,
         UserbasicnewModule,
         MediastikerModule,
         LogapisModule,
