@@ -9,6 +9,9 @@ import { PostsService } from 'src/content/posts/posts.service';
 import { ContenteventsService } from 'src/content/contentevents/contentevents.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { NotificationReadService } from './notification_read.service';
+import { NewPostService } from 'src/content/new_post/new_post.service';
+import { NewPostContentService } from 'src/content/new_post/new_postcontent.service';
+
 @Controller()
 export class PostsReadController {
     private readonly logger = new Logger(PostsReadController.name);
@@ -20,6 +23,8 @@ export class PostsReadController {
         private readonly postsService: PostsService,
         private readonly contenteventsService: ContenteventsService,
         private readonly notificationReadService: NotificationReadService,
+        private readonly post2SS: NewPostService,
+        private readonly postContent2SS: NewPostContentService
     ) { }
 
     @Post('api/posts/getuserposts/my')
@@ -847,7 +852,8 @@ export class PostsReadController {
 
         try {
 
-            data = await this.postsReadService.landingpageMy2V2(email, postType, parseInt(pageNumber), parseInt(pageRow), emailLogin);
+            // data = await this.postsReadService.landingpageMy2V2(email, postType, parseInt(pageNumber), parseInt(pageRow), emailLogin);
+            data = await this.post2SS.landingpageMigration(email, emailLogin, postType, parseInt(pageNumber), parseInt(pageRow))
             lengpict = data.length;
             console.log("data", data);
         } catch (e) {
@@ -924,9 +930,9 @@ export class PostsReadController {
                     }
                 }
                 console.log("");
-                tempapsaraId_result = await this.postContentService.getImageApsara(tempapsaraId);
-                tempapsaraThumbId_result = await this.postContentService.getImageApsara(tempapsaraThumbId);
-                tempapsaraMusicThumbId_result = await this.postContentService.getImageApsara(tempapsaraMusicThumbId);
+                tempapsaraId_result = await this.postContent2SS.getImageApsara(tempapsaraId);
+                tempapsaraThumbId_result = await this.postContent2SS.getImageApsara(tempapsaraThumbId);
+                tempapsaraMusicThumbId_result = await this.postContent2SS.getImageApsara(tempapsaraMusicThumbId);
 
                 let gettempresultpictapsara_tempapsaraId = tempapsaraId_result.ImageInfo;
                 let gettempresultpictapsara_tempapsaraThumbId = tempapsaraThumbId_result.ImageInfo;
@@ -970,13 +976,13 @@ export class PostsReadController {
                     if (boosted !== null || boosted.length > 0) {
                         console.log("boosted: " + data[i].postID);
                         if (data[i].postID != undefined) {
-                            this.postsService.updateBoostViewer(data[i].postID, email);
+                            this.post2SS.updateBoostViewer(data[i].postID, email);
                         }
                         if (boosted.length > 0) {
                             if (boosted[0] != undefined) {
                                 boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
                                 boosted = boosted;
-                                await this.postsService.updateBoostCount(data[i].postID, boostCount + 1);
+                                await this.post2SS.updateBoostCount(data[i].postID, boostCount + 1);
                             } else {
                                 boostCount = 0;
                                 boosted = [];
@@ -1015,11 +1021,11 @@ export class PostsReadController {
                 }
 
                 if (mediaType == "image" || mediaType == "images") {
-                    resultpictapsara = await this.postContentService.getImageApsara(tempdatapict);
+                    resultpictapsara = await this.postContent2SS.getImageApsara(tempdatapict);
                     gettempresultpictapsara = resultpictapsara.ImageInfo;
 
                 } else {
-                    resultpictapsara = await this.postContentService.getVideoApsara(tempdatapict);
+                    resultpictapsara = await this.postContent2SS.getVideoApsara(tempdatapict);
                     gettempresultpictapsara = resultpictapsara.VideoList;
                 }
 
@@ -1085,14 +1091,14 @@ export class PostsReadController {
                     if (boosted !== null || boosted.length > 0) {
                         console.log("boosted: " + data[i].postID);
                         if (data[i].postID != undefined) {
-                            this.postsService.updateBoostViewer(data[i].postID, email);
+                            this.post2SS.updateBoostViewer(data[i].postID, email);
                         }
                         if (boosted.length > 0) {
                             if (boosted[0] != undefined) {
                                 boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
                                 boosted = boosted;
 
-                                await this.postsService.updateBoostCount(data[i].postID, boostCount + 1);
+                                await this.post2SS.updateBoostCount(data[i].postID, boostCount + 1);
                             } else {
                                 boostCount = 0;
                                 boosted = [];
@@ -1455,9 +1461,9 @@ export class PostsReadController {
 
 
 
-                    if (boosted !== null && boosted !==undefined) {
+                    if (boosted !== null && boosted !== undefined) {
 
-                        if(boosted.length > 0 ){
+                        if (boosted.length > 0) {
                             console.log("boosted: " + data[i].postID);
                             this.postsReadService.updateBoostViewer(data[i].postID, email);
                             //pd.boostJangkauan = this.countBoosted(obj, email);
@@ -1475,7 +1481,7 @@ export class PostsReadController {
                                 boosted = [];
                             }
                         }
-                      
+
                     } else {
                         boostCount = 0;
                         boosted = [];
@@ -1525,26 +1531,26 @@ export class PostsReadController {
                             "VideoList": []
                         };
                     }
-                    if (boosted !== null && boosted !==undefined) {
-                        if(boosted.length > 0 ){
-                        console.log("boosted: " + data[i].postID);
-                        this.postsReadService.updateBoostViewer(data[i].postID, email);
-                        //pd.boostJangkauan = this.countBoosted(obj, email);
+                    if (boosted !== null && boosted !== undefined) {
                         if (boosted.length > 0) {
-                            if (boosted[0] != undefined) {
-                                boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
-                                boosted = boosted;
+                            console.log("boosted: " + data[i].postID);
+                            this.postsReadService.updateBoostViewer(data[i].postID, email);
+                            //pd.boostJangkauan = this.countBoosted(obj, email);
+                            if (boosted.length > 0) {
+                                if (boosted[0] != undefined) {
+                                    boostCount = (boosted[0].boostViewer != undefined) ? boosted[0].boostViewer.length : 0;
+                                    boosted = boosted;
 
-                                await this.postsReadService.updateBoostCount(data[i].postID, boostCount + 1);
+                                    await this.postsReadService.updateBoostCount(data[i].postID, boostCount + 1);
+                                } else {
+                                    boostCount = 0;
+                                    boosted = [];
+                                }
                             } else {
                                 boostCount = 0;
                                 boosted = [];
                             }
-                        } else {
-                            boostCount = 0;
-                            boosted = [];
                         }
-                    }
                     } else {
                         boostCount = 0;
                         boosted = [];

@@ -12,6 +12,7 @@ import { CreateAccountbalances } from '../accountbalances/dto/create-accountbala
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
+import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
 
 @Controller('api/topups')
 export class TopupsController {
@@ -19,7 +20,8 @@ export class TopupsController {
     private readonly topupsService: TopupsService,
     private readonly utilsService: UtilsService,
     private readonly errorHandler: ErrorHandler, 
-    private readonly userbasicsService: UserbasicsService, 
+    //private readonly userbasicsService: UserbasicsService,
+    private readonly basic2SS: UserbasicnewService,
     private readonly userauthsService: UserauthsService, 
     private readonly accountbalancesService: AccountbalancesService,
     private readonly configService: ConfigService,
@@ -36,7 +38,7 @@ export class TopupsController {
         'Unauthorized',
       );
     }
-    let dataUserbasics_login = await this.userbasicsService.findOne(headers['x-auth-user']);
+    let dataUserbasics_login = await this.basic2SS.findBymail(headers['x-auth-user']);
     let dataUserauths_login = await this.userauthsService.findOne(headers['x-auth-user']);
     //VALIDASI PARAM email
     var ceckemail = await this.utilsService.validateParam("email", Topups_.email, "string")
@@ -52,7 +54,7 @@ export class TopupsController {
         cecktopup,
       );
     }
-    let dataUserbasics = await this.userbasicsService.findOne((Topups_.email.toString()).toLowerCase());
+    let dataUserbasics = await this.basic2SS.findBymail((Topups_.email.toString()).toLowerCase());
     let dataUserauths = await this.userauthsService.findOne((Topups_.email.toString()).toLowerCase());
     if ((await this.utilsService.ceckData(dataUserbasics)) && (await this.utilsService.ceckData(dataUserauths))) {
       Topups_._id = new mongoose.Types.ObjectId();
@@ -89,7 +91,7 @@ export class TopupsController {
         'Unauthorized',
       );
     }
-    let dataUserbasics_login = await this.userbasicsService.findOne(headers['x-auth-user']);
+    let dataUserbasics_login = await this.basic2SS.findBymail(headers['x-auth-user']);
 
     //VALIDASI PARAM _id
     var ceck_id = await this.utilsService.validateParam("id", Topups_._id.toString(), "string")
@@ -228,7 +230,7 @@ export class TopupsController {
       );
     }
 
-    let dataUserbasics_login = await this.userbasicsService.findOne(headers['x-auth-user']);
+    let dataUserbasics_login = await this.basic2SS.findBymail(headers['x-auth-user']);
     let dataUserauths_login = await this.userauthsService.findOne(headers['x-auth-user']);
 
     if (file!=undefined){
@@ -251,7 +253,7 @@ export class TopupsController {
           for (let u = 0; u < dataArray.length; u++) {
             let dataGet = dataArray[u];
             if ((dataGet.Email != undefined) && (dataGet.Topup != undefined)){
-              let dataUserbasics = await this.userbasicsService.findOne((dataGet.Email.toString()).toLowerCase());
+              let dataUserbasics = await this.basic2SS.findBymail((dataGet.Email.toString()).toLowerCase());
               let dataUserauths = await this.userauthsService.findOne((dataGet.Email.toString()).toLowerCase());
               let Topups_ = new Topups();
               if ((await this.utilsService.ceckData(dataUserbasics)) && (await this.utilsService.ceckData(dataUserauths))) {
