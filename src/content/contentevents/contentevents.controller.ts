@@ -3190,6 +3190,7 @@ export class ContenteventsController {
         this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
       } else {
         if (!(await this.utilsService.ceckData(CeckDataDiscusContact_sender)) && !(await this.utilsService.ceckData(CeckDataDiscusContact_receiver))) {
+          id_discus = await this.utilsService.generateId();
           //INSERT DISQUS CONTACT
           var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
           try {
@@ -3226,7 +3227,6 @@ export class ContenteventsController {
           } catch (error) {
             this.logger.log("ERROR INSERT DISQUS CONTACT >>>>>>>>>>>>>>>>>>> ", error);
           }
-          id_discus = await this.utilsService.generateId();
           //INSERT DISQUS
           try {
             CreateDisqusDto_._id = id_discus;

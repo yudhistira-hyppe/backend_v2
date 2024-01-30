@@ -2216,7 +2216,6 @@ export class DisqusController {
     let dis = new Disqus();
     if (cts != undefined && cts.length > 0) {
       let ct = cts[0];
-      console.log(ct.disqus_data_.disqusID);
       dis = await this.disqusService.findById(ct.disqus_data_.disqusID);
       console.log(dis._id);
     } else {
