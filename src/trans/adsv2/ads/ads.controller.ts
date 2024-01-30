@@ -882,7 +882,7 @@ export class AdsController {
             AdsDto_.endAge = 0;
             AdsDto_.totalView = 0;
             AdsDto_.isActive = false;
-            
+
             var getSetting_CreditPrice = await this.adsPriceCreditsService.findStatusActive();
             if (await this.utilsService.ceckData(getSetting_CreditPrice)) {
                 AdsDto_.idAdspricecredits = getSetting_CreditPrice._id;
@@ -1668,6 +1668,7 @@ export class AdsController {
                 }
             }
 
+            var adsVideoContains = [];
             var listdata = [];
             if (ads_campaign_detail.idApsara != undefined) {
                 listdata.push(ads_campaign_detail.idApsara);
@@ -1677,6 +1678,7 @@ export class AdsController {
                 if (apsaravideodata.VideoList.length > 0) {
                     if (apsaravideodata.VideoList[0] != undefined) {
                         ads_campaign_detail.media = apsaravideodata.VideoList[0];
+                        adsVideoContains.push('media');
                     }
                 }
             }
@@ -1689,6 +1691,7 @@ export class AdsController {
                 if (apsaravideodataportrait.VideoList.length > 0) {
                     if (apsaravideodataportrait.VideoList[0] != undefined) {
                         ads_campaign_detail.mediaPortrait = apsaravideodataportrait.VideoList[0];
+                        adsVideoContains.push('mediaPortrait');
                     }
                 }
             }
@@ -1701,9 +1704,11 @@ export class AdsController {
                 if (apsaravideodatalandscape.VideoList.length > 0) {
                     if (apsaravideodatalandscape.VideoList[0] != undefined) {
                         ads_campaign_detail.mediaLandscape = apsaravideodatalandscape.VideoList[0];
+                        adsVideoContains.push('mediaLandscape');
                     }
                 }
             }
+            ads_campaign_detail.adsVideoContains = adsVideoContains;
 
             var adsImageContains = [];
             if (ads_campaign_detail.mediaUri && ads_campaign_detail.mediaUri != undefined) adsImageContains.push('DEFAULT');
