@@ -4134,7 +4134,6 @@ export class AuthController {
     var timestamps_start = await this.utilsService.getDateTimeString();
 
     if (request.body.email == undefined) {
-      console.log('email kosong');
       var fullurl = request.get("Host") + request.originalUrl;
       var timestamps_end = await this.utilsService.getDateTimeString();
       var reqbody = JSON.parse(JSON.stringify(request.body));
@@ -4145,8 +4144,7 @@ export class AuthController {
       );
     }
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
-      console.log('header kosong');
-
+      
       var fullurl = request.get("Host") + request.originalUrl;
       var timestamps_end = await this.utilsService.getDateTimeString();
       var reqbody = JSON.parse(JSON.stringify(request.body));
@@ -4157,14 +4155,11 @@ export class AuthController {
       );
     }
     if (request.body.email != headers['x-auth-user']) {
-      console.log('email beda ama tokennya');
-
       var fullurl = request.get("Host") + request.originalUrl;
       var timestamps_end = await this.utilsService.getDateTimeString();
       var reqbody = JSON.parse(JSON.stringify(request.body));
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
 
-      console.log("ok");
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, Param email dan email header not match',
       );
@@ -4175,7 +4170,7 @@ export class AuthController {
       const user_userbasics = await this.basic2SS.findbyemail(request.body.email);
       if (await this.utilsService.ceckData(user_userbasics)) {
         // await this.userbasicsService.updateNoneActive(request.body.email);
-        await this.basic2SS.updateNoneActive(request.body.email, user_userbasics.emailLogin.toString());
+        await this.basic2SS.updateNoneActive(request.body.email);
         await this.userdevicesService.updateNoneActive(request.body.email);
 
         //await this.postsService.updateNoneActive(request.body.email);
