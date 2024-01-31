@@ -6373,7 +6373,6 @@ export class UserbasicnewService {
     }
 
     async addFriendList(email_target: Userbasicnew, email_source: Userbasicnew) {
-        console.log(email_source);
         var convertdata = JSON.parse(JSON.stringify(email_source));
         var listarray = null;
         try {
@@ -6398,9 +6397,6 @@ export class UserbasicnewService {
         catch (e) {
             listarray = [];
         }
-        console.log('ready');
-        console.log(listarray);
-        console.log('go!!');
 
         var checkfriendexist = true;
         if (listarray.length == 0) {
@@ -6423,15 +6419,7 @@ export class UserbasicnewService {
                 checkfriendexist = true;
             }
         }
-        console.log(checkfriendexist);
-        console.log('update!!');
-        /*
-            kesimpulan : query was already executed!!
-
-            gak tau kenapa. tiap abis update, auto stop!!
-            klo pake await, auto berhenti disini.
-            klo gak pake await, auto berhenti ketika friend gak ketemu!!
-        */
+        
         if (checkfriendexist == false) {
             var mongo = require('mongoose');
             try {
@@ -6442,10 +6430,7 @@ export class UserbasicnewService {
                     {
                         "$push":
                         {
-                            "friend":
-                            {
-                                "email": email_target.email.toString()
-                            }
+                            "friend": email_target.email.toString()
                         }
                     },
                     // {
@@ -6467,7 +6452,6 @@ export class UserbasicnewService {
                 console.log(e);
             }
         }
-        console.log('update!!');
     }
 
     async deleteFriendList(email_target: Userbasicnew, email_source: Userbasicnew) {
@@ -6479,7 +6463,7 @@ export class UserbasicnewService {
         else {
             var updatedata = new Userbasicnew();
             var listfriend = convertdata.friend;
-            updatedata.friend = listfriend.filter((email) => email.email != email_target.email.toString());
+            updatedata.friend = listfriend.filter((email) => email != email_target.email.toString());
             var mongodb = require('mongoose');
 
             await this.UserbasicnewModel.updateOne(
