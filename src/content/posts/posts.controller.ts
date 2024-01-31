@@ -3566,6 +3566,68 @@ export class PostsController {
   //   }
   // }
 
+  // @Get('stream/:id')
+  // @HttpCode(HttpStatus.OK)
+  // async stream(@Param('id') mediaFile: string, @Headers() headers, @Res() response) {
+  //   var timestamps_start = await this.utilsService.getDateTimeString();
+  //   var fullurl = headers.host + "/stream/" + mediaFile;
+
+  //   console.log(mediaFile);
+  //   if ((headers['x-auth-user'] != undefined) && (headers['x-auth-token'] != undefined) && (headers['post-id'] != undefined) && (mediaFile != undefined)) {
+  //     if (await this.utilsService.validasiTokenEmailParam(headers['x-auth-token'], headers['x-auth-user'])) {
+  //       var dataMedia = await this.PostsService.findOnepostID(headers['post-id']);
+  //       if (await this.utilsService.ceckData(dataMedia)) {
+  //         var mediaBasePath = "";
+  //         if (dataMedia != null) {
+  //           if (dataMedia[0].datacontent[0].mediaBasePath != undefined) {
+  //             mediaBasePath = dataMedia[0].datacontent[0].mediaBasePath;
+  //           }
+  //           if (mediaBasePath != "") {
+  //             var data = await this.PostsService.stream(mediaBasePath + mediaFile);
+  //             if (data != null) {
+  //               var timestamps_end = await this.utilsService.getDateTimeString();
+  //               this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+  //               response.set("Content-Type", "application/octet-stream");
+  //               response.send(data);
+  //             } else {
+  //               var timestamps_end = await this.utilsService.getDateTimeString();
+  //               this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+  //               response.send(null);
+  //             }
+  //           } else {
+  //             var timestamps_end = await this.utilsService.getDateTimeString();
+  //             this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+  //             response.send(null);
+  //           }
+  //         } else {
+  //           var timestamps_end = await this.utilsService.getDateTimeString();
+  //           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+  //           response.send(null);
+  //         }
+  //       } else {
+  //         var timestamps_end = await this.utilsService.getDateTimeString();
+  //         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+
+  //         response.send(null);
+  //       }
+  //     } else {
+  //       var timestamps_end = await this.utilsService.getDateTimeString();
+  //       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, null);
+
+  //       response.send(null);
+  //     }
+  //   } else {
+  //     var timestamps_end = await this.utilsService.getDateTimeString();
+  //     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, null);
+
+  //     response.send(null);
+  //   }
+  // }
+
   @Get('stream/:id')
   @HttpCode(HttpStatus.OK)
   async stream(@Param('id') mediaFile: string, @Headers() headers, @Res() response) {
@@ -3575,12 +3637,13 @@ export class PostsController {
     console.log(mediaFile);
     if ((headers['x-auth-user'] != undefined) && (headers['x-auth-token'] != undefined) && (headers['post-id'] != undefined) && (mediaFile != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(headers['x-auth-token'], headers['x-auth-user'])) {
-        var dataMedia = await this.PostsService.findOnepostID(headers['post-id']);
+        var dataMedia = await this.NewPostService.findid(mediaFile);
+        console.log(dataMedia.mediaSource);
         if (await this.utilsService.ceckData(dataMedia)) {
           var mediaBasePath = "";
           if (dataMedia != null) {
-            if (dataMedia[0].datacontent[0].mediaBasePath != undefined) {
-              mediaBasePath = dataMedia[0].datacontent[0].mediaBasePath;
+            if (dataMedia.mediaSource[0].mediaBasePath != undefined) {
+              mediaBasePath = dataMedia.mediaSource[0].mediaBasePath;
             }
             if (mediaBasePath != "") {
               var data = await this.PostsService.stream(mediaBasePath + mediaFile);
@@ -3597,10 +3660,55 @@ export class PostsController {
                 response.send(null);
               }
             } else {
-              var timestamps_end = await this.utilsService.getDateTimeString();
-              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, null);
+              console.log("NON OSS");
+              var thum_data = "";
+              if (dataMedia.mediaSource[0].apsara) {
+                if (dataMedia.mediaSource[0].apsaraId != undefined) {
+                  var resultpictapsara = await this.postContentService.getVideoApsara([dataMedia.mediaSource[0].apsaraId.toString()]);
+                  var UrlThumnail = resultpictapsara.VideoList[0].CoverURL;
+                  var data_thum = await this.PostsService.urlToBuffer(UrlThumnail);
+                  //var data_thum = await this.postContentService.generate_thumnail_buffer(data, "jpg");
 
-              response.send(null);
+                  if (data_thum != null) {
+                    response.set("Content-Type", "image/jpeg");
+                    response.send(data_thum);
+                  } else {
+                    response.send(null);
+                  }
+                } else {
+                  response.send(null);
+                }
+              } else {
+                let thum=null;
+
+                try{
+                  thum=dataMedia.mediaSource[0].fsTargetThumbUri;
+                }catch(e){
+                  thum=null
+                }
+                if (thum != undefined && thum != null) {
+                  thum_data = dataMedia.mediaSource[0].fsTargetThumbUri;
+                } else {
+                  thum_data = dataMedia.mediaSource[0].fsSourceUri;
+                }
+                // if (thum_data != '') {
+                //   var data = await this.PostsService.thum(thum_data);
+                //   if (data != null) {
+                //     var data_thum = await this.postContentService.generate_thumnail_buffer(data, "jpg");
+                //     console.log("data_thum", data_thum);
+                //     if (data_thum != null) {
+                //       response.set("Content-Type", "image/jpeg");
+                //       response.send(data_thum);
+                //     } else {
+                //       response.send(null);
+                //     }
+                //   } else {
+                //     response.send(null);
+                //   }
+                // } else {
+                //   response.send(null);
+                // }
+              }
             }
           } else {
             var timestamps_end = await this.utilsService.getDateTimeString();
