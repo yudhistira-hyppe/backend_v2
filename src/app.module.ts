@@ -282,6 +282,5 @@ import { AppController } from './app.controller';
     FiltercategoryModule
     //  ChallengeModule
   ], providers: [],
-  controllers: [AppController],
 })
 export class AppModule { }
