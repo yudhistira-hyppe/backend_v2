@@ -4498,7 +4498,7 @@ export class NewPostController {
     }
 
     @HttpCode(HttpStatus.OK)
-    @Post('api/posts/notifyapsara/cmod/image')
+    @Post('posts/notifyapsara/cmod/image')
     async notifyApsaraCmodImage(@Body() body, @Headers() headers) {
         this.logger.log("notifyApsaraCmodImage >>> start: " + JSON.stringify(body));
         this.newPostModService.cmodResponse(body);
