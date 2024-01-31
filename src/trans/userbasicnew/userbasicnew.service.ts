@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId, Types } from 'mongoose';
+import mongoose, { Model, ObjectId, Types } from 'mongoose';
 import { Userbasicnew, UserbasicnewDocument } from './schemas/userbasicnew.schema';
 import { LogapisService } from '../logapis/logapis.service';
 import { CreateuserbasicnewDto } from './dto/Createuserbasicnew-dto';
@@ -7445,5 +7445,31 @@ export class UserbasicnewService {
         }
         const query = await this.UserbasicnewModel.aggregate(aggregate);
         return query;
+    }
+
+    async getUser(userid: string) {
+        let paramaggregate = [
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(userid),
+
+                }
+            },
+            {
+                $project: {
+                    fullName: 1,
+                    email: 1,
+                    username: 1,
+                    avatar: {
+                        "mediaBasePath": "$mediaBasePath",
+                        "mediaUri": "$mediaUri",
+                        "mediaType": "$mediaType",
+                        "mediaEndpoint": "$mediaEndpoint"
+                    }
+                }
+            },
+        ];
+        const data = await this.UserbasicnewModel.aggregate(paramaggregate);
+        return data;
     }
 }

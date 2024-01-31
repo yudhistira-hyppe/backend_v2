@@ -12,6 +12,7 @@ import { MediastreamingalicloudService } from './mediastreamingalicloud.service'
 import { AppGateway } from '../socket/socket.gateway';
 import { UserauthsService } from 'src/trans/userauths/userauths.service';
 import { MediastreamingrequestService } from './mediastreamingrequest.service';
+import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 
 @Controller("api/live") 
 export class MediastreamingController {
@@ -21,7 +22,8 @@ export class MediastreamingController {
     private readonly configService: ConfigService,
     private readonly mediastreamingService: MediastreamingService,
     private readonly mediastreamingalicloudService: MediastreamingalicloudService,
-    private readonly userbasicsService: UserbasicsService, 
+    //private readonly userbasicsService: UserbasicsService,
+    private readonly userbasicnewService: UserbasicnewService,
     private readonly userauthService: UserauthsService, 
     private readonly mediastreamingrequestService: MediastreamingrequestService, 
     private readonly appGateway: AppGateway,) { } 
@@ -41,7 +43,7 @@ export class MediastreamingController {
         'Unabled to proceed email header dan token not match',
       );
     }
-    var profile = await this.userbasicsService.findOne(headers['x-auth-user']);
+    var profile = await this.userbasicnewService.findBymail(headers['x-auth-user']);
     if (!(await this.utilsService.ceckData(profile))) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed user not found',
@@ -116,7 +118,7 @@ export class MediastreamingController {
         'Unabled to proceed email header dan token not match',
       );
     }
-    var profile = await this.userbasicsService.findOne(headers['x-auth-user']);
+    var profile = await this.userbasicnewService.findBymail(headers['x-auth-user']);
     var profile_auth = await this.userauthService.findOne(headers['x-auth-user']);
     if (!(await this.utilsService.ceckData(profile))) {
       await this.errorHandler.generateNotAcceptableException(
@@ -252,7 +254,7 @@ export class MediastreamingController {
             this.mediastreamingService.socketRequest(RequestSoctDto_);
           }
           //SEND COMMENT SINGLE
-          const getUser = await this.userbasicsService.getUser(profile._id.toString());
+          const getUser = await this.userbasicnewService.getUser(profile._id.toString());
           getUser[0]["idStream"] = MediastreamingDto_._id.toString();
           getUser[0]["messages"] = "joined";
           const singleSend = {
@@ -353,7 +355,7 @@ export class MediastreamingController {
           };
           await this.mediastreamingService.insertComment(MediastreamingDto_._id.toString(), dataComment);
           //SEND COMMENT SINGLE
-          const getUser = await this.userbasicsService.getUser(profile._id.toString());
+          const getUser = await this.userbasicnewService.getUser(profile._id.toString());
           getUser[0]["idStream"] = MediastreamingDto_._id.toString();
           getUser[0]["messages"] = MediastreamingDto_.messages;
           const singleSend = {
