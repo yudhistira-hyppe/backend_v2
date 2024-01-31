@@ -27,16 +27,16 @@ export class TaskService {
   //   // }
   // }
 
-  // // @Cron('* */10 * * * *')z
-  // // ceckStatus() {
-  // //   this.logger.debug('DISBURSEMENT JOB START');
-  // //   this.transactionsService.ceckStatusDisbursement();
-  // // }
+  @Cron('0 */10 * * * *')
+  ceckStatus() {
+    this.logger.debug('DISBURSEMENT JOB START');
+    this.transactionsService.ceckStatusDisbursement();
+  }
 
-  // @Cron('0 0 0 * * *')
-  // //@Cron('0 */1 * * * *')
-  // ceckADS() {
-  //   this.logger.debug('----------ADS JOB START----------', new Date());
-  //   this.adsService.ceckAdsActive();
-  // }
+  @Cron('0 0 0 * * *')
+  //@Cron('0 */1 * * * *')
+  ceckADS() {
+    this.logger.debug('----------ADS JOB START----------', new Date());
+    this.adsService.ceckAdsActive();
+  }
 }
