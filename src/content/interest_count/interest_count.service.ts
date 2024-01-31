@@ -12297,7 +12297,7 @@ export class InterestCountService {
                             mediaUri: {$arrayElemAt:[ '$pict.mediaSource.mediaUri',0]},
                             postID: "$pict.postID",
                             mediaEndpoint: {
-                                '$concat': ['/pict/', '$pict.postID']
+                                '$concat': ['/stream/', '$pict.postID']
                             },
                             mediaThumbEndpoint: {
                                 '$concat': ['/thumb/', '$pict.postID']
@@ -12401,7 +12401,7 @@ export class InterestCountService {
                             mediaUri: {$arrayElemAt:[ '$pict.mediaSource.mediaUri',0]},
                             postID: "$pict.postID",
                             mediaEndpoint: {
-                                '$concat': ['/pict/', '$pict.postID']
+                                '$concat': ['/stream/', '$pict.postID']
                             },
                             mediaThumbEndpoint: {
                                 '$concat': ['/thumb/', '$pict.postID']
