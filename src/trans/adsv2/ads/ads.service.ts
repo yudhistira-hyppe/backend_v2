@@ -8450,7 +8450,18 @@ export class AdsService {
                         mediaUri: 1,
                         mediaThumBasePath: 1,
                         mediaThumUri: 1,
-
+                        mediaPortraitBasePath: 1,
+                        mediaPortraitUri: 1,
+                        mediaPortraitThumBasePath: 1,
+                        mediaPortraitThumUri: 1,
+                        widthPortrait: 1,
+                        heightPortrait: 1,
+                        mediaLandscapeBasePath: 1,
+                        mediaLandscapeUri: 1,
+                        mediaLandscapeThumBasePath: 1,
+                        mediaLandscapeThumUri: 1,
+                        heightLandscape: 1,
+                        widthLandscape: 1,
                     }
                 },
             ]
