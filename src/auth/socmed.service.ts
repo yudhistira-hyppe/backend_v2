@@ -1823,7 +1823,7 @@ export class SocmedService {
               "ROLE_USER"
             ],
             fullName: username_,
-            isIdVerified: "false",
+            isIdVerified: (datauserbasicsService.statusKyc == "verified" ? true : false),
             isEmailVerified: "true",
             token: "Bearer " + token,
             idProofStatus: "IN_PROGRESS",

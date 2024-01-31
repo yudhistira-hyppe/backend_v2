@@ -3067,7 +3067,7 @@ export class ContenteventsController {
         if (post.mediaSource[0].mediaUri != undefined) {
           media_["mediaUri"] = post.mediaSource[0].mediaUri;
         }
-        if (post.mediaSource[0].mediaUri != undefined) {
+        if (post.mediaSource[0].mediaThumb != undefined) {
           media_["mediaThumbUri"] = post.mediaSource[0].mediaThumb;
         }
         if (post.description != undefined) {
@@ -3079,8 +3079,8 @@ export class ContenteventsController {
         if (post.mediaSource[0].mediaType != undefined) {
           media_["mediaType"] = post.mediaSource[0].mediaType;
         }
-        if (post.mediaSource[0].mediaType != undefined) {
-          media_["mediaThumbEndpoint"] = post.mediaSource[0].mediaType;
+        if (post.postID != undefined) {
+          media_["mediaThumbEndpoint"] = "/thumb/" + post.postID;
         }
         if (post.postID != undefined) {
           media_["postID"] = post.postID;
@@ -3190,9 +3190,11 @@ export class ContenteventsController {
         this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
       } else {
         if (!(await this.utilsService.ceckData(CeckDataDiscusContact_sender)) && !(await this.utilsService.ceckData(CeckDataDiscusContact_receiver))) {
+          id_discus = await this.utilsService.generateId();
           //INSERT DISQUS CONTACT
           var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
           try {
+            id_discus_contact = await this.utilsService.generateId();
             CreateDisquscontactsDto_._id = id_discus_contact;
             CreateDisquscontactsDto_.active = true;
             CreateDisquscontactsDto_.email = email_user;
@@ -3210,6 +3212,7 @@ export class ContenteventsController {
           //INSERT DISQUS CONTACT
           var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
           try {
+            id_discus_contact = await this.utilsService.generateId();
             CreateDisquscontactsDto_._id = id_discus_contact;
             CreateDisquscontactsDto_.active = true;
             CreateDisquscontactsDto_.email = email_receiverParty;
@@ -3224,7 +3227,6 @@ export class ContenteventsController {
           } catch (error) {
             this.logger.log("ERROR INSERT DISQUS CONTACT >>>>>>>>>>>>>>>>>>> ", error);
           }
-          id_discus = await this.utilsService.generateId();
           //INSERT DISQUS
           try {
             CreateDisqusDto_._id = id_discus;

@@ -1489,7 +1489,11 @@ export class UserbasicnewService {
                     {
                         "$regex": target,
                         "$options": "i"
+                    },
+                    "guestMode":{
+                        $ne:true
                     }
+                    
                 }
             },
             {
