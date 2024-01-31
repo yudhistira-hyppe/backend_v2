@@ -127,6 +127,7 @@ import { PostsReadModule } from './readonly/post_read/post_read.module';
 import { ChallengeReadModule } from './readonly/challenge_read/challenge_read.module';
 import { MediastreamingModule } from './content/mediastreaming/mediastreaming.module';
 import { FiltercategoryModule } from './assets/filtercategory/filtercategory.module';
+import { AppController } from './app.controller';
 @Module({
   imports: [
     ChallengeReadModule,
@@ -281,5 +282,6 @@ import { FiltercategoryModule } from './assets/filtercategory/filtercategory.mod
     FiltercategoryModule
     //  ChallengeModule
   ], providers: [],
+  controllers: [AppController],
 })
 export class AppModule { }
