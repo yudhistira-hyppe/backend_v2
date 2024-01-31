@@ -2344,7 +2344,7 @@ export class PostsController {
   //   return this.postContentService.getUserPostByProfile(body, headers);
   // }
 
-  @Post('api/posts/notifyapsara')
+  @Post('api/posts/notifyapsara/backup')
   async notifyApsara(@Body() body, @Headers() headers) {
     this.logger.log("notifyApsara >>> start: " + JSON.stringify(body));
     this.postContentService.updateNewPost(body, headers);
@@ -2923,7 +2923,7 @@ export class PostsController {
     }
   }
 
-  @Get('api/posts/getpostm2m')
+  @Get('api/posts/getpostm2m/backup')
   @HttpCode(HttpStatus.ACCEPTED)
   async getPostM2M(@Query('postID') postID: string,) {
     var response = {};

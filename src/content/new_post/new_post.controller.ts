@@ -4711,4 +4711,93 @@ export class NewPostController {
         }
 
     }
+
+    @Get('posts/getpostm2m')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async getPostM2M(@Query('postID') postID: string,) {
+        var response = {};
+        var post = await this.newPostService.findByPostId(postID);
+        if (await this.utilsService.ceckData(post)) {
+            if (await this.utilsService.ceckData(post.mediaSource)) {
+                var dataUserbasic = await this.basic2SS.findBymail(post.email.toString());
+                var data = [];
+                var data_ = {};
+                if (post.mediaSource[0].mediaBasePath != undefined) {
+                    data_["mediaBasePath"] = post.mediaSource[0].mediaBasePath;
+                }
+                if (post.mediaSource[0].apsaraId != undefined) {
+                    var dataApsara = await this.newPostContentService.getVideoApsaraSingleNoDefinition(post.mediaSource[0].apsaraId);
+                    var metadata = {
+                        duration: dataApsara.Duration
+                    }
+                    console.log(dataApsara);
+                    data_['metadata'] = metadata;
+                }
+                if (post.mediaSource[0].mediaUri != undefined) {
+                    data_["mediaUri"] = post.mediaSource[0].mediaUri;
+                }
+                if (post.description != undefined) {
+                    data_["description"] = post.description;
+                }
+                if (post.active != undefined) {
+                    data_["active"] = post.active;
+                }
+                if (post.mediaSource[0].mediaType != undefined) {
+                    data_["mediaType"] = post.mediaSource[0].mediaType;
+                }
+                if (post.postID != undefined) {
+                    data_["postID"] = post.postID;
+                }
+                if (post.tags != undefined) {
+                    data_["tags"] = post.tags;
+                }
+                if (post.allowComments != undefined) {
+                    data_["allowComments"] = post.allowComments;
+                }
+                if (post.createdAt != undefined) {
+                    data_["createdAt"] = post.createdAt;
+                }
+                if (post.email != undefined) {
+                    data_["username"] = dataUserbasic.username;
+                }
+                if (post.email != undefined) {
+                    data_["fullName"] = dataUserbasic.fullName;
+                }
+                if (post.updatedAt != undefined) {
+                    data_["updatedAt"] = post.updatedAt;
+                }
+                data.push(data_)
+                response = {
+                    "response_code": 202,
+                    "data": data,
+                    "messages": {
+                        info: [
+                            "Succesfully"
+                        ]
+                    }
+                }
+            } else {
+                response = {
+                    "response_code": 202,
+                    "data": [],
+                    "messages": {
+                        info: [
+                            "Succesfully"
+                        ]
+                    }
+                }
+            }
+        } else {
+            response = {
+                "response_code": 202,
+                "data": [],
+                "messages": {
+                    info: [
+                        "Succesfully"
+                    ]
+                }
+            }
+        }
+        return response;
+    }
 }
