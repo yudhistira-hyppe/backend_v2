@@ -4382,6 +4382,342 @@ export class TransactionsController {
 
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/withdraw/listdetail/v2')
+    async detailwithdrawmigration(@Res() res, @Req() request: Request, @Headers() headers) {
+
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var fullurl = headers.host + '/api/transactions/withdraw/listdetail/v2';
+        var token = headers['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var setemail = auth.email;
+
+        const messages = {
+            "info": ["Disbursement Request has been completed (success)"],
+        };
+        var datarek = null;
+        var databank = null;
+        var idbank = null;
+        var bankcode = null;
+        var bankname = null;
+        var norek = null;
+        var norekdb = null;
+        var namarek = null;
+        var iduser = null;
+        var data = {};
+        var nama = null;
+        var amount = 0;
+        var totalamount = 0;
+        var valuebankcharge = 0;
+        var valuedisbcharge = 0;
+        var datasettingbankvercharge = null;
+        var datasettingdisbvercharge = null;
+        var idbankverificationcharge = "62bd4104f37a00001a004367";
+        var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
+        var statusInquiry = null;
+        var email = null;
+        var datareqinq = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["bankcode"] !== undefined) {
+            bankcode = request_json["bankcode"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["norek"] !== undefined) {
+            norek = request_json["norek"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["amount"] !== undefined) {
+            amount = request_json["amount"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var ubasic = null;
+        var idubasic = null;
+        try {
+            ubasic = await this.basic2SS.findBymail(email);
+            idubasic = ubasic._id;
+        } catch (e) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("user not found");
+        }
+
+
+        try {
+            datasettingbankvercharge = await this.settingsService.findOne(idbankverificationcharge);
+            valuebankcharge = datasettingbankvercharge._doc.value;
+            datasettingdisbvercharge = await this.settingsService.findOne(idBankDisbursmentCharge);
+            valuedisbcharge = datasettingdisbvercharge._doc.value;
+
+        } catch (e) {
+            valuebankcharge = 0;
+            valuedisbcharge = 0;
+
+        }
+        try {
+            databank = await this.banksService.findbankcode(bankcode);
+            idbank = databank._doc._id;
+            bankname = databank._doc.bankname;
+            datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+            var idbankaccount = datarek._doc._id;
+            norekdb = datarek._doc.noRek;
+            namarek = datarek._doc.nama;
+            iduser = datarek._doc.userId;
+            statusInquiry = datarek._doc.statusInquiry;
+
+        } catch (e) {
+            datarek = null;
+            statusInquiry = null;
+        }
+
+
+
+        if (datarek !== null) {
+            let datareqinquiry = new OyAccountInquirys();
+            datareqinquiry.bank_code = bankcode;
+            datareqinquiry.account_number = norek;
+            if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
+                var account_name = null;
+                var namaakun = null;
+                try {
+                    datareqinq = await this.oyPgService.inquiryAccount(datareqinquiry);
+                } catch (e) {
+                    datareqinq = null;
+                }
+                var statuscode = datareqinq.status.code;
+                account_name = datareqinq.account_name;
+                if (account_name === null || account_name === undefined || account_name === "") {
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                    throw new BadRequestException("Maaf nomor rekening dan nama akun tidak ada...!");
+                }
+                namaakun = account_name.toLowerCase();
+                totalamount = amount - valuedisbcharge - valuebankcharge;
+                if (statuscode == "000") {
+                    await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+
+                    datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                    var idbankaccount = datarek._doc._id;
+                    norekdb = datarek._doc.noRek;
+                    namarek = datarek._doc.nama;
+                    iduser = datarek._doc.userId;
+                    statusInquiry = datarek._doc.statusInquiry;
+                    nama = namarek.toLowerCase();
+                    if (nama == namaakun) {
+                        data = {
+                            "name": account_name,
+                            "bankName": bankname,
+                            "bankAccount": norek,
+                            "bankCode": bankcode,
+                            "amount": amount,
+                            "totalAmount": totalamount,
+                            "adminFee": valuedisbcharge,
+                            "chargeInquiry": valuebankcharge,
+                            "statusInquiry": statusInquiry
+                        }
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                        return res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": "Inquiry is success"
+                        });
+                    } else {
+                        await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                        await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                        datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                        var idbankaccount = datarek._doc._id;
+                        norekdb = datarek._doc.noRek;
+                        namarek = datarek._doc.nama;
+                        iduser = datarek._doc.userId;
+                        statusInquiry = datarek._doc.statusInquiry;
+
+                        data = {
+                            "name": account_name,
+                            "bankName": bankname,
+                            "bankAccount": norek,
+                            "bankCode": bankcode,
+                            "statusInquiry": statusInquiry
+                        }
+
+                        var timestamps_end = await this.utilsService.getDateTimeString();
+                        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                        return res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": "Nama Akun bank tidak sama"
+                        });
+                    }
+
+                }
+                else if (statuscode == "201") {
+                    await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                    datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                    var idbankaccount = datarek._doc._id;
+                    norekdb = datarek._doc.noRek;
+                    namarek = datarek._doc.nama;
+                    iduser = datarek._doc.userId;
+                    statusInquiry = datarek._doc.statusInquiry;
+                    data = {
+                        "name": account_name,
+                        "bankName": bankname,
+                        "bankAccount": norek,
+                        "bankCode": bankcode,
+                        "statusInquiry": statusInquiry
+                    }
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                    return res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": "Request is Rejected (User ID is not Found)"
+                    });
+
+                }
+                else if (statuscode == "208") {
+                    await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                    datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                    var idbankaccount = datarek._doc._id;
+                    norekdb = datarek._doc.noRek;
+                    namarek = datarek._doc.nama;
+                    iduser = datarek._doc.userId;
+                    statusInquiry = datarek._doc.statusInquiry;
+                    data = {
+                        "name": account_name,
+                        "bankName": bankname,
+                        "bankAccount": norek,
+                        "bankCode": bankcode,
+                        "statusInquiry": statusInquiry
+                    }
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                    return res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": "Request is Rejected (API Key is not Valid)"
+                    });
+
+                }
+                else if (statuscode == "209") {
+                    await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                    datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                    var idbankaccount = datarek._doc._id;
+                    norekdb = datarek._doc.noRek;
+                    namarek = datarek._doc.nama;
+                    iduser = datarek._doc.userId;
+                    statusInquiry = datarek._doc.statusInquiry;
+                    data = {
+                        "name": account_name,
+                        "bankName": bankname,
+                        "bankAccount": norek,
+                        "bankCode": bankcode,
+                        "statusInquiry": statusInquiry
+                    }
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                    return res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": "Request is Rejected (Bank Account is not found)"
+                    });
+                } else {
+                    await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                    datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                    var idbankaccount = datarek._doc._id;
+                    norekdb = datarek._doc.noRek;
+                    namarek = datarek._doc.nama;
+                    iduser = datarek._doc.userId;
+                    statusInquiry = datarek._doc.statusInquiry;
+                    data = {
+                        "name": account_name,
+                        "bankName": bankname,
+                        "bankAccount": norek,
+                        "bankCode": bankcode,
+                        "statusInquiry": statusInquiry
+                    }
+
+                    var timestamps_end = await this.utilsService.getDateTimeString();
+                    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                    return res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": "Request is Rejected"
+                    });
+                }
+            } else {
+                totalamount = amount - valuedisbcharge;
+                data = {
+                    "name": namarek,
+                    "bankName": bankname,
+                    "bankAccount": norek,
+                    "bankCode": bankcode,
+                    "amount": amount,
+                    "totalAmount": totalamount,
+                    "adminFee": valuedisbcharge,
+                    "chargeInquiry": 0,
+                    "statusInquiry": statusInquiry
+                }
+
+                var timestamps_end = await this.utilsService.getDateTimeString();
+                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+                return res.status(HttpStatus.OK).json({
+                    response_code: 202,
+                    "data": data,
+                    "message": "Inquiry is success"
+                });
+            }
+
+
+
+        } else {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, setemail, null, null, request_json);
+
+            throw new BadRequestException("recipient_account not found...!");
+        }
+
+
+
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('api/transactions/withdraw/listdetail/v2')
     async detailwithdraw2(@Res() res, @Req() request: Request, @Headers() headers) {
 
         var timestamps_start = await this.utilsService.getDateTimeString();
