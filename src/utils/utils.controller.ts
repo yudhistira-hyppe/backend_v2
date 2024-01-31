@@ -1,4 +1,4 @@
-import { HttpCode, Controller, HttpStatus, Get, Req, Query, UseGuards, Headers, Post, BadRequestException, Request } from '@nestjs/common';
+import { HttpCode, Controller, HttpStatus, Get, Req, Query, UseGuards, Headers, Post, BadRequestException, Request, Param, Res } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UtilsService } from './utils.service';
 import { InterestsRepoService } from '../infra/interests_repo/interests_repo.service';
@@ -25,6 +25,7 @@ import { Posts } from '../content/posts/schemas/posts.schema';
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { Cron, Interval } from '@nestjs/schedule';
 import { CreateTemplatesDto } from 'src/infra/templates/dto/create-templates.dto';
+import * as fs from 'fs';
 
 @Controller('api/utils/')
 export class UtilsController {
@@ -985,6 +986,20 @@ export class UtilsController {
         }
 
         actionRecursion();
+    }
+    
+    @Get('images/:id')
+    async downloadFile(
+        @Param('id') id: string, @Res() response) {
+        const mime = require('mime-types')
+        const pathUpload = "../../images/";
+        const mime_type = mime.lookup(pathUpload + id)
+        var file = fs.createReadStream(pathUpload + id);
+        var stat = fs.statSync(pathUpload + id);
+        response.setHeader('Content-Length', stat.size);
+        response.setHeader('Content-Type', mime_type);
+        response.setHeader('Content-Disposition', 'attachment; filename=' + id);
+        file.pipe(response);
     }
 
 }
