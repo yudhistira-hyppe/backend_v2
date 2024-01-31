@@ -2132,7 +2132,7 @@ export class NewPostController {
 
         return { response_code: 202, data, messages };
     }
-    @Post('api/getusercontents/searchdatanew/v2')
+    @Post('getusercontents/searchdatanew/v2')
     @UseGuards(JwtAuthGuard)
     async contentsearchnew(@Req() request: Request, @Headers() headers): Promise<any> {
         var timestamps_start = await this.utilsService.getDateTimeString();
