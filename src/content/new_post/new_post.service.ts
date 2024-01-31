@@ -17807,9 +17807,34 @@ export class NewPostService {
                          {
                              "$concat": ["/thumb/", "$pict.postID"]
                          },
-                         "mediaEndpoint": {
-                             "$concat": ["/profilepict/", "$pict.postID"]
-                         },
+                         mediaEndpoint:{
+                          "$cond":
+                          {
+                              if:
+                              {
+                                  "$eq":
+                                      [
+                                        "$pict.postType", "pict"
+                                      ]
+                              },
+                              then:
+                              {
+                                  "$concat":
+                                      [
+                                          "/pict/",
+                                          "$pict.postID"
+                                      ]
+                              },
+                              else:
+                              {
+                                  "$concat":
+                                      [
+                                          "/stream/",
+                                          "$pict.postID"
+                                      ]
+                              }
+                          }
+                      },
                          "mediaType": {
                              $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                          },
@@ -18158,13 +18183,38 @@ export class NewPostService {
                           "boosted": "$pict.boosted",
                           "reportedStatus": "$pict.reportedStatus",
                           "_id": "$pict._id",
-                           "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                          "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                           {
                               "$concat": ["/thumb/", "$pict.postID"]
                           },
-                          "mediaEndpoint": {
-                              "$concat": ["/profilepict/", "$pict.postID"]
-                          },
+                          mediaEndpoint:{
+                           "$cond":
+                           {
+                               if:
+                               {
+                                   "$eq":
+                                       [
+                                         "$pict.postType", "pict"
+                                       ]
+                               },
+                               then:
+                               {
+                                   "$concat":
+                                       [
+                                           "/pict/",
+                                           "$pict.postID"
+                                       ]
+                               },
+                               else:
+                               {
+                                   "$concat":
+                                       [
+                                           "/stream/",
+                                           "$pict.postID"
+                                       ]
+                               }
+                           }
+                       },
                           "mediaType": {
                               $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                           },
@@ -18512,13 +18562,38 @@ export class NewPostService {
                           "boosted": "$pict.boosted",
                           "reportedStatus": "$pict.reportedStatus",
                           "_id": "$pict._id",
-                           "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                          "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                           {
                               "$concat": ["/thumb/", "$pict.postID"]
                           },
-                          "mediaEndpoint": {
-                              "$concat": ["/profilepict/", "$pict.postID"]
-                          },
+                          mediaEndpoint:{
+                           "$cond":
+                           {
+                               if:
+                               {
+                                   "$eq":
+                                       [
+                                         "$pict.postType", "pict"
+                                       ]
+                               },
+                               then:
+                               {
+                                   "$concat":
+                                       [
+                                           "/pict/",
+                                           "$pict.postID"
+                                       ]
+                               },
+                               else:
+                               {
+                                   "$concat":
+                                       [
+                                           "/stream/",
+                                           "$pict.postID"
+                                       ]
+                               }
+                           }
+                       },
                           "mediaType": {
                               $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                           },
@@ -18865,13 +18940,38 @@ export class NewPostService {
                        "boosted": "$pict.boosted",
                        "reportedStatus": "$pict.reportedStatus",
                        "_id": "$pict._id",
-                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                       "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                        {
                            "$concat": ["/thumb/", "$pict.postID"]
                        },
-                       "mediaEndpoint": {
-                           "$concat": ["/profilepict/", "$pict.postID"]
-                       },
+                       mediaEndpoint:{
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$eq":
+                                    [
+                                      "$pict.postType", "pict"
+                                    ]
+                            },
+                            then:
+                            {
+                                "$concat":
+                                    [
+                                        "/pict/",
+                                        "$pict.postID"
+                                    ]
+                            },
+                            else:
+                            {
+                                "$concat":
+                                    [
+                                        "/stream/",
+                                        "$pict.postID"
+                                    ]
+                            }
+                        }
+                    },
                        "mediaType": {
                            $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                        },
@@ -19056,13 +19156,38 @@ export class NewPostService {
                        "boosted": "$pict.boosted",
                        "reportedStatus": "$pict.reportedStatus",
                        "_id": "$pict._id",
-                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                       "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                        {
                            "$concat": ["/thumb/", "$pict.postID"]
                        },
-                       "mediaEndpoint": {
-                           "$concat": ["/profilepict/", "$pict.postID"]
-                       },
+                       mediaEndpoint:{
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$eq":
+                                    [
+                                      "$pict.postType", "pict"
+                                    ]
+                            },
+                            then:
+                            {
+                                "$concat":
+                                    [
+                                        "/pict/",
+                                        "$pict.postID"
+                                    ]
+                            },
+                            else:
+                            {
+                                "$concat":
+                                    [
+                                        "/stream/",
+                                        "$pict.postID"
+                                    ]
+                            }
+                        }
+                    },
                        "mediaType": {
                            $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                        },
@@ -19413,13 +19538,38 @@ export class NewPostService {
                        "boosted": "$pict.boosted",
                        "reportedStatus": "$pict.reportedStatus",
                        "_id": "$pict._id",
-                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                       "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                        {
                            "$concat": ["/thumb/", "$pict.postID"]
                        },
-                       "mediaEndpoint": {
-                           "$concat": ["/profilepict/", "$pict.postID"]
-                       },
+                       mediaEndpoint:{
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$eq":
+                                    [
+                                      "$pict.postType", "pict"
+                                    ]
+                            },
+                            then:
+                            {
+                                "$concat":
+                                    [
+                                        "/pict/",
+                                        "$pict.postID"
+                                    ]
+                            },
+                            else:
+                            {
+                                "$concat":
+                                    [
+                                        "/stream/",
+                                        "$pict.postID"
+                                    ]
+                            }
+                        }
+                    },
                        "mediaType": {
                            $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                        },
@@ -19604,13 +19754,38 @@ export class NewPostService {
                           "boosted": "$pict.boosted",
                           "reportedStatus": "$pict.reportedStatus",
                           "_id": "$pict._id",
-                           "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                          "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                           {
                               "$concat": ["/thumb/", "$pict.postID"]
                           },
-                          "mediaEndpoint": {
-                              "$concat": ["/profilepict/", "$pict.postID"]
-                          },
+                          mediaEndpoint:{
+                           "$cond":
+                           {
+                               if:
+                               {
+                                   "$eq":
+                                       [
+                                         "$pict.postType", "pict"
+                                       ]
+                               },
+                               then:
+                               {
+                                   "$concat":
+                                       [
+                                           "/pict/",
+                                           "$pict.postID"
+                                       ]
+                               },
+                               else:
+                               {
+                                   "$concat":
+                                       [
+                                           "/stream/",
+                                           "$pict.postID"
+                                       ]
+                               }
+                           }
+                       },
                           "mediaType": {
                               $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                           },
@@ -19958,13 +20133,38 @@ export class NewPostService {
                           "boosted": "$pict.boosted",
                           "reportedStatus": "$pict.reportedStatus",
                           "_id": "$pict._id",
-                           "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                          "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                           {
                               "$concat": ["/thumb/", "$pict.postID"]
                           },
-                          "mediaEndpoint": {
-                              "$concat": ["/profilepict/", "$pict.postID"]
-                          },
+                          mediaEndpoint:{
+                           "$cond":
+                           {
+                               if:
+                               {
+                                   "$eq":
+                                       [
+                                         "$pict.postType", "pict"
+                                       ]
+                               },
+                               then:
+                               {
+                                   "$concat":
+                                       [
+                                           "/pict/",
+                                           "$pict.postID"
+                                       ]
+                               },
+                               else:
+                               {
+                                   "$concat":
+                                       [
+                                           "/stream/",
+                                           "$pict.postID"
+                                       ]
+                               }
+                           }
+                       },
                           "mediaType": {
                               $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                           },
@@ -20150,13 +20350,38 @@ export class NewPostService {
                           "boosted": "$pict.boosted",
                           "reportedStatus": "$pict.reportedStatus",
                           "_id": "$pict._id",
-                           "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                          "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                           {
                               "$concat": ["/thumb/", "$pict.postID"]
                           },
-                          "mediaEndpoint": {
-                              "$concat": ["/profilepict/", "$pict.postID"]
-                          },
+                          mediaEndpoint:{
+                           "$cond":
+                           {
+                               if:
+                               {
+                                   "$eq":
+                                       [
+                                         "$pict.postType", "pict"
+                                       ]
+                               },
+                               then:
+                               {
+                                   "$concat":
+                                       [
+                                           "/pict/",
+                                           "$pict.postID"
+                                       ]
+                               },
+                               else:
+                               {
+                                   "$concat":
+                                       [
+                                           "/stream/",
+                                           "$pict.postID"
+                                       ]
+                               }
+                           }
+                       },
                           "mediaType": {
                               $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                           },
@@ -20505,13 +20730,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -20696,13 +20946,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -20887,13 +21162,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -21270,13 +21570,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -21480,13 +21805,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -21688,13 +22038,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -22260,13 +22635,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -22563,13 +22963,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -22868,13 +23293,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -23171,13 +23621,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -23362,13 +23837,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -23666,13 +24166,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -23857,13 +24382,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -24049,13 +24599,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -24353,13 +24928,38 @@ export class NewPostService {
                       "boosted": "$pict.boosted",
                       "reportedStatus": "$pict.reportedStatus",
                       "_id": "$pict._id",
-                       "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                      "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                       {
                           "$concat": ["/thumb/", "$pict.postID"]
                       },
-                      "mediaEndpoint": {
-                          "$concat": ["/profilepict/", "$pict.postID"]
-                      },
+                      mediaEndpoint:{
+                       "$cond":
+                       {
+                           if:
+                           {
+                               "$eq":
+                                   [
+                                     "$pict.postType", "pict"
+                                   ]
+                           },
+                           then:
+                           {
+                               "$concat":
+                                   [
+                                       "/pict/",
+                                       "$pict.postID"
+                                   ]
+                           },
+                           else:
+                           {
+                               "$concat":
+                                   [
+                                       "/stream/",
+                                       "$pict.postID"
+                                   ]
+                           }
+                       }
+                   },
                       "mediaType": {
                           $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                       },
@@ -24544,13 +25144,38 @@ export class NewPostService {
                       "boosted": "$pict.boosted",
                       "reportedStatus": "$pict.reportedStatus",
                       "_id": "$pict._id",
-                       "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                      "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                       {
                           "$concat": ["/thumb/", "$pict.postID"]
                       },
-                      "mediaEndpoint": {
-                          "$concat": ["/profilepict/", "$pict.postID"]
-                      },
+                      mediaEndpoint:{
+                       "$cond":
+                       {
+                           if:
+                           {
+                               "$eq":
+                                   [
+                                     "$pict.postType", "pict"
+                                   ]
+                           },
+                           then:
+                           {
+                               "$concat":
+                                   [
+                                       "/pict/",
+                                       "$pict.postID"
+                                   ]
+                           },
+                           else:
+                           {
+                               "$concat":
+                                   [
+                                       "/stream/",
+                                       "$pict.postID"
+                                   ]
+                           }
+                       }
+                   },
                       "mediaType": {
                           $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                       },
@@ -24982,13 +25607,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -25430,13 +26080,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -25621,13 +26296,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -26069,13 +26769,38 @@ export class NewPostService {
                           "boosted": "$pict.boosted",
                           "reportedStatus": "$pict.reportedStatus",
                           "_id": "$pict._id",
-                           "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                          "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                           {
                               "$concat": ["/thumb/", "$pict.postID"]
                           },
-                          "mediaEndpoint": {
-                              "$concat": ["/profilepict/", "$pict.postID"]
-                          },
+                          mediaEndpoint:{
+                           "$cond":
+                           {
+                               if:
+                               {
+                                   "$eq":
+                                       [
+                                         "$pict.postType", "pict"
+                                       ]
+                               },
+                               then:
+                               {
+                                   "$concat":
+                                       [
+                                           "/pict/",
+                                           "$pict.postID"
+                                       ]
+                               },
+                               else:
+                               {
+                                   "$concat":
+                                       [
+                                           "/stream/",
+                                           "$pict.postID"
+                                       ]
+                               }
+                           }
+                       },
                           "mediaType": {
                               $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                           },
@@ -26260,13 +26985,38 @@ export class NewPostService {
                           "boosted": "$pict.boosted",
                           "reportedStatus": "$pict.reportedStatus",
                           "_id": "$pict._id",
-                           "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                          "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                           {
                               "$concat": ["/thumb/", "$pict.postID"]
                           },
-                          "mediaEndpoint": {
-                              "$concat": ["/profilepict/", "$pict.postID"]
-                          },
+                          mediaEndpoint:{
+                           "$cond":
+                           {
+                               if:
+                               {
+                                   "$eq":
+                                       [
+                                         "$pict.postType", "pict"
+                                       ]
+                               },
+                               then:
+                               {
+                                   "$concat":
+                                       [
+                                           "/pict/",
+                                           "$pict.postID"
+                                       ]
+                               },
+                               else:
+                               {
+                                   "$concat":
+                                       [
+                                           "/stream/",
+                                           "$pict.postID"
+                                       ]
+                               }
+                           }
+                       },
                           "mediaType": {
                               $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                           },
@@ -26576,13 +27326,38 @@ export class NewPostService {
                       "boosted": "$pict.boosted",
                       "reportedStatus": "$pict.reportedStatus",
                       "_id": "$pict._id",
-                       "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                      "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                       {
                           "$concat": ["/thumb/", "$pict.postID"]
                       },
-                      "mediaEndpoint": {
-                          "$concat": ["/profilepict/", "$pict.postID"]
-                      },
+                      mediaEndpoint:{
+                       "$cond":
+                       {
+                           if:
+                           {
+                               "$eq":
+                                   [
+                                     "$pict.postType", "pict"
+                                   ]
+                           },
+                           then:
+                           {
+                               "$concat":
+                                   [
+                                       "/pict/",
+                                       "$pict.postID"
+                                   ]
+                           },
+                           else:
+                           {
+                               "$concat":
+                                   [
+                                       "/stream/",
+                                       "$pict.postID"
+                                   ]
+                           }
+                       }
+                   },
                       "mediaType": {
                           $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                       },
@@ -26767,13 +27542,38 @@ export class NewPostService {
                       "boosted": "$pict.boosted",
                       "reportedStatus": "$pict.reportedStatus",
                       "_id": "$pict._id",
-                       "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                      "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                       {
                           "$concat": ["/thumb/", "$pict.postID"]
                       },
-                      "mediaEndpoint": {
-                          "$concat": ["/profilepict/", "$pict.postID"]
-                      },
+                      mediaEndpoint:{
+                       "$cond":
+                       {
+                           if:
+                           {
+                               "$eq":
+                                   [
+                                     "$pict.postType", "pict"
+                                   ]
+                           },
+                           then:
+                           {
+                               "$concat":
+                                   [
+                                       "/pict/",
+                                       "$pict.postID"
+                                   ]
+                           },
+                           else:
+                           {
+                               "$concat":
+                                   [
+                                       "/stream/",
+                                       "$pict.postID"
+                                   ]
+                           }
+                       }
+                   },
                       "mediaType": {
                           $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                       },
@@ -26958,13 +27758,38 @@ export class NewPostService {
                       "boosted": "$pict.boosted",
                       "reportedStatus": "$pict.reportedStatus",
                       "_id": "$pict._id",
-                       "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                      "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                       {
                           "$concat": ["/thumb/", "$pict.postID"]
                       },
-                      "mediaEndpoint": {
-                          "$concat": ["/profilepict/", "$pict.postID"]
-                      },
+                      mediaEndpoint:{
+                       "$cond":
+                       {
+                           if:
+                           {
+                               "$eq":
+                                   [
+                                     "$pict.postType", "pict"
+                                   ]
+                           },
+                           then:
+                           {
+                               "$concat":
+                                   [
+                                       "/pict/",
+                                       "$pict.postID"
+                                   ]
+                           },
+                           else:
+                           {
+                               "$concat":
+                                   [
+                                       "/stream/",
+                                       "$pict.postID"
+                                   ]
+                           }
+                       }
+                   },
                       "mediaType": {
                           $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                       },
@@ -27397,13 +28222,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -27588,13 +28438,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -27779,13 +28654,38 @@ export class NewPostService {
                         "boosted": "$pict.boosted",
                         "reportedStatus": "$pict.reportedStatus",
                         "_id": "$pict._id",
-                         "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                         {
                             "$concat": ["/thumb/", "$pict.postID"]
                         },
-                        "mediaEndpoint": {
-                            "$concat": ["/profilepict/", "$pict.postID"]
-                        },
+                        mediaEndpoint:{
+                         "$cond":
+                         {
+                             if:
+                             {
+                                 "$eq":
+                                     [
+                                       "$pict.postType", "pict"
+                                     ]
+                             },
+                             then:
+                             {
+                                 "$concat":
+                                     [
+                                         "/pict/",
+                                         "$pict.postID"
+                                     ]
+                             },
+                             else:
+                             {
+                                 "$concat":
+                                     [
+                                         "/stream/",
+                                         "$pict.postID"
+                                     ]
+                             }
+                         }
+                     },
                         "mediaType": {
                             $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                         },
@@ -28096,13 +28996,38 @@ export class NewPostService {
                        "boosted": "$pict.boosted",
                        "reportedStatus": "$pict.reportedStatus",
                        "_id": "$pict._id",
-                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                       "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                        {
                            "$concat": ["/thumb/", "$pict.postID"]
                        },
-                       "mediaEndpoint": {
-                           "$concat": ["/profilepict/", "$pict.postID"]
-                       },
+                       mediaEndpoint:{
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$eq":
+                                    [
+                                      "$pict.postType", "pict"
+                                    ]
+                            },
+                            then:
+                            {
+                                "$concat":
+                                    [
+                                        "/pict/",
+                                        "$pict.postID"
+                                    ]
+                            },
+                            else:
+                            {
+                                "$concat":
+                                    [
+                                        "/stream/",
+                                        "$pict.postID"
+                                    ]
+                            }
+                        }
+                    },
                        "mediaType": {
                            $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                        },
@@ -28287,13 +29212,38 @@ export class NewPostService {
                        "boosted": "$pict.boosted",
                        "reportedStatus": "$pict.reportedStatus",
                        "_id": "$pict._id",
-                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                       "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                        {
                            "$concat": ["/thumb/", "$pict.postID"]
                        },
-                       "mediaEndpoint": {
-                           "$concat": ["/profilepict/", "$pict.postID"]
-                       },
+                       mediaEndpoint:{
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$eq":
+                                    [
+                                      "$pict.postType", "pict"
+                                    ]
+                            },
+                            then:
+                            {
+                                "$concat":
+                                    [
+                                        "/pict/",
+                                        "$pict.postID"
+                                    ]
+                            },
+                            else:
+                            {
+                                "$concat":
+                                    [
+                                        "/stream/",
+                                        "$pict.postID"
+                                    ]
+                            }
+                        }
+                    },
                        "mediaType": {
                            $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                        },
@@ -28479,13 +29429,38 @@ export class NewPostService {
                        "boosted": "$pict.boosted",
                        "reportedStatus": "$pict.reportedStatus",
                        "_id": "$pict._id",
-                        "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
+                       "mediaThumbEndpoint": //{ $arrayElemAt: ['$pict.mediaSource.mediaThumbEndpoint', 0] },
                        {
                            "$concat": ["/thumb/", "$pict.postID"]
                        },
-                       "mediaEndpoint": {
-                           "$concat": ["/profilepict/", "$pict.postID"]
-                       },
+                       mediaEndpoint:{
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$eq":
+                                    [
+                                      "$pict.postType", "pict"
+                                    ]
+                            },
+                            then:
+                            {
+                                "$concat":
+                                    [
+                                        "/pict/",
+                                        "$pict.postID"
+                                    ]
+                            },
+                            else:
+                            {
+                                "$concat":
+                                    [
+                                        "/stream/",
+                                        "$pict.postID"
+                                    ]
+                            }
+                        }
+                    },
                        "mediaType": {
                            $arrayElemAt: ['$pict.mediaSource.mediaType', 0]
                        },
