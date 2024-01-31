@@ -35072,9 +35072,8 @@ export class NewPostService {
 
   async detailinterestmigration3(keys:string, email:string, skip:number, limit:number, listpict:boolean, listvid:boolean, listdiary:boolean)
   {
-      console.log('masuk');
-      var mongo = require('mongoose');
-      var renderfacet = {};
+    var mongo = require('mongoose');
+    var renderfacet = {};
 
     if(listpict == true)
     {
@@ -36253,7 +36252,7 @@ export class NewPostService {
                 "$set": {
                   "kosong": {
                     "$ifNull": [
-                      "$user.profilePict.$id",
+                      "$user.email",
                       "kancut"
                     ]
                   }
@@ -38217,7 +38216,7 @@ export class NewPostService {
                 "$set": {
                   "kosong": {
                     "$ifNull": [
-                      "$user.profilePict.$id",
+                      "$user.email",
                       "kancut"
                     ]
                   }
@@ -40181,7 +40180,7 @@ export class NewPostService {
                 "$set": {
                   "kosong": {
                     "$ifNull": [
-                      "$user.profilePict.$id",
+                      "$user.email",
                       "kancut"
                     ]
                   }
