@@ -1118,13 +1118,13 @@ export class UtilsService {
     if (await this.ceckData(datauserbasicsService)) {
       emailuserbasic = datauserbasicsService.email;
 
-      try {
-        profilepict = datauserbasicsService.profilePict;
-        idprofilepict = profilepict.oid;
-        mediaprofilepicts = await this.mediaprofilepictsService.findOne(idprofilepict);
-      } catch (e) {
-        mediaprofilepicts = null;
-      }
+      // try {
+      //   profilepict = datauserbasicsService.profilePict;
+      //   idprofilepict = profilepict.oid;
+      //   mediaprofilepicts = await this.mediaprofilepictsService.findOne(idprofilepict);
+      // } catch (e) {
+      //   mediaprofilepicts = null;
+      // }
       // const user_userAuth = await this.userauthsService.findOne(
       //   emailuserbasic
       // );
@@ -1133,26 +1133,24 @@ export class UtilsService {
       var mediaBasePath = null;
       var mediaType = null;
       var mediaEndpoint = null;
-      if (mediaprofilepicts != null) {
-        mediaUri = mediaprofilepicts.mediaUri;
+      if (datauserbasicsService.mediaUri != null) {
+        mediaUri = datauserbasicsService.mediaUri;
       }
 
       let result = null;
       if (mediaUri != null) {
-        result = '/profilepict/' + mediaUri.replace('_0001.jpeg', '');
+        result = datauserbasicsService.mediaEndpoint;
       }
-      if (mediaprofilepicts != null) {
-        if (mediaprofilepicts.mediaBasePath != null) {
-          mediaBasePath = mediaprofilepicts.mediaBasePath;
-        }
+      if (datauserbasicsService.mediaBasePath != null) {
+        mediaBasePath = datauserbasicsService.mediaBasePath;
+      }
 
-        if (mediaprofilepicts.mediaUri != null) {
-          mediaUri = mediaprofilepicts.mediaUri;
-        }
+      if (datauserbasicsService.mediaUri != null) {
+        mediaUri = datauserbasicsService.mediaUri;
+      }
 
-        if (mediaprofilepicts.mediaType != null) {
-          mediaType = mediaprofilepicts.mediaType;
-        }
+      if (datauserbasicsService.mediaType != null) {
+        mediaType = datauserbasicsService.mediaType;
       }
 
       if (result != null) {

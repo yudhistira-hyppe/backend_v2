@@ -12,9 +12,11 @@ import { UserauthsModule } from 'src/trans/userauths/userauths.module';
 import { Mediastreamingrequest, MediastreamingrequestSchema } from './schema/mediastreamingrequest.schema';
 import { MediastreamingrequestService } from './mediastreamingrequest.service';
 import { HttpModule } from '@nestjs/axios';
+import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
 
 @Module({
     imports: [
+        UserbasicnewModule,
         HttpModule,
         SocketModule,
         UserauthsModule,

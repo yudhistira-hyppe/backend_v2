@@ -16,6 +16,8 @@ import { GetusercontentsService } from 'src/trans/getusercontents/getusercontent
 import { PostchallengeService } from 'src/trans/postchallenge/postchallenge.service';
 import { UserchallengesService } from 'src/trans/userchallenges/userchallenges.service';
 import { Userchallenges } from 'src/trans/userchallenges/schemas/userchallenges.schema';
+import { DisqusService } from '../disqus/disqus.service';
+import { DisquslogsService } from '../disquslogs/disquslogs.service';
 import { pipeline } from 'stream';
 
 @Injectable()
@@ -36,6 +38,8 @@ export class NewPostService {
     private readonly postchallengeService: PostchallengeService,
     private readonly userchallengesService: UserchallengesService,
     private readonly utilsService: UtilsService,
+    private readonly disquslogsService: DisquslogsService,
+    private readonly disqusService: DisqusService,
   ) { }
 
   async create(CreatePostsDto: newPosts): Promise<newPosts> {
@@ -30662,15 +30666,18 @@ export class NewPostService {
       }
     );
 
-    if (skip != null && skip != undefined && page != null && page != undefined) {
-      pipeline.push(
-        {
-          "$skip": (skip * page)
-        },
-        {
-          "$limit": page
-        },
-      );
+    if(postids == null || postids == undefined)
+    {
+      if (skip != null && skip != undefined && page != null && page != undefined) {
+        pipeline.push(
+          {
+            "$skip": (skip * page)
+          },
+          {
+            "$limit": page
+          },
+        );
+      }
     }
 
     pipeline.push(
@@ -31224,7 +31231,7 @@ export class NewPostService {
 
     // var util = require('util');
     // console.log(util.inspect(pipeline, { showHidden:false, depth:null }));
-    console.log(JSON.stringify(pipeline))
+    // console.log(JSON.stringify(pipeline))
     var result = await this.loaddata.aggregate(pipeline);
     return result;
   }
@@ -35110,6 +35117,59 @@ export class NewPostService {
 
 
       });
+    return data;
+  }
+
+  async updateBuyBoostToNoBoost(id: string, boosted: any) {
+    let data = await this.loaddata.updateOne({ "_id": id },
+      {
+        $set: {
+          "boosted": boosted,
+        },
+        $unset: { isBoost: 1 }
+      });
+    return data;
+  }
+
+  async noneActiveAllDiscusLog(postID: string, idtransaction: string) {
+    var query = await this.disquslogsService.noneActiveAllDiscusLog(postID, idtransaction);
+    return query;
+  }
+
+  async noneActiveAllDiscus(postID: string, idtransaction: string) {
+    var query = await this.disqusService.noneActiveAllDiscus(postID, idtransaction);
+    return query;
+  }
+
+  async updatesalelike(id: string): Promise<Object> {
+    let data = await this.loaddata.updateOne({ "_id": id },
+      {
+        $set: {
+          "salelike": false,
+          "saleAmount": 0
+        }
+      });
+    return data;
+  }
+
+  async updateeventlike(postid: string) {
+    let data = await this.contentEventService.updatesalelike(postid)
+    return data;
+  }
+
+  async updatesaleview(id: string): Promise<Object> {
+    let data = await this.loaddata.updateOne({ "_id": id },
+      {
+        $set: {
+          "saleview": false,
+          "saleAmount": 0
+        }
+      });
+    return data;
+  }
+
+  async updateeventview(postid: string) {
+    let data = await this.contentEventService.updatesaleview(postid);
     return data;
   }
 }
