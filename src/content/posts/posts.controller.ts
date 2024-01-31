@@ -3638,6 +3638,7 @@ export class PostsController {
     if ((headers['x-auth-user'] != undefined) && (headers['x-auth-token'] != undefined) && (headers['post-id'] != undefined) && (mediaFile != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(headers['x-auth-token'], headers['x-auth-user'])) {
         var dataMedia = await this.NewPostService.findid(mediaFile);
+        console.log(dataMedia.mediaSource);
         if (await this.utilsService.ceckData(dataMedia)) {
           var mediaBasePath = "";
           if (dataMedia != null) {
