@@ -3017,7 +3017,7 @@ export class TransactionsController {
                         this.notifseller(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postid, noinvoice);
                         this.notifbuyer(emailbuyer.toString(), titleinsuksesbeli, titleensuksesbeli, bodyinsuksesbeli, bodyensuksesbeli, eventType, event, postid, noinvoice);
 
-                        await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy, timedate);
+                        await this.posts2SS.updateemail(postid, emailbuyer.toString(), iduserbuy, timedate);
                         this.posts2SS.noneActiveAllDiscus(postid, idtransaction);
                         this.posts2SS.noneActiveAllDiscusLog(postid, idtransaction);
 

@@ -35140,7 +35140,27 @@ export class NewPostService {
     var query = await this.disqusService.noneActiveAllDiscus(postID, idtransaction);
     return query;
   }
-
+  async updateemail(id: string, email: string, iduser: {
+    "$oid": string
+  }, createdAt: string): Promise<Object> {
+    let data = await this.loaddata.updateOne({ "_id": id },
+      {
+        $set: {
+          "email": email, "userProfile": {
+            "$ref": "userbasics",
+            "$id": iduser,
+            "$db": "hyppe_trans_db"
+          },
+          "saleAmount": 0,
+          "comments": 0,
+          "certified": true,
+          "createdAt": createdAt,
+          "updatedAt": createdAt,
+          "metadata.email": email
+        }
+      });
+    return data;
+  }
   async updatesalelike(id: string): Promise<Object> {
     let data = await this.loaddata.updateOne({ "_id": id },
       {
