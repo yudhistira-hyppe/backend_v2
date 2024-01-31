@@ -2094,12 +2094,6 @@ export class ContenteventsController {
     }
   }
 
-  //jangan lupa tambah guest check
-  /*
-    kalo masih guest mode, harusnya gak bertambah data insight dan insight lognya!!
-    sementara masih kesimpan di dalam tempfollow. user target tidak mendapat notifikasi
-    data tersebut diproses ketika guest mode melakukan pendaftaran
-  */
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/posts/interactive/v2')
@@ -3553,9 +3547,7 @@ export class ContenteventsController {
       try
       {
         if (jenisoperasi == 'create') {
-          console.log('proses1');
           await this.basic2SS.addFriendList(email1, email2);
-          console.log('proses2');
           await this.basic2SS.addFriendList(email2, email1);
         }
         else {
