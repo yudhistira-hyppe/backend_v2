@@ -4722,6 +4722,9 @@ export class NewPostController {
                 var dataUserbasic = await this.basic2SS.findBymail(post.email.toString());
                 var data = [];
                 var data_ = {};
+                if (post.postType != undefined) {
+                    data_["postType"] = post.postType;
+                }
                 if (post.mediaSource[0].mediaBasePath != undefined) {
                     data_["mediaBasePath"] = post.mediaSource[0].mediaBasePath;
                 }
