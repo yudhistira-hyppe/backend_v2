@@ -2249,20 +2249,44 @@ export class AdsController {
                 }
                 CreateUserAdsDto_.createdAt = current_date;
                 CreateUserAdsDto_.statusClick = false;
-                CreateUserAdsDto_.statusView = false;
+                CreateUserAdsDto_.statusView = true;
                 CreateUserAdsDto_.viewed = 0;
                 CreateUserAdsDto_.liveAt = data_ads[0].liveAt;
                 CreateUserAdsDto_.liveTypeuserads = data_ads[0].liveTypeAds;
                 CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_ads[0].typeAdsID);
                 CreateUserAdsDto_.nameType = data_ads[0].nameType;
-                CreateUserAdsDto_.isActive = true;
+                if (data_ads[0].audiensFrekuensi == 1) {
+                    CreateUserAdsDto_.isActive = false;
+                } else {
+                    CreateUserAdsDto_.isActive = true;
+                }
                 CreateUserAdsDto_.scoreAge = data_ads[0].scoreUmur;
                 CreateUserAdsDto_.scoreGender = data_ads[0].scoreKelamin;
                 CreateUserAdsDto_.scoreGeografis = data_ads[0].scoreGeografis;
                 CreateUserAdsDto_.scoreInterest = data_ads[0].scoreMinat;
                 CreateUserAdsDto_.scoreTotal = data_ads[0].scoreTotal;
                 this.userAdsService.create(CreateUserAdsDto_);
+            } else {
+                var data_Update_UserAds = {
+                    $inc: { 'viewed': 1 },
+                    $push: { "updateAt": current_date },
+                }
+                if (((ceckData.viewed != undefined ? ceckData.viewed : 0) + 1) == (data_ads[0].audiensFrekuensi != undefined ? data_ads[0].audiensFrekuensi : 0)) {
+                    data_Update_UserAds["isActive"] = false;
+                }
+                await this.userAdsService.updateData(ceckData._id.toString(), data_Update_UserAds)
             }
+
+            //update Ads
+            var data_Update_Ads = {}
+            if ((data_ads[0].totalView + 1) <= data_ads[0].tayang) {
+                data_Update_Ads["$inc"] = { 'usedCredit': Number(data_ads[0].CPV), 'totalView': 1 };
+            }
+            if (data_ads[0].tayang == (data_ads[0].totalView + 1)) {
+                data_Update_Ads["status"] = "IN_ACTIVE";
+                data_Update_Ads["isActive"] = false;
+            }
+            await this.adsService.updateData(data_ads[0]._id.toString(), data_Update_Ads)
 
             //Get Pict User Ads
             var get_profilePict = {};
@@ -2579,9 +2603,9 @@ export class AdsController {
         }
         AdsLogsDto_.requestAds = JSON.stringify(logRequest);
         AdsLogsDto_.endPointAds = "api/adsv2/ads/clickads/";
-        AdsLogsDto_.type = "VIEWS ADS";
+        AdsLogsDto_.type = "CLICKED ADS";
         AdsLogsDto_.dateTime = await this.utilsService.getDateTimeString();
-        AdsLogsDto_.nameActivitas = ["ViewAds"];
+        AdsLogsDto_.nameActivitas = ["ClickedAds"];
 
         //Validasi Token
         if (headers['x-auth-user'] == undefined || headers['x-auth-token'] == undefined) {
@@ -2764,7 +2788,7 @@ export class AdsController {
 
             //Send Fcm
             var eventType = "TRANSACTION";
-            var event = "ADS VIEW";
+            var event = "ADS CLIKED";
             this.utilsService.sendFcmV2(data_userbasic.email.toString(), data_userbasic.email.toString(), eventType, event, "REWARDS", null, null, null, dataRewards.rewardPrice.toString());
 
             //Set Response
