@@ -8112,7 +8112,7 @@ export class SubChallengeReadService {
                             {
                                 "$lookup":
                                 {
-                                    from: "userbasics",
+                                    from: "newUserBasics",
                                     let:
                                     {
                                         basic_fk: "$idUser",
@@ -8135,40 +8135,45 @@ export class SubChallengeReadService {
                                                 }
                                             },
                                             {
-                                                "$lookup":
-                                                {
-                                                    from: "userauths",
-                                                    let:
-                                                    {
-                                                        basic_fk: "$email"
-                                                    },
-                                                    as: 'userauth_data',
-                                                    pipeline:
-                                                        [
-                                                            {
-                                                                "$match":
-                                                                {
-                                                                    "$and":
-                                                                        [
-                                                                            {
-                                                                                "$expr":
-                                                                                {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$email",
-                                                                                            "$$basic_fk"
-                                                                                        ]
-                                                                                },
-
-                                                                            },
-
-                                                                        ]
-                                                                }
-                                                            },
-
-                                                        ]
+                                                $set: {
+                                                    userauth_data: "$userbasic_data.username"
                                                 }
                                             },
+                                            //{
+                                            //    "$lookup": 
+                                            //    {
+                                            //        from: "userauths",
+                                            //        let: 
+                                            //        {
+                                            //            basic_fk: "$email"
+                                            //        },
+                                            //        as: 'userauth_data',
+                                            //        pipeline: 
+                                            //        [
+                                            //            {
+                                            //                "$match": 
+                                            //                {
+                                            //                    "$and": 
+                                            //                    [
+                                            //                        {
+                                            //                            "$expr": 
+                                            //                            {
+                                            //                                "$eq": 
+                                            //                                [
+                                            //                                    "$email",
+                                            //                                    "$$basic_fk"
+                                            //                                ]
+                                            //                            },
+                                            //                            
+                                            //                        },
+                                            //                        
+                                            //                    ]
+                                            //                }
+                                            //            },
+                                            //            
+                                            //        ]
+                                            //    }
+                                            //},
                                             {
                                                 "$lookup":
                                                 {
@@ -13297,7 +13302,7 @@ export class SubChallengeReadService {
                             {
                                 "$lookup":
                                 {
-                                    from: "userbasics",
+                                    from: "newUserBasics",
                                     let:
                                     {
                                         basic_fk: "$idUser",
@@ -13320,40 +13325,45 @@ export class SubChallengeReadService {
                                                 }
                                             },
                                             {
-                                                "$lookup":
-                                                {
-                                                    from: "userauths",
-                                                    let:
-                                                    {
-                                                        basic_fk: "$email"
-                                                    },
-                                                    as: 'userauth_data',
-                                                    pipeline:
-                                                        [
-                                                            {
-                                                                "$match":
-                                                                {
-                                                                    "$and":
-                                                                        [
-                                                                            {
-                                                                                "$expr":
-                                                                                {
-                                                                                    "$eq":
-                                                                                        [
-                                                                                            "$email",
-                                                                                            "$$basic_fk"
-                                                                                        ]
-                                                                                },
-
-                                                                            },
-
-                                                                        ]
-                                                                }
-                                                            },
-
-                                                        ]
+                                                $set: {
+                                                    userauth_data: "$userbasic_data.username"
                                                 }
                                             },
+                                            //{
+                                            //    "$lookup": 
+                                            //    {
+                                            //        from: "userauths",
+                                            //        let: 
+                                            //        {
+                                            //            basic_fk: "$email"
+                                            //        },
+                                            //        as: 'userauth_data',
+                                            //        pipeline: 
+                                            //        [
+                                            //            {
+                                            //                "$match": 
+                                            //                {
+                                            //                    "$and": 
+                                            //                    [
+                                            //                        {
+                                            //                            "$expr": 
+                                            //                            {
+                                            //                                "$eq": 
+                                            //                                [
+                                            //                                    "$email",
+                                            //                                    "$$basic_fk"
+                                            //                                ]
+                                            //                            },
+                                            //                            
+                                            //                        },
+                                            //                        
+                                            //                    ]
+                                            //                }
+                                            //            },
+                                            //            
+                                            //        ]
+                                            //    }
+                                            //},
                                             {
                                                 "$lookup":
                                                 {
