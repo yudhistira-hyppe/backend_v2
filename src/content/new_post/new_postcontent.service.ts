@@ -437,7 +437,7 @@ export class NewPostContentService {
     let tag = Posts_.tagPeople;
     if (tag != undefined && tag.length > 0) {
       tag.forEach(el => {
-        let oid = el.oid;
+        let oid = el.toString();
         //let oid = el.toString();
         this.basic2SS.findOne(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
@@ -451,7 +451,7 @@ export class NewPostContentService {
     let tagdescription = Posts_.tagDescription;
     if (tagdescription != undefined && tagdescription.length > 0) {
       tagdescription.forEach(el => {
-        let oid = el.oid;
+        let oid = el.toString();
         //let oid = el.toString();
         this.basic2SS.findOne(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
