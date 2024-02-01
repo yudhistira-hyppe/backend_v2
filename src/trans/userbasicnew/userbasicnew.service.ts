@@ -25,6 +25,11 @@ export class UserbasicnewService {
             { email: email },
             { $push: { userAssets: { $each: assets } } })
     }
+    async updateUserBadge(id: string, userBadge: any[]): Promise<Object> {
+        let data = await this.UserbasicnewModel.updateOne({ "_id": new Types.ObjectId(id) },
+            { $set: { "userBadge": userBadge } });
+        return data;
+    }
     async findBymail(email: string): Promise<Userbasicnew> {
         return await this.UserbasicnewModel.findOne({ email: email }).exec();
     }
@@ -1499,10 +1504,10 @@ export class UserbasicnewService {
                         "$regex": target,
                         "$options": "i"
                     },
-                    "guestMode":{
-                        $ne:true
+                    "guestMode": {
+                        $ne: true
                     }
-                    
+
                 }
             },
             {
@@ -5771,7 +5776,7 @@ export class UserbasicnewService {
                     "descriptionContent": '$tester.descriptionContent',
                     "title": '$tester.title',
                     "mediaType": '$tester.mediaType',
-                     mediaEndpoint:{
+                    mediaEndpoint: {
                         "$cond":
                         {
                             if:
@@ -5854,7 +5859,7 @@ export class UserbasicnewService {
                     "mediaEndpoint": 1,
                     "apsaraId": 1,
                     "apsara": 1,
-                    iconVoucher:1
+                    iconVoucher: 1
 
                 }
             },
@@ -5886,7 +5891,7 @@ export class UserbasicnewService {
                     "postType": 1,
                     "descriptionContent": 1,
                     "title": 1,
-                    iconVoucher:1,
+                    iconVoucher: 1,
                     "kepemilikan":
                     {
                         $cond: {
@@ -6428,7 +6433,7 @@ export class UserbasicnewService {
                 checkfriendexist = true;
             }
         }
-        
+
         if (checkfriendexist == false) {
             var mongo = require('mongoose');
             try {
