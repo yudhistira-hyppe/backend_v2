@@ -10107,9 +10107,6 @@ export class AdsService {
     }
 
     async getAdsUser2(email: string, idUser: string, idTypeAds: string): Promise<any> {
-        console.log(email);
-        console.log(idUser);
-        console.log(idTypeAds);
         var query = await this.adsModel.aggregate(
             [
                 {
@@ -10912,54 +10909,11 @@ export class AdsService {
                                     }
                                 }
                             },
-                            // {
-                            //     "$lookup":
-                            //     {
-                            //         from: "userauths",
-                            //         let:
-                            //         {
-                            //             basic_fk: "$email"
-                            //         },
-                            //         as: 'userauth_data',
-                            //         pipeline:
-                            //             [
-                            //                 {
-                            //                     "$match":
-                            //                     {
-                            //                         "$and":
-                            //                             [
-                            //                                 {
-                            //                                     "$expr":
-                            //                                     {
-                            //                                         "$eq":
-                            //                                             [
-                            //                                                 "$email",
-                            //                                                 "$$basic_fk"
-                            //                                             ]
-                            //                                     },
-
-                            //                                 },
-
-                            //                             ]
-                            //                     }
-                            //                 },
-
-                            //             ]
-                            //     }
-                            // },
                             {
                                 $project: {
 
                                     "email": 1,
-                                    "userName": 1,
-                                    // "userName":
-                                    // {
-                                    //     "$arrayElemAt":
-                                    //         [
-                                    //             "$userauth_data.username",
-                                    //             0
-                                    //         ]
-                                    // },
+                                    "userName": "$username",
                                     avatar:
                                     {
                                         mediaEndpoint:
