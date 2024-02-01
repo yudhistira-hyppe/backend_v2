@@ -1109,7 +1109,7 @@ export class NewPostController {
                 if (data[i].music.apsaraThumnail) {
                     for (var j = 0; j < gettempresultpictapsara_tempapsaraMusicThumbId.length; j++) {
                         if (gettempresultpictapsara_tempapsaraMusicThumbId[j].ImageId == data[i].music.apsaraThumnail) {
-                            data[i].music.mediaMusicThumbEndpoint = gettempresultpictapsara_tempapsaraMusicThumbId[j].URL;
+                            data[i].music.apsaraThumbUrl = gettempresultpictapsara_tempapsaraMusicThumbId[j].URL;
                         }
                     }
                 }
