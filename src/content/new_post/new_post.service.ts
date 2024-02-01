@@ -12977,14 +12977,20 @@ export class NewPostService {
                       {
                         "$eq":
                           [
-                            "$postType", "pict"
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaType", 0 
+                              ]
+                            }, 
+                            "video"
                           ]
                       },
                       then:
                       {
                         "$concat":
                           [
-                            "/pict/",
+                            "/stream/",
                             "$postID"
                           ]
                       },
@@ -12992,7 +12998,7 @@ export class NewPostService {
                       {
                         "$concat":
                           [
-                            "/stream/",
+                            "/pict/",
                             "$postID"
                           ]
                       }
@@ -13517,14 +13523,20 @@ export class NewPostService {
                       {
                         "$eq":
                           [
-                            "$postType", "pict"
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaType", 0 
+                              ]
+                            }, 
+                            "video"
                           ]
                       },
                       then:
                       {
                         "$concat":
                           [
-                            "/pict/",
+                            "/stream/",
                             "$postID"
                           ]
                       },
@@ -13532,7 +13544,7 @@ export class NewPostService {
                       {
                         "$concat":
                           [
-                            "/stream/",
+                            "/pict/",
                             "$postID"
                           ]
                       }
@@ -13684,7 +13696,7 @@ export class NewPostService {
       pipeline.push({ $limit: limit });
     }
 
-    console.log(JSON.stringify(pipeline));
+    // console.log(JSON.stringify(pipeline));
 
     let query = await this.loaddata.aggregate(pipeline);
     // console.log(query);
