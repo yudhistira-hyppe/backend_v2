@@ -2788,7 +2788,7 @@ export class AdsController {
 
             //Send Fcm
             var eventType = "TRANSACTION";
-            var event = "ADS CLIKED";
+            var event = "ADS VIEW";
             this.utilsService.sendFcmV2(data_userbasic.email.toString(), data_userbasic.email.toString(), eventType, event, "REWARDS", null, null, null, dataRewards.rewardPrice.toString());
 
             //Set Response
