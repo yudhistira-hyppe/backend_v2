@@ -1093,6 +1093,28 @@ export class NewPostController {
         // var data = await this.UserbasicnewService.getpostquery(email:string, visibility:string, postids: string, tipepost:string, activestatus:string, exptime:string, skip:number, page:number, insight:string, sorttime:string);
         var data = await this.newPostService.getpostquery(auth.email, body.search, body.visibility, body.postID, body.postType, body.withActive, body.withExp, setPagerow, setPagenumber, body.withInsight, 'true');
 
+        var tempapsaraMusicThumbId = [];
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].music != undefined) {
+                if (data[i].music.apsaraThumnail != undefined) {
+                    tempapsaraMusicThumbId.push(data[i].music.apsaraThumnail);
+                }
+            }
+        }
+        let tempapsaraMusicThumbId_result = await this.newPostContentService.getImageApsara(tempapsaraMusicThumbId);
+        let gettempresultpictapsara_tempapsaraMusicThumbId = tempapsaraMusicThumbId_result.ImageInfo;
+
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].music != undefined) {
+                if (data[i].music.apsaraThumnail) {
+                    for (var j = 0; j < gettempresultpictapsara_tempapsaraMusicThumbId.length; j++) {
+                        if (gettempresultpictapsara_tempapsaraMusicThumbId[j].ImageId == data[i].music.apsaraThumnail) {
+                            data[i].music.mediaMusicThumbEndpoint = gettempresultpictapsara_tempapsaraMusicThumbId[j].URL;
+                        }
+                    }
+                }
+            }
+        }
         // var listdatagambar = [];
         // var listdatavideo = [];
         // var listmusic = [];
