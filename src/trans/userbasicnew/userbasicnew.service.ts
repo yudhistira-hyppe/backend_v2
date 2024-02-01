@@ -20,6 +20,11 @@ export class UserbasicnewService {
     async findOne(id: string): Promise<Userbasicnew> {
         return this.UserbasicnewModel.findOne({ _id: new Types.ObjectId(id) }).exec();
     }
+    async updateUserAssets(email: string, assets: mongoose.Types.ObjectId[]) {
+        return this.UserbasicnewModel.updateOne(
+            { email: email },
+            { $push: { userAssets: { $each: assets } } })
+    }
     async findBymail(email: string): Promise<Userbasicnew> {
         return await this.UserbasicnewModel.findOne({ email: email }).exec();
     }
@@ -1724,8 +1729,8 @@ export class UserbasicnewService {
             });
         }
 
-        var consol = require('util');
-        console.log(consol.inspect(pipeline, { showHidden: false, depth: null, colors: true }))
+        // var consol = require('util');
+        // console.log(consol.inspect(pipeline, { showHidden: false, depth: null, colors: true }))
 
         var data = await this.UserbasicnewModel.aggregate(pipeline);
 

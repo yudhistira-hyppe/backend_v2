@@ -8,11 +8,12 @@ import { UtilsModule } from '../../utils/utils.module';
 import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
 import { OssModule } from '../../stream/oss/oss.module';
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
+import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
 
 @Module({
     imports: [
         OssModule,
-        UserbasicsModule,
+        UserbasicnewModule,
         UtilsModule,
         LogapisModule,
         ConfigModule.forRoot(),

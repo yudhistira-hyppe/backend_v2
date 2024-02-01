@@ -50722,10 +50722,58 @@ export class NewPostService {
                     },
                     {
                       "$project": {
-                        "isApsara": "$apsara",
-                        "apsaraId": 1,
-                        "apsaraThumbId": 1,
-                        "mediaUri": 1,
+                        "isApsara": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.apsara", 0
+                              ]
+                            },
+                            false
+                          ]
+                        },
+                        "apsaraId": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.apsaraId", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "apsaraThumbId": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.apsaraThumbId", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "mediaUri": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaUri", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
                         "postID": 1,
                         "mediaEndpoint": {
                           "$concat": [
@@ -50733,16 +50781,76 @@ export class NewPostService {
                             "$postID"
                           ]
                         },
-                        "mediaThumbEndpoint": {
-                          "$concat": [
-                            "/thumb/",
-                            "$postID"
+                        "mediaThumbEndpoint": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaThumbEndpoint", 0
+                              ]
+                            },
+                            {
+                              "$concat": [
+                                "/thumb/",
+                                "$postID"
+                              ]
+                            }
                           ]
                         },
-                        "mediaThumbUri": "$mediaThumb",
-                        "mediaType": 1,
-                        "uploadSource": 1,
-                        "mediaThumUri": 1
+                        "mediaThumbUri": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaThumb", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "mediaType": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaType", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "uploadSource": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.uploadSource", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "mediaThumUri":
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaThumbUri", 0
+                              ]
+                            },
+                            null
+                          ]
+                        }
                       }
                     }
                   ]
@@ -52686,10 +52794,58 @@ export class NewPostService {
                     },
                     {
                       "$project": {
-                        "isApsara": "$apsara",
-                        "apsaraId": 1,
-                        "apsaraThumbId": 1,
-                        "mediaUri": 1,
+                        "isApsara": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.apsara", 0
+                              ]
+                            },
+                            false
+                          ]
+                        },
+                        "apsaraId": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.apsaraId", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "apsaraThumbId": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.apsaraThumbId", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "mediaUri": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaUri", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
                         "postID": 1,
                         "mediaEndpoint": {
                           "$concat": [
@@ -52697,16 +52853,76 @@ export class NewPostService {
                             "$postID"
                           ]
                         },
-                        "mediaThumbEndpoint": {
-                          "$concat": [
-                            "/thumb/",
-                            "$postID"
+                        "mediaThumbEndpoint": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaThumbEndpoint", 0
+                              ]
+                            },
+                            {
+                              "$concat": [
+                                "/thumb/",
+                                "$postID"
+                              ]
+                            }
                           ]
                         },
-                        "mediaThumbUri": "$mediaThumb",
-                        "mediaType": 1,
-                        "uploadSource": 1,
-                        "mediaThumUri": 1
+                        "mediaThumbUri": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaThumb", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "mediaType": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaType", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "uploadSource": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.uploadSource", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "mediaThumUri":
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaThumbUri", 0
+                              ]
+                            },
+                            null
+                          ]
+                        }
                       }
                     }
                   ]
@@ -53415,12 +53631,13 @@ export class NewPostService {
                       }
                     }
                   },
-                  "mediaType": {
-                    "$arrayElemAt": [
-                      "$media.mediaType",
-                      "$index"
-                    ]
-                  },
+                  "mediaType":"$mediapost.mediaType",
+                  // "mediaType": {
+                  //   "$arrayElemAt": [
+                  //     "$mediapost.mediaType",
+                  //     "$index"
+                  //   ]
+                  // },
                   "postType": {
                     "$arrayElemAt": [
                       "$all.postType",
@@ -54650,10 +54867,58 @@ export class NewPostService {
                     },
                     {
                       "$project": {
-                        "isApsara": "$apsara",
-                        "apsaraId": 1,
-                        "apsaraThumbId": 1,
-                        "mediaUri": 1,
+                        "isApsara": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.apsara", 0
+                              ]
+                            },
+                            false
+                          ]
+                        },
+                        "apsaraId": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.apsaraId", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "apsaraThumbId": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.apsaraThumbId", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "mediaUri": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaUri", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
                         "postID": 1,
                         "mediaEndpoint": {
                           "$concat": [
@@ -54661,16 +54926,76 @@ export class NewPostService {
                             "$postID"
                           ]
                         },
-                        "mediaThumbEndpoint": {
-                          "$concat": [
-                            "/thumb/",
-                            "$postID"
+                        "mediaThumbEndpoint": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaThumbEndpoint", 0
+                              ]
+                            },
+                            {
+                              "$concat": [
+                                "/thumb/",
+                                "$postID"
+                              ]
+                            }
                           ]
                         },
-                        "mediaThumbUri": "$mediaThumb",
-                        "mediaType": 1,
-                        "uploadSource": 1,
-                        "mediaThumUri": 1
+                        "mediaThumbUri": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaThumb", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "mediaType": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaType", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "uploadSource": 
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.uploadSource", 0
+                              ]
+                            },
+                            null
+                          ]
+                        },
+                        "mediaThumUri":
+                        {
+                          "$ifNull":
+                          [
+                            {
+                              "$arrayElemAt":
+                              [
+                                "$mediaSource.mediaThumbUri", 0
+                              ]
+                            },
+                            null
+                          ]
+                        }
                       }
                     }
                   ]

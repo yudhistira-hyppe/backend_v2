@@ -13,6 +13,7 @@ import * as http from "http";
 const sharp = require('sharp');
 import { LogapisService } from 'src/trans/logapis/logapis.service';
 import { CreateFilterDto } from '../filtercategory/dto/create-filter.dto';
+import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 
 
 @Controller('api/assets/filter')
@@ -21,7 +22,8 @@ export class AssetsFilterController {
         private readonly assetsFilterService: AssetsFilterService,
         private readonly utilsService: UtilsService,
         private readonly errorHandler: ErrorHandler,
-        private readonly userbasicsService: UserbasicsService,
+        //private readonly userbasicsService: UserbasicsService,
+        private readonly userbasicnewService: UserbasicnewService,
         private readonly ossService: OssService,
         private readonly logapiSS: LogapisService,
     ) { }
@@ -235,7 +237,7 @@ export class AssetsFilterController {
                 'Unabled to proceed email header dan token not match',
             );
         }
-        var profile = await this.userbasicsService.findOne(headers['x-auth-user']);
+        var profile = await this.userbasicnewService.findBymail(headers['x-auth-user']);
         if (!(await this.utilsService.ceckData(profile))) {
 
             var fullurl = req.get("Host") + req.originalUrl;
@@ -246,7 +248,7 @@ export class AssetsFilterController {
                 'Unabled to proceed user not found',
             );
         }
-        var assetsUser = await (await this.userbasicsService.findOne(headers['x-auth-user'])).userAssets;
+        var assetsUser = await (await this.userbasicnewService.findBymail(headers['x-auth-user'])).userAssets;
         if (await this.utilsService.ceckData(assetsUser)) {
             assetsUser.map(function (i) {
                 return new mongoose.Types.ObjectId(i);
@@ -302,7 +304,7 @@ export class AssetsFilterController {
                 'Unabled to proceed email header dan token not match',
             );
         }
-        var profile = await this.userbasicsService.findOne(headers['x-auth-user']);
+        var profile = await this.userbasicnewService.findBymail(headers['x-auth-user']);
         if (!(await this.utilsService.ceckData(profile))) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed user not found',
@@ -443,7 +445,7 @@ export class AssetsFilterController {
                 'Unabled to proceed email header dan token not match',
             );
         }
-        var profile = await this.userbasicsService.findOne(headers['x-auth-user']);
+        var profile = await this.userbasicnewService.findBymail(headers['x-auth-user']);
         if (!(await this.utilsService.ceckData(profile))) {
             var fullurl = req.get("Host") + req.originalUrl;
             var timestamps_end = await this.utilsService.getDateTimeString();
@@ -478,7 +480,7 @@ export class AssetsFilterController {
         _UpdateAssetsFilterDto_.assets = UpdateAssetsFilterDto_.assets.map(function (i) {
             return new mongoose.Types.ObjectId(i);
         });
-        this.userbasicsService.updateUserAssets(headers['x-auth-user'], _UpdateAssetsFilterDto_.assets)
+        this.userbasicnewService.updateUserAssets(headers['x-auth-user'], _UpdateAssetsFilterDto_.assets)
 
         var fullurl = req.get("Host") + req.originalUrl;
         var timestamps_end = await this.utilsService.getDateTimeString();
