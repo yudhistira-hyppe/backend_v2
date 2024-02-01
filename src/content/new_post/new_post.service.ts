@@ -50777,7 +50777,7 @@ export class NewPostService {
                         "postID": 1,
                         "mediaEndpoint": {
                           "$concat": [
-                            "/stream/",
+                            "/pict/",
                             "$postID"
                           ]
                         },
