@@ -45761,7 +45761,7 @@ export class NewPostService {
       {
         "$project":
         {
-          //"musicId": 1,
+          "musicId": 1,
           "postID": 1,
           "certified": 1,
           "metadata": 1,
@@ -46147,83 +46147,83 @@ export class NewPostService {
             ]
         }
       },
-      // {
-      //   "$lookup": {
-      //     from: "mediamusic",
-      //     as: "music",
-      //     let: {
-      //       localID: '$musicId'
-      //     },
-      //     pipeline: [
-      //       {
-      //         $match:
-      //         {
-      //           $expr: {
-      //             $eq: ['$_id', '$$localID']
-      //           }
-      //         }
-      //       },
-      //       //lookup dengan genre, theme dan mood
-      //       {
-      //         "$lookup":
-      //         {
-      //           from: "genre",
-      //           localField: "genre",
-      //           foreignField: "_id",
-      //           as: "genre_data"
-      //         }
-      //       },
-      //       {
-      //         "$lookup":
-      //         {
-      //           from: "theme",
-      //           localField: "theme",
-      //           foreignField: "_id",
-      //           as: "theme_data"
-      //         }
-      //       },
-      //       {
-      //         "$lookup":
-      //         {
-      //           from: "mood",
-      //           localField: "mood",
-      //           foreignField: "_id",
-      //           as: "mood_data"
-      //         }
-      //       },
-      //       {
-      //         $project: {
-      //           "musicTitle": 1,
-      //           "artistName": 1,
-      //           "albumName": 1,
-      //           "apsaraMusic": 1,
-      //           "apsaraThumnail": 1,
-      //           "genre":
-      //           {
-      //             "$arrayElemAt":
-      //               [
-      //                 "$genre_data.name", 0
-      //               ]
-      //           },
-      //           "theme":
-      //           {
-      //             "$arrayElemAt":
-      //               [
-      //                 "$theme_data.name", 0
-      //               ]
-      //           },
-      //           "mood":
-      //           {
-      //             "$arrayElemAt":
-      //               [
-      //                 "$mood_data.name", 0
-      //               ]
-      //           },
-      //         }
-      //       },
-      //     ],
-      //   }
-      // },
+      {
+        "$lookup": {
+          from: "mediamusic",
+          as: "music",
+          let: {
+            localID: '$musicId'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $eq: ['$_id', '$$localID']
+                }
+              }
+            },
+            //lookup dengan genre, theme dan mood
+            {
+              "$lookup":
+              {
+                from: "genre",
+                localField: "genre",
+                foreignField: "_id",
+                as: "genre_data"
+              }
+            },
+            {
+              "$lookup":
+              {
+                from: "theme",
+                localField: "theme",
+                foreignField: "_id",
+                as: "theme_data"
+              }
+            },
+            {
+              "$lookup":
+              {
+                from: "mood",
+                localField: "mood",
+                foreignField: "_id",
+                as: "mood_data"
+              }
+            },
+            {
+              $project: {
+                "musicTitle": 1,
+                "artistName": 1,
+                "albumName": 1,
+                "apsaraMusic": 1,
+                "apsaraThumnail": 1,
+                "genre":
+                {
+                  "$arrayElemAt":
+                    [
+                      "$genre_data.name", 0
+                    ]
+                },
+                "theme":
+                {
+                  "$arrayElemAt":
+                    [
+                      "$theme_data.name", 0
+                    ]
+                },
+                "mood":
+                {
+                  "$arrayElemAt":
+                    [
+                      "$mood_data.name", 0
+                    ]
+                },
+              }
+            },
+          ],
+        }
+      },
       {
         "$project":
         {
@@ -46336,48 +46336,48 @@ export class NewPostService {
               ]
           },
           //music:1,
-          // music:
-          // {
-          //   "$cond":
-          //   {
-          //     if:
-          //     {
-          //       "$eq":
-          //         [
-          //           "$music",
-          //           []
-          //         ]
-          //     },
-          //     then: null,
-          //     else:
-          //     {
-          //       "musicTitle": {
-          //         $arrayElemAt: ["$music.musicTitle", 0]
-          //       },
-          //       "artistName": {
-          //         $arrayElemAt: ["$music.artistName", 0]
-          //       },
-          //       "albumName": {
-          //         $arrayElemAt: ["$music.albumName", 0]
-          //       },
-          //       "apsaraMusic": {
-          //         $arrayElemAt: ["$music.apsaraMusic", 0]
-          //       },
-          //       "apsaraThumnail": {
-          //         $arrayElemAt: ["$music.apsaraThumnail", 0]
-          //       },
-          //       "genre": {
-          //         $arrayElemAt: ["$music.genre", 0]
-          //       },
-          //       "theme": {
-          //         $arrayElemAt: ["$music.theme", 0]
-          //       },
-          //       "mood": {
-          //         $arrayElemAt: ["$music.mood", 0]
-          //       },
-          //     }
-          //   }
-          // },
+          music:
+          {
+            "$cond":
+            {
+              if:
+              {
+                "$eq":
+                  [
+                    "$music",
+                    []
+                  ]
+              },
+              then: null,
+              else:
+              {
+                "musicTitle": {
+                  $arrayElemAt: ["$music.musicTitle", 0]
+                },
+                "artistName": {
+                  $arrayElemAt: ["$music.artistName", 0]
+                },
+                "albumName": {
+                  $arrayElemAt: ["$music.albumName", 0]
+                },
+                "apsaraMusic": {
+                  $arrayElemAt: ["$music.apsaraMusic", 0]
+                },
+                "apsaraThumnail": {
+                  $arrayElemAt: ["$music.apsaraThumnail", 0]
+                },
+                "genre": {
+                  $arrayElemAt: ["$music.genre", 0]
+                },
+                "theme": {
+                  $arrayElemAt: ["$music.theme", 0]
+                },
+                "mood": {
+                  $arrayElemAt: ["$music.mood", 0]
+                },
+              }
+            }
+          },
         }
       }
     );
