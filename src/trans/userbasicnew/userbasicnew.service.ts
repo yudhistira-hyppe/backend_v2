@@ -1725,8 +1725,8 @@ export class UserbasicnewService {
             });
         }
 
-        var consol = require('util');
-        console.log(consol.inspect(pipeline, { showHidden: false, depth: null, colors: true }))
+        // var consol = require('util');
+        // console.log(consol.inspect(pipeline, { showHidden: false, depth: null, colors: true }))
 
         var data = await this.UserbasicnewModel.aggregate(pipeline);
 
