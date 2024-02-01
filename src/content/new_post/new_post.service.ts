@@ -17562,6 +17562,13 @@ export class NewPostService {
                     pipeline: [
                       {
                         $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
+                      {
+                        $match: {
                           $expr: {
                             $regexMatch: {
                               input: "$username",
@@ -17934,139 +17941,146 @@ export class NewPostService {
           $facet:
           {
             "user":
-              [
-                {
-                  $lookup: {
-                    from: "newUserBasics",
-                    let: {
-                      name: "$dedy"
-                    },
-                    pipeline: [
-                      {
-                        $match: {
-                          $expr: {
-                            $regexMatch: {
-                              input: "$username",
-                              regex: "$$name",
-                              options: "i"
-                            }
+            [
+              {
+                $lookup: {
+                  from: "newUserBasics",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match: {
+                        guestMode: {
+                              $ne: true
+                          }
+                      }
+                  },
+                    {
+                      $match: {
+                        $expr: {
+                          $regexMatch: {
+                            input: "$username",
+                            regex: "$$name",
+                            options: "i"
                           }
                         }
                       }
-                    ],
-                    as: "userAuth"
-                  },
-
-                },
-                {
-                  $unwind: {
-                    path: "$userAuth",
-                    preserveNullAndEmptyArrays: true
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": "$userAuth.fullName",
-                    "profilePict": "$userAuth.profilePict",
-                    "username": "$userAuth.username",
-                    "email": "$userAuth.email",
-                    "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        //"mediaEndpoint": {
-                        //"$concat": ["/profilepict/", "$mediaUri"]
-                        //}
-                      }],
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$filter":
-                            {
-                              input:
-                              {
-                                "$arrayElemAt":
-                                  [
-                                    "$userAuth.userBadge",
-                                    0
-                                  ]
-                              },
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive",
-                                          true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
-                          []
-                        ]
-                    },
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": 1,
-                    "profilePict": 1,
-                    "username": 1,
-                    "email": 1,
-                    "avatar": 1,
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$urluserBadge",
-                                0
-                              ]
-                          },
-                          null
-                        ]
                     }
+                  ],
+                  as: "userAuth"
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$userAuth",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $project: {
+                  "fullName": "$userAuth.fullName",
+                  "profilePict": "$userAuth.profilePict",
+                  "username": "$userAuth.username",
+                  "email": "$userAuth.email",
+                  "avatar":
+                    [{
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    }],
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$filter":
+                          {
+                            input:
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$userAuth.userBadge",
+                                  0
+                                ]
+                            },
+                            as: "listbadge",
+                            cond:
+                            {
+                              "$and":
+                                [
+                                  {
+                                    "$eq":
+                                      [
+                                        "$$listbadge.isActive",
+                                        true
+                                      ]
+                                  },
+                                  {
+                                    "$lte": [
+                                      {
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            "$add": [
+                                              new Date(),
+                                              25200000
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "$$listbadge.endDatetime"
+                                    ]
+                                  }
+                                ]
+                            }
+                          }
+                        },
+                        []
+                      ]
+                  },
+                }
+              },
+              {
+                $project: {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "username": 1,
+                  "email": 1,
+                  "avatar": 1,
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$urluserBadge",
+                              0
+                            ]
+                        },
+                        null
+                      ]
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
-              ],
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
+            ],
             "vid":
               [
                 {
@@ -18313,139 +18327,146 @@ export class NewPostService {
           $facet:
           {
             "user":
-              [
-                {
-                  $lookup: {
-                    from: "newUserBasics",
-                    let: {
-                      name: "$dedy"
-                    },
-                    pipeline: [
-                      {
-                        $match: {
-                          $expr: {
-                            $regexMatch: {
-                              input: "$username",
-                              regex: "$$name",
-                              options: "i"
-                            }
+            [
+              {
+                $lookup: {
+                  from: "newUserBasics",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match: {
+                        guestMode: {
+                              $ne: true
+                          }
+                      }
+                  },
+                    {
+                      $match: {
+                        $expr: {
+                          $regexMatch: {
+                            input: "$username",
+                            regex: "$$name",
+                            options: "i"
                           }
                         }
                       }
-                    ],
-                    as: "userAuth"
-                  },
-
-                },
-                {
-                  $unwind: {
-                    path: "$userAuth",
-                    preserveNullAndEmptyArrays: true
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": "$userAuth.fullName",
-                    "profilePict": "$userAuth.profilePict",
-                    "username": "$userAuth.username",
-                    "email": "$userAuth.email",
-                    "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        //"mediaEndpoint": {
-                        //"$concat": ["/profilepict/", "$mediaUri"]
-                        //}
-                      }],
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$filter":
-                            {
-                              input:
-                              {
-                                "$arrayElemAt":
-                                  [
-                                    "$userAuth.userBadge",
-                                    0
-                                  ]
-                              },
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive",
-                                          true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
-                          []
-                        ]
-                    },
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": 1,
-                    "profilePict": 1,
-                    "username": 1,
-                    "email": 1,
-                    "avatar": 1,
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$urluserBadge",
-                                0
-                              ]
-                          },
-                          null
-                        ]
                     }
+                  ],
+                  as: "userAuth"
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$userAuth",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $project: {
+                  "fullName": "$userAuth.fullName",
+                  "profilePict": "$userAuth.profilePict",
+                  "username": "$userAuth.username",
+                  "email": "$userAuth.email",
+                  "avatar":
+                    [{
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    }],
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$filter":
+                          {
+                            input:
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$userAuth.userBadge",
+                                  0
+                                ]
+                            },
+                            as: "listbadge",
+                            cond:
+                            {
+                              "$and":
+                                [
+                                  {
+                                    "$eq":
+                                      [
+                                        "$$listbadge.isActive",
+                                        true
+                                      ]
+                                  },
+                                  {
+                                    "$lte": [
+                                      {
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            "$add": [
+                                              new Date(),
+                                              25200000
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "$$listbadge.endDatetime"
+                                    ]
+                                  }
+                                ]
+                            }
+                          }
+                        },
+                        []
+                      ]
+                  },
+                }
+              },
+              {
+                $project: {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "username": 1,
+                  "email": 1,
+                  "avatar": 1,
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$urluserBadge",
+                              0
+                            ]
+                        },
+                        null
+                      ]
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
-              ],
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
+            ],
             "diary":
               [
                 {
@@ -18698,6 +18719,13 @@ export class NewPostService {
                       name: "$dedy"
                     },
                     pipeline: [
+                      {
+                        $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
                       {
                         $match: {
                           $expr: {
@@ -19288,139 +19316,146 @@ export class NewPostService {
           $facet:
           {
             "user":
-              [
-                {
-                  $lookup: {
-                    from: "newUserBasics",
-                    let: {
-                      name: "$dedy"
-                    },
-                    pipeline: [
-                      {
-                        $match: {
-                          $expr: {
-                            $regexMatch: {
-                              input: "$username",
-                              regex: "$$name",
-                              options: "i"
-                            }
+            [
+              {
+                $lookup: {
+                  from: "newUserBasics",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match: {
+                        guestMode: {
+                              $ne: true
+                          }
+                      }
+                  },
+                    {
+                      $match: {
+                        $expr: {
+                          $regexMatch: {
+                            input: "$username",
+                            regex: "$$name",
+                            options: "i"
                           }
                         }
                       }
-                    ],
-                    as: "userAuth"
-                  },
-
-                },
-                {
-                  $unwind: {
-                    path: "$userAuth",
-                    preserveNullAndEmptyArrays: true
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": "$userAuth.fullName",
-                    "profilePict": "$userAuth.profilePict",
-                    "username": "$userAuth.username",
-                    "email": "$userAuth.email",
-                    "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        //"mediaEndpoint": {
-                        //"$concat": ["/profilepict/", "$mediaUri"]
-                        //}
-                      }],
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$filter":
-                            {
-                              input:
-                              {
-                                "$arrayElemAt":
-                                  [
-                                    "$userAuth.userBadge",
-                                    0
-                                  ]
-                              },
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive",
-                                          true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
-                          []
-                        ]
-                    },
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": 1,
-                    "profilePict": 1,
-                    "username": 1,
-                    "email": 1,
-                    "avatar": 1,
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$urluserBadge",
-                                0
-                              ]
-                          },
-                          null
-                        ]
                     }
+                  ],
+                  as: "userAuth"
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$userAuth",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $project: {
+                  "fullName": "$userAuth.fullName",
+                  "profilePict": "$userAuth.profilePict",
+                  "username": "$userAuth.username",
+                  "email": "$userAuth.email",
+                  "avatar":
+                    [{
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    }],
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$filter":
+                          {
+                            input:
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$userAuth.userBadge",
+                                  0
+                                ]
+                            },
+                            as: "listbadge",
+                            cond:
+                            {
+                              "$and":
+                                [
+                                  {
+                                    "$eq":
+                                      [
+                                        "$$listbadge.isActive",
+                                        true
+                                      ]
+                                  },
+                                  {
+                                    "$lte": [
+                                      {
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            "$add": [
+                                              new Date(),
+                                              25200000
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "$$listbadge.endDatetime"
+                                    ]
+                                  }
+                                ]
+                            }
+                          }
+                        },
+                        []
+                      ]
+                  },
+                }
+              },
+              {
+                $project: {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "username": 1,
+                  "email": 1,
+                  "avatar": 1,
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$urluserBadge",
+                              0
+                            ]
+                        },
+                        null
+                      ]
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
-              ],
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
+            ],
             //pict
             "pict":
               [
@@ -19892,6 +19927,13 @@ export class NewPostService {
                       name: "$dedy"
                     },
                     pipeline: [
+                      {
+                        $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
                       {
                         $match: {
                           $expr: {
@@ -20480,139 +20522,146 @@ export class NewPostService {
           $facet:
           {
             "user":
-              [
-                {
-                  $lookup: {
-                    from: "newUserBasics",
-                    let: {
-                      name: "$dedy"
-                    },
-                    pipeline: [
-                      {
-                        $match: {
-                          $expr: {
-                            $regexMatch: {
-                              input: "$username",
-                              regex: "$$name",
-                              options: "i"
-                            }
+            [
+              {
+                $lookup: {
+                  from: "newUserBasics",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match: {
+                        guestMode: {
+                              $ne: true
+                          }
+                      }
+                  },
+                    {
+                      $match: {
+                        $expr: {
+                          $regexMatch: {
+                            input: "$username",
+                            regex: "$$name",
+                            options: "i"
                           }
                         }
                       }
-                    ],
-                    as: "userAuth"
-                  },
-
-                },
-                {
-                  $unwind: {
-                    path: "$userAuth",
-                    preserveNullAndEmptyArrays: true
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": "$userAuth.fullName",
-                    "profilePict": "$userAuth.profilePict",
-                    "username": "$userAuth.username",
-                    "email": "$userAuth.email",
-                    "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        //"mediaEndpoint": {
-                        //"$concat": ["/profilepict/", "$mediaUri"]
-                        //}
-                      }],
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$filter":
-                            {
-                              input:
-                              {
-                                "$arrayElemAt":
-                                  [
-                                    "$userAuth.userBadge",
-                                    0
-                                  ]
-                              },
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive",
-                                          true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
-                          []
-                        ]
-                    },
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": 1,
-                    "profilePict": 1,
-                    "username": 1,
-                    "email": 1,
-                    "avatar": 1,
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$urluserBadge",
-                                0
-                              ]
-                          },
-                          null
-                        ]
                     }
+                  ],
+                  as: "userAuth"
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$userAuth",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $project: {
+                  "fullName": "$userAuth.fullName",
+                  "profilePict": "$userAuth.profilePict",
+                  "username": "$userAuth.username",
+                  "email": "$userAuth.email",
+                  "avatar":
+                    [{
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    }],
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$filter":
+                          {
+                            input:
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$userAuth.userBadge",
+                                  0
+                                ]
+                            },
+                            as: "listbadge",
+                            cond:
+                            {
+                              "$and":
+                                [
+                                  {
+                                    "$eq":
+                                      [
+                                        "$$listbadge.isActive",
+                                        true
+                                      ]
+                                  },
+                                  {
+                                    "$lte": [
+                                      {
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            "$add": [
+                                              new Date(),
+                                              25200000
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "$$listbadge.endDatetime"
+                                    ]
+                                  }
+                                ]
+                            }
+                          }
+                        },
+                        []
+                      ]
+                  },
+                }
+              },
+              {
+                $project: {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "username": 1,
+                  "email": 1,
+                  "avatar": 1,
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$urluserBadge",
+                              0
+                            ]
+                        },
+                        null
+                      ]
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
-              ],
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
+            ],
             //pict
             "pict":
               [
@@ -21302,6 +21351,13 @@ export class NewPostService {
                       name: "$dedy"
                     },
                     pipeline: [
+                      {
+                        $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
                       {
                         $match: {
                           $expr: {
@@ -22274,6 +22330,13 @@ export class NewPostService {
                       name: "$dedy"
                     },
                     pipeline: [
+                      {
+                        $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
                       {
                         $match: {
                           $expr: {
@@ -25367,6 +25430,13 @@ export class NewPostService {
                     pipeline: [
                       {
                         $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
+                      {
+                        $match: {
                           $expr: {
                             $regexMatch: {
                               input: "$username",
@@ -25830,139 +25900,146 @@ export class NewPostService {
           $facet:
           {
             "user":
-              [
-                {
-                  $lookup: {
-                    from: "newUserBasics",
-                    let: {
-                      name: "$dedy"
-                    },
-                    pipeline: [
-                      {
-                        $match: {
-                          $expr: {
-                            $regexMatch: {
-                              input: "$username",
-                              regex: "$$name",
-                              options: "i"
-                            }
+            [
+              {
+                $lookup: {
+                  from: "newUserBasics",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match: {
+                        guestMode: {
+                              $ne: true
+                          }
+                      }
+                  },
+                    {
+                      $match: {
+                        $expr: {
+                          $regexMatch: {
+                            input: "$username",
+                            regex: "$$name",
+                            options: "i"
                           }
                         }
                       }
-                    ],
-                    as: "userAuth"
-                  },
-
-                },
-                {
-                  $unwind: {
-                    path: "$userAuth",
-                    preserveNullAndEmptyArrays: true
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": "$userAuth.fullName",
-                    "profilePict": "$userAuth.profilePict",
-                    "username": "$userAuth.username",
-                    "email": "$userAuth.email",
-                    "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        //"mediaEndpoint": {
-                        //"$concat": ["/profilepict/", "$mediaUri"]
-                        //}
-                      }],
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$filter":
-                            {
-                              input:
-                              {
-                                "$arrayElemAt":
-                                  [
-                                    "$userAuth.userBadge",
-                                    0
-                                  ]
-                              },
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive",
-                                          true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
-                          []
-                        ]
-                    },
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": 1,
-                    "profilePict": 1,
-                    "username": 1,
-                    "email": 1,
-                    "avatar": 1,
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$urluserBadge",
-                                0
-                              ]
-                          },
-                          null
-                        ]
                     }
+                  ],
+                  as: "userAuth"
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$userAuth",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $project: {
+                  "fullName": "$userAuth.fullName",
+                  "profilePict": "$userAuth.profilePict",
+                  "username": "$userAuth.username",
+                  "email": "$userAuth.email",
+                  "avatar":
+                    [{
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    }],
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$filter":
+                          {
+                            input:
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$userAuth.userBadge",
+                                  0
+                                ]
+                            },
+                            as: "listbadge",
+                            cond:
+                            {
+                              "$and":
+                                [
+                                  {
+                                    "$eq":
+                                      [
+                                        "$$listbadge.isActive",
+                                        true
+                                      ]
+                                  },
+                                  {
+                                    "$lte": [
+                                      {
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            "$add": [
+                                              new Date(),
+                                              25200000
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "$$listbadge.endDatetime"
+                                    ]
+                                  }
+                                ]
+                            }
+                          }
+                        },
+                        []
+                      ]
+                  },
+                }
+              },
+              {
+                $project: {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "username": 1,
+                  "email": 1,
+                  "avatar": 1,
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$urluserBadge",
+                              0
+                            ]
+                        },
+                        null
+                      ]
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
-              ],
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
+            ],
             //pict
             "pict":
               [
@@ -26520,139 +26597,146 @@ export class NewPostService {
           $facet:
           {
             "user":
-              [
-                {
-                  $lookup: {
-                    from: "newUserBasics",
-                    let: {
-                      name: "$dedy"
-                    },
-                    pipeline: [
-                      {
-                        $match: {
-                          $expr: {
-                            $regexMatch: {
-                              input: "$username",
-                              regex: "$$name",
-                              options: "i"
-                            }
+            [
+              {
+                $lookup: {
+                  from: "newUserBasics",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match: {
+                        guestMode: {
+                              $ne: true
+                          }
+                      }
+                  },
+                    {
+                      $match: {
+                        $expr: {
+                          $regexMatch: {
+                            input: "$username",
+                            regex: "$$name",
+                            options: "i"
                           }
                         }
                       }
-                    ],
-                    as: "userAuth"
-                  },
-
-                },
-                {
-                  $unwind: {
-                    path: "$userAuth",
-                    preserveNullAndEmptyArrays: true
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": "$userAuth.fullName",
-                    "profilePict": "$userAuth.profilePict",
-                    "username": "$userAuth.username",
-                    "email": "$userAuth.email",
-                    "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        //"mediaEndpoint": {
-                        //"$concat": ["/profilepict/", "$mediaUri"]
-                        //}
-                      }],
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$filter":
-                            {
-                              input:
-                              {
-                                "$arrayElemAt":
-                                  [
-                                    "$userAuth.userBadge",
-                                    0
-                                  ]
-                              },
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive",
-                                          true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
-                          []
-                        ]
-                    },
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": 1,
-                    "profilePict": 1,
-                    "username": 1,
-                    "email": 1,
-                    "avatar": 1,
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$urluserBadge",
-                                0
-                              ]
-                          },
-                          null
-                        ]
                     }
+                  ],
+                  as: "userAuth"
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$userAuth",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $project: {
+                  "fullName": "$userAuth.fullName",
+                  "profilePict": "$userAuth.profilePict",
+                  "username": "$userAuth.username",
+                  "email": "$userAuth.email",
+                  "avatar":
+                    [{
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    }],
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$filter":
+                          {
+                            input:
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$userAuth.userBadge",
+                                  0
+                                ]
+                            },
+                            as: "listbadge",
+                            cond:
+                            {
+                              "$and":
+                                [
+                                  {
+                                    "$eq":
+                                      [
+                                        "$$listbadge.isActive",
+                                        true
+                                      ]
+                                  },
+                                  {
+                                    "$lte": [
+                                      {
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            "$add": [
+                                              new Date(),
+                                              25200000
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "$$listbadge.endDatetime"
+                                    ]
+                                  }
+                                ]
+                            }
+                          }
+                        },
+                        []
+                      ]
+                  },
+                }
+              },
+              {
+                $project: {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "username": 1,
+                  "email": 1,
+                  "avatar": 1,
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$urluserBadge",
+                              0
+                            ]
+                        },
+                        null
+                      ]
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
-              ],
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
+            ],
             "vid":
               [
                 {
@@ -27972,139 +28056,146 @@ export class NewPostService {
           $facet:
           {
             "user":
-              [
-                {
-                  $lookup: {
-                    from: "newUserBasics",
-                    let: {
-                      name: "$dedy"
-                    },
-                    pipeline: [
-                      {
-                        $match: {
-                          $expr: {
-                            $regexMatch: {
-                              input: "$username",
-                              regex: "$$name",
-                              options: "i"
-                            }
+            [
+              {
+                $lookup: {
+                  from: "newUserBasics",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match: {
+                        guestMode: {
+                              $ne: true
+                          }
+                      }
+                  },
+                    {
+                      $match: {
+                        $expr: {
+                          $regexMatch: {
+                            input: "$username",
+                            regex: "$$name",
+                            options: "i"
                           }
                         }
                       }
-                    ],
-                    as: "userAuth"
-                  },
-
-                },
-                {
-                  $unwind: {
-                    path: "$userAuth",
-                    preserveNullAndEmptyArrays: true
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": "$userAuth.fullName",
-                    "profilePict": "$userAuth.profilePict",
-                    "username": "$userAuth.username",
-                    "email": "$userAuth.email",
-                    "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        //"mediaEndpoint": {
-                        //"$concat": ["/profilepict/", "$mediaUri"]
-                        //}
-                      }],
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$filter":
-                            {
-                              input:
-                              {
-                                "$arrayElemAt":
-                                  [
-                                    "$userAuth.userBadge",
-                                    0
-                                  ]
-                              },
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive",
-                                          true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
-                          []
-                        ]
-                    },
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": 1,
-                    "profilePict": 1,
-                    "username": 1,
-                    "email": 1,
-                    "avatar": 1,
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$urluserBadge",
-                                0
-                              ]
-                          },
-                          null
-                        ]
                     }
+                  ],
+                  as: "userAuth"
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$userAuth",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $project: {
+                  "fullName": "$userAuth.fullName",
+                  "profilePict": "$userAuth.profilePict",
+                  "username": "$userAuth.username",
+                  "email": "$userAuth.email",
+                  "avatar":
+                    [{
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    }],
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$filter":
+                          {
+                            input:
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$userAuth.userBadge",
+                                  0
+                                ]
+                            },
+                            as: "listbadge",
+                            cond:
+                            {
+                              "$and":
+                                [
+                                  {
+                                    "$eq":
+                                      [
+                                        "$$listbadge.isActive",
+                                        true
+                                      ]
+                                  },
+                                  {
+                                    "$lte": [
+                                      {
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            "$add": [
+                                              new Date(),
+                                              25200000
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "$$listbadge.endDatetime"
+                                    ]
+                                  }
+                                ]
+                            }
+                          }
+                        },
+                        []
+                      ]
+                  },
+                }
+              },
+              {
+                $project: {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "username": 1,
+                  "email": 1,
+                  "avatar": 1,
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$urluserBadge",
+                              0
+                            ]
+                        },
+                        null
+                      ]
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
-              ],
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
+            ],
             //pict
             "pict":
               [
@@ -29566,139 +29657,146 @@ export class NewPostService {
           $facet:
           {
             "user":
-              [
-                {
-                  $lookup: {
-                    from: "newUserBasics",
-                    let: {
-                      name: "$dedy"
-                    },
-                    pipeline: [
-                      {
-                        $match: {
-                          $expr: {
-                            $regexMatch: {
-                              input: "$username",
-                              regex: "$$name",
-                              options: "i"
-                            }
+            [
+              {
+                $lookup: {
+                  from: "newUserBasics",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match: {
+                        guestMode: {
+                              $ne: true
+                          }
+                      }
+                  },
+                    {
+                      $match: {
+                        $expr: {
+                          $regexMatch: {
+                            input: "$username",
+                            regex: "$$name",
+                            options: "i"
                           }
                         }
                       }
-                    ],
-                    as: "userAuth"
-                  },
-
-                },
-                {
-                  $unwind: {
-                    path: "$userAuth",
-                    preserveNullAndEmptyArrays: true
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": "$userAuth.fullName",
-                    "profilePict": "$userAuth.profilePict",
-                    "username": "$userAuth.username",
-                    "email": "$userAuth.email",
-                    "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        //"mediaEndpoint": {
-                        //"$concat": ["/profilepict/", "$mediaUri"]
-                        //}
-                      }],
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$filter":
-                            {
-                              input:
-                              {
-                                "$arrayElemAt":
-                                  [
-                                    "$userAuth.userBadge",
-                                    0
-                                  ]
-                              },
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive",
-                                          true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
-                          []
-                        ]
-                    },
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": 1,
-                    "profilePict": 1,
-                    "username": 1,
-                    "email": 1,
-                    "avatar": 1,
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$urluserBadge",
-                                0
-                              ]
-                          },
-                          null
-                        ]
                     }
+                  ],
+                  as: "userAuth"
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$userAuth",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $project: {
+                  "fullName": "$userAuth.fullName",
+                  "profilePict": "$userAuth.profilePict",
+                  "username": "$userAuth.username",
+                  "email": "$userAuth.email",
+                  "avatar":
+                    [{
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    }],
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$filter":
+                          {
+                            input:
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$userAuth.userBadge",
+                                  0
+                                ]
+                            },
+                            as: "listbadge",
+                            cond:
+                            {
+                              "$and":
+                                [
+                                  {
+                                    "$eq":
+                                      [
+                                        "$$listbadge.isActive",
+                                        true
+                                      ]
+                                  },
+                                  {
+                                    "$lte": [
+                                      {
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            "$add": [
+                                              new Date(),
+                                              25200000
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "$$listbadge.endDatetime"
+                                    ]
+                                  }
+                                ]
+                            }
+                          }
+                        },
+                        []
+                      ]
+                  },
+                }
+              },
+              {
+                $project: {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "username": 1,
+                  "email": 1,
+                  "avatar": 1,
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$urluserBadge",
+                              0
+                            ]
+                        },
+                        null
+                      ]
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
-              ],
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
+            ],
 
             //pict
             "pict":
@@ -30033,6 +30131,13 @@ export class NewPostService {
                       name: "$dedy"
                     },
                     pipeline: [
+                      {
+                        $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
                       {
                         $match: {
                           $expr: {
@@ -30481,139 +30586,146 @@ export class NewPostService {
           $facet:
           {
             "user":
-              [
-                {
-                  $lookup: {
-                    from: "newUserBasics",
-                    let: {
-                      name: "$dedy"
-                    },
-                    pipeline: [
-                      {
-                        $match: {
-                          $expr: {
-                            $regexMatch: {
-                              input: "$username",
-                              regex: "$$name",
-                              options: "i"
-                            }
+            [
+              {
+                $lookup: {
+                  from: "newUserBasics",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match: {
+                        guestMode: {
+                              $ne: true
+                          }
+                      }
+                  },
+                    {
+                      $match: {
+                        $expr: {
+                          $regexMatch: {
+                            input: "$username",
+                            regex: "$$name",
+                            options: "i"
                           }
                         }
                       }
-                    ],
-                    as: "userAuth"
-                  },
-
-                },
-                {
-                  $unwind: {
-                    path: "$userAuth",
-                    preserveNullAndEmptyArrays: true
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": "$userAuth.fullName",
-                    "profilePict": "$userAuth.profilePict",
-                    "username": "$userAuth.username",
-                    "email": "$userAuth.email",
-                    "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        //"mediaEndpoint": {
-                        //"$concat": ["/profilepict/", "$mediaUri"]
-                        //}
-                      }],
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$filter":
-                            {
-                              input:
-                              {
-                                "$arrayElemAt":
-                                  [
-                                    "$userAuth.userBadge",
-                                    0
-                                  ]
-                              },
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive",
-                                          true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
-                          []
-                        ]
-                    },
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": 1,
-                    "profilePict": 1,
-                    "username": 1,
-                    "email": 1,
-                    "avatar": 1,
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$urluserBadge",
-                                0
-                              ]
-                          },
-                          null
-                        ]
                     }
+                  ],
+                  as: "userAuth"
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$userAuth",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $project: {
+                  "fullName": "$userAuth.fullName",
+                  "profilePict": "$userAuth.profilePict",
+                  "username": "$userAuth.username",
+                  "email": "$userAuth.email",
+                  "avatar":
+                    [{
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    }],
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$filter":
+                          {
+                            input:
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$userAuth.userBadge",
+                                  0
+                                ]
+                            },
+                            as: "listbadge",
+                            cond:
+                            {
+                              "$and":
+                                [
+                                  {
+                                    "$eq":
+                                      [
+                                        "$$listbadge.isActive",
+                                        true
+                                      ]
+                                  },
+                                  {
+                                    "$lte": [
+                                      {
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            "$add": [
+                                              new Date(),
+                                              25200000
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "$$listbadge.endDatetime"
+                                    ]
+                                  }
+                                ]
+                            }
+                          }
+                        },
+                        []
+                      ]
+                  },
+                }
+              },
+              {
+                $project: {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "username": 1,
+                  "email": 1,
+                  "avatar": 1,
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$urluserBadge",
+                              0
+                            ]
+                        },
+                        null
+                      ]
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
-              ],
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
+            ],
             "diary":
               [
                 {
@@ -30943,6 +31055,13 @@ export class NewPostService {
                       name: "$dedy"
                     },
                     pipeline: [
+                      {
+                        $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
                       {
                         $match: {
                           $expr: {
@@ -31688,139 +31807,146 @@ export class NewPostService {
           $facet:
           {
             "user":
-              [
-                {
-                  $lookup: {
-                    from: "newUserBasics",
-                    let: {
-                      name: "$dedy"
-                    },
-                    pipeline: [
-                      {
-                        $match: {
-                          $expr: {
-                            $regexMatch: {
-                              input: "$username",
-                              regex: "$$name",
-                              options: "i"
-                            }
+            [
+              {
+                $lookup: {
+                  from: "newUserBasics",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match: {
+                        guestMode: {
+                              $ne: true
+                          }
+                      }
+                  },
+                    {
+                      $match: {
+                        $expr: {
+                          $regexMatch: {
+                            input: "$username",
+                            regex: "$$name",
+                            options: "i"
                           }
                         }
                       }
-                    ],
-                    as: "userAuth"
-                  },
-
-                },
-                {
-                  $unwind: {
-                    path: "$userAuth",
-                    preserveNullAndEmptyArrays: true
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": "$userAuth.fullName",
-                    "profilePict": "$userAuth.profilePict",
-                    "username": "$userAuth.username",
-                    "email": "$userAuth.email",
-                    "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        //"mediaEndpoint": {
-                        //"$concat": ["/profilepict/", "$mediaUri"]
-                        //}
-                      }],
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$filter":
-                            {
-                              input:
-                              {
-                                "$arrayElemAt":
-                                  [
-                                    "$userAuth.userBadge",
-                                    0
-                                  ]
-                              },
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive",
-                                          true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
-                          []
-                        ]
-                    },
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": 1,
-                    "profilePict": 1,
-                    "username": 1,
-                    "email": 1,
-                    "avatar": 1,
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$urluserBadge",
-                                0
-                              ]
-                          },
-                          null
-                        ]
                     }
+                  ],
+                  as: "userAuth"
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$userAuth",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $project: {
+                  "fullName": "$userAuth.fullName",
+                  "profilePict": "$userAuth.profilePict",
+                  "username": "$userAuth.username",
+                  "email": "$userAuth.email",
+                  "avatar":
+                    [{
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    }],
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$filter":
+                          {
+                            input:
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$userAuth.userBadge",
+                                  0
+                                ]
+                            },
+                            as: "listbadge",
+                            cond:
+                            {
+                              "$and":
+                                [
+                                  {
+                                    "$eq":
+                                      [
+                                        "$$listbadge.isActive",
+                                        true
+                                      ]
+                                  },
+                                  {
+                                    "$lte": [
+                                      {
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            "$add": [
+                                              new Date(),
+                                              25200000
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "$$listbadge.endDatetime"
+                                    ]
+                                  }
+                                ]
+                            }
+                          }
+                        },
+                        []
+                      ]
+                  },
+                }
+              },
+              {
+                $project: {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "username": 1,
+                  "email": 1,
+                  "avatar": 1,
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$urluserBadge",
+                              0
+                            ]
+                        },
+                        null
+                      ]
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
-              ],
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
+            ],
             //pict
             "pict":
               [
@@ -32446,6 +32572,13 @@ export class NewPostService {
                       name: "$dedy"
                     },
                     pipeline: [
+                      {
+                        $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
                       {
                         $match: {
                           $expr: {
@@ -33196,6 +33329,13 @@ export class NewPostService {
                       name: "$dedy"
                     },
                     pipeline: [
+                      {
+                        $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
                       {
                         $match: {
                           $expr: {
@@ -34242,6 +34382,13 @@ export class NewPostService {
                       name: "$dedy"
                     },
                     pipeline: [
+                      {
+                        $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
                       {
                         $match: {
                           $expr: {
@@ -35445,6 +35592,13 @@ export class NewPostService {
                       name: "$dedy"
                     },
                     pipeline: [
+                      {
+                        $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
                       {
                         $match: {
                           $expr: {
@@ -39309,6 +39463,13 @@ export class NewPostService {
                     pipeline: [
                       {
                         $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
+                      {
+                        $match: {
                           $expr: {
                             $regexMatch: {
                               input: "$username",
@@ -39857,6 +40018,13 @@ export class NewPostService {
                       name: "$dedy"
                     },
                     pipeline: [
+                      {
+                        $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
                       {
                         $match: {
                           $expr: {
@@ -40694,139 +40862,146 @@ export class NewPostService {
           $facet:
           {
             "user":
-              [
-                {
-                  $lookup: {
-                    from: "newUserBasics",
-                    let: {
-                      name: "$dedy"
-                    },
-                    pipeline: [
-                      {
-                        $match: {
-                          $expr: {
-                            $regexMatch: {
-                              input: "$username",
-                              regex: "$$name",
-                              options: "i"
-                            }
+            [
+              {
+                $lookup: {
+                  from: "newUserBasics",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match: {
+                        guestMode: {
+                              $ne: true
+                          }
+                      }
+                  },
+                    {
+                      $match: {
+                        $expr: {
+                          $regexMatch: {
+                            input: "$username",
+                            regex: "$$name",
+                            options: "i"
                           }
                         }
                       }
-                    ],
-                    as: "userAuth"
-                  },
-
-                },
-                {
-                  $unwind: {
-                    path: "$userAuth",
-                    preserveNullAndEmptyArrays: true
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": "$userAuth.fullName",
-                    "profilePict": "$userAuth.profilePict",
-                    "username": "$userAuth.username",
-                    "email": "$userAuth.email",
-                    "avatar":
-                      [{
-                        "mediaBasePath": "$userAuth.mediaBasePath",
-                        "mediaUri": "$userAuth.mediaUri",
-                        "originalName": "$userAuth.originalName",
-                        "fsSourceUri": "$userAuth.fsSourceUri",
-                        "fsSourceName": "$userBasic.fsSourceName",
-                        "fsTargetUri": "$userAuth.fsTargetUri",
-                        "mediaType": "$userAuth.mediaType",
-                        //"mediaEndpoint": {
-                        //"$concat": ["/profilepict/", "$mediaUri"]
-                        //}
-                      }],
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$filter":
-                            {
-                              input:
-                              {
-                                "$arrayElemAt":
-                                  [
-                                    "$userAuth.userBadge",
-                                    0
-                                  ]
-                              },
-                              as: "listbadge",
-                              cond:
-                              {
-                                "$and":
-                                  [
-                                    {
-                                      "$eq":
-                                        [
-                                          "$$listbadge.isActive",
-                                          true
-                                        ]
-                                    },
-                                    {
-                                      "$lte": [
-                                        {
-                                          "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                              "$add": [
-                                                new Date(),
-                                                25200000
-                                              ]
-                                            }
-                                          }
-                                        },
-                                        "$$listbadge.endDatetime"
-                                      ]
-                                    }
-                                  ]
-                              }
-                            }
-                          },
-                          []
-                        ]
-                    },
-                  }
-                },
-                {
-                  $project: {
-                    "fullName": 1,
-                    "profilePict": 1,
-                    "username": 1,
-                    "email": 1,
-                    "avatar": 1,
-                    //"idUserAuth": "$userAuth._id",
-                    "urluserBadge":
-                    {
-                      "$ifNull":
-                        [
-                          {
-                            "$arrayElemAt":
-                              [
-                                "$urluserBadge",
-                                0
-                              ]
-                          },
-                          null
-                        ]
                     }
+                  ],
+                  as: "userAuth"
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$userAuth",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $project: {
+                  "fullName": "$userAuth.fullName",
+                  "profilePict": "$userAuth.profilePict",
+                  "username": "$userAuth.username",
+                  "email": "$userAuth.email",
+                  "avatar":
+                    [{
+                      "mediaBasePath": "$userAuth.mediaBasePath",
+                      "mediaUri": "$userAuth.mediaUri",
+                      "originalName": "$userAuth.originalName",
+                      "fsSourceUri": "$userAuth.fsSourceUri",
+                      "fsSourceName": "$userBasic.fsSourceName",
+                      "fsTargetUri": "$userAuth.fsTargetUri",
+                      "mediaType": "$userAuth.mediaType",
+                      //"mediaEndpoint": {
+                      //"$concat": ["/profilepict/", "$mediaUri"]
+                      //}
+                    }],
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$filter":
+                          {
+                            input:
+                            {
+                              "$arrayElemAt":
+                                [
+                                  "$userAuth.userBadge",
+                                  0
+                                ]
+                            },
+                            as: "listbadge",
+                            cond:
+                            {
+                              "$and":
+                                [
+                                  {
+                                    "$eq":
+                                      [
+                                        "$$listbadge.isActive",
+                                        true
+                                      ]
+                                  },
+                                  {
+                                    "$lte": [
+                                      {
+                                        "$dateToString": {
+                                          "format": "%Y-%m-%d %H:%M:%S",
+                                          "date": {
+                                            "$add": [
+                                              new Date(),
+                                              25200000
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "$$listbadge.endDatetime"
+                                    ]
+                                  }
+                                ]
+                            }
+                          }
+                        },
+                        []
+                      ]
+                  },
+                }
+              },
+              {
+                $project: {
+                  "fullName": 1,
+                  "profilePict": 1,
+                  "username": 1,
+                  "email": 1,
+                  "avatar": 1,
+                  //"idUserAuth": "$userAuth._id",
+                  "urluserBadge":
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$urluserBadge",
+                              0
+                            ]
+                        },
+                        null
+                      ]
                   }
-                },
-                {
-                  $skip: skip
-                },
-                {
-                  $limit: limit
-                },
-              ],
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
+            ],
             "vid":
               [
                 {
@@ -42541,6 +42716,13 @@ export class NewPostService {
                       name: "$dedy"
                     },
                     pipeline: [
+                      {
+                        $match: {
+                          guestMode: {
+                                $ne: true
+                            }
+                        }
+                    },
                       {
                         $match: {
                           $expr: {
