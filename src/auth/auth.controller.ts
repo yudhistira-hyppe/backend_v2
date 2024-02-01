@@ -2916,13 +2916,13 @@ export class AuthController {
           //   }
           // }
         }
-        //  else {
-        //   var fullurl = req.get("Host") + req.originalUrl;
-        //   var timestamps_end = await this.utilsService.getDateTimeString();
-        //   this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+         else {
+          var fullurl = req.get("Host") + req.originalUrl;
+          var timestamps_end = await this.utilsService.getDateTimeString();
+          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
 
-        //   response.send(null);
-        // }
+          response.send(null);
+        }
       } else {
         var fullurl = req.get("Host") + req.originalUrl;
         var timestamps_end = await this.utilsService.getDateTimeString();
