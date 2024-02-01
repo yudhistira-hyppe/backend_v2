@@ -28,6 +28,10 @@ export class UserbasicnewService {
     async findBymail(email: string): Promise<Userbasicnew> {
         return await this.UserbasicnewModel.findOne({ email: email }).exec();
     }
+
+    async findByIdavatar(idavatar: string): Promise<Userbasicnew> {
+        return await this.UserbasicnewModel.findOne({ _idAvatar: idavatar }).exec();
+    }
     async find(): Promise<Userbasicnew[]> {
         return this.UserbasicnewModel.find().exec();
     }
@@ -1725,8 +1729,8 @@ export class UserbasicnewService {
             });
         }
 
-        var consol = require('util');
-        console.log(consol.inspect(pipeline, { showHidden: false, depth: null, colors: true }))
+        // var consol = require('util');
+        // console.log(consol.inspect(pipeline, { showHidden: false, depth: null, colors: true }))
 
         var data = await this.UserbasicnewModel.aggregate(pipeline);
 

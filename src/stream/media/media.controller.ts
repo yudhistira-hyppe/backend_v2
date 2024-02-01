@@ -511,7 +511,7 @@ export class MediaController {
                 cardPict_mimetype = files.cardPict[0].mimetype;
 
                 var result = await this.ossService.uploadFile(files.cardPict[0], iduserbasic + "/kyc/proofpict/" + cardPict_filename_new);
-                console.log("RESULT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",result);
+                console.log("RESULT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", result);
                 if (result != undefined) {
                     if (result.res != undefined) {
                         if (result.res.statusCode != undefined) {
@@ -1040,8 +1040,7 @@ export class MediaController {
         var re = /(?:\.([^.]+))?$/;
 
         if (await this.utilsService.ceckData(datauserbasicsService)) {
-            if(datauserbasicsService.kyc.length != 0 && datauserbasicsService.kyc[0].postType != undefined)
-            {
+            if (datauserbasicsService.kyc.length != 0 && datauserbasicsService.kyc[0].postType != undefined) {
                 datakyc = datauserbasicsService.kyc[0];
             }
             emailuserbasic = datauserbasicsService.email;
@@ -1063,7 +1062,7 @@ export class MediaController {
                 cardPict_mimetype = files.cardPict[0].mimetype;
 
                 var result = await this.ossService.uploadFile(files.cardPict[0], iduserbasic + "/kyc/proofpict/" + cardPict_filename_new);
-                console.log("RESULT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",result);
+                console.log("RESULT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", result);
                 if (result != undefined) {
                     if (result.res != undefined) {
                         if (result.res.statusCode != undefined) {
@@ -1383,7 +1382,7 @@ export class MediaController {
                             $db: 'hyppe_content_db'
                         },
                         listAddKyc: listAddKyc,
-                        kyc:[CreateMediaproofpictsDto_]
+                        kyc: [CreateMediaproofpictsDto_]
                     });
                 } catch (err) {
                     await this.errorHandler.generateNotAcceptableException(
@@ -1443,9 +1442,9 @@ export class MediaController {
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.status = 'FAILED';
                     _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict dan Selfie Pict';
-                    datakyc.status  = 'FAILED';
+                    datakyc.status = 'FAILED';
                     datakyc.state = 'Kesalahan KTP Pict dan Selfie Pict';
-                    var updatedata = new CreateuserbasicnewDto(); 
+                    var updatedata = new CreateuserbasicnewDto();
                     updatedata.kyc = [datakyc];
                     iduserbasic = datauserbasicsService._id;
                     await this.basic2SS.updateIdVerifiedUser(iduserbasic, false, 'unverified');
@@ -1498,9 +1497,9 @@ export class MediaController {
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.status = 'FAILED';
                     _CreateMediaproofpictsDto.state = 'Kesalahan Selfie Pict';
-                    datakyc.status  = 'FAILED';
+                    datakyc.status = 'FAILED';
                     datakyc.state = 'Kesalahan Selfie Pict';
-                    var updatedata = new CreateuserbasicnewDto(); 
+                    var updatedata = new CreateuserbasicnewDto();
                     updatedata.kyc = [datakyc];
                     iduserbasic = datauserbasicsService._id;
                     await this.basic2SS.updateIdVerifiedUser(iduserbasic, false, 'unverified');
@@ -1526,9 +1525,9 @@ export class MediaController {
                     await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REJECT');
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.state = 'KTP Pict';
-                    datakyc.status  = 'FAILED';
+                    datakyc.status = 'FAILED';
                     datakyc.state = 'KTP Pict';
-                    var updatedata = new CreateuserbasicnewDto(); 
+                    var updatedata = new CreateuserbasicnewDto();
                     updatedata.kyc = [datakyc];
                     iduserbasic = datauserbasicsService._id;
                     await this.basic2SS.updateIdVerifiedUser(iduserbasic, false, 'unverified');
@@ -3243,7 +3242,7 @@ export class MediaController {
             loaddatakyc = dataemailuser.kyc[0];
 
             var setutil = require('util');
-            console.log(setutil.inspect(loaddatakyc, { showHidden:false, depth:null }));
+            console.log(setutil.inspect(loaddatakyc, { showHidden: false, depth: null }));
 
             loaddatakyc['idcardnumber'] = noktp;
             loaddatakyc['nama'] = nama;
@@ -3253,12 +3252,12 @@ export class MediaController {
         } catch (e) {
             dataemailuser = null;
             email = "";
-            loaddatakyc = 
+            loaddatakyc =
             {
-                "idcardnumber": noktp, 
-                "nama": nama, 
-                "tglLahir": tglLahir, 
-                "tempatLahir": tempatLahir, 
+                "idcardnumber": noktp,
+                "nama": nama,
+                "tglLahir": tglLahir,
+                "tempatLahir": tempatLahir,
                 "jenisKelamin": jenisKelamin
             };
         }
@@ -3286,7 +3285,7 @@ export class MediaController {
                 await this.basic2SS.updateStatusKycName(nama, jenisKelamin, email, true, "verified", tglLahir, [loaddatakyc]);
                 await this.utilsService.sendFcmV2(email.toString(), email.toString(), 'KYC', 'REQUEST', 'KYC_VERIFIED');
 
-                return { response_code: 202, data:loaddatakyc.kycHandle[0], messages };
+                return { response_code: 202, data: loaddatakyc.kycHandle[0], messages };
 
             } catch (e) {
                 throw new BadRequestException("Unabled to proceed " + e);
@@ -3315,7 +3314,7 @@ export class MediaController {
                 await this.basic2SS.updateStatusKycFailed(email, false, "unverified", [loaddatakyc]);
                 await this.utilsService.sendFcmV2(email.toString(), email.toString(), 'KYC', 'REQUEST', 'KYC_REJECT');
 
-                return { response_code: 202, data:loaddatakyc.kycHandle[0], messages };
+                return { response_code: 202, data: loaddatakyc.kycHandle[0], messages };
 
             } catch (e) {
                 throw new BadRequestException("Unabled to proceed " + e);
@@ -3902,6 +3901,359 @@ export class MediaController {
         } else {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed user not found',
+            );
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Post('api/posts/upload/v2')
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'cardPict', maxCount: 1 }, { name: 'selfiepict', maxCount: 1, }, { name: 'supportFile', maxCount: 10, }]))
+    async uploadnewv2(
+        @UploadedFiles() files1: {
+            cardPict?: Express.Multer.File[],
+            selfiepict?: Express.Multer.File[],
+            supportFile?: Express.Multer.File[]
+        },
+        // @UploadedFiles() files2: Array<Express.Multer.File>,
+        @Body() CreateMediaproofpictsDto_: CreateMediaproofpictsDto,
+        @Headers() headers) {
+        //  var idmediaproofpict = CreateMediaproofpictsDto_._id.toString();
+
+
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unable to proceed, token and email do not match',
+            );
+        }
+
+        if (headers['x-auth-token'] == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unable to proceed, email is required',
+            );
+        }
+
+        var iduserbasic = null;
+        var url_cardPict = null;
+
+        var countfile = files1.supportFile.length;
+        //Var supportFile
+        let supportFile_data = null;
+        let supportFile_filename = '';
+        let supportFile_etx = '';
+        let supportFile_mimetype = '';
+        let supportFile_name = '';
+        let supportFile_filename_new = '';
+        let supportFile_local_path = '';
+        let supportFile_seaweedfs_path = '';
+        var url_cardPict = null;
+        var url_supportPict = null;
+        var url_selfiepict = null;
+
+        var arrayUri = [];
+        var arrayName = [];
+        var arraySuri = [];
+        var arraySname = [];
+        var arrayThumbUri = [];
+        //Var cardPict
+        let cardPict_data = null;
+        let cardPict_filename = '';
+        let cardPict_etx = '';
+        let cardPict_mimetype = '';
+        let cardPict_name = '';
+        let cardPict_filename_new = '';
+        let cardPict_local_path = '';
+        let cardPict_seaweedfs_path = '';
+
+        //Var selfiepict
+        let selfiepict_data = null;
+        let selfiepict_filename = '';
+        let selfiepict_etx = '';
+        let selfiepict_mimetype = '';
+        let selfiepict_name = '';
+        let selfiepict_filename_new = '';
+        let selfiepict_local_path = '';
+        let selfiepict_seaweedfs_path = '';
+        var emailuserbasic = null;
+        //Var current date
+        var current_date = await this.utilsService.getDateTimeString();
+
+        //Var generate id
+        var IdMediaproofpictsDto = await this.utilsService.generateId();
+        //Var generate id mongoose
+
+
+        //Ceck User Userbasics
+        const datauserbasicsService = await this.basic2SS.findBymail(
+            headers['x-auth-user'],
+        );
+
+        var titleinsukses = null;
+        var titleensukses = null;
+        var bodyinsukses = null;
+        var bodyensukses = null;
+        var eventType = null;
+        var supportFile_filename_new_thum = null;
+        var event = null;
+        if (await this.utilsService.ceckData(datauserbasicsService)) {
+            // var mongoose_gen_meida = new mongoose.Types.ObjectId();
+            titleinsukses = "Dalam Proses Verifikasi";
+            titleensukses = "Verification On Progress";
+            bodyinsukses = "Hai " + datauserbasicsService.fullName + "! Kami sedang meninjau data yang Anda kirimkan. ini akan memakan waktu 3x24 jam proses";
+            bodyensukses = "Hi " + datauserbasicsService.fullName + "! We are currently reviewing the data you submitted. this will take a 3x24 hour process";
+            eventType = "SUPPORTFILE";
+            event = "REQUEST";
+
+            emailuserbasic = datauserbasicsService.email;
+            iduserbasic = datauserbasicsService._id.toString();
+
+            var paths = IdMediaproofpictsDto;
+            var mongoose_gen_meida = paths;
+            var url_cardPict_thum = null;
+            //Ceck cardPict
+            if (files1.cardPict != undefined) {
+                var FormData_ = new FormData();
+                cardPict_filename = files1.cardPict[0].originalname;
+
+                cardPict_etx = '.jpeg';
+                cardPict_filename_new = iduserbasic + cardPict_etx;
+                cardPict_mimetype = files1.cardPict[0].mimetype;
+
+                var result = await this.ossService.uploadFile(files1.cardPict[0], iduserbasic + "/kyc/proofpict/" + cardPict_filename_new);
+                if (result != undefined) {
+                    if (result.res != undefined) {
+                        if (result.res.statusCode != undefined) {
+                            if (result.res.statusCode == 200) {
+                                url_cardPict = result.res.requestUrls[0];
+                            } else {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unable to proceed, cardPict failed to upload: response status code is not 200',
+                                );
+                            }
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unable to proceed, cardPict failed to upload: response status code is undefined',
+                            );
+                        }
+                    } else {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unable to proceed, cardPict failed to upload: response data is undefined',
+                        );
+                    }
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unable to proceed, cardPict failed to upload: result is undefined',
+                    );
+                }
+
+
+                //Ceck selfiepict
+                if (files1.selfiepict != undefined) {
+                    var FormData_ = new FormData();
+                    selfiepict_filename = files1.selfiepict[0].originalname;
+
+                    selfiepict_etx = '.jpeg';
+                    selfiepict_filename_new = iduserbasic + selfiepict_etx;
+                    selfiepict_mimetype = files1.selfiepict[0].mimetype;
+
+                    var result = await this.ossService.uploadFile(files1.selfiepict[0], iduserbasic + "/kyc/selfiepict/" + selfiepict_filename_new);
+                    if (result != undefined) {
+                        if (result.res != undefined) {
+                            if (result.res.statusCode != undefined) {
+                                if (result.res.statusCode == 200) {
+                                    url_selfiepict = result.res.requestUrls[0];
+                                } else {
+                                    await this.errorHandler.generateNotAcceptableException(
+                                        'Unable to proceed, selfiePict failed to upload: response status code is not 200',
+                                    );
+                                }
+                            } else {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unable to proceed, selfiePict failed to upload: response status code is undefined',
+                                );
+                            }
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unable to proceed, selfiePict failed to upload: response data is undefined',
+                            );
+                        }
+                    } else {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unable to proceed, selfiePict failed to upload: response data is undefined',
+                        );
+                    }
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unable to proceed, selfiepict is required',
+                    );
+                }
+                //Ceck supportFile
+                if (files1.supportFile != undefined) {
+
+                    for (var i = 0; i < countfile; i++) {
+                        var FormData_ = new FormData();
+                        supportFile_data = files1.supportFile[i];
+
+                        supportFile_filename = files1.supportFile[i].originalname;
+                        supportFile_etx = '.jpeg';
+                        supportFile_filename_new = mongoose_gen_meida + '_000' + (i + 1) + supportFile_etx;
+                        supportFile_mimetype = files1.supportFile[i].mimetype;
+
+                        var result = await this.ossService.uploadFile(files1.supportFile[i], iduserbasic + "/kyc/supportfile/" + supportFile_filename_new);
+                        console.log(result)
+                        if (result != undefined) {
+                            if (result.res != undefined) {
+                                if (result.res.statusCode != undefined) {
+                                    if (result.res.statusCode == 200) {
+                                        url_supportPict = result.res.requestUrls[0];
+                                    } else {
+                                        await this.errorHandler.generateNotAcceptableException(
+                                            'Unable to proceed, supportFile failed to upload: response status code is not 200',
+                                        );
+                                    }
+                                } else {
+                                    await this.errorHandler.generateNotAcceptableException(
+                                        'Unable to proceed, supportFile failed to upload: response status code is undefined',
+                                    );
+                                }
+                            } else {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unable to proceed, supportFile failed to upload: response data is undefined',
+                                );
+                            }
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unable to proceed, supportFile failed to upload: result is undefined',
+                            );
+                        }
+
+                        var cardPict_thum = await this.generate_thumnail(files1.supportFile[i], "jpeg");
+                        supportFile_filename_new_thum = mongoose_gen_meida + "_thum" + '_000' + (i + 1) + supportFile_etx;
+                        var result_thum = await this.ossService.uploadFileBuffer(cardPict_thum, iduserbasic + "/kyc/supportfile/" + supportFile_filename_new_thum);
+                        if (result_thum != undefined) {
+                            if (result_thum.res != undefined) {
+                                if (result_thum.res.statusCode != undefined) {
+                                    if (result_thum.res.statusCode == 200) {
+                                        url_cardPict_thum = result_thum.res.requestUrls[0];
+                                    } else {
+                                        await this.errorHandler.generateNotAcceptableException(
+                                            'Unable to proceed, cardPict thumnail failed to upload: response status code is not 200',
+                                        );
+                                    }
+                                } else {
+                                    await this.errorHandler.generateNotAcceptableException(
+                                        'Unable to proceed, cardPict thumnail failed to upload: response status code is undefined',
+                                    );
+                                }
+                            } else {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unable to proceed, cardPict thumnail failed to upload: response data is undefined',
+                                );
+                            }
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unable to proceed, cardPict thumnail failed to upload: result is undefined',
+                            );
+                        }
+                        var pathnew = iduserbasic + '/kyc/supportfile/' + supportFile_filename_new
+                        arrayUri.push(pathnew);
+                        arrayThumbUri.push(url_cardPict_thum);
+                        arrayName.push(supportFile_filename);
+                        arraySuri.push(url_cardPict);
+                        arraySname.push(supportFile_filename);
+                    }
+                }
+
+            } else {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unable to proceed, supportFile is required',
+                );
+            }
+
+            // /Ceck Data user proofPict
+            // Ceck Data user proofPict
+
+            //Update proofPict
+            try {
+
+                CreateMediaproofpictsDto_._id = IdMediaproofpictsDto;
+                CreateMediaproofpictsDto_.mediaID = IdMediaproofpictsDto;
+                CreateMediaproofpictsDto_.active = true;
+                CreateMediaproofpictsDto_.valid = false;
+                CreateMediaproofpictsDto_.createdAt = current_date;
+                CreateMediaproofpictsDto_.updatedAt = current_date;
+
+                CreateMediaproofpictsDto_.mediaType = 'image';
+                CreateMediaproofpictsDto_.postType = 'proofpict';
+                CreateMediaproofpictsDto_.mediaBasePath = iduserbasic + "/kyc/proofpict/" + cardPict_filename_new;
+                CreateMediaproofpictsDto_.mediaUri = cardPict_filename_new;
+                CreateMediaproofpictsDto_.originalName = cardPict_filename;
+                CreateMediaproofpictsDto_.fsSourceUri = url_cardPict;
+                CreateMediaproofpictsDto_.fsSourceName = cardPict_filename_new;
+                CreateMediaproofpictsDto_.fsTargetUri = url_cardPict;
+                CreateMediaproofpictsDto_.mediaMime = cardPict_mimetype;
+                CreateMediaproofpictsDto_.proofpictUploadSource = "OSS";
+
+                CreateMediaproofpictsDto_.mediaSelfieType = 'selfiepict';
+                CreateMediaproofpictsDto_.mediaSelfieBasePath = iduserbasic + '/kyc/selfiepict/' + selfiepict_filename_new;
+                CreateMediaproofpictsDto_.mediaSelfieUri = selfiepict_filename_new;
+                CreateMediaproofpictsDto_.SelfieOriginalName = selfiepict_filename;
+                CreateMediaproofpictsDto_.SelfiefsSourceUri = url_selfiepict;
+                CreateMediaproofpictsDto_.SelfiefsSourceName = selfiepict_filename_new;
+                CreateMediaproofpictsDto_.SelfiefsTargetUri = url_selfiepict;
+                CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype;
+                CreateMediaproofpictsDto_.SelfieUploadSource = "OSS";
+
+                CreateMediaproofpictsDto_.SupportUploadSource = "OSS";
+                CreateMediaproofpictsDto_.mediaSupportType = 'supportfile';
+                CreateMediaproofpictsDto_.mediaSupportBasePath = mongoose_gen_meida + '/supportfile/';
+                CreateMediaproofpictsDto_.mediaSupportUri = arrayUri;
+                CreateMediaproofpictsDto_.SupportOriginalName = arrayName;
+                CreateMediaproofpictsDto_.SupportfsSourceUri = arraySuri;
+                CreateMediaproofpictsDto_.SupportfsSourceName = arraySname;
+                CreateMediaproofpictsDto_.SupportfsTargetUri = arrayUri;
+                CreateMediaproofpictsDto_.SupportmediaMime = supportFile_mimetype;
+                CreateMediaproofpictsDto_.mediaSupportUriThumb = arrayThumbUri;
+
+                CreateMediaproofpictsDto_.status = 'IN_PROGGRESS';
+                await this.mediaproofpictsService.create(CreateMediaproofpictsDto_);
+                await this.basic2SS.updatebyEmail(datauserbasicsService.email.toString(), {
+                    idProofName: CreateMediaproofpictsDto_.nama,
+                    idProofNumber: CreateMediaproofpictsDto_.idcardnumber,
+                    idProofStatus: 'COMPLETE',
+                    isIdVerified: false,
+                    statusKyc: 'review',
+                    proofPict: {
+                        $ref: 'mediaproofpicts',
+                        $id: new Object(IdMediaproofpictsDto),
+                        $db: 'hyppe_content_db'
+                    },
+                    kyc: [CreateMediaproofpictsDto_]
+                });
+                await this.utilsService.sendFcmV2(datauserbasicsService.email.toString(), datauserbasicsService.email.toString(), 'KYC', 'REQUEST', 'KYC_REVIEW');
+
+                // await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+            } catch (err) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unable to proceed, failed to update Mediaproofpicts ' + err,
+                );
+            }
+
+            return {
+                "response_code": 202,
+                "data": {
+                    "id_mediaproofpicts": IdMediaproofpictsDto,
+                    "status": "IN_PROGGRESS"
+                },
+                "messages": {
+                    "info": [
+                        "Successfully Uploaded"
+                    ]
+                }
+            };
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unable to proceed, user not found',
             );
         }
     }
