@@ -129,7 +129,7 @@ export class UserAdsService {
                 }
             }, {
                 $lookup: {
-                    from: 'userbasics',
+                    from: 'newUserBasics',
                     localField: 'userID',
                     foreignField: '_id',
                     as: 'userbasics_data',
@@ -355,7 +355,7 @@ export class UserAdsService {
         pipeline = [
             {
                 '$lookup': {
-                    from: 'userbasics',
+                    from: 'newUserBasics',
                     localField: 'userID',
                     foreignField: '_id',
                     as: 'basic'
@@ -769,7 +769,7 @@ export class UserAdsService {
             },
             {
                 $lookup: {
-                    from: 'userbasics',
+                    from: 'newUserBasics',
                     localField: 'userID',
                     foreignField: '_id',
                     as: 'userbasics_data',
@@ -2109,7 +2109,7 @@ export class UserAdsService {
             },
             {
                 $lookup: {
-                    from: 'userbasics',
+                    from: 'newUserBasics',
                     localField: 'userID',
                     foreignField: '_id',
                     as: 'userbasics_data',
@@ -2716,7 +2716,7 @@ export class UserAdsService {
             },
             {
                 $lookup: {
-                    from: 'userbasics',
+                    from: 'newUserBasics',
                     localField: 'userID',
                     foreignField: '_id',
                     as: 'userbasics_data',
@@ -5702,7 +5702,7 @@ export class UserAdsService {
             },
             {
                 $lookup: {
-                    from: 'userbasics',
+                    from: 'newUserBasics',
                     as: 'userbasics_data',
                     let: {
                         local_id: "$userID"
@@ -5957,16 +5957,6 @@ export class UserAdsService {
                                 ]
                             }
                         },
-                        // {
-                        //     $group:
-                        //     {
-                        //         _id: "$clickTime",
-                        //         CTACount:
-                        //         {
-                        //             "$sum": 1
-                        //         }
-                        //     }
-                        // }
                     ],
                 },
             },
@@ -7144,7 +7134,7 @@ export class UserAdsService {
             },
             {
                 $lookup: {
-                    from: 'userbasics',
+                    from: 'newUserBasics',
                     as: 'userbasics_data',
                     let: {
                         local_id: "$userID"
@@ -7513,7 +7503,7 @@ export class UserAdsService {
             },
             {
                 $lookup: {
-                    from: 'userbasics',
+                    from: 'newUserBasics',
                     as: 'userbasics_data',
                     let: {
                         local_id: "$userID"
@@ -7882,7 +7872,7 @@ export class UserAdsService {
             },
             {
                 $lookup: {
-                    from: 'userbasics',
+                    from: 'newUserBasics',
                     as: 'userbasics_data',
                     let: {
                         local_id: "$userID"
@@ -8251,7 +8241,7 @@ export class UserAdsService {
             },
             {
                 $lookup: {
-                    from: 'userbasics',
+                    from: 'newUserBasics',
                     as: 'userbasics_data',
                     let: {
                         local_id: "$userID"
@@ -8623,7 +8613,7 @@ export class UserAdsService {
             },
             {
                 $lookup: {
-                    from: 'userbasics',
+                    from: 'newUserBasics',
                     as: 'userbasics_data',
                     let: {
                         local_id: "$userID"
