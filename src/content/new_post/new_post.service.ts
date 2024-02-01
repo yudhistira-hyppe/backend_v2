@@ -2046,92 +2046,41 @@ export class NewPostService {
               "default": ""
             }
           },
-          "mediaEndpoint": {
-            "$switch": {
-              "branches": [
+          "mediaEndpoint": 
+          {
+            "$ifNull":
+              [
+                "$mediaSource.mediaEndpoint",
                 {
-                  "case": {
-                    "$eq": [
-                      "$type",
-                      "HyppePic"
-                    ]
-                  },
-                  "then": {
-                    "$concat":
-                      [
-                        "/pict/",
-                        "$postID"
-                      ]
-                  }
-                },
-                {
-                  "case": {
-                    "$eq": [
-                      "$type",
-                      "HyppeDiary"
-                    ]
-                  },
-                  "then": {
-                    "$concat": [
-                      "/thumb/",
-                      "$postID"
-                    ]
-                  }
-                },
-                {
-                  "case": {
-                    "$eq": [
-                      "$type",
-                      "HyppeVid"
-                    ]
-                  },
-                  "then": {
-                    "$concat": [
-                      "/thumb/",
-                      "$postID"
-                    ]
-                  }
-                },
-                {
-                  "case": {
-                    "$eq": [
-                      "$type",
-                      "HyppeDiary"
-                    ]
-                  },
-                  "then": {
-                    "$cond":
+                  "$cond":
+                  {
+                    if:
                     {
-                      if:
-                      {
-                        "$eq":
-                          [
-                            "$mediaSource.mediaType",
-                            "image"
-                          ]
-                      },
-                      then:
-                      {
-                        "$concat":
-                          [
-                            "/pict/",
-                            "$postID"
-                          ]
-                      },
-                      else:
-                      {
-                        "$concat":
-                          [
-                            "/stream/",
-                            "$postID"
-                          ]
-                      }
+                      "$eq":
+                        [
+                          "$mediaSource.mediaType", 
+                          "video"
+                        ]
+                    },
+                    then:
+                    {
+                      "$concat":
+                        [
+                          "/stream/",
+                          "$postID"
+                        ]
+                    },
+                    else:
+                    {
+                      "$concat":
+                        [
+                          "/pict/",
+                          "$postID"
+                        ]
                     }
                   }
                 }
-              ],
-              "default": ""
-            }
+              ]
           },
           "mediaThumbUri": "$mediaSource.mediaThumb",
           "apsaraId": {
