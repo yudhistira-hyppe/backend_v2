@@ -651,8 +651,8 @@ export class NewPostContentService {
     let tag = Posts_.tagPeople;
     if (tag != undefined && tag.length > 0) {
       tag.forEach(el => {
-        let oid = el.oid;
-        //let oid = el.toString();
+        //let oid = el.oid;
+        let oid = el.toString();
         this.basic2SS.findOne(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
             this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString());
@@ -665,8 +665,8 @@ export class NewPostContentService {
     let tagdescription = Posts_.tagDescription;
     if (tagdescription != undefined && tagdescription.length > 0) {
       tagdescription.forEach(el => {
-        let oid = el.oid;
-        //let oid = el.toString();
+        //let oid = el.oid;
+        let oid = el.toString();
         this.basic2SS.findOne(oid).then(async (as) => {
           if (await this.utilService.ceckData(as)) {
             this.utilService.sendFcmV2(as.email.toString(), Posts_.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), Posts_.postType.toString())
@@ -1784,7 +1784,7 @@ export class NewPostContentService {
         var tp = await this.basic2SS.findOneUsername(tmp);
         if (await this.utilService.ceckData(tp)) {
           if (tp.username != undefined) {
-            var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
+            var objintr_ = new mongoose.Types.ObjectId(tp._id);
             let em = String(tp.username);
             let bodyi = em + ' Menandai kamu di ';
             let bodye = em + ' Tagged you in ';
@@ -1805,7 +1805,7 @@ export class NewPostContentService {
             console.log(body.postID);
             console.log(post.postType.toString());
             this.utilService.sendFcmV2(tp.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID, post.postType.toString());
-            pcats.push(objintr);
+            pcats.push(objintr_);
           }
         }
       }
@@ -1838,7 +1838,7 @@ export class NewPostContentService {
         var tp = await this.basic2SS.findOneUsername(tmp);
         if (await this.utilService.ceckData(tp)) {
           if (tp != undefined || tp != null) {
-            var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
+            var objintrx = new mongoose.Types.ObjectId(tp._id);
             let em = String(tp.username);
             let bodyi = em + ' Menandai kamu di ';
             let bodye = em + ' Tagged you in ';
