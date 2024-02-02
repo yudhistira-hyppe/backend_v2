@@ -248,7 +248,7 @@ export class AccountbalancesService {
         paramaggregate.push(
             {
                 $lookup: {
-                    from: 'userbasics',
+                    from: 'newUserBasics',
                     as: 'userbasics_data',
                     let: {
                         local_id: "$iduser"
@@ -333,26 +333,6 @@ export class AccountbalancesService {
                                 ]
                             }
                         },
-                        {
-                            $lookup: {
-                                from: 'userauths',
-                                as: 'userauths',
-                                let: {
-                                    local_id: "$userAuth.$id"
-                                },
-                                pipeline: [
-                                    {
-                                        $match: {
-                                            $expr: {
-                                                $and: [
-                                                    { $eq: ['$_id', '$$local_id'] },
-                                                ]
-                                            }
-                                        }
-                                    },
-                                ]
-                            }
-                        }
                     ],
                 },
             },
@@ -605,20 +585,11 @@ export class AccountbalancesService {
                         }
                     },
                     username: {
-                        $let: {
+                        "$let": {
                             "vars": {
-                                userauths: {
-                                    "$arrayElemAt": [{
-                                        "$let": {
-                                            "vars": {
-                                                "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
-                                            },
-                                            "in": "$$tmp.userauths"
-                                        }
-                                    }, 0]
-                                }
+                                "tmp": { "$arrayElemAt": ["$userbasics_data", 0] },
                             },
-                            "in": "$$userauths.username"
+                            "in": "$$tmp.username"
                         }
                     },
                     lokasiId: {
