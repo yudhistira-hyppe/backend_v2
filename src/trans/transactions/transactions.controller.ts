@@ -4966,7 +4966,7 @@ export class TransactionsController {
         var ubasic = null;
         var idubasic = null;
         try {
-            ubasic = await this.userbasicsService.findOne(email);
+            ubasic = await this.basic2SS.findOne(email);
             idubasic = ubasic._id;
         } catch (e) {
             var timestamps_end = await this.utilsService.getDateTimeString();
