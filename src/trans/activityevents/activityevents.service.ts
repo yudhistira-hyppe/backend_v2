@@ -780,7 +780,7 @@ export class ActivityeventsService {
 
   }
 
-  async filteruser2(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number, descending: any, type: string) {
+  async filteruser2(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number, descending: any, type: string, listcreator: any[]) {
 
     var arrlokasi = [];
     var idlokasi = null;
@@ -1055,6 +1055,13 @@ export class ActivityeventsService {
               },
           },
           lastlogin: '$createdAt',
+          creator:
+          {
+              "$arrayElemAt":
+              [
+                  "$user.creator", 0
+              ]
+          },
           urluserBadge: 
           {
               '$ifNull': 
@@ -1120,6 +1127,14 @@ export class ActivityeventsService {
               areasId: 1,
               avatar: 1,
               lastlogin: 1,
+              creator: 
+              {
+                "$ifNull":
+                [
+                  "$creator",
+                  false
+                ]
+              },
               urluserBadge: 
               {
                   '$ifNull': 
@@ -1149,6 +1164,19 @@ export class ActivityeventsService {
           username: {
             $regex: username,
             $options: 'i'
+          },
+
+        }
+      },);
+
+    }
+
+    if (listcreator && listcreator !== undefined) {
+
+      pipeline.push({
+        $match: {
+          creator: {
+            "$in":listcreator
           },
 
         }
