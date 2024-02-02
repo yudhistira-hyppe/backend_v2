@@ -3104,7 +3104,7 @@ export class TransactionsController {
                         // console.log(langIso);
 
                         // await this.postsService.updateGenerateUserPlaylist(idusersell, CreateUserplaylistDto_);
-                        var basicdatabypost = await this.basic2SS.findBymail(postid.email);
+                        var basicdatabypost = await this.basic2SS.findBymail(emailbuyer.toString());
                         await this.postsContent2SS.generateCertificate(postid, langIso, datapost, basicdatabypost);
 
                         var timestamps_end = await this.utilsService.getDateTimeString();

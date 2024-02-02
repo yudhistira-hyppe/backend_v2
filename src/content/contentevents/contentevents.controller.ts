@@ -2719,10 +2719,8 @@ export class ContenteventsController {
           // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
           await this.contenteventsService.create(CreateContenteventsDto2);
           await this.postDisqusSS.updateLike(email_receiverParty, email_user, request.body.postID);
-          if (await this.utilsService.ceckData(Insight_receiver)) {
-            await this.insightsService.updateLike(email_receiverParty);
-            this.sendInteractiveFCM2(email_receiverParty, "LIKE", request.body.postID, email_user);
-          }
+          await this.insightsService.updateLike(email_receiverParty);
+          this.sendInteractiveFCM2(email_receiverParty, "LIKE", request.body.postID, email_user);
           // const databasic = await this.userbasicsService.findOne(
           //   email_receiverParty
           // );
