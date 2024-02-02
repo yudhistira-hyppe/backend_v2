@@ -11682,6 +11682,8 @@ export class AdsService {
                         scoreGeografis: 1,
                         scoreTotal: 1,
                         isValid: 1,
+                        width: 1,
+                        height: 1,
                         objectivitasId: "$objectivitas.name_id",
                         objectivitasEn: "$objectivitas.name_en",
                         mediaBasePath: 1,
