@@ -3240,6 +3240,74 @@ export class AuthController {
     }
   }
 
+  // @Get('proofpict/:id')
+  // @HttpCode(HttpStatus.OK)
+  // async proofpict(
+  //   @Param('id') id: string,
+  //   @Query('x-auth-token') token: string,
+  //   @Query('x-auth-user') email: string, @Res() response) {
+  //   if ((id != undefined) && (token != undefined) && (email != undefined)) {
+  //     if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+  //       var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
+  //       if (mediaproofpicts.proofpictUploadSource != undefined) {
+  //         if (mediaproofpicts.proofpictUploadSource == "OSS") {
+  //           if (mediaproofpicts.mediaMime != undefined) {
+  //             mediaMime = mediaproofpicts.mediaMime.toString();
+  //           } else {
+  //             mediaMime = "image/jpeg";
+  //           }
+  //           var data2 = await this.ossService.readFile(mediaproofpicts.mediaBasePath.toString());
+  //           if (data2 != null) {
+  //             response.set("Content-Type", "image/jpeg");
+  //             response.send(data2);
+  //           } else {
+  //             response.send(null);
+  //           }
+  //         } else {
+  //           response.send(null);
+  //         }
+  //       } else {
+  //         if (await this.utilsService.ceckData(mediaproofpicts)) {
+  //           var mediaproofpicts_fsSourceUri = '';
+  //           var mediaMime = "";
+  //           if (mediaproofpicts != null) {
+  //             if (mediaproofpicts.fsSourceUri != null) {
+  //               mediaproofpicts_fsSourceUri = mediaproofpicts.fsSourceUri.toString();
+  //             }
+  //           }
+  //           if (mediaproofpicts.mediaMime != undefined) {
+  //             mediaMime = mediaproofpicts.mediaMime.toString();
+  //           } else {
+  //             mediaMime = "image/jpeg";
+  //           }
+  //           if (mediaproofpicts_fsSourceUri != '') {
+  //             // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
+  //             // const response_ = await fetch(url);
+  //             // const blob = await response_.blob();
+  //             // const arrayBuffer = await blob.arrayBuffer();
+  //             // const buffer = Buffer.from(arrayBuffer);
+  //             var data = await this.authService.profilePict(mediaproofpicts_fsSourceUri);
+  //             if (data != null) {
+  //               response.set("Content-Type", mediaMime);
+  //               response.send(data);
+  //             } else {
+  //               response.send(null);
+  //             }
+  //           } else {
+  //             response.send(null);
+  //           }
+  //         } else {
+  //           response.send(null);
+  //         }
+  //       }
+  //     } else {
+  //       response.send(null);
+  //     }
+  //   } else {
+  //     response.send(null);
+  //   }
+  // }
+
   @Get('proofpict/:id')
   @HttpCode(HttpStatus.OK)
   async proofpict(
@@ -3248,15 +3316,16 @@ export class AuthController {
     @Query('x-auth-user') email: string, @Res() response) {
     if ((id != undefined) && (token != undefined) && (email != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
-        var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
-        if (mediaproofpicts.proofpictUploadSource != undefined) {
-          if (mediaproofpicts.proofpictUploadSource == "OSS") {
-            if (mediaproofpicts.mediaMime != undefined) {
-              mediaMime = mediaproofpicts.mediaMime.toString();
+        var userbasic = await this.basic2SS.findOne(id);
+        console.log("userbasic:", userbasic);
+        if (userbasic.kyc[0].proofpictUploadSource != undefined) {
+          if (userbasic.kyc[0].proofpictUploadSource == "OSS") {
+            if (userbasic.kyc[0].mediaMime != undefined) {
+              mediaMime = userbasic.kyc[0].mediaMime.toString();
             } else {
               mediaMime = "image/jpeg";
             }
-            var data2 = await this.ossService.readFile(mediaproofpicts.mediaBasePath.toString());
+            var data2 = await this.ossService.readFile(userbasic.kyc[0].mediaBasePath.toString());
             if (data2 != null) {
               response.set("Content-Type", "image/jpeg");
               response.send(data2);
@@ -3267,25 +3336,20 @@ export class AuthController {
             response.send(null);
           }
         } else {
-          if (await this.utilsService.ceckData(mediaproofpicts)) {
+          if (await this.utilsService.ceckData(userbasic.kyc[0])) {
             var mediaproofpicts_fsSourceUri = '';
             var mediaMime = "";
-            if (mediaproofpicts != null) {
-              if (mediaproofpicts.fsSourceUri != null) {
-                mediaproofpicts_fsSourceUri = mediaproofpicts.fsSourceUri.toString();
+            if (userbasic.kyc[0] != null) {
+              if (userbasic.kyc[0].fsSourceUri != null) {
+                mediaproofpicts_fsSourceUri = userbasic.kyc[0].fsSourceUri.toString();
               }
             }
-            if (mediaproofpicts.mediaMime != undefined) {
-              mediaMime = mediaproofpicts.mediaMime.toString();
+            if (userbasic.kyc[0].mediaMime != undefined) {
+              mediaMime = userbasic.kyc[0].mediaMime.toString();
             } else {
               mediaMime = "image/jpeg";
             }
             if (mediaproofpicts_fsSourceUri != '') {
-              // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
-              // const response_ = await fetch(url);
-              // const blob = await response_.blob();
-              // const arrayBuffer = await blob.arrayBuffer();
-              // const buffer = Buffer.from(arrayBuffer);
               var data = await this.authService.profilePict(mediaproofpicts_fsSourceUri);
               if (data != null) {
                 response.set("Content-Type", mediaMime);
@@ -4025,6 +4089,44 @@ export class AuthController {
     var getdata = await this.userbasicsService.findbyid(request_json.idUser);
 
     await this.userbasicsService.updateData(getdata.email.toString(), updatedata);
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    var reqbody = JSON.parse(JSON.stringify(request.body));
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
+
+    return {
+      "response_code": 202,
+      "messages": {
+        "info": [
+          "The process successful"
+        ]
+      }
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/user/updatestatuscreator/v2')
+  async updateCreator2(@Req() request: any, @Headers() headers) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = request.get("Host") + request.originalUrl;
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json.creator == null || request_json.creator == undefined) {
+      await this.errorHandler.generateNotAcceptableException("Unable to proceed. creator field is required");
+    }
+
+    if (request_json.idUser == null || request_json.idUser == undefined) {
+      await this.errorHandler.generateNotAcceptableException("Unable to proceed. idUser field is required");
+    }
+
+    var updatedata = new CreateuserbasicnewDto();
+    updatedata.creator = request_json.creator;
+    updatedata.updatedAt = await this.utilsService.getDateTimeString();
+
+    var getdata = await this.basic2SS.findOne(request_json.idUser);
+
+    await this.basic2SS.updateData(getdata.email.toString(), updatedata);
 
     var timestamps_end = await this.utilsService.getDateTimeString();
     var reqbody = JSON.parse(JSON.stringify(request.body));
