@@ -5762,7 +5762,10 @@ export class AdsService {
                                             },
                                             "in": {
                                                 "name": {
-                                                    "$arrayElemAt": ["$userAdsAge._id", "$$this"]
+                                                    $ifNull: [
+                                                        { "$arrayElemAt": ["$userAdsAge._id", "$$this"] },
+                                                        "Lainnya"
+                                                    ]
                                                 },
                                                 "count": {
                                                     "$arrayElemAt": ["$userAdsAge.ageCount", "$$this"]
@@ -5815,7 +5818,10 @@ export class AdsService {
                                             },
                                             "in": {
                                                 "name": {
-                                                    "$arrayElemAt": ["$userAdsGender._id", "$$this"]
+                                                    $ifNull: [
+                                                        { "$arrayElemAt": ["$userAdsGender._id", "$$this"] },
+                                                        "Lainnya"
+                                                    ]
                                                 },
                                                 "count": {
                                                     "$arrayElemAt": ["$userAdsGender.genderCount", "$$this"]
