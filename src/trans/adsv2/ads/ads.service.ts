@@ -3065,7 +3065,10 @@ export class AdsService {
                                             },
                                             "in": {
                                                 "name": {
-                                                    "$arrayElemAt": ["$userAdsGender._id", "$$this"]
+                                                    $ifNull: [
+                                                        { "$arrayElemAt": ["$userAdsGender._id", "$$this"] },
+                                                        "Lainnya"
+                                                    ]
                                                 },
                                                 "count": {
                                                     "$arrayElemAt": ["$userAdsGender.genderCount", "$$this"]
@@ -3452,24 +3455,24 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$viewTime",
-                                            "includeArrayIndex": "viewTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "viewTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -3501,31 +3504,31 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$viewTime",
-                                            "includeArrayIndex": "viewTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "viewTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
                                         "$project": {
                                             "userID": 1,
                                             "viewTime": {
-                                                "$substr": ["$viewTime", 0, 10]
+                                                "$substr": ["$updateAt", 0, 10]
                                             }
                                         }
                                     }, {
@@ -3564,30 +3567,30 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$viewTime",
-                                            "includeArrayIndex": "viewTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "viewTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
                                         "$project": {
                                             "viewTime": {
-                                                "$substr": ["$viewTime", 0, 10]
+                                                "$substr": ["$updateAt", 0, 10]
                                             }
                                         }
                                     }, {
@@ -3605,8 +3608,8 @@ export class AdsService {
                                             }, {
                                                 "clickTime": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -3619,8 +3622,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -3644,8 +3647,8 @@ export class AdsService {
                                             }, {
                                                 "clickTime": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -3658,8 +3661,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -3688,10 +3691,10 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -3718,7 +3721,8 @@ export class AdsService {
                                                 }
                                             }, {
                                                 "$project": {
-                                                    "CPV": {
+                                                    "CPV": 1,
+                                                    "CPV_adstypes": {
                                                         "$let": {
                                                             "vars": {
                                                                 "tmp": {
@@ -3733,14 +3737,14 @@ export class AdsService {
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$viewTime",
-                                            "includeArrayIndex": "viewTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "viewTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -3774,8 +3778,8 @@ export class AdsService {
                                             }, {
                                                 "clickTime": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
@@ -3802,7 +3806,8 @@ export class AdsService {
                                                 }
                                             }, {
                                                 "$project": {
-                                                    "CPA": {
+                                                    "CPA": 1,
+                                                    "CPA_adstypes": {
                                                         "$let": {
                                                             "vars": {
                                                                 "tmp": {
@@ -3823,8 +3828,8 @@ export class AdsService {
                                     }, {
                                         "$match": {
                                             "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -3856,17 +3861,17 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
                                         }
                                     }, {
                                         "$lookup": {
-                                            "from": "newUserBasics",
+                                            "from": "userbasics",
                                             "as": "userbasics_data",
                                             "let": {
                                                 "local_id": "$userID"
@@ -4090,8 +4095,7 @@ export class AdsService {
                                                             "in": "$$this.v"
                                                         }
                                                     },
-                                                    "states": 1,
-                                                    "statesName": 1
+                                                    "states": 1
                                                 }
                                             }, {
                                                 "$lookup": {
@@ -4100,7 +4104,7 @@ export class AdsService {
                                                     "foreignField": "_id",
                                                     "as": "interests"
                                                 }
-                                            }, /*{
+                                            }, {
                                                 "$lookup": {
                                                     "from": "areas",
                                                     "as": "areas",
@@ -4115,18 +4119,18 @@ export class AdsService {
                                                         }
                                                     }]
                                                 }
-                                            }*/]
+                                            }]
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$clickTime",
-                                            "includeArrayIndex": "clickTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -4216,17 +4220,17 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
                                         }
                                     }, {
                                         "$lookup": {
-                                            "from": "newUserBasics",
+                                            "from": "userbasics",
                                             "as": "userbasics_data",
                                             "let": {
                                                 "local_id": "$userID"
@@ -4450,8 +4454,7 @@ export class AdsService {
                                                             "in": "$$this.v"
                                                         }
                                                     },
-                                                    "states": 1,
-                                                    "statesName": 1
+                                                    "states": 1
                                                 }
                                             }, {
                                                 "$lookup": {
@@ -4460,7 +4463,7 @@ export class AdsService {
                                                     "foreignField": "_id",
                                                     "as": "interests"
                                                 }
-                                            }, /*{
+                                            }, {
                                                 "$lookup": {
                                                     "from": "areas",
                                                     "as": "areas",
@@ -4475,18 +4478,18 @@ export class AdsService {
                                                         }
                                                     }]
                                                 }
-                                            }*/]
+                                            }]
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$clickTime",
-                                            "includeArrayIndex": "clickTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -4576,17 +4579,17 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
                                         }
                                     }, {
                                         "$lookup": {
-                                            "from": "newUserBasics",
+                                            "from": "userbasics",
                                             "as": "userbasics_data",
                                             "let": {
                                                 "local_id": "$userID"
@@ -4810,8 +4813,7 @@ export class AdsService {
                                                             "in": "$$this.v"
                                                         }
                                                     },
-                                                    "states": 1,
-                                                    "statesName": 1
+                                                    "states": 1
                                                 }
                                             }, {
                                                 "$lookup": {
@@ -4820,7 +4822,7 @@ export class AdsService {
                                                     "foreignField": "_id",
                                                     "as": "interests"
                                                 }
-                                            }, /*{
+                                            }, {
                                                 "$lookup": {
                                                     "from": "areas",
                                                     "as": "areas",
@@ -4835,18 +4837,18 @@ export class AdsService {
                                                         }
                                                     }]
                                                 }
-                                            }*/]
+                                            }]
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$clickTime",
-                                            "includeArrayIndex": "clickTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -4936,17 +4938,17 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
                                         }
                                     }, {
                                         "$lookup": {
-                                            "from": "newUserBasics",
+                                            "from": "userbasics",
                                             "as": "userbasics_data",
                                             "let": {
                                                 "local_id": "$userID"
@@ -5170,8 +5172,7 @@ export class AdsService {
                                                             "in": "$$this.v"
                                                         }
                                                     },
-                                                    "states": 1,
-                                                    "statesName": 1
+                                                    "states": 1
                                                 }
                                             }, {
                                                 "$lookup": {
@@ -5180,7 +5181,7 @@ export class AdsService {
                                                     "foreignField": "_id",
                                                     "as": "interests"
                                                 }
-                                            }, /*{
+                                            }, {
                                                 "$lookup": {
                                                     "from": "areas",
                                                     "as": "areas",
@@ -5195,18 +5196,18 @@ export class AdsService {
                                                         }
                                                     }]
                                                 }
-                                            }*/]
+                                            }]
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$clickTime",
-                                            "includeArrayIndex": "clickTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -5298,17 +5299,17 @@ export class AdsService {
                                             "$and": [{
                                                 "adsID": new mongoose.Types.ObjectId(adsId)
                                             }, {
-                                                "viewTime": {
+                                                "updateAt": {
                                                     "$elemMatch": {
-                                                        "$gte": start_date.toISOString(),
-                                                        "$lte": end_date.toISOString()
+                                                        $gte: await this.utilsService.formatDateString(start_date),
+                                                        $lte: await this.utilsService.formatDateString(end_date)
                                                     }
                                                 }
                                             }]
                                         }
                                     }, {
                                         "$lookup": {
-                                            "from": "newUserBasics",
+                                            "from": "userbasics",
                                             "as": "userbasics_data",
                                             "let": {
                                                 "local_id": "$userID"
@@ -5532,8 +5533,7 @@ export class AdsService {
                                                             "in": "$$this.v"
                                                         }
                                                     },
-                                                    "states": 1,
-                                                    "statesName": 1
+                                                    "states": 1
                                                 }
                                             }, {
                                                 "$lookup": {
@@ -5542,7 +5542,7 @@ export class AdsService {
                                                     "foreignField": "_id",
                                                     "as": "interests"
                                                 }
-                                            }, /*{
+                                            }, {
                                                 "$lookup": {
                                                     "from": "areas",
                                                     "as": "areas",
@@ -5557,18 +5557,18 @@ export class AdsService {
                                                         }
                                                     }]
                                                 }
-                                            }*/]
+                                            }]
                                         }
                                     }, {
                                         "$unwind": {
-                                            "path": "$clickTime",
-                                            "includeArrayIndex": "clickTime_index"
+                                            "path": "$updateAt",
+                                            "includeArrayIndex": "updateAt_index"
                                         }
                                     }, {
                                         "$match": {
-                                            "clickTime": {
-                                                "$gte": start_date.toISOString(),
-                                                "$lte": end_date.toISOString()
+                                            "updateAt": {
+                                                $gte: await this.utilsService.formatDateString(start_date),
+                                                $lte: await this.utilsService.formatDateString(end_date)
                                             }
                                         }
                                     }, {
@@ -5711,7 +5711,7 @@ export class AdsService {
                                                                         "$arrayElemAt": ["$viewed", 0]
                                                                     }
                                                                 },
-                                                                "in": "$$tmp.reach"
+                                                                "in": "$$tmp.impresi"
                                                             }
                                                         }]
                                                     }, 100]
@@ -5868,7 +5868,10 @@ export class AdsService {
                                             },
                                             "in": {
                                                 "name": {
-                                                    "$arrayElemAt": ["$userAdsArea._id", "$$this"]
+                                                    $ifNull: [
+                                                        { "$arrayElemAt": ["$userAdsArea._id", "$$this"] },
+                                                        "Lainnya"
+                                                    ]
                                                 },
                                                 "count": {
                                                     "$arrayElemAt": ["$userAdsArea.areasCount", "$$this"]
@@ -11682,6 +11685,8 @@ export class AdsService {
                         scoreGeografis: 1,
                         scoreTotal: 1,
                         isValid: 1,
+                        width: 1,
+                        height: 1,
                         objectivitasId: "$objectivitas.name_id",
                         objectivitasEn: "$objectivitas.name_en",
                         mediaBasePath: 1,
@@ -11700,6 +11705,8 @@ export class AdsService {
                         mediaLandscapeThumUri: 1,
                         heightLandscape: 1,
                         widthLandscape: 1,
+                        idApsaraPortrait: 1,
+                        idApsaraLandscape: 1,
 
                     }
                 },
