@@ -45899,7 +45899,27 @@ export class NewPostService {
                 "$mediaSource", 0
               ]
           },
-        }
+          "tempboost":
+          {
+            $filter: {
+              input: "$boosted",
+              as: "item",
+              cond: {
+                $gte: [
+                  "$$item.boostSession.end",
+                  {
+                    "$dateToString": {
+                      "format": "%Y-%m-%d %H:%M:%S",
+                      "date": {
+                        $add: [new Date(), 25200000]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
       },
       {
         "$project":
@@ -45915,6 +45935,15 @@ export class NewPostService {
           "updatedAt": 1,
           "description": 1,
           "stiker": 1,
+          "end": "$tempboost.boostSession.end",
+          "start": "$tempboost.boostSession.start",
+          "boostJangkauan": {
+            "$size": "$tempboost.boostViewer"
+          },
+          "boostViewer": {
+            $arrayElemAt: ["$tempboost.boostViewer", 0]
+          },
+          "boosted": "$tempboost",
           "location": 1,
           "isShared": 1,
           "visibility": 1,
@@ -46381,6 +46410,11 @@ export class NewPostService {
           "stiker": 1,
           "location": 1,
           "visibility": 1,
+          "end": 1,
+          "start": 1,
+          "boostJangkauan": 1,
+          "boostViewer": 1,
+          "boosted": 1,
           "allowComments": 1,
           "postType": 1,
           "isLiked":
