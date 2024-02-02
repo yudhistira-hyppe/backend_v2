@@ -6554,7 +6554,7 @@ export class UserAdsService {
             }
         );
 
-        //console.log(JSON.stringify(aggregateData));
+        console.log(JSON.stringify(aggregateData));
         let query = await this.userAdsModel.aggregate(aggregateData);
         return query;
     }
