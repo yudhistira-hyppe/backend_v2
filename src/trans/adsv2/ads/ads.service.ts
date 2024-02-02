@@ -1440,7 +1440,7 @@ export class AdsService {
                                             "areas": {
                                                 "$let": {
                                                     "vars": {
-                                                        "userauths": {
+                                                        "temp": {
                                                             "$arrayElemAt": [{
                                                                 "$let": {
                                                                     "vars": {
@@ -1453,7 +1453,7 @@ export class AdsService {
                                                             }, 0]
                                                         }
                                                     },
-                                                    "in": "$$userauths.stateName"
+                                                    "in": "$$temp.stateName"
                                                 }
                                             }
                                         }
@@ -1799,7 +1799,7 @@ export class AdsService {
                                             "areas": {
                                                 "$let": {
                                                     "vars": {
-                                                        "userauths": {
+                                                        "temp": {
                                                             "$arrayElemAt": [{
                                                                 "$let": {
                                                                     "vars": {
@@ -1812,7 +1812,7 @@ export class AdsService {
                                                             }, 0]
                                                         }
                                                     },
-                                                    "in": "$$userauths.stateName"
+                                                    "in": "$$temp.stateName"
                                                 }
                                             }
                                         }
@@ -2158,7 +2158,7 @@ export class AdsService {
                                             "areas": {
                                                 "$let": {
                                                     "vars": {
-                                                        "userauths": {
+                                                        "temp": {
                                                             "$arrayElemAt": [{
                                                                 "$let": {
                                                                     "vars": {
@@ -2171,7 +2171,7 @@ export class AdsService {
                                                             }, 0]
                                                         }
                                                     },
-                                                    "in": "$$userauths.stateName"
+                                                    "in": "$$temp.stateName"
                                                 }
                                             }
                                         }
@@ -2517,7 +2517,7 @@ export class AdsService {
                                             "areas": {
                                                 "$let": {
                                                     "vars": {
-                                                        "userauths": {
+                                                        "temp": {
                                                             "$arrayElemAt": [{
                                                                 "$let": {
                                                                     "vars": {
@@ -2530,7 +2530,7 @@ export class AdsService {
                                                             }, 0]
                                                         }
                                                     },
-                                                    "in": "$$userauths.stateName"
+                                                    "in": "$$temp.stateName"
                                                 }
                                             }
                                         }
@@ -2878,7 +2878,7 @@ export class AdsService {
                                             "areas": {
                                                 "$let": {
                                                     "vars": {
-                                                        "userauths": {
+                                                        "temp": {
                                                             "$arrayElemAt": [{
                                                                 "$let": {
                                                                     "vars": {
@@ -2891,7 +2891,7 @@ export class AdsService {
                                                             }, 0]
                                                         }
                                                     },
-                                                    "in": "$$userauths.stateName"
+                                                    "in": "$$temp.stateName"
                                                 }
                                             }
                                         }
@@ -3871,7 +3871,7 @@ export class AdsService {
                                         }
                                     }, {
                                         "$lookup": {
-                                            "from": "userbasics",
+                                            "from": "newUserBasics",
                                             "as": "userbasics_data",
                                             "let": {
                                                 "local_id": "$userID"
@@ -4190,7 +4190,7 @@ export class AdsService {
                                             "areas": {
                                                 "$let": {
                                                     "vars": {
-                                                        "userauths": {
+                                                        "temp": {
                                                             "$arrayElemAt": [{
                                                                 "$let": {
                                                                     "vars": {
@@ -4203,7 +4203,7 @@ export class AdsService {
                                                             }, 0]
                                                         }
                                                     },
-                                                    "in": "$$userauths.stateName"
+                                                    "in": "$$temp.stateName"
                                                 }
                                             }
                                         }
@@ -4230,7 +4230,7 @@ export class AdsService {
                                         }
                                     }, {
                                         "$lookup": {
-                                            "from": "userbasics",
+                                            "from": "newUserBasics",
                                             "as": "userbasics_data",
                                             "let": {
                                                 "local_id": "$userID"
@@ -4549,7 +4549,7 @@ export class AdsService {
                                             "areas": {
                                                 "$let": {
                                                     "vars": {
-                                                        "userauths": {
+                                                        "temp": {
                                                             "$arrayElemAt": [{
                                                                 "$let": {
                                                                     "vars": {
@@ -4562,7 +4562,7 @@ export class AdsService {
                                                             }, 0]
                                                         }
                                                     },
-                                                    "in": "$$userauths.stateName"
+                                                    "in": "$$temp.stateName"
                                                 }
                                             }
                                         }
@@ -4589,7 +4589,7 @@ export class AdsService {
                                         }
                                     }, {
                                         "$lookup": {
-                                            "from": "userbasics",
+                                            "from": "newUserBasics",
                                             "as": "userbasics_data",
                                             "let": {
                                                 "local_id": "$userID"
@@ -4908,7 +4908,7 @@ export class AdsService {
                                             "areas": {
                                                 "$let": {
                                                     "vars": {
-                                                        "userauths": {
+                                                        "temp": {
                                                             "$arrayElemAt": [{
                                                                 "$let": {
                                                                     "vars": {
@@ -4921,7 +4921,7 @@ export class AdsService {
                                                             }, 0]
                                                         }
                                                     },
-                                                    "in": "$$userauths.stateName"
+                                                    "in": "$$temp.stateName"
                                                 }
                                             }
                                         }
@@ -4948,7 +4948,7 @@ export class AdsService {
                                         }
                                     }, {
                                         "$lookup": {
-                                            "from": "userbasics",
+                                            "from": "newUserBasics",
                                             "as": "userbasics_data",
                                             "let": {
                                                 "local_id": "$userID"
@@ -5267,7 +5267,7 @@ export class AdsService {
                                             "areas": {
                                                 "$let": {
                                                     "vars": {
-                                                        "userauths": {
+                                                        "temp": {
                                                             "$arrayElemAt": [{
                                                                 "$let": {
                                                                     "vars": {
@@ -5280,7 +5280,7 @@ export class AdsService {
                                                             }, 0]
                                                         }
                                                     },
-                                                    "in": "$$userauths.stateName"
+                                                    "in": "$$temp.stateName"
                                                 }
                                             }
                                         }
@@ -5309,7 +5309,7 @@ export class AdsService {
                                         }
                                     }, {
                                         "$lookup": {
-                                            "from": "userbasics",
+                                            "from": "newUserBasics",
                                             "as": "userbasics_data",
                                             "let": {
                                                 "local_id": "$userID"
@@ -5628,7 +5628,7 @@ export class AdsService {
                                             "areas": {
                                                 "$let": {
                                                     "vars": {
-                                                        "userauths": {
+                                                        "temp": {
                                                             "$arrayElemAt": [{
                                                                 "$let": {
                                                                     "vars": {
@@ -5641,7 +5641,7 @@ export class AdsService {
                                                             }, 0]
                                                         }
                                                     },
-                                                    "in": "$$userauths.stateName"
+                                                    "in": "$$temp.stateName"
                                                 }
                                             }
                                         }

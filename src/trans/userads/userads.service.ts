@@ -7444,7 +7444,7 @@ export class UserAdsService {
                     areas: {
                         $let: {
                             "vars": {
-                                userauths: {
+                                temp: {
                                     "$arrayElemAt": [{
                                         "$let": {
                                             "vars": {
@@ -7455,7 +7455,7 @@ export class UserAdsService {
                                     }, 0]
                                 }
                             },
-                            "in": "$$userauths.stateName"
+                            "in": "$$temp.stateName"
                         }
                     },
                 }
@@ -8876,7 +8876,7 @@ export class UserAdsService {
                     areas: {
                         $let: {
                             "vars": {
-                                userauths: {
+                                temp: {
                                     "$arrayElemAt": [{
                                         "$let": {
                                             "vars": {
@@ -8887,7 +8887,7 @@ export class UserAdsService {
                                     }, 0]
                                 }
                             },
-                            "in": "$$userauths.stateName"
+                            "in": "$$temp.stateName"
                         }
                     },
                 }
@@ -9245,7 +9245,7 @@ export class UserAdsService {
                     areas: {
                         $let: {
                             "vars": {
-                                userauths: {
+                                temp: {
                                     "$arrayElemAt": [{
                                         "$let": {
                                             "vars": {
@@ -9256,7 +9256,7 @@ export class UserAdsService {
                                     }, 0]
                                 }
                             },
-                            "in": "$$userauths.stateName"
+                            "in": "$$temp.stateName"
                         }
                     },
                 }
@@ -9614,7 +9614,7 @@ export class UserAdsService {
                     areas: {
                         $let: {
                             "vars": {
-                                userauths: {
+                                temp: {
                                     "$arrayElemAt": [{
                                         "$let": {
                                             "vars": {
@@ -9625,7 +9625,7 @@ export class UserAdsService {
                                     }, 0]
                                 }
                             },
-                            "in": "$$userauths.stateName"
+                            "in": "$$temp.stateName"
                         }
                     },
                 }
@@ -9983,7 +9983,7 @@ export class UserAdsService {
                     areas: {
                         $let: {
                             "vars": {
-                                userauths: {
+                                temp: {
                                     "$arrayElemAt": [{
                                         "$let": {
                                             "vars": {
@@ -9994,7 +9994,7 @@ export class UserAdsService {
                                     }, 0]
                                 }
                             },
-                            "in": "$$userauths.stateName"
+                            "in": "$$temp.stateName"
                         }
                     },
                 }
@@ -10355,7 +10355,7 @@ export class UserAdsService {
                     areas: {
                         $let: {
                             "vars": {
-                                userauths: {
+                                temp: {
                                     "$arrayElemAt": [{
                                         "$let": {
                                             "vars": {
@@ -10366,7 +10366,7 @@ export class UserAdsService {
                                     }, 0]
                                 }
                             },
-                            "in": "$$userauths.stateName"
+                            "in": "$$temp.stateName"
                         }
                     },
                 }
