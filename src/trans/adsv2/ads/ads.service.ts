@@ -3065,7 +3065,10 @@ export class AdsService {
                                             },
                                             "in": {
                                                 "name": {
-                                                    "$arrayElemAt": ["$userAdsGender._id", "$$this"]
+                                                    $ifNull: [
+                                                        { "$arrayElemAt": ["$userAdsGender._id", "$$this"] },
+                                                        "Lainnya"
+                                                    ]
                                                 },
                                                 "count": {
                                                     "$arrayElemAt": ["$userAdsGender.genderCount", "$$this"]
