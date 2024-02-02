@@ -2094,6 +2094,7 @@ export class ContenteventsController {
     }
   }
 
+  //userVIEW dan userLIKE harusnya cuma ada satu email saja dan bentuknya unik. gak mungkin lebih dari satu
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/posts/interactive/v2')
@@ -2553,7 +2554,12 @@ export class ContenteventsController {
             //await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
             var dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
 
-            await this.postDisqusSS.updateView(email_receiverParty, email_user, request.body.postID);
+            var getpost = await this.postDisqusSS.findid(request.body.postID);
+            var result = getpost.userView.filter((email) => email === email_user);
+            if(result.length == 0)
+            {
+              await this.postDisqusSS.updateView(email_receiverParty, email_user, request.body.postID);
+            }
             await this.insightsService.updateViews(email_receiverParty);
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
@@ -2718,7 +2724,12 @@ export class ContenteventsController {
           let event1 = resultdata1.eventType.toString();
           // await this.utilsService.counscore("CE", "prodAll", "contentevents", idevent1, event1, userbasic1._id);
           await this.contenteventsService.create(CreateContenteventsDto2);
-          await this.postDisqusSS.updateLike(email_receiverParty, email_user, request.body.postID);
+          var getpost = await this.postDisqusSS.findid(request.body.postID);
+          var result = getpost.userLike.filter((email) => email === email_user);
+          if(result.length == 0)
+          {
+            await this.postDisqusSS.updateLike(email_receiverParty, email_user, request.body.postID);
+          }          
           await this.insightsService.updateLike(email_receiverParty);
           this.sendInteractiveFCM2(email_receiverParty, "LIKE", request.body.postID, email_user);
           // const databasic = await this.userbasicsService.findOne(
