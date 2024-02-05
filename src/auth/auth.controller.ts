@@ -2830,48 +2830,48 @@ export class AuthController {
         console.log(mediaprofilepicts);
         if (await this.utilsService.ceckData(mediaprofilepicts)) {
           //if (mediaprofilepicts.uploadSource != undefined) {
-           // console.log("OSS");
-            //if (mediaprofilepicts.uploadSource == "OSS") {
-              // if (mediaprofilepicts.mediaMime != undefined) {
-              //   mediaMime = mediaprofilepicts.mediaMime.toString();
-              // } else {
-              //   mediaMime = "image/jpeg";
-              // }
-             // mediaMime = "image/jpeg";
-              var path = "";
-              if (mediaprofilepicts.mediaThumBasePath != undefined) {
-                path = mediaprofilepicts.mediaThumBasePath.toString();
-              } else {
-                path = mediaprofilepicts.mediaBasePath.toString();
-              }
-              console.log(path);
+          // console.log("OSS");
+          //if (mediaprofilepicts.uploadSource == "OSS") {
+          // if (mediaprofilepicts.mediaMime != undefined) {
+          //   mediaMime = mediaprofilepicts.mediaMime.toString();
+          // } else {
+          //   mediaMime = "image/jpeg";
+          // }
+          // mediaMime = "image/jpeg";
+          var path = "";
+          if (mediaprofilepicts.mediaThumBasePath != undefined) {
+            path = mediaprofilepicts.mediaThumBasePath.toString();
+          } else {
+            path = mediaprofilepicts.mediaBasePath.toString();
+          }
+          console.log(path);
 
-               var data2 = await this.ossService.readFile(path);
-              //var data2 = mediaprofilepicts.mediaBasePath.toString();
-             // var repdata=data2.replace("http","https");
-              console.log(data2);
-              if (data2 != null) {
-                var fullurl = req.get("Host") + req.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+          var data2 = await this.ossService.readFile(path);
+          //var data2 = mediaprofilepicts.mediaBasePath.toString();
+          // var repdata=data2.replace("http","https");
+          console.log(data2);
+          if (data2 != null) {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
 
-                response.set("Content-Type", "image/jpeg");
-                response.send(data2);
-              } else {
-                var fullurl = req.get("Host") + req.originalUrl;
-                var timestamps_end = await this.utilsService.getDateTimeString();
-                this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+            response.set("Content-Type", "image/jpeg");
+            response.send(data2);
+          } else {
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
 
-                response.send(null);
-              }
-            // } else {
-            //   var fullurl = req.get("Host") + req.originalUrl;
-            //   var timestamps_end = await this.utilsService.getDateTimeString();
-            //   this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
+            response.send(null);
+          }
+          // } else {
+          //   var fullurl = req.get("Host") + req.originalUrl;
+          //   var timestamps_end = await this.utilsService.getDateTimeString();
+          //   this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
 
-            //   response.send(null);
-            // }
-         // } 
+          //   response.send(null);
+          // }
+          // } 
           // else {
           //   console.log("NON OSS");
           //   var mediaprofilepicts_fsSourceUri = '';
@@ -2916,7 +2916,7 @@ export class AuthController {
           //   }
           // }
         }
-         else {
+        else {
           var fullurl = req.get("Host") + req.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
           this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, null);
@@ -3585,56 +3585,95 @@ export class AuthController {
     }
   }
 
+  // @Get('selfiepict/:id')
+  // @HttpCode(HttpStatus.OK)
+  // async selfiepict(
+  //   @Param('id') id: string,
+  //   @Query('x-auth-token') token: string,
+  //   @Query('x-auth-user') email: string, @Res() response) {
+  //   if ((id != undefined) && (token != undefined) && (email != undefined)) {
+  //     if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+  //       var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
+  //       if (mediaproofpicts.SelfieUploadSource != undefined) {
+  //         if (mediaproofpicts.SelfieUploadSource == "OSS") {
+  //           if (mediaproofpicts.mediaMime != undefined) {
+  //             mediaMime = mediaproofpicts.mediaMime.toString();
+  //           } else {
+  //             mediaMime = "image/jpeg";
+  //           }
+  //           var data2 = await this.ossService.readFile(mediaproofpicts.mediaSelfieBasePath.toString());
+  //           if (data2 != null) {
+  //             response.set("Content-Type", "image/jpeg");
+  //             response.send(data2);
+  //           } else {
+  //             response.send(null);
+  //           }
+  //         } else {
+  //           response.send(null);
+  //         }
+  //       } else {
+  //         if (await this.utilsService.ceckData(mediaproofpicts)) {
+  //           var mediaproofpicts_SelfiefsSourceUri = '';
+  //           var mediaMime = "";
+  //           if (mediaproofpicts != null) {
+  //             if (mediaproofpicts.SelfiefsSourceUri != null) {
+  //               mediaproofpicts_SelfiefsSourceUri = mediaproofpicts.SelfiefsSourceUri.toString();
+  //             }
+  //           }
+  //           if (mediaproofpicts.SelfiemediaMime != undefined) {
+  //             mediaMime = mediaproofpicts.SelfiemediaMime.toString();
+  //           } else {
+  //             mediaMime = "image/jpeg";
+  //           }
+  //           if (mediaproofpicts_SelfiefsSourceUri != '') {
+  //             // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
+  //             // const response_ = await fetch(url);
+  //             // const blob = await response_.blob();
+  //             // const arrayBuffer = await blob.arrayBuffer();
+  //             // const buffer = Buffer.from(arrayBuffer);
+  //             var data = await this.authService.profilePict(mediaproofpicts_SelfiefsSourceUri);
+  //             if (data != null) {
+  //               response.set("Content-Type", "image/png");
+  //               response.send(data);
+  //             } else {
+  //               response.send(null);
+  //             }
+  //           } else {
+  //             response.send(null);
+  //           }
+  //         } else {
+  //           response.send(null);
+  //         }
+  //       }
+  //     } else {
+  //       response.send(null);
+  //     }
+  //   } else {
+  //     response.send(null);
+  //   }
+  // }
+
   @Get('selfiepict/:id')
   @HttpCode(HttpStatus.OK)
   async selfiepict(
     @Param('id') id: string,
     @Query('x-auth-token') token: string,
     @Query('x-auth-user') email: string, @Res() response) {
-    if ((id != undefined) && (token != undefined) && (email != undefined)) {
-      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
-        var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
-        if (mediaproofpicts.SelfieUploadSource != undefined) {
-          if (mediaproofpicts.SelfieUploadSource == "OSS") {
-            if (mediaproofpicts.mediaMime != undefined) {
-              mediaMime = mediaproofpicts.mediaMime.toString();
-            } else {
-              mediaMime = "image/jpeg";
-            }
-            var data2 = await this.ossService.readFile(mediaproofpicts.mediaSelfieBasePath.toString());
-            if (data2 != null) {
-              response.set("Content-Type", "image/jpeg");
-              response.send(data2);
-            } else {
-              response.send(null);
-            }
-          } else {
-            response.send(null);
-          }
-        } else {
-          if (await this.utilsService.ceckData(mediaproofpicts)) {
-            var mediaproofpicts_SelfiefsSourceUri = '';
-            var mediaMime = "";
-            if (mediaproofpicts != null) {
-              if (mediaproofpicts.SelfiefsSourceUri != null) {
-                mediaproofpicts_SelfiefsSourceUri = mediaproofpicts.SelfiefsSourceUri.toString();
+      if ((id != undefined) && (token != undefined) && (email != undefined)) {
+        if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+          var userbasic = await this.basic2SS.findOne(id);
+          var mediaproofpicts = userbasic.kyc[0];
+          if (mediaproofpicts.SelfieUploadSource != undefined) {
+            if (mediaproofpicts.SelfieUploadSource == "OSS") {
+              if (mediaproofpicts.mediaMime != undefined) {
+                mediaMime = mediaproofpicts.mediaMime.toString();
+              } else {
+                mediaMime = "image/jpeg";
               }
-            }
-            if (mediaproofpicts.SelfiemediaMime != undefined) {
-              mediaMime = mediaproofpicts.SelfiemediaMime.toString();
-            } else {
-              mediaMime = "image/jpeg";
-            }
-            if (mediaproofpicts_SelfiefsSourceUri != '') {
-              // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
-              // const response_ = await fetch(url);
-              // const blob = await response_.blob();
-              // const arrayBuffer = await blob.arrayBuffer();
-              // const buffer = Buffer.from(arrayBuffer);
-              var data = await this.authService.profilePict(mediaproofpicts_SelfiefsSourceUri);
-              if (data != null) {
-                response.set("Content-Type", "image/png");
-                response.send(data);
+              var data2 = await this.ossService.readFile(mediaproofpicts.mediaSelfieBasePath.toString());
+              if (data2 != null) {
+                response.set("Content-Type", "image/jpeg");
+                response.send(data2);
               } else {
                 response.send(null);
               }
@@ -3642,15 +3681,40 @@ export class AuthController {
               response.send(null);
             }
           } else {
-            response.send(null);
+            if (await this.utilsService.ceckData(mediaproofpicts)) {
+              var mediaproofpicts_SelfiefsSourceUri = '';
+              var mediaMime = "";
+              if (mediaproofpicts != null) {
+                if (mediaproofpicts.SelfiefsSourceUri != null) {
+                  mediaproofpicts_SelfiefsSourceUri = mediaproofpicts.SelfiefsSourceUri.toString();
+                }
+              }
+              if (mediaproofpicts.SelfiemediaMime != undefined) {
+                mediaMime = mediaproofpicts.SelfiemediaMime.toString();
+              } else {
+                mediaMime = "image/jpeg";
+              }
+              if (mediaproofpicts_SelfiefsSourceUri != '') {
+                var data = await this.authService.profilePict(mediaproofpicts_SelfiefsSourceUri);
+                if (data != null) {
+                  response.set("Content-Type", "image/png");
+                  response.send(data);
+                } else {
+                  response.send(null);
+                }
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
           }
+        } else {
+          response.send(null);
         }
       } else {
         response.send(null);
       }
-    } else {
-      response.send(null);
-    }
   }
 
   @Get('selfiepict/v2/:id')
@@ -4250,7 +4314,7 @@ export class AuthController {
       );
     }
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
-      
+
       var fullurl = request.get("Host") + request.originalUrl;
       var timestamps_end = await this.utilsService.getDateTimeString();
       var reqbody = JSON.parse(JSON.stringify(request.body));
@@ -7146,7 +7210,7 @@ export class AuthController {
       if (lengsupport > 0) {
         for (let i = 0; i < lengsupport; i++) {
 
-          newsupport = "/supportfile/" + mediaId + "/" + i;
+          newsupport = "/supportfile/" + id + "/" + i;
           arrsuport.push(newsupport);
 
         }
