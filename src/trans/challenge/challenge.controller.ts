@@ -5753,9 +5753,9 @@ export class ChallengeController {
   async insertuserintonotifchallenge2(listjoin: any[]) {
     var targetlist = ['updateLeaderboard', 'challengeAkanBerakhir', 'challengeBerakhir', 'untukPemenang'];
     if (listjoin.length != 0) {
-      var getuserbasic = listjoin[0].idUser.toString();
+      var getuserbasic = listjoin[0].idUser;
       var getchallenge = listjoin[0].idChallenge;
-      var basicdata = await this.UserbasicnewService.findOne(getuserbasic);
+      var basicdata = await this.UserbasicnewService.findOne(getuserbasic.toString());
       var subdata = await this.subchallenge.findChild(getchallenge.toString());
       var detailchallenge = await this.challengeService.findOne(getchallenge.toString());
       var pushnotifikasi = detailchallenge.notifikasiPush[0];
