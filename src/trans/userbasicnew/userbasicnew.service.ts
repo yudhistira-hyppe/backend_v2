@@ -926,7 +926,9 @@ export class UserbasicnewService {
                                     {
                                         "$ifNull":
                                             [
-                                                "$proofPict.$id",
+                                                {
+                                                    $toString: "$_id"
+                                                },
                                                 ""
                                             ]
                                     }
