@@ -5834,13 +5834,13 @@ export class ChallengeController {
               console.log(getnotifdata);
               var setobject = {};
               setobject['idUser'] = getuserbasic;
-              setobject['email'] = basicdata[0].email;
-              setobject['username'] = basicdata[0].username;
+              setobject['email'] = basicdata.email;
+              setobject['username'] = basicdata.username;
               setobject['ranking'] = listjoin[i].ranking;
               var gettitle = getnotifdata[0].title;
               var converttitle = null;
               try {
-                var cariusername = gettitle.replaceAll("$username", basicdata[0].username);
+                var cariusername = gettitle.replaceAll("$username", basicdata.username);
                 converttitle = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
               }
               catch (e) {
@@ -5849,7 +5849,7 @@ export class ChallengeController {
               var gettitleEN = getnotifdata[0].titleEN;
               var converttitleEN = null;
               try {
-                var cariusername = gettitleEN.replaceAll("$username", basicdata[0].username);
+                var cariusername = gettitleEN.replaceAll("$username", basicdata.username);
                 converttitleEN = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
               }
               catch (e) {
@@ -5858,7 +5858,7 @@ export class ChallengeController {
               var getdesc = getnotifdata[0].description;
               var convertdesc = null;
               try {
-                var cariusername = getdesc.replaceAll("$username", basicdata[0].username);
+                var cariusername = getdesc.replaceAll("$username", basicdata.username);
                 convertdesc = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
               }
               catch (e) {
@@ -5867,7 +5867,7 @@ export class ChallengeController {
               var getdescEN = getnotifdata[0].descriptionEN;
               var convertdescEN = null;
               try {
-                var cariusername = getdescEN.replaceAll("$username", basicdata[0].username);
+                var cariusername = getdescEN.replaceAll("$username", basicdata.username);
                 convertdescEN = cariusername.replaceAll("$title", detailchallenge.nameChallenge);
               }
               catch (e) {
