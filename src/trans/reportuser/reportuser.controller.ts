@@ -632,7 +632,7 @@ export class ReportuserController {
                     } else {
                         createPostsDto.reportedStatus = reportedStatus;
                     }
-                    this.postsService.update(postID, createPostsDto);
+                    this.post2SS.update(postID, createPostsDto);
                 }
 
                 var data = request_json;
