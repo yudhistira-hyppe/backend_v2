@@ -49,7 +49,7 @@ export class ChallengeController {
     private readonly NotificationsService: NotificationsService,
     private readonly BadgeService: BadgeService,
     private readonly userbasicsSS: UserbasicsService,
-    private readonly userbasics2SS: UserbasicnewService,
+    private readonly UserbasicnewService: UserbasicnewService,
     private readonly settings2SS: Settings2Service,
     private readonly postSS: NewpostsService,
     private readonly post2SS: NewPost2Service
@@ -3180,7 +3180,7 @@ export class ChallengeController {
       throw new BadRequestException("Unabled to proceed, user id field is required");
     }
 
-    var getuserbasic = await this.userbasics2SS.findOne(getuserid);
+    var getuserbasic = await this.UserbasicnewService.findOne(getuserid);
     if (getuserbasic == null) {
       var timestamps_end = await this.util.getDateTimeString();
       this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, getuserid, null, request_json);
@@ -3457,7 +3457,7 @@ export class ChallengeController {
       // console.log(timestamp_start);
       var setparticipantchallenge = [];
       if (participant == "ALL") {
-        var totaldata = await this.userbasics2SS.getcount();
+        var totaldata = await this.UserbasicnewService.getcount();
         var setpagination = parseInt(totaldata[0].totalpost) / 200;
         var ceksisa = (parseInt(totaldata[0].totalpost) % 200);
         if (ceksisa > 0 && ceksisa < 5) {
@@ -3465,7 +3465,7 @@ export class ChallengeController {
         }
 
         for (var looppagination = 0; looppagination < setpagination; looppagination++) {
-          var getalluserbasic = await this.userbasics2SS.getuser(looppagination, 200);
+          var getalluserbasic = await this.UserbasicnewService.getuser(looppagination, 200);
 
           for (var loopuser = 0; loopuser < getalluserbasic.length; loopuser++) {
             setparticipantchallenge.push(getalluserbasic[loopuser]._id.toString());
@@ -4303,16 +4303,16 @@ export class ChallengeController {
 
       if (userBadge.length == 0) {
         userBadge.push(obj);
-        await this.userbasics2SS.updateUserBadge(iduser.toString(), userBadge);
+        await this.UserbasicnewService.updateUserBadge(iduser.toString(), userBadge);
       }
 
       else if (userBadge.length > 0) {
         userBadge.push(obj);
-        await this.userbasics2SS.updateUserBadge(iduser.toString(), userBadge);
+        await this.UserbasicnewService.updateUserBadge(iduser.toString(), userBadge);
 
 
         try {
-          databasicbadge = await this.userbasics2SS.findOne(iduser.toString());
+          databasicbadge = await this.UserbasicnewService.findOne(iduser.toString());
         } catch (e) {
           databasicbadge = null;
         }
@@ -4356,7 +4356,7 @@ export class ChallengeController {
             arrUserbadge.push(objnew);
 
           }
-          await this.userbasics2SS.updateUserBadge(iduser.toString(), arrUserbadge);
+          await this.UserbasicnewService.updateUserBadge(iduser.toString(), arrUserbadge);
 
         }
       }
@@ -5384,7 +5384,7 @@ export class ChallengeController {
       pushnotifikasi = detail.notifikasiPush[0];
       if (detail.peserta[0].caraGabung == "DENGAN UNDANGAN") {
         listpartisipan = detail.listParticipant;
-        var result = await this.userbasics2SS.findInbyid(listpartisipan);
+        var result = await this.UserbasicnewService.findInbyid(listpartisipan);
       }
       else {
         listpartisipan = null;
@@ -5753,9 +5753,9 @@ export class ChallengeController {
   async insertuserintonotifchallenge2(listjoin: any[]) {
     var targetlist = ['updateLeaderboard', 'challengeAkanBerakhir', 'challengeBerakhir', 'untukPemenang'];
     if (listjoin.length != 0) {
-      var getuserbasic = listjoin[0].idUser;
+      var getuserbasic = listjoin[0].idUser.toString();
       var getchallenge = listjoin[0].idChallenge;
-      var basicdata = await this.userbasics2SS.findOne(getuserbasic);
+      var basicdata = await this.UserbasicnewService.findOne(getuserbasic);
       var subdata = await this.subchallenge.findChild(getchallenge.toString());
       var detailchallenge = await this.challengeService.findOne(getchallenge.toString());
       var pushnotifikasi = detailchallenge.notifikasiPush[0];
@@ -6399,8 +6399,8 @@ export class ChallengeController {
       throw new BadRequestException("Unabled to proceed, reason field is required");
     }
 
-    var exileUser = await this.userbasics2SS.findbyemail(email);
-    var admin = await this.userbasics2SS.findOne(idadmin);
+    var exileUser = await this.UserbasicnewService.findbyemail(email);
+    var admin = await this.UserbasicnewService.findOne(idadmin);
 
     var getuserchallenge = await this.userchallengeSS.findByChallengeandUser(idchallenge, exileUser._id.toString());
 
