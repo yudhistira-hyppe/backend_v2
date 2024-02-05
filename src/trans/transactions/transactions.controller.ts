@@ -9946,9 +9946,6 @@ export class TransactionsController {
                     valuemradmin = datamradmin._doc.value;
                     nominalmradmin = Math.ceil(amounts * valuemradmin / 100);
 
-
-
-
                 } catch (e) {
                     datamradmin = null;
                     databankvacharge = null;
