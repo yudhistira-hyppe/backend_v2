@@ -13957,7 +13957,7 @@ export class TransactionsController {
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
-            var ubasic = await this.userbasicsService.findOne(email);
+            var ubasic = await this.basic2SS.findBymail(email);
 
             iduser = ubasic._id;
 
