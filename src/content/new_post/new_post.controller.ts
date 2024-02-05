@@ -1115,98 +1115,97 @@ export class NewPostController {
                 }
             }
         }
-        // var listdatagambar = [];
-        // var listdatavideo = [];
-        // var listmusic = [];
-        // var tempresult = null;
-        // var tempdata = null;
-        // if(data.length != 0)
-        // {
-        //     for (var i = 0; i < data.length; i++) {
-        //         tempdata = data[i];
-        //         if (tempdata.isApsara == true) {
-        //             var gettypedata = tempdata.mediaMime.split("/")[0];
-        //             if(gettypedata == "video" || gettypedata == "videos")
-        //             {
-        //                 listdatavideo.push(tempdata.apsaraId);
-        //             }
-        //             else
-        //             {
-        //                 listdatagambar.push(tempdata.apsaraId);
-        //             }
-        //         }
+        var listdatagambar = [];
+        var listdatavideo = [];
+        var listmusic = [];
+        var tempresult = null;
+        var tempdata = null;
+        if(data.length != 0)
+        {
+            for (var i = 0; i < data.length; i++) {
+                tempdata = data[i];
+                if (tempdata.isApsara == true) {
+                    var gettypedata = tempdata.mediaType;
+                    if(gettypedata == "video" || gettypedata == "videos")
+                    {
+                        listdatavideo.push(tempdata.apsaraId);
+                    }
+                    else
+                    {
+                        listdatagambar.push(tempdata.apsaraId);
+                    }
+                }
     
-        //         var getmusicapsara = null;
-        //         try {
-        //             getmusicapsara = tempdata.music.apsaraThumnail;
-        //         }
-        //         catch (e) {
-        //             getmusicapsara = undefined;
-        //         }
-        //         listmusic.push(getmusicapsara);
-        //     }
+                var getmusicapsara = null;
+                try {
+                    getmusicapsara = tempdata.music.apsaraThumnail;
+                }
+                catch (e) {
+                    getmusicapsara = undefined;
+                }
+                listmusic.push(getmusicapsara);
+            }
 
-        //     if(listdatagambar.length != 0)
-        //     {
-        //         // console.log(listdatagambar);
-        //         var apsaraimagedata = await this.newPostContentService.getImageApsara(listdatagambar);
-        //         // console.log(apsaraimagedata);
-        //         // console.log(resultdata.ImageInfo[0]);
-        //         tempresult = apsaraimagedata.ImageInfo;
-        //         for (var i = 0; i < data.length; i++) {
-        //             for (var j = 0; j < tempresult.length; j++) {
-        //                 if (tempresult[j].ImageId == data[i].apsaraId) {
-        //                     data[i].apsaraThumbId = tempresult[j].apsaraThumbId;
-        //                 }
-        //             }
-        //             // if (resultquery[i].apsara == false && (resultquery[i].mediaType == "image" || resultquery[i].mediaType == "images")) {
-        //             //     resultquery[i].apsaraThumbId = '/thumb/' + resultquery[i].postID;
-        //             // }
-        //         }
-        //     }
+            if(listdatagambar.length != 0)
+            {
+                // console.log(listdatagambar);
+                var apsaraimagedata = await this.newPostContentService.getImageApsara(listdatagambar);
+                console.log(apsaraimagedata);
+                // console.log(resultdata.ImageInfo[0]);
+                tempresult = apsaraimagedata.ImageInfo;
+                for (var i = 0; i < data.length; i++) {
+                    for (var j = 0; j < tempresult.length; j++) {
+                        if (tempresult[j].ImageId == data[i].apsaraId) {
+                            data[i].mediaUri = tempresult[j].URL;
+                            data[i].mediaThumbEndpoint = tempresult[j].URL;
+                            data[i].mediaEndpoint = tempresult[j].URL;
+                            data[i].mediaThumbUri = tempresult[j].URL;
+                        }
+                    }
+                    // if (resultquery[i].isApsara == false && (resultquery[i].mediaType == "image" || resultquery[i].mediaType == "images")) {
+                    //     resultquery[i].apsaraThumbId = '/thumb/' + resultquery[i].postID;
+                    // }
+                }
+            }
 
-        //     if(listdatavideo.length != 0)
-        //     {
-        //         // console.log(listdatavideo);
-        //         var apsaravideodata = await this.newPostContentService.getVideoApsara(listdatavideo);
-        //         // console.log(apsaravideodata);
-        //         // console.log(resultdata.ImageInfo[0]);
-        //         tempresult = apsaravideodata.VideoList;
-        //         for (var i = 0; i < data.length; i++) {
-        //             for (var j = 0; j < tempresult.length; j++) {
-        //                 if (tempresult[j].VideoId == data[i].apsaraId) {
-        //                     data[i].mediaThumbEndpoint = tempresult[j].CoverURL;
-        //                 }
-        //             }
-        //             // if (resultquery[i].apsara == false && resultquery[i].mediaType == "video") {
-        //             //     resultquery[i].mediaThumbEndpoint = '/thumb/' + resultquery[i].postID;
-        //             // }
-        //         }
-        //     }
-        // }
+            if(listdatavideo.length != 0)
+            {
+                // console.log(listdatavideo);
+                var apsaravideodata = await this.newPostContentService.getVideoApsara(listdatavideo);
+                console.log(apsaravideodata);
+                // console.log(resultdata.ImageInfo[0]);
+                tempresult = apsaravideodata.VideoList;
+                for (var i = 0; i < data.length; i++) {
+                    for (var j = 0; j < tempresult.length; j++) {
+                        if (tempresult[j].VideoId == data[i].apsaraId) {
+                            data[i].mediaThumbEndpoint = tempresult[j].CoverURL;
+                        }
+                    }
+                    // if (resultquery[i].isApsara == false && resultquery[i].mediaType == "video") {
+                    //     resultquery[i].mediaThumbEndpoint = '/thumb/' + resultquery[i].postID;
+                    // }
+                }
+            }
+        }
 
         // console.log(listmusic);
-        // var apsaramusic = await this.musicSS.getImageApsara(listmusic);
-        // var setutil = require('util');
-        // console.log(setutil.inspect(apsaramusic, { depth:null, showHidden:false }));
-        // tempresult = apsaramusic.ImageInfo;
-        // for (var i = 0; i < query.length; i++) {
-        //     try
-        //     {
-        //         for (var j = 0; j < tempresult.length; j++) {
-        //         if (tempresult[j].ImageId == query[i].music.apsaraThumnail) {
-        //             query[i].music.apsaraThumnailUrl = tempresult[j].URL;
-        //         }
-        //         }
-        //         if (query[i].apsara == false && query[i].mediaType == "video") {
-        //         query[i].music.apsaraThumnailUrl = null;
-        //         }
-        //     }
-        //     catch(e)
-        //     {
-        //         query[i].music.apsaraThumnailUrl = null;
-        //     }
-        // }
+        var apsaramusic = await this.musicSS.getImageApsara(listmusic);
+
+        tempresult = apsaramusic.ImageInfo;
+        for (var i = 0; i < data.length; i++) {
+            try
+            {
+                for (var j = 0; j < tempresult.length; j++) {
+                    if (tempresult[j].ImageId == data[i].music.apsaraThumnail) {
+                        data[i].music.apsaraThumnailUrl = tempresult[j].URL;
+                    }
+                }
+            }
+            catch(e)
+            {
+                data[i].music.apsaraThumnailUrl = null;
+            }
+        }
 
         // return this.postContentService.getUserPost(body, headers);
 
