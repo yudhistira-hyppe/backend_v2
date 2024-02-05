@@ -1150,7 +1150,7 @@ export class NewPostController {
             {
                 // console.log(listdatagambar);
                 var apsaraimagedata = await this.newPostContentService.getImageApsara(listdatagambar);
-                console.log(apsaraimagedata);
+                // console.log(apsaraimagedata);
                 // console.log(resultdata.ImageInfo[0]);
                 tempresult = apsaraimagedata.ImageInfo;
                 for (var i = 0; i < data.length; i++) {
@@ -1172,7 +1172,7 @@ export class NewPostController {
             {
                 // console.log(listdatavideo);
                 var apsaravideodata = await this.newPostContentService.getVideoApsara(listdatavideo);
-                console.log(apsaravideodata);
+                // console.log(apsaravideodata);
                 // console.log(resultdata.ImageInfo[0]);
                 tempresult = apsaravideodata.VideoList;
                 for (var i = 0; i < data.length; i++) {
@@ -1203,7 +1203,7 @@ export class NewPostController {
             }
             catch(e)
             {
-                data[i].music.apsaraThumnailUrl = null;
+                // data[i].music.apsaraThumnailUrl = null;
             }
         }
 
