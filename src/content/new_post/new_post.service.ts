@@ -46216,6 +46216,42 @@ export class NewPostService {
         }
       },
       {
+        "$lookup": {
+          from: "interests_repo",
+          as: "cats",
+          let: {
+            localID: '$category.$id'
+          },
+          pipeline: [
+            {
+              $match: {
+
+                $expr: {
+                  $and: [
+                    {
+                      $in: ['$_id', {
+                        $ifNull: ['$$localID', []]
+                      }]
+                    },
+
+                  ]
+                }
+              }
+            },
+            {
+              $project: {
+                "interestName": 1,
+                "langIso": 1,
+                "icon": 1,
+                "createdAt": 1,
+                "updatedAt": 1
+              }
+            }
+          ],
+
+        }
+      },
+      {
         "$lookup":
         {
           from: "newUserBasics",

@@ -441,7 +441,8 @@ export class UserbasicnewService {
                     "fsSourceUri": 1,
                     "fsSourceName": 1,
                     "fsTargetUri": 1,
-                    "kyc": 1
+                    "kyc": 1,
+                    "creator": 1
                 }
             }
         ]);

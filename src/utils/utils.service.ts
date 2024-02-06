@@ -1568,7 +1568,7 @@ export class UtilsService {
 
   async generateGuestUsername(): Promise<string> {
     const getUserGuest = await this.basic2SS.findGuestUser();
-    return "GuestHyppe" + ((getUserGuest.length)+1).toString();
+    return "GuestHyppe" + ((getUserGuest.length) + 1).toString();
   }
 
   async generatePassword(password: string): Promise<string> {
@@ -1656,7 +1656,7 @@ export class UtilsService {
     return DateTime.substring(0, DateTime.lastIndexOf('.')).split(' ')[0] + "Z";
   }
 
-  async getDateTimePlusDayISOString(day:number): Promise<string> {
+  async getDateTimePlusDayISOString(day: number): Promise<string> {
     var date = new Date();
     date.setDate(date.getDate() + day);
     var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
@@ -1896,14 +1896,14 @@ export class UtilsService {
     var AvatarDTO_ = new AvatarDTO();
     var get_userbasic = await this.basic2SS.findBymail(email);
     if (await this.ceckData(get_userbasic)) {
-     
 
-      
-        AvatarDTO_.mediaBasePath = get_userbasic.mediaBasePath;
-        AvatarDTO_.mediaUri = get_userbasic.mediaUri;
-        AvatarDTO_.mediaType = get_userbasic.mediaType;
-        AvatarDTO_.mediaEndpoint = get_userbasic.mediaEndpoint;
-      
+
+
+      AvatarDTO_.mediaBasePath = get_userbasic.mediaBasePath;
+      AvatarDTO_.mediaUri = get_userbasic.mediaUri;
+      AvatarDTO_.mediaType = get_userbasic.mediaType;
+      AvatarDTO_.mediaEndpoint = get_userbasic.mediaEndpoint;
+
     }
     return AvatarDTO_;
   }
@@ -2052,11 +2052,11 @@ export class UtilsService {
       }
     }
 
-    if (email_view!=undefined){
+    if (email_view != undefined) {
       const contenteventsService_data_ = await this.getprofilecontenteventService.findByCriteriaWithUser(email_view, "FOLLOWING", email);
-      if (await this.ceckData(contenteventsService_data_)){
+      if (await this.ceckData(contenteventsService_data_)) {
         ProfileDTO_.following = true;
-      }else{
+      } else {
         ProfileDTO_.following = false;
       }
     }
@@ -2165,12 +2165,10 @@ export class UtilsService {
             }
           }
         }
-        if(get_userbasic.creator != undefined)
-        {
+        if (get_userbasic.creator != undefined) {
           ProfileDTO_.creator = get_userbasic.creator;
         }
-        else
-        {
+        else {
           ProfileDTO_.creator = false;
         }
       }
@@ -2405,6 +2403,12 @@ export class UtilsService {
               }
             }
           }
+        }
+        if (get_userbasic.creator != undefined) {
+          ProfileDTO_.creator = get_userbasic.creator;
+        }
+        else {
+          ProfileDTO_.creator = false;
         }
       }
     }
