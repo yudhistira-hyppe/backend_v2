@@ -828,6 +828,7 @@ export class PostsReadController {
         var datasearch = null;
         var emailreceiver = null;
         var email = null;
+        var postid = null;
 
         if (body.pageNumber !== undefined) {
             pageNumber = body.pageNumber;
@@ -843,6 +844,10 @@ export class PostsReadController {
             email = body.email;
         }
 
+        if(body.postid !== undefined) {
+            postid = body.postid;
+        }
+
         const messages = {
             "info": ["The process was successful"],
         };
@@ -853,7 +858,7 @@ export class PostsReadController {
         try {
 
             // data = await this.postsReadService.landingpageMy2V2(email, postType, parseInt(pageNumber), parseInt(pageRow), emailLogin);
-            data = await this.post2SS.landingpageMigration(email, emailLogin, postType, parseInt(pageNumber), parseInt(pageRow))
+            data = await this.post2SS.landingpageMigration(email, emailLogin, postType, postid, parseInt(pageNumber), parseInt(pageRow))
             lengpict = data.length;
             console.log("data", data);
         } catch (e) {

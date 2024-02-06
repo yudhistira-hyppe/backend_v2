@@ -300,6 +300,68 @@ export class ActivityeventsController {
     return { response_code: 202, data, messages };
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('logactivitas/guest')
+  async countGuestsesi2(@Req() request, @Headers() headers): Promise<Object> {
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var email = auth.email;
+    var timestamps_start = await this.utilsService.getDateTimeString();
+    var fullurl = headers.host + "/api/activityevents/logactivitas/guest";
+
+    var datasesi = null;
+    var startdate = null;
+    var enddate = null;
+    const messages = {
+      "info": ["The process successful"],
+    };
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
+
+    try {
+      datasesi = await this.activityeventsService.sesitamu(startdate, enddate);
+    } catch (e) {
+      datasesi = null;
+    }
+
+    var data = [];
+    if(datasesi != null)
+    {
+      var setstartdate = new Date(startdate);
+      var endstartdate = new Date(enddate);
+      endstartdate.setDate(endstartdate.getDate() + 1);
+      setstartdate.setDate(setstartdate.getDate() - 1);
+      var tempdate = setstartdate.toISOString().split("T")[0];
+      var end = new Date().toISOString().split("T")[0];
+
+      //kalo lama, berarti error disini!!
+      while (tempdate != end) {
+        var temp = new Date(tempdate);
+        temp.setDate(temp.getDate() + 1);
+        tempdate = new Date(temp).toISOString().split("T")[0];
+        // console.log(tempdate);
+
+        let obj = datasesi.find(objs => objs.date.toString() === tempdate);
+        //console.log(obj);
+        if (obj == undefined) {
+          obj =
+          {
+            date: tempdate,
+            count: 0
+          }
+        }
+
+        data.push(obj);
+      }
+    }
+
+    var timestamps_end = await this.utilsService.getDateTimeString();
+    this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+    return { response_code: 202, data, messages };
+  }
+
 
   @UseGuards(JwtAuthGuard)
   @Post('logactivitas/useractive')
