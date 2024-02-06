@@ -44649,7 +44649,7 @@ export class NewPostService {
     const query = await this.loaddata.aggregate(pipeline);
     return query;
   }
-  async landingpageMigration(email: string, emailLogin: string, type: string, skip: number, limit: number) {
+  async landingpageMigration(email: string, emailLogin: string, type: string, postid:string, skip: number, limit: number) {
     var mongo = require('mongoose');
     var pipeline = [];
     if (email == emailLogin) {
@@ -44733,18 +44733,35 @@ export class NewPostService {
       );
     }
 
-    pipeline.push(
-      {
-        $sort: {
-          createdAt: - 1,
+    if(postid != null && postid != undefined)
+    {
+      pipeline.push(
+        {
+          "$match":
+          {
+            "postID":postid
+          }
         }
-      },
-      {
-        $skip: ((skip - 1) * limit)
-      },
-      {
-        $limit: limit
-      },
+      )
+    }
+    else
+    {
+      pipeline.push(
+        {
+          $sort: {
+            createdAt: - 1,
+          }
+        },
+        {
+          $skip: ((skip - 1) * limit)
+        },
+        {
+          $limit: limit
+        },
+      )
+    }
+
+    pipeline.push(
       {
         "$lookup": {
           from: "disquslogs",

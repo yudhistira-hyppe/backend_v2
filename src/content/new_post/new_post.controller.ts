@@ -2543,14 +2543,16 @@ export class NewPostController {
         console.log('=============================================MY PAGE HIT=============================================')
         console.log('============================================= BODY =============================================', JSON.stringify(body))
 
+        var postid = null;
         var pageNumber = null;
         var pageRow = null;
         var postType = body.postType;
         var data = null;
         var datasearch = null;
         var emailreceiver = null;
-        if (body.pageNumber !== undefined) {
-            pageNumber = body.pageNumber;
+        
+        if (body.postID !== undefined) {
+            postid = body.postID;
         }
 
         if(body.pageRow != null && body.pageRow != undefined)
@@ -2573,7 +2575,7 @@ export class NewPostController {
 
         try {
 
-            data = await this.newPostService.landingpageMigration(email, email, postType, parseInt(pageNumber), parseInt(pageRow));
+            data = await this.newPostService.landingpageMigration(email, email, postType, postid, parseInt(pageNumber), parseInt(pageRow));
             lengpict = data.length;
 
         } catch (e) {
