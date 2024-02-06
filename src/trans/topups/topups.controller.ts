@@ -83,6 +83,61 @@ export class TopupsController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('/create/v2')
+  async create2(@Body() Topups_: Topups, @Headers() headers) {
+    console.log("---------TOPUPS---------", JSON.stringify(Topups_))
+    var currentDate = await this.utilsService.getDateTimeISOString();
+    let data = null;
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    let dataUserbasics_login = await this.basic2SS.findBymail(headers['x-auth-user']);
+    // let dataUserauths_login = await this.userauthsService.findOne(headers['x-auth-user']);
+    //VALIDASI PARAM email
+    var ceckemail = await this.utilsService.validateParam("email", Topups_.email, "string")
+    if (ceckemail != "") {
+      await this.errorHandler.generateBadRequestException(
+        ceckemail,
+      );
+    }
+    //VALIDASI PARAM topup
+    var cecktopup = await this.utilsService.validateParam("topup", Topups_.topup, "number")
+    if (cecktopup != "") {
+      await this.errorHandler.generateBadRequestException(
+        cecktopup,
+      );
+    }
+    let dataUserbasics = await this.basic2SS.findBymail((Topups_.email.toString()).toLowerCase());
+    // let dataUserauths = await this.userauthsService.findOne((Topups_.email.toString()).toLowerCase());
+    if (await this.utilsService.ceckData(dataUserbasics)) {
+      Topups_._id = new mongoose.Types.ObjectId();
+      Topups_.idUser = new mongoose.Types.ObjectId(dataUserbasics._id.toString());
+      Topups_.username = dataUserbasics.username;
+      Topups_.createBy = new mongoose.Types.ObjectId(dataUserbasics_login._id.toString());
+      Topups_.createByUsername = dataUserbasics_login.username;
+      Topups_.createdAt = currentDate;
+      Topups_.updatedAt = currentDate;
+      Topups_.email = (Topups_.email.toString()).toLowerCase();
+      let ceckData = await this.getDataTopup(Topups_);
+
+      if (ceckData.status) {
+        Topups_ = ceckData.Topups;
+        data = await this.topupsService.create(Topups_);
+      }
+      console.log("---------TOPUPS DATA---------", JSON.stringify(data))
+      return await this.errorHandler.generateAcceptResponseCodeWithData(
+        "Create Data Topups succesfully", data
+      );
+    } else {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, User not found',
+      );
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post('/approve')
   async approve(@Body() Topups_: Topups, @Headers() headers) {
     var currentDate = await this.utilsService.getDateTimeISOString();
@@ -278,6 +333,110 @@ export class TopupsController {
                 Topups_._id = new mongoose.Types.ObjectId();
                 Topups_.createBy = new mongoose.Types.ObjectId(dataUserbasics_login._id.toString());
                 Topups_.createByUsername = dataUserauths_login.username;
+                Topups_.createdAt = currentDate;
+                Topups_.updatedAt = currentDate;
+                Topups_.topup = dataGet.Topup;
+                Topups_.email = (dataGet.Email.toString()).toLowerCase();
+                let ceckData = await this.getDataTopup(Topups_);
+
+                if (ceckData.status) {
+                  Topups_ = ceckData.Topups;
+                  Topups_.status = "FAILED";
+                  if (Topups_.remact == undefined) {
+                    Topups_.remact = "User Nor Found";
+                  }
+                  const data = await this.topupsService.create(Topups_);
+                } else {
+                  Topups_ = ceckData.Topups;
+                  Topups_.status = "FAILED";
+                  if (Topups_.remact == undefined) {
+                    Topups_.remact = "User Nor Found";
+                  }
+                  const data = await this.topupsService.create(Topups_);
+                }
+              }
+            }
+          }
+        }
+
+        let dataResponse = {
+          length: dataArray.length,
+          succes: CountSucces,
+          failed: dataArray.length - CountSucces,
+          data: dataArray,
+        }
+
+        return await this.errorHandler.generateAcceptResponseCodeWithData(
+          "Create Data Topups succesfully", dataResponse
+        );
+      } else {
+        await this.errorHandler.generateBadRequestException("Unabled to proceed format file is required zip");
+      }
+    } else {
+      await this.errorHandler.generateBadRequestException("Unabled to proceed file is required");
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/import/v2')
+  @UseInterceptors(FileInterceptor('file'))
+  async export2(@UploadedFile() file: Express.Multer.File, @Headers() headers) {
+    const XLSX = require('xlsx')
+    var currentDate = await this.utilsService.getDateTimeISOString();
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+
+    let dataUserbasics_login = await this.basic2SS.findBymail(headers['x-auth-user']);
+    // let dataUserauths_login = await this.userauthsService.findOne(headers['x-auth-user']);
+
+    if (file!=undefined){
+      if (file.mimetype == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.mimetype == 'application/vnd.ms-excel') {
+        const fileBuffer = file.buffer;
+        let wb = XLSX.read(fileBuffer, { type: "buffer" });
+
+        let dataArray = [];
+        const sheets = wb.SheetNames;
+        for (let i = 0; i < sheets.length; i++) {
+          const temp = XLSX.utils.sheet_to_json(
+          wb.Sheets[wb.SheetNames[i]])
+          temp.forEach((res) => {
+            dataArray.push(res)
+          })
+        } 
+
+        let CountSucces = 0;
+        if (dataArray.length>0){
+          for (let u = 0; u < dataArray.length; u++) {
+            let dataGet = dataArray[u];
+            if ((dataGet.Email != undefined) && (dataGet.Topup != undefined)){
+              let dataUserbasics = await this.basic2SS.findBymail((dataGet.Email.toString()).toLowerCase());
+              // let dataUserauths = await this.userauthsService.findOne((dataGet.Email.toString()).toLowerCase());
+              let Topups_ = new Topups();
+              if (await this.utilsService.ceckData(dataUserbasics)) {
+                Topups_._id = new mongoose.Types.ObjectId();
+                Topups_.idUser = new mongoose.Types.ObjectId(dataUserbasics._id.toString());
+                Topups_.username = dataUserbasics.username;
+                Topups_.createBy = new mongoose.Types.ObjectId(dataUserbasics_login._id.toString());
+                Topups_.createByUsername = dataUserbasics_login.username;
+                Topups_.createdAt = currentDate;
+                Topups_.updatedAt = currentDate; 
+                Topups_.topup = dataGet.Topup;
+                Topups_.npwp = dataGet.Npwp.toString();
+                Topups_.email = (dataGet.Email.toString()).toLowerCase();
+                let ceckData = await this.getDataTopup(Topups_);
+
+                if (ceckData.status) {
+                  Topups_ = ceckData.Topups;
+                  const data = await this.topupsService.create(Topups_);
+                  CountSucces++;
+                }
+              }else{
+                Topups_._id = new mongoose.Types.ObjectId();
+                Topups_.createBy = new mongoose.Types.ObjectId(dataUserbasics_login._id.toString());
+                Topups_.createByUsername = dataUserbasics_login.username;
                 Topups_.createdAt = currentDate;
                 Topups_.updatedAt = currentDate;
                 Topups_.topup = dataGet.Topup;
