@@ -833,7 +833,15 @@ export class ActivityeventsService {
       pipeline.push({
         $match:
         {
-          "event": "LOGIN"
+          "$or":
+          [
+            {
+              "event": "LOGIN"
+            },
+            {
+              "event": "LOGIN_GUEST"
+            }
+          ]
         }
       },);
     }
@@ -924,35 +932,56 @@ export class ActivityeventsService {
           }
       },
       {
-          '$project': 
+        '$project': 
+        {
+          iduser: 
+          { 
+              '$arrayElemAt': 
+              [ 
+                  '$user._id', 0 
+              ] 
+          },
+          jenis: 
           {
-              iduser: 
-              { 
-                  '$arrayElemAt': 
-                  [ 
-                      '$user._id', 0 
-                  ] 
-              },
-              jenis: 
-              {
-                  '$cond': 
+            "$switch":
+            {
+              branches:
+              [
+                {
+                  case:
                   {
-                  if: 
-                  {
-                      '$eq': 
-                      [ 
-                          { 
-                              '$arrayElemAt': 
-                              [ 
-                                  '$user.isIdVerified', 0 
-                              ] 
-                          }, 
-                          true 
-                      ]
+                    "$eq":
+                    [
+                      {
+                        "$arrayElemAt":
+                        [
+                          "$user.guestMode", 0
+                        ]
+                      },
+                      true
+                    ]
                   },
-                  then: 'PREMIUM',
-                  else: 'BASIC'
-              }
+                  then:"GUEST"
+                },
+                {
+                  case:
+                  {
+                    '$eq': 
+                    [ 
+                        { 
+                            '$arrayElemAt': 
+                            [ 
+                                '$user.isIdVerified', 0 
+                            ] 
+                        }, 
+                        true 
+                    ]
+                  },
+                  then:"PREMIUM"
+                },
+              ],
+              default:"BASIC"
+            }
           },
           age: 1,
           email: 1,
@@ -1284,6 +1313,100 @@ export class ActivityeventsService {
           event: 1,
           createdAt: 1,
           email: "$payload.email"
+        }
+      },
+      {
+        $match: {
+          $or: [
+            {
+              $and: [
+                {
+                  event: "AWAKE",
+
+                },
+                {
+                  createdAt:
+                  {
+                    $gte: startdate,
+                    $lte: dt
+                  }
+                }
+              ]
+            },
+          ]
+        }
+      },
+      {
+        $group: {
+          _id: {
+            tgl: {
+              $substrCP: ['$createdAt', 0, 10]
+            },
+            dt: '$email',
+
+          },
+
+        },
+
+      },
+      {
+        $project:
+        {
+          _id: "$kusnur",
+          tgl: "$_id.tgl",
+          email: "$_id.dt",
+
+        }
+      },
+      {
+        $sort: {
+          tgl: 1
+        }
+      },
+      {
+        $group:
+        {
+          _id: "$tgl",
+          count:
+          {
+            $sum: 1
+          },
+        }
+      },
+      {
+        "$project":
+        {
+          "_id": 0,
+          "date": "$_id",
+          "count": 1
+        }
+      },
+      {
+        "$sort":
+        {
+          "date": 1
+        }
+      }
+    ]);
+    return query;
+  }
+
+  async sesitamu(startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+
+      var dt = dateend.substring(0, 10);
+    } catch (e) {
+      dt = "";
+    }
+    var query = await this.activityeventsModel.aggregate([
+      {
+        $project: {
+          event: 1,
+          createdAt: 1,
+          email:/@hyppe.id/i
         }
       },
       {
