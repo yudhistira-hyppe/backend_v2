@@ -44746,19 +44746,22 @@ export class NewPostService {
     }
     else
     {
-      pipeline.push(
-        {
-          $sort: {
-            createdAt: - 1,
-          }
-        },
-        {
-          $skip: ((skip - 1) * limit)
-        },
-        {
-          $limit: limit
-        },
-      )
+      if(type != 'story')
+      {
+        pipeline.push(
+          {
+            $sort: {
+              createdAt: - 1,
+            }
+          },
+          {
+            $skip: ((skip - 1) * limit)
+          },
+          {
+            $limit: limit
+          },
+        )
+      }
     }
 
     pipeline.push(

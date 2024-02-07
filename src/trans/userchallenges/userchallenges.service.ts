@@ -302,7 +302,7 @@ export class UserchallengesService {
             },
             {
                 $match: {
-                   "idChallenge": new Types.ObjectId(idChallenge),
+                //    "idChallenge": new Types.ObjectId(idChallenge),
                 //    "idSubChallenge":new Types.ObjectId(idSubChallenge),
                    "idUser": new Types.ObjectId(iduser),
                    "isActive": true
