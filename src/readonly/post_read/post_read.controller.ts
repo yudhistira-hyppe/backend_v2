@@ -829,6 +829,10 @@ export class PostsReadController {
         var emailreceiver = null;
         var email = null;
         var postid = null;
+        var visibility = null;
+        var active = null;
+        var exp = null;
+        var withinsight = null;
 
         if (body.pageNumber !== undefined) {
             pageNumber = body.pageNumber;
@@ -840,8 +844,48 @@ export class PostsReadController {
         if (body.postType !== undefined) {
             postType = body.postType;
         }
+
         if (body.email !== undefined) {
             email = body.email;
+        }
+
+        if (body.visibility !== undefined) {
+            visibility = body.visibility;
+        }
+
+        if (body.withActive !== undefined) {
+            if(body.withActive == "true" || body.withActive == true)
+            {
+                active = true;
+            }
+            else
+            {
+                active = false;
+            }
+        }
+
+        if(body.withExp !== undefined)
+        {
+            if(body.withExp == "true" || body.withExp == true)
+            {
+                exp = true;
+            }
+            else
+            {
+                exp = false;
+            }
+        }
+
+        if(body.withInsight !== undefined)
+        {
+            if(body.withInsight == "true" || body.withInsight == true)
+            {
+                withinsight = true;
+            }
+            else
+            {
+                withinsight = false;
+            }
         }
 
         if(body.postid !== undefined) {
@@ -858,7 +902,7 @@ export class PostsReadController {
         try {
 
             // data = await this.postsReadService.landingpageMy2V2(email, postType, parseInt(pageNumber), parseInt(pageRow), emailLogin);
-            data = await this.post2SS.landingpageMigration(email, emailLogin, postType, postid, parseInt(pageNumber), parseInt(pageRow))
+            data = await this.post2SS.landingpageMigration(email, emailLogin, postType, postid, visibility, active, exp, withinsight, parseInt(pageNumber), parseInt(pageRow))
             lengpict = data.length;
             console.log("data", data);
         } catch (e) {

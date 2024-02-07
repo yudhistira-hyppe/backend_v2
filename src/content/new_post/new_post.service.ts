@@ -44649,7 +44649,7 @@ export class NewPostService {
     const query = await this.loaddata.aggregate(pipeline);
     return query;
   }
-  async landingpageMigration(email: string, emailLogin: string, type: string, postid:string, skip: number, limit: number) {
+  async landingpageMigration(email: string, emailLogin: string, type: string, postid:string, visibility:boolean, active:boolean, exp:boolean, withinsight:boolean, skip: number, limit: number) {
     var mongo = require('mongoose');
     var pipeline = [];
     if (email == emailLogin) {
@@ -44658,7 +44658,7 @@ export class NewPostService {
           "$match": {
             "$and": [
               {
-                "active": true
+                "active": (active != null ? active : true)
               },
               {
                 "postType": type
@@ -44695,7 +44695,7 @@ export class NewPostService {
           "$match": {
             "$and": [
               {
-                "active": true
+                "active": (active != null ? active : true)
               },
               {
                 "postType": type
@@ -44746,7 +44746,41 @@ export class NewPostService {
     }
     else
     {
-      if(type != 'story')
+      if(type == 'story')
+      {
+        pipeline.push(
+          {
+            "$set":
+            {
+              "yesterday":
+              {
+                "$dateToString": {
+                  "format": "%Y-%m-%d %H:%M:%S",
+                  "date": {
+                    $add: [
+                      new Date(),
+                      -61200000
+                    ]
+                  }
+                }
+              },
+            }
+          },
+          {
+            "$match":
+            {
+              "$expr":
+              {
+                "$gte":
+                [
+                  "$createdAt", "$yesterday"
+                ]
+              }
+            }
+          }
+        );
+      }
+      else
       {
         pipeline.push(
           {
@@ -45288,14 +45322,7 @@ export class NewPostService {
           friends: {
             $arrayElemAt: ["$friend.friend", 0]
           },
-          "insight":
-          {
-            "likes": "$likes",
-            "views": "$views",
-            "shares": "$shares",
-            "comments": "$comments",
-
-          },
+          "insight":(withinsight != null && withinsight == true ? "$insight" : "$$REMOVE"),
           "userProfile": "$userProfile",
           "contentMedias": "$contentMedias",
           "cats": "$cats",
