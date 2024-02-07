@@ -6318,14 +6318,15 @@ export class ContenteventsService {
     return data;
   }
 
-  async scorelikerequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string) {
+  async scorelikerequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string,listchallenge:any[]) {
     var call = {
       "idevent": idevent,
       "namatabel": namatabel,
       "event": event,
       "postID": postID,
       "email_user": email_user,
-      "email_receiverParty": email_receiverParty
+      "email_receiverParty": email_receiverParty,
+      "listchallenge":listchallenge
     };
     console.log(JSON.stringify(call))
     let config = { headers: { "Content-Type": "application/json" } };

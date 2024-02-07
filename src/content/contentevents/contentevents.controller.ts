@@ -39,7 +39,7 @@ import { RequestSoctDto } from '../mediastreaming/dto/mediastreaming.dto';
 import { ConfigService } from '@nestjs/config';
 import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 import { NewpostService } from '../disqus/newpost/newpost.service';
-import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema'; 
+import { Userbasicnew } from 'src/trans/userbasicnew/schemas/userbasicnew.schema';
 @Controller()
 export class ContenteventsController {
   private readonly logger = new Logger(ContenteventsController.name);
@@ -1046,7 +1046,7 @@ export class ContenteventsController {
               updateAt: current_date
             }
             await this.mediastreamingService.insertFollower(request.body.idMediaStreaming, dataFollower)
-          }else{
+          } else {
             await this.mediastreamingService.updateFollower(request.body.idMediaStreaming.toString(), userbasic1._id.toString(), false, true, current_date);
           }
         }
@@ -1523,7 +1523,7 @@ export class ContenteventsController {
           //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
           //this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-         // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty)
+          // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty)
 
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
@@ -1559,7 +1559,7 @@ export class ContenteventsController {
 
             // this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
 
-           // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty)
+            // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty)
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
             var timestamps_end = await this.utilsService.getDateTimeString();
@@ -1584,7 +1584,7 @@ export class ContenteventsController {
             // this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
             // this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-           // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty)
+            // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty)
 
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
@@ -1660,7 +1660,7 @@ export class ContenteventsController {
               //this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
 
               // this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
-             // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+              // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2100,7 +2100,7 @@ export class ContenteventsController {
   @Post('api/posts/interactive/v2')
   async interactive3(@Req() request: any, @Headers() headers) {
     var timestamps_start = await this.utilsService.getDateTimeString();
-
+    var listchallenge = null;
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(request.body));
     if (headers['x-auth-user'] == undefined) {
       var fullurl = request.get("Host") + request.originalUrl;
@@ -2131,6 +2131,12 @@ export class ContenteventsController {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, param receiverParty is required',
       );
+    }
+
+    try {
+      listchallenge = request.body.listchallenge;
+    } catch (e) {
+      listchallenge = null;
     }
 
     const eventType = request.body.eventType;
@@ -2250,7 +2256,7 @@ export class ContenteventsController {
               updateAt: current_date
             }
             await this.mediastreamingService.insertFollower(request.body.idMediaStreaming, dataFollower)
-          }else{
+          } else {
             await this.mediastreamingService.updateFollower(request.body.idMediaStreaming.toString(), userbasic1._id.toString(), false, true, current_date);
           }
         }
@@ -2267,7 +2273,7 @@ export class ContenteventsController {
           this.sendInteractiveFCM2(email_receiverParty, "FOLLOWER", "", email_user);
           await this.basic2SS.updatefollowSystem(email_receiverParty, email_user, "FOLLOWING");
           //  this.sendInteractiveFCM2(email_user, "FOLLOWING", "", email_receiverParty);
-          
+
           const databasic = await this.basic2SS.findbyemail(
             email_user
           );
@@ -2315,7 +2321,7 @@ export class ContenteventsController {
         }
       }
 
-       this.checkFriendbasedString2(userbasic1, userbasic2, "create");
+      this.checkFriendbasedString2(userbasic1, userbasic2, "create");
     }
     //  else if (eventType == "VIEW") {
 
@@ -2556,8 +2562,7 @@ export class ContenteventsController {
 
             var getpost = await this.postDisqusSS.findid(request.body.postID);
             var result = getpost.userView.filter((email) => email === email_user);
-            if(result.length == 0)
-            {
+            if (result.length == 0) {
               await this.postDisqusSS.updateView(email_receiverParty, email_user, request.body.postID);
             }
             await this.insightsService.updateViews(email_receiverParty);
@@ -2726,10 +2731,9 @@ export class ContenteventsController {
           await this.contenteventsService.create(CreateContenteventsDto2);
           var getpost = await this.postDisqusSS.findid(request.body.postID);
           var result = getpost.userLike.filter((email) => email === email_user);
-          if(result.length == 0)
-          {
+          if (result.length == 0) {
             await this.postDisqusSS.updateLike(email_receiverParty, email_user, request.body.postID);
-          }          
+          }
           await this.insightsService.updateLike(email_receiverParty);
           this.sendInteractiveFCM2(email_receiverParty, "LIKE", request.body.postID, email_user);
           // const databasic = await this.userbasicsService.findOne(
@@ -2743,9 +2747,14 @@ export class ContenteventsController {
           //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
           //this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-        
-         // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
+          if(listchallenge !==null){
+            if(listchallenge.length>0){
+              this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty,listchallenge);
+
+            }
+          }
+         
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2780,7 +2789,7 @@ export class ContenteventsController {
 
             // this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
 
-           // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+            // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
             var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2805,9 +2814,14 @@ export class ContenteventsController {
             // this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
             // this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-           
-           // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
+            // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+            if(listchallenge !==null){
+              if(listchallenge.length>0){
+                this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty,listchallenge);
+  
+              }
+            }
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
             var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2846,8 +2860,8 @@ export class ContenteventsController {
           //this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
 
           //this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
-          
-         // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+
+          // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2883,8 +2897,8 @@ export class ContenteventsController {
               //this.userChallengeUnLike2(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
 
               // this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
-             
-             // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+
+              // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2917,8 +2931,8 @@ export class ContenteventsController {
               //this.userChallengeLike2(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
               //this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-              
-             // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+
+              // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2964,11 +2978,11 @@ export class ContenteventsController {
           // if (databasic !== null) {
           //   iduser = databasic._id;
           //   // this.userChallengeUnFollow(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW");
-           
+
           //   this.scoreunfollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW")
           // }
 
-           this.checkFriendbasedString2(userbasic1, userbasic2, "delete");
+          this.checkFriendbasedString2(userbasic1, userbasic2, "delete");
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
@@ -3050,14 +3064,14 @@ export class ContenteventsController {
       //CECk DISQUS CONTACT
       var CeckDataDiscusContact_sender = await this.disquscontactsService.findMayeEmail(email_user, email_receiverParty);
       var CeckDataDiscusContact_receiver = await this.disquscontactsService.findMayeEmail(email_receiverParty, email_user);
-      
+
       var id_discus_contact = "";
       var id_discus = "";
       var id_discus_log = "";
 
       var post = await this.postDisqusSS.findByPostId(request.body.postID.toString());
       var media_ = {}
-      if (await this.utilsService.ceckData(post.mediaSource[0])){
+      if (await this.utilsService.ceckData(post.mediaSource[0])) {
         if (post.createdAt != undefined) {
           media_["createdAt"] = post.createdAt;
         }
@@ -3258,7 +3272,7 @@ export class ContenteventsController {
           retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_, body_messages);
           this.logger.log("REVAL DATA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", JSON.stringify(retVal));
           this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
-        }else{
+        } else {
           if (!(await this.utilsService.ceckData(CeckDataDiscusContact_sender))) {
             //INSERT DISQUS CONTACT
             var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
@@ -3552,9 +3566,8 @@ export class ContenteventsController {
     // console.log(checkexist);
 
     // if (checklist1 == true && checklist2 == true) {
-    if (checkexist == true && data.length==2) {
-      try
-      {
+    if (checkexist == true && data.length == 2) {
+      try {
         if (jenisoperasi == 'create') {
           await this.basic2SS.addFriendList(email1, email2);
           await this.basic2SS.addFriendList(email2, email1);
@@ -3564,8 +3577,7 @@ export class ContenteventsController {
           await this.basic2SS.deleteFriendList(email2, email1);
         }
       }
-      catch(e)
-      {
+      catch (e) {
         console.log(e);
       }
     }
@@ -8764,8 +8776,8 @@ export class ContenteventsController {
   async scoreunlikerequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string) {
     await this.contenteventsService.scoreunlikerequest(idevent, namatabel, event, postID, email_user, email_receiverParty)
   }
-  async scorelikerequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string) {
-    await this.contenteventsService.scorelikerequest(idevent, namatabel, event, postID, email_user, email_receiverParty)
+  async scorelikerequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string, listchallenge: any[]) {
+    await this.contenteventsService.scorelikerequest(idevent, namatabel, event, postID, email_user, email_receiverParty, listchallenge)
   }
 
   async scoreviewrequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string) {
