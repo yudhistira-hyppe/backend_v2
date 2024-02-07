@@ -2816,7 +2816,7 @@ export class ContenteventsController {
             // this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
             // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-            if(listchallenge !==null){
+            if(listchallenge !==null  && listchallenge !==undefined){
               if(listchallenge.length>0){
                 this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty,listchallenge);
   
