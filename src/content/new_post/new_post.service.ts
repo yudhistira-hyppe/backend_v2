@@ -45213,6 +45213,27 @@ export class NewPostService {
                 []
               ]
           },
+          "isViewed":
+          {
+            "$ifNull":
+            [
+              {
+                "$filter":
+                {
+                  filter:"$userView",
+                  as:"listuser",
+                  cond:
+                  {
+                    "$eq":
+                    [
+                      "$$listuser", emailLogin
+                    ]
+                  }
+                }
+              },
+              []
+            ]
+          },
         },
       },
       {
@@ -45572,6 +45593,24 @@ export class NewPostService {
                   [
                     {
                       "$size": "$isLiked"
+                    },
+                    0
+                  ]
+              },
+              then: false,
+              else: true
+            }
+          },
+          "isViewed":
+          {
+            "$cond":
+            {
+              if:
+              {
+                "$eq":
+                  [
+                    {
+                      "$size": "$isViewed"
                     },
                     0
                   ]
