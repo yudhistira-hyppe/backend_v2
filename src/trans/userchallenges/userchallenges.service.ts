@@ -279,6 +279,174 @@ export class UserchallengesService {
         return query;
     }
 
+
+    async userChallengebyUser(iduser: string,idChallenge:string) {
+        var query = await this.UserchallengesModel.aggregate([
+
+
+            {
+                $set: {
+                    "timenow": 
+                    {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                                $add: [
+                                    new Date(),
+                                    25200000
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $match: {
+                   "idChallenge": new Types.ObjectId(idChallenge),
+                    "idUser": new Types.ObjectId(iduser),
+                   "isActive": true
+                }
+            },
+            {
+                "$match": 
+                {
+                    "$and": 
+                    [
+                        
+                        {
+                            $expr: 
+                            {
+                                $gte: 
+                                [
+                                    "$timenow",
+                                    "$startDatetime",
+                                    
+                                ]
+                            },
+                            
+                        },
+                        {
+                            $expr: 
+                            {
+                                $lte: 
+                                [
+                                    "$timenow",
+                                    "$endDatetime",
+                                    
+                                ]
+                            },
+                            
+                        },
+                        
+                    ]
+                }
+            },
+            {
+                $lookup: {
+                    from: 'challenge',
+                    localField: 'idChallenge',
+                    foreignField: '_id',
+                    as: 'challenge_data',
+                    
+                },
+                
+            },
+            {
+                $project: {
+                    "idChallenge": 1,
+                    "idSubChallenge": 1,
+                    "idUser": 1,
+                    "objectChallenge": 1,
+                    "startDatetime": 1,
+                    "endDatetime": 1,
+                    "createdAt": 1,
+                    "updatedAt": 1,
+                    "isActive": 1,
+                    "ranking": 1,
+                    "score": 1,
+                    "maxScore": 1,
+                    "maxDate": 1,
+                    "isBot": 1,
+                    "challenge_data": 1,
+                    "timenow": 1,
+                    
+                }
+            },
+            {
+                $project: {
+                    "idChallenge": 1,
+                    "idSubChallenge": 1,
+                    "idUser": 1,
+                    "objectChallenge": 1,
+                    "startDatetime": 1,
+                    "endDatetime": 1,
+                    "isActive": 1,
+                    "maxScore": 1,
+                    "maxDate": 1,
+                    "isBot": 1,
+                    "metrik": {
+                        $arrayElemAt: ["$challenge_data.metrik", 0]
+                    },
+                    
+                }
+            },
+            {
+                $project: {
+                    "idChallenge": 1,
+                    "idSubChallenge": 1,
+                    "idUser": 1,
+                    "objectChallenge": 1,
+                    "startDatetime": 1,
+                    "endDatetime": 1,
+                    "isActive": 1,
+                    "maxScore": 1,
+                    "maxDate": 1,
+                    "isBot": 1,
+                    "InteraksiKonten": {
+                        $arrayElemAt: ["$metrik.InteraksiKonten", 0]
+                    },
+                     "AktivitasAkun": {
+                        $arrayElemAt: ["$metrik.AktivitasAkun", 0]
+                    },
+                }
+            },
+            {
+                $project: {
+                    "idChallenge": 1,
+                    "idSubChallenge": 1,
+                    "idUser": 1,
+                    "objectChallenge": 1,
+                    "startDatetime": 1,
+                    "endDatetime": 1,
+                    "isActive": 1,
+                    "maxScore": 1,
+                    "maxDate": 1,
+                    "isBot": 1,
+                    "suka": {
+                        $arrayElemAt: ["$InteraksiKonten.suka", 0]
+                    },
+                                "tonton": {
+                        $arrayElemAt: ["$InteraksiKonten.tonton", 0]
+                    },
+                    "buatKonten": {
+                        $arrayElemAt: ["$InteraksiKonten.buatKonten", 0]
+                    },
+                                 "tagar": {
+                        $arrayElemAt: ["$InteraksiKonten.tagar", 0]
+                    },
+                                 "Referal": {
+                        $arrayElemAt: ["$AktivitasAkun.Referal", 0]
+                    },
+                                 "Ikuti": {
+                        $arrayElemAt: ["$AktivitasAkun.Ikuti", 0]
+                    },
+                }
+            },
+        ]);
+        return query;
+    }
+
+    
     async datauserchall() {
         var query = await this.UserchallengesModel.aggregate([
 
