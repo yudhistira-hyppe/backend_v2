@@ -45192,6 +45192,13 @@ export class NewPostService {
               }
             }
           },
+          "setinsight":
+          {
+              "likes": "$likes",
+              "views": "$views",
+              "shares": "$shares",
+              "comments": "$comments",
+          },
           "isLiked":
           {
             "$ifNull":
@@ -45220,7 +45227,7 @@ export class NewPostService {
               {
                 "$filter":
                 {
-                  filter:"$userView",
+                  input:"$userView",
                   as:"listuser",
                   cond:
                   {
@@ -45342,7 +45349,7 @@ export class NewPostService {
           friends: {
             $arrayElemAt: ["$friend.friend", 0]
           },
-          "insight":(withinsight != null && withinsight == true ? "$insight" : "$$REMOVE"),
+          "insight":(withinsight != null && withinsight == true ? "$setinsight" : "$$REMOVE"),
           "userProfile": "$userProfile",
           "contentMedias": "$contentMedias",
           "cats": "$cats",
