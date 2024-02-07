@@ -280,7 +280,7 @@ export class UserchallengesService {
     }
 
 
-    async userChallengebyUser(iduser: string,idChallenge:string,idSubChallenge:string) {
+    async userChallengebyUser(iduser: string,idChallenge:string) {
         var query = await this.UserchallengesModel.aggregate([
 
 
@@ -302,9 +302,9 @@ export class UserchallengesService {
             },
             {
                 $match: {
-                   "idChallenge": new Types.ObjectId(idChallenge),
-                   "idSubChallenge":new Types.ObjectId(idSubChallenge),
-                    "idUser": new Types.ObjectId(iduser),
+                //    "idChallenge": new Types.ObjectId(idChallenge),
+                //    "idSubChallenge":new Types.ObjectId(idSubChallenge),
+                   "idUser": new Types.ObjectId(iduser),
                    "isActive": true
                 }
             },

@@ -2550,6 +2550,10 @@ export class NewPostController {
         var data = null;
         var datasearch = null;
         var emailreceiver = null;
+        var visibility = null;
+        var active = null;
+        var exp = null;
+        var withinsight = null;
         
         if (body.postID !== undefined) {
             postid = body.postID;
@@ -2565,6 +2569,44 @@ export class NewPostController {
             pageNumber = parseInt(body.pageNumber);
         }
 
+        if (body.visibility !== undefined) {
+            visibility = body.visibility;
+        }
+
+        if (body.withActive !== undefined) {
+            if(body.withActive == "true" || body.withActive == true)
+            {
+                active = true;
+            }
+            else
+            {
+                active = false;
+            }
+        }
+
+        if(body.withExp !== undefined)
+        {
+            if(body.withExp == "true" || body.withExp == true)
+            {
+                exp = true;
+            }
+            else
+            {
+                exp = false;
+            }
+        }
+
+        if(body.withInsight !== undefined)
+        {
+            if(body.withInsight == "true" || body.withInsight == true)
+            {
+                withinsight = true;
+            }
+            else
+            {
+                withinsight = false;
+            }
+        }
 
         const messages = {
             "info": ["The process successful"],
@@ -2575,7 +2617,7 @@ export class NewPostController {
 
         try {
 
-            data = await this.newPostService.landingpageMigration(email, email, postType, postid, parseInt(pageNumber), parseInt(pageRow));
+            data = await this.newPostService.landingpageMigration(email, email, postType, postid, visibility, active, exp, withinsight, parseInt(pageNumber), parseInt(pageRow));
             lengpict = data.length;
 
         } catch (e) {
