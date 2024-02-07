@@ -3165,6 +3165,7 @@ export class ChallengeController {
     var uscall = null;
     var statuskick = null;
     var botmode = false;
+    var response = null;
 
     if (getsubid == null || getsubid == undefined) {
       var timestamps_end = await this.util.getDateTimeString();
@@ -3303,10 +3304,12 @@ export class ChallengeController {
 
     if (listjoin.length != 0) {
       this.insertuserintonotifchallenge2(listjoin);
+
+      response = await this.userchallengeSS.userChallengebyUser(getuserid, getsubid);
     }
     return res.status(HttpStatus.OK).json({
       response_code: 202,
-      "data": listjoin,
+      "data": response,
       "message": messages
     });
     // var checkdata = await this.userchallengeSS.checkUserjoinchallenge(getsubid, getuserid);
