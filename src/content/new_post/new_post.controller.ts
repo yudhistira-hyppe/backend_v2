@@ -2684,7 +2684,6 @@ export class NewPostController {
                         tempapsaraMusicThumbId.push(data[i].apsaraMusicThumnail);
                     }
                 }
-                console.log("");
                 tempapsaraId_result = await this.newPostContentService.getImageApsara(tempapsaraId);
                 tempapsaraThumbId_result = await this.newPostContentService.getImageApsara(tempapsaraThumbId);
                 tempapsaraMusicThumbId_result = await this.newPostContentService.getImageApsara(tempapsaraMusicThumbId);

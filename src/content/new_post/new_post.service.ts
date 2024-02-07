@@ -45223,7 +45223,6 @@ export class NewPostService {
           },
           "postID": 1,
           "tagPeople": "$userTag",
-          "mediaType": 1,
           "postType": 1,
           "description": 1,
           "active": 1,
@@ -45414,6 +45413,9 @@ export class NewPostService {
           "stiker": "$stiker",
           "apsaraId": {
             $arrayElemAt: ["$mediaSource.apsaraId", 0]
+          },
+          "mediaType": {
+            $arrayElemAt: ["$mediaSource.mediaType", 0]
           },
           "isApsara": {
             $arrayElemAt: ["$mediaSource.apsara", 0]
