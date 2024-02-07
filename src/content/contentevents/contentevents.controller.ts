@@ -2150,6 +2150,7 @@ export class ContenteventsController {
     var userbasic1 = await this.basic2SS.findbyemail(email_user);
     var userbasic2 = await this.basic2SS.findbyemail(email_receiverParty);
     var iduser = null;
+    var isguest = false;
     if (userbasic1 == null || userbasic1 == undefined) {
       var fullurl = request.get("Host") + request.originalUrl;
       var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2161,6 +2162,7 @@ export class ContenteventsController {
       );
     }
     iduser = userbasic1._id;
+    isguest = userbasic1.guestMode;
 
     if (eventType == "FOLLOWING") {
       var ceck_data_FOLLOWER = await this.contenteventsService.ceckData(email_receiverParty, "FOLLOWER", "ACCEPT", email_user, "", "");
@@ -2735,7 +2737,9 @@ export class ContenteventsController {
             await this.postDisqusSS.updateLike(email_receiverParty, email_user, request.body.postID);
           }
           await this.insightsService.updateLike(email_receiverParty);
-          this.sendInteractiveFCM2(email_receiverParty, "LIKE", request.body.postID, email_user);
+          if (!isguest) {
+            this.sendInteractiveFCM2(email_receiverParty, "LIKE", request.body.postID, email_user);
+          }
           // const databasic = await this.userbasicsService.findOne(
           //   email_receiverParty
           // );
@@ -2748,13 +2752,13 @@ export class ContenteventsController {
 
           //this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
-          if(listchallenge !==null  && listchallenge !==undefined){
-            if(listchallenge.length>0){
-              this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty,listchallenge);
+          if (listchallenge !== null && listchallenge !== undefined) {
+            if (listchallenge.length > 0) {
+              this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty, listchallenge);
 
             }
           }
-         
+
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2816,10 +2820,10 @@ export class ContenteventsController {
             // this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
             // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-            if(listchallenge !==null  && listchallenge !==undefined){
-              if(listchallenge.length>0){
-                this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty,listchallenge);
-  
+            if (listchallenge !== null && listchallenge !== undefined) {
+              if (listchallenge.length > 0) {
+                this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty, listchallenge);
+
               }
             }
           } catch (error) {
