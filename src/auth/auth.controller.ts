@@ -4534,6 +4534,59 @@ export class AuthController {
     return await this.authService.signsosmed(request);
   }
 
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/sign/socmed/v2')
+  async signsosmed2(@Headers() Header, @Req() request: any) {
+    var timestamps_start = await this.utilsService.getDateTimeString();
+
+    this.logger.log("signsosmed >>> start: " + JSON.stringify(request.body));
+    var deviceId = null;
+    var socmedSource = null;
+    var devicetype = null;
+    var email = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["socmedSource"] !== undefined) {
+      socmedSource = request_json["socmedSource"];
+    } else {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["deviceId"] !== undefined) {
+      deviceId = request_json["deviceId"];
+    } else {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed");
+    }
+    if (request_json["devicetype"] !== undefined) {
+      devicetype = request_json["devicetype"];
+    } else {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed");
+    }
+    if (request_json["email"] !== undefined) {
+      email = request_json["email"];
+    } else {
+      var fullurl = request.get("Host") + request.originalUrl;
+      var timestamps_end = await this.utilsService.getDateTimeString();
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, null, null, request_json);
+
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    await this.socmed.newsignupsosmed(request, Header);
+    // return await this.authService.signsosmed(request);
+  }
+
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/user/getuserprofile/byusername')
