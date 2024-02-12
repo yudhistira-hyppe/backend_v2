@@ -1054,7 +1054,7 @@ export class AuthController {
     );
 
     //Generate Refresh Token
-    await this.authService.updateRefreshToken(LoginRequest_.email.toString());
+    await this.authService.updateRefreshToken2(LoginRequest_.email.toString());
 
     //Ceck User Userdevices
     const data_userdevices = await this.userdevicesService.findOneEmail(LoginRequest_.email, LoginRequest_.deviceId);
@@ -1065,7 +1065,7 @@ export class AuthController {
     }
 
     //Generate Refresh Token
-    await this.authService.updateRefreshToken(LoginRequest_.email.toString());
+    await this.authService.updateRefreshToken2(LoginRequest_.email.toString());
 
     //Ceck User Userbasics
     const data_userbasics = await this.basic2SS.findbyemail(

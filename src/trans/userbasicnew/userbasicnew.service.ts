@@ -414,6 +414,13 @@ export class UserbasicnewService {
                     "statesName": 1,
                     "mediaBasePath": 1,
                     "mediaUri": 1,
+                    "avatar":
+                    {
+                        "mediaBasePath":"$mediaBasePath",
+                        "mediaEndpoint":"$mediaEndpoint",
+                        "mediaType":"$mediaType",
+                        "mediaUri":"$mediaUri"
+                    },
                     "mediaType": 1,
                     "mediaEndpoint": 1,
                     "oneTimePassword": 1,

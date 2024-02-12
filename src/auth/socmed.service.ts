@@ -1838,6 +1838,7 @@ export class SocmedService {
               likes: new Double(0)
             },
             interest: user_interest,
+            avatar:datauserbasicsService.avatar,
             event: "UPDATE_BIO",
             email: user_email,
             username: username_,
