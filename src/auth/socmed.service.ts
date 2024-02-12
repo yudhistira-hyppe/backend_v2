@@ -2233,6 +2233,8 @@ export class SocmedService {
                 await this.contenteventsService.create(CreateContenteventsDto4);
                 await this.insightsService.updateFollower(req.body.referral);
                 await this.insightsService.updateFollowing(req.body.email);
+                await this.userbasicsnewService.updatefollowSystem(req.body.email, req.body.referral, "FOLLOWER");
+                await this.userbasicsnewService.updatefollowSystem(req.body.referral, req.body.email, "FOLLOWING");
               } catch (error) {
                 
                 var timestamps_end = await this.utilsService.getDateTimeString();

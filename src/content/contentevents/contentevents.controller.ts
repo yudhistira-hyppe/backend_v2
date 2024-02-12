@@ -2280,11 +2280,11 @@ export class ContenteventsController {
             email_user
           );
           var iduser = null;
-          // if (databasic !== null) {
-          //   iduser = databasic._id;
-          //   // this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
-          //   this.scorefollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW")
-          // }
+          if (databasic !== null) {
+            iduser = databasic._id;
+            // this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
+            this.scorefollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW",listchallenge)
+          }
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2313,11 +2313,11 @@ export class ContenteventsController {
             email_user
           );
           var iduser = null;
-          // if (databasic !== null) {
-          //   iduser = databasic._id;
-          //   //this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
-          //   this.scorefollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW")
-          // }
+          if (databasic !== null) {
+            iduser = databasic._id;
+            //this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
+            this.scorefollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW",listchallenge)
+          }
 
 
         }
@@ -2631,17 +2631,17 @@ export class ContenteventsController {
               idevent1 = resultdata1._id;
               let dataconten = await this.contenteventsService.create(CreateContenteventsDto2);
 
-              // if (idevent1 !== null) {
-              //   try {
-              //     // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
-              //     this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty)
-              //     console.log("sukses hitung score")
-              //   } catch (e) {
-              //     console.log("gagal ngitung skor" + e)
-              //   }
+              if (idevent1 !== null) {
+                try {
+                  // this.userChallengeViewv3(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty);
+                  this.scoreviewrequest(idevent1.toString(), "contentevents", "VIEW", request.body.postID, email_user, email_receiverParty,listchallenge)
+                  console.log("sukses hitung score")
+                } catch (e) {
+                  console.log("gagal ngitung skor" + e)
+                }
 
 
-              // }
+              }
 
 
             } catch (error) {
@@ -2752,12 +2752,11 @@ export class ContenteventsController {
 
           //this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
-          if (listchallenge !== null && listchallenge !== undefined) {
-            if (listchallenge.length > 0) {
-              this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty, listchallenge);
+          
+           this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty, listchallenge);
 
-            }
-          }
+            
+          
 
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
@@ -2793,7 +2792,7 @@ export class ContenteventsController {
 
             // this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
 
-            // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+             this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty,listchallenge);
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
             var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2820,12 +2819,10 @@ export class ContenteventsController {
             // this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
             // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
-            if (listchallenge !== null && listchallenge !== undefined) {
-              if (listchallenge.length > 0) {
+         
                 this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty, listchallenge);
 
-              }
-            }
+            
           } catch (error) {
             var fullurl = request.get("Host") + request.originalUrl;
             var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2865,7 +2862,7 @@ export class ContenteventsController {
 
           //this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
 
-          // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+          this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty,listchallenge);
         } catch (error) {
           var fullurl = request.get("Host") + request.originalUrl;
           var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2902,7 +2899,7 @@ export class ContenteventsController {
 
               // this.userChallengeUnLike3(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
 
-              // this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty);
+               this.scoreunlikerequest(idevent1.toString(), "contentevents", "UNLIKE", request.body.postID, email_user, email_receiverParty,listchallenge);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2936,7 +2933,7 @@ export class ContenteventsController {
 
               //this.userChallengeLike3(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
 
-              // this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty);
+              this.scorelikerequest(idevent1.toString(), "contentevents", "LIKE", request.body.postID, email_user, email_receiverParty,listchallenge);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -2979,12 +2976,12 @@ export class ContenteventsController {
             email_user
           );
           var iduser = null;
-          // if (databasic !== null) {
-          //   iduser = databasic._id;
-          //   // this.userChallengeUnFollow(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW");
+          if (databasic !== null) {
+            iduser = databasic._id;
+            // this.userChallengeUnFollow(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW");
 
-          //   this.scoreunfollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW")
-          // }
+            this.scoreunfollowrequest(iduser.toString(), idevent1.toString(), "contentevents", "UNFOLLOW",listchallenge)
+          }
 
           this.checkFriendbasedString2(userbasic1, userbasic2, "delete");
         } catch (error) {
@@ -8777,21 +8774,21 @@ export class ContenteventsController {
 
   }
 
-  async scoreunlikerequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string) {
-    await this.contenteventsService.scoreunlikerequest(idevent, namatabel, event, postID, email_user, email_receiverParty)
+  async scoreunlikerequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string,listchallenge: any[]) {
+    await this.contenteventsService.scoreunlikerequest(idevent, namatabel, event, postID, email_user, email_receiverParty,listchallenge)
   }
   async scorelikerequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string, listchallenge: any[]) {
     await this.contenteventsService.scorelikerequest(idevent, namatabel, event, postID, email_user, email_receiverParty, listchallenge)
   }
 
-  async scoreviewrequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string) {
-    await this.contenteventsService.scoreviewrequest(idevent, namatabel, event, postID, email_user, email_receiverParty)
+  async scoreviewrequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string,listchallenge: any[]) {
+    await this.contenteventsService.scoreviewrequest(idevent, namatabel, event, postID, email_user, email_receiverParty,listchallenge)
   }
-  async scorefollowrequest(iduser: string, idevent: string, namatabel: string, event: string) {
-    await this.contenteventsService.scorefollowrequest(iduser, idevent, namatabel, event)
+  async scorefollowrequest(iduser: string, idevent: string, namatabel: string, event: string,listchallenge: any[]) {
+    await this.contenteventsService.scorefollowrequest(iduser, idevent, namatabel, event,listchallenge)
   }
 
-  async scoreunfollowrequest(iduser: string, idevent: string, namatabel: string, event: string) {
-    await this.contenteventsService.scoreunfollowrequest(iduser, idevent, namatabel, event)
+  async scoreunfollowrequest(iduser: string, idevent: string, namatabel: string, event: string, listchallenge: any[]) {
+    await this.contenteventsService.scoreunfollowrequest(iduser, idevent, namatabel, event,listchallenge)
   }
 }

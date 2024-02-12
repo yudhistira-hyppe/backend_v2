@@ -4813,7 +4813,7 @@ export class PostsController {
     return await this.MediastikerService.updatedata(list, "used");
   }
 
-  async scorepostrequest(iduser: string, idevent: string, namatabel: string, event: string, postID: string) {
-    await this.contenteventsService.scorepostrequest(iduser, idevent, namatabel, event, postID);
+  async scorepostrequest(iduser: string, idevent: string, namatabel: string, event: string, postID: string,listchallenge:any[]) {
+    await this.contenteventsService.scorepostrequest(iduser, idevent, namatabel, event, postID,listchallenge);
   }
 }

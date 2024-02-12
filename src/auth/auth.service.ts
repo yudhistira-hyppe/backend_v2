@@ -11188,6 +11188,7 @@ export class AuthService {
     var CurrentStatus = '';
     var CurrentEvent = '';
     var user_regSrc = "";
+    var listchallenge=null;
 
     var lang = "id";
     if (req.body.lang != undefined) {
@@ -11197,7 +11198,11 @@ export class AuthService {
     if (req.body.regSrc != undefined) {
       user_regSrc = req.body.regSrc.toString();
     }
-
+    try {
+      listchallenge = req.body.listchallenge;
+    } catch (e) {
+      listchallenge = null;
+    }
     var current_date = await this.utilsService.getDateTimeString();
 
     if (req.body.email == undefined) {
@@ -11782,9 +11787,22 @@ export class AuthService {
                           req.body.referral,
                         );
 
+                        // if (databasic !== null) {
+                        //   var idref = insertdata._id;
+                        //   this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
+                        // }
+                        
+                       
+
                         if (databasic !== null) {
                           var idref = insertdata._id;
-                          this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
+                          try {
+                            //this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
+                            this.scorereferralrequest(databasic._id.toString(), idref.toString(), "referral", "REFERAL",listchallenge)
+
+                          } catch (e) {
+
+                          }
                         }
 
                         var _id_1 = (await this.utilsService.generateId());
@@ -11864,6 +11882,8 @@ export class AuthService {
                         await this.contenteventsService.create(CreateContenteventsDto4);
                         await this.insightsService.updateFollower(req.body.referral);
                         await this.insightsService.updateFollowing(req.body.email);
+                        await this.basic2SS.updatefollowSystem(req.body.email, req.body.referral, "FOLLOWER");
+                        await this.basic2SS.updatefollowSystem(req.body.referral, req.body.email, "FOLLOWING");
                       }
                     }
                   }
@@ -15062,8 +15082,8 @@ export class AuthService {
   }
 
 
-  async scorereferralrequest(iduser: string, idevent: string, namatabel: string, event: string) {
-    await this.contenteventsService.scorereferralrequest(iduser, idevent, namatabel, event)
+  async scorereferralrequest(iduser: string, idevent: string, namatabel: string, event: string,listchallenge:any[]) {
+    await this.contenteventsService.scorereferralrequest(iduser, idevent, namatabel, event,listchallenge)
   }
 
   async guestToreal(data:Userbasicnew)

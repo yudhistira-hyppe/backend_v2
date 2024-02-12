@@ -6302,14 +6302,20 @@ export class ContenteventsService {
     return query;
   }
 
-  async scoreviewrequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string) {
+  async scoreviewrequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string,listchallenge:any[]) {
+    if(listchallenge !==undefined && listchallenge !==null){
+      listchallenge=listchallenge;
+    }else{
+      listchallenge=[];
+    }
     var call = {
       "idevent": idevent,
       "namatabel": namatabel,
       "event": event,
       "postID": postID,
       "email_user": email_user,
-      "email_receiverParty": email_receiverParty
+      "email_receiverParty": email_receiverParty,
+      "listchallenge":listchallenge
     };
     console.log(JSON.stringify(call))
     let config = { headers: { "Content-Type": "application/json" } };
@@ -6319,6 +6325,12 @@ export class ContenteventsService {
   }
 
   async scorelikerequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string,listchallenge:any[]) {
+
+    if(listchallenge !==undefined && listchallenge !==null){
+      listchallenge=listchallenge;
+    }else{
+      listchallenge=[];
+    }
     var call = {
       "idevent": idevent,
       "namatabel": namatabel,
@@ -6335,14 +6347,20 @@ export class ContenteventsService {
     return data;
   }
 
-  async scoreunlikerequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string) {
+  async scoreunlikerequest(idevent: string, namatabel: string, event: string, postID: string, email_user: string, email_receiverParty: string,listchallenge:any[]) {
+    if(listchallenge !==undefined && listchallenge !==null){
+      listchallenge=listchallenge;
+    }else{
+      listchallenge=[];
+    }
     var call = {
       "idevent": idevent,
       "namatabel": namatabel,
       "event": event,
       "postID": postID,
       "email_user": email_user,
-      "email_receiverParty": email_receiverParty
+      "email_receiverParty": email_receiverParty,
+      "listchallenge":listchallenge
     };
     console.log(JSON.stringify(call))
     let config = { headers: { "Content-Type": "application/json" } };
@@ -6351,12 +6369,18 @@ export class ContenteventsService {
     return data;
   }
 
-  async scorefollowrequest(iduser: string, idevent: string, namatabel: string, event: string) {
+  async scorefollowrequest(iduser: string, idevent: string, namatabel: string, event: string,listchallenge:any[]) {
+    if(listchallenge !==undefined && listchallenge !==null){
+      listchallenge=listchallenge;
+    }else{
+      listchallenge=[];
+    }
     var call = {
       "iduser": iduser,
       "idevent": idevent,
       "namatabel": namatabel,
-      "event": event
+      "event": event,
+      "listchallenge":listchallenge
     };
     console.log(JSON.stringify(call))
     let config = { headers: { "Content-Type": "application/json" } };
@@ -6364,12 +6388,18 @@ export class ContenteventsService {
     const data = res.data;
     return data;
   }
-  async scoreunfollowrequest(iduser: string, idevent: string, namatabel: string, event: string) {
+  async scoreunfollowrequest(iduser: string, idevent: string, namatabel: string, event: string,listchallenge:any[]) {
+    if(listchallenge !==undefined && listchallenge !==null){
+      listchallenge=listchallenge;
+    }else{
+      listchallenge=[];
+    }
     var call = {
       "iduser": iduser,
       "idevent": idevent,
       "namatabel": namatabel,
-      "event": event
+      "event": event,
+      "listchallenge":listchallenge
     };
     console.log(JSON.stringify(call))
     let config = { headers: { "Content-Type": "application/json" } };
@@ -6378,12 +6408,18 @@ export class ContenteventsService {
     return data;
   }
 
-  async scorereferralrequest(iduser: string, idevent: string, namatabel: string, event: string) {
+  async scorereferralrequest(iduser: string, idevent: string, namatabel: string, event: string,listchallenge:any[]) {
+    if(listchallenge !==undefined && listchallenge !==null){
+      listchallenge=listchallenge;
+    }else{
+      listchallenge=[];
+    }
     var call = {
       "iduser": iduser,
       "idevent": idevent,
       "namatabel": namatabel,
-      "event": event
+      "event": event,
+      "listchallenge":listchallenge
     };
     console.log(JSON.stringify(call))
     let config = { headers: { "Content-Type": "application/json" } };
@@ -6392,13 +6428,19 @@ export class ContenteventsService {
     return data;
   }
 
-  async scorepostrequest(iduser: string, idevent: string, namatabel: string, event: string, postID: string) {
+  async scorepostrequest(iduser: string, idevent: string, namatabel: string, event: string, postID: string, listchallenge: any[]) {
+    if(listchallenge !==undefined && listchallenge !==null){
+      listchallenge=listchallenge;
+    }else{
+      listchallenge=[];
+    }
     var call = {
       "iduser": iduser,
       "idevent": idevent,
       "namatabel": namatabel,
       "event": event,
-      "postID": postID
+      "postID": postID,
+      "listchallenge":listchallenge
     };
     console.log(JSON.stringify(call))
     let config = { headers: { "Content-Type": "application/json" } };
