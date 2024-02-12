@@ -9901,6 +9901,8 @@ export class AdsService {
                         mediaLandscapeThumUri: 1,
                         heightLandscape: 1,
                         widthLandscape: 1,
+                        idApsaraPortrait: 1,
+                        idApsaraLandscape: 1,
                     }
                 },
             ]

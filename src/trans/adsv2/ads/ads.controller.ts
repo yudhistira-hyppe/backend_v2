@@ -2166,7 +2166,7 @@ export class AdsController {
             }
         }
         AdsLogsDto_.requestAds = JSON.stringify(logRequest);
-        AdsLogsDto_.endPointAds = "api/adsv2/ads/get/v2/" + id;
+        AdsLogsDto_.endPointAds = "api/adsv2/ads/get/" + id;
         AdsLogsDto_.type = "GET ADS";
         AdsLogsDto_.dateTime = await this.utilsService.getDateTimeString();
         AdsLogsDto_.nameActivitas = ["GetAds"];
@@ -2234,7 +2234,8 @@ export class AdsController {
             );
         }
         AdsLogsDto_.iduser = new mongoose.Types.ObjectId(data_userbasic._id.toString());
-        const data_ads = await this.adsService.getAdsUser2(headers['x-auth-user'], data_userbasic._id.toString(), id);
+        console.log("ok")
+        const data_ads = await this.adsService.getAdsUser(headers['x-auth-user'], data_userbasic._id.toString(), id);
         console.log(data_ads);
         if (await this.utilsService.ceckData(data_ads)) {
             var ceckData = await this.userAdsService.findAdsIDUserID(data_userbasic._id.toString(), data_ads[0]._id.toString());
@@ -2250,7 +2251,6 @@ export class AdsController {
                 CreateUserAdsDto_.createdAt = current_date;
                 CreateUserAdsDto_.statusClick = false;
                 CreateUserAdsDto_.statusView = true;
-                CreateUserAdsDto_.viewed = 0;
                 CreateUserAdsDto_.liveAt = data_ads[0].liveAt;
                 CreateUserAdsDto_.liveTypeuserads = data_ads[0].liveTypeAds;
                 CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_ads[0].typeAdsID);
@@ -2265,6 +2265,8 @@ export class AdsController {
                 CreateUserAdsDto_.scoreGeografis = data_ads[0].scoreGeografis;
                 CreateUserAdsDto_.scoreInterest = data_ads[0].scoreMinat;
                 CreateUserAdsDto_.scoreTotal = data_ads[0].scoreTotal;
+                CreateUserAdsDto_.updateAt = [current_date];
+                CreateUserAdsDto_.viewed = 1;
                 this.userAdsService.create(CreateUserAdsDto_);
             } else {
                 var data_Update_UserAds = {
@@ -2289,25 +2291,14 @@ export class AdsController {
             await this.adsService.updateData(data_ads[0]._id.toString(), data_Update_Ads)
 
             //Get Pict User Ads
-            var get_profilePict = {};
             const data_userbasic_ads = await this.basic2SS.findOne(data_ads[0].userID.toString());
-            if (data_userbasic_ads.mediaBasePath != undefined || data_userbasic_ads.mediaUri != undefined || data_userbasic_ads.mediaType != undefined || data_userbasic_ads.mediaEndpoint != undefined) {
-                if (data_userbasic_ads.mediaBasePath != undefined) {
-                    get_profilePict['mediaBasePath'] = data_userbasic_ads.mediaBasePath;
-                }
-
-                if (data_userbasic_ads.mediaUri != undefined) {
-                    get_profilePict['mediaUri'] = data_userbasic_ads.mediaUri;
-                }
-
-                if (data_userbasic_ads.mediaType != undefined) {
-                    get_profilePict['mediaType'] = data_userbasic_ads.mediaType;
-                }
-
-                if (data_userbasic_ads.mediaEndpoint != undefined) {
-                    get_profilePict['mediaEndpoint'] = data_userbasic_ads.mediaEndpoint;
-                }
-            }
+            // var get_profilePict = null;
+            // if (data_userbasic_ads.profilePict != undefined) {
+            //     if (data_userbasic_ads.profilePict != null) {
+            //         var mediaprofilepicts_json = JSON.parse(JSON.stringify(data_userbasic_ads.profilePict));
+            //         get_profilePict = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
+            //     }
+            // }
 
             //Create Response
             var data_response = {};
@@ -2323,14 +2314,18 @@ export class AdsController {
             data_response['idUser'] = data_userbasic_ads._id.toString();
             data_response['fullName'] = data_userbasic_ads.fullName;
             data_response['email'] = data_userbasic_ads.email;
-            data_response['username'] = data_userbasic_ads.username;
-            if (await this.utilsService.ceckData(get_profilePict)) {
-                data_response['avartar'] = {
-                    mediaBasePath: (get_profilePict['mediaBasePath'] != undefined) ? get_profilePict['mediaBasePath'] : null,
-                    mediaUri: (get_profilePict['mediaUri'] != undefined) ? get_profilePict['mediaUri'] : null,
-                    mediaType: (get_profilePict['mediaType'] != undefined) ? get_profilePict['mediaType'] : null,
-                    mediaEndpoint: (get_profilePict['mediaEndpoint'] != undefined) ? get_profilePict['mediaEndpoint'] : null,
-                }
+            data_response['username'] = data_ads[0].username;
+            data_response['avartar'] = data_ads[0].avatar;
+            data_response['scoreUmur'] = data_ads[0].scoreUmur;
+            data_response['scoreKelamin'] = data_ads[0].scoreKelamin;
+            data_response['scoreMinat'] = data_ads[0].scoreMinat;
+            data_response['scoreGeografis'] = data_ads[0].scoreGeografis;
+            data_response['scoreTotal'] = data_ads[0].scoreTotal;
+            data_response['avartar'] = {
+                mediaBasePath: (data_userbasic_ads.mediaBasePath != undefined) ? data_userbasic_ads.mediaBasePath : null,
+                mediaUri: (data_userbasic_ads.mediaUri != undefined) ? data_userbasic_ads.mediaUri : null,
+                mediaType: (data_userbasic_ads.mediaType != undefined) ? data_userbasic_ads.mediaType : null,
+                mediaEndpoint: (data_userbasic_ads.mediaEndpoint != undefined) ? '/profilepict/' + data_userbasic_ads.mediaEndpoint : null,
             }
             try {
                 data_response['placingID'] = data_ads[0].placingID.toString();
@@ -2349,26 +2344,12 @@ export class AdsController {
             data_response['ctaButton'] = data_ads[0].ctaNames;
             data_response['videoId'] = data_ads[0].idApsara;
             data_response['duration'] = data_ads[0].duration;
-            data_response['videoIdPortrait'] = data_ads[0].idApsaraPortrait;
-            data_response['videoIdLandscape'] = data_ads[0].idApsaraLandscape;
             data_response['mediaBasePath'] = data_ads[0].mediaBasePath;
             data_response['mediaUri'] = data_ads[0].mediaUri;
             data_response['mediaThumBasePath'] = data_ads[0].mediaThumBasePath;
             data_response['mediaThumUri'] = data_ads[0].mediaThumUri;
             data_response['width'] = data_ads[0].width;
             data_response['height'] = data_ads[0].height;
-            data_response['mediaPortraitBasePath'] = data_ads[0].mediaPortraitBasePath;
-            data_response['mediaPortraitUri'] = data_ads[0].mediaPortraitUri;
-            data_response['mediaPortraitThumBasePath'] = data_ads[0].mediaPortraitThumBasePath;
-            data_response['mediaPortraitThumUri'] = data_ads[0].mediaPortraitThumUri;
-            data_response['widthPortrait'] = data_ads[0].widthPortrait;
-            data_response['heightPortrait'] = data_ads[0].heightPortrait;
-            data_response['mediaLandscapeBasePath'] = data_ads[0].mediaLandscapeBasePath;
-            data_response['mediaLandscapeUri'] = data_ads[0].mediaLandscapeUri;
-            data_response['mediaLandscapeThumBasePath'] = data_ads[0].mediaLandscapeThumBasePath;
-            data_response['mediaLandscapeThumUri'] = data_ads[0].mediaLandscapeThumUri;
-            data_response['widthLandscape'] = data_ads[0].widthLandscape;
-            data_response['heightLandscape'] = data_ads[0].heightLandscape;
 
             AdsLogsDto_.responseAds = JSON.stringify(data_response);
             await this.adslogsService.create(AdsLogsDto_);
