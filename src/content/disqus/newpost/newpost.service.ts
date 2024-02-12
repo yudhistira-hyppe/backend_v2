@@ -513,12 +513,12 @@ export class NewpostService {
                     createdAt: - 1
                 }
             },
-            {
-                $skip: (page * limit)
-            },
-            {
-                $limit: limit
-            },
+            // {
+            //     $skip: (page * limit)
+            // },
+            // {
+            //     $limit: limit
+            // },
             {
                 $lookup: {
                     from: 'newUserBasics',
@@ -856,6 +856,12 @@ export class NewpostService {
                     username: "$_id.username",
                     story: 1
                 }
+            },
+            {
+                $skip: (page * limit)
+            },
+            {
+                $limit: limit
             },
         ]);
 
