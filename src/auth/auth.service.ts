@@ -11882,6 +11882,8 @@ export class AuthService {
                         await this.contenteventsService.create(CreateContenteventsDto4);
                         await this.insightsService.updateFollower(req.body.referral);
                         await this.insightsService.updateFollowing(req.body.email);
+                        await this.basic2SS.updatefollowSystem(req.body.email, req.body.referral, "FOLLOWER");
+                        await this.basic2SS.updatefollowSystem(req.body.referral, req.body.email, "FOLLOWING");
                       }
                     }
                   }

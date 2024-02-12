@@ -8668,4 +8668,42 @@ export class AuthController {
       return GlobalResponse_;
     }
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('api/newuserbasics/guestchart')
+  async totalguest(
+      @Headers() headers) {
+      var timestamps_start = await this.utilsService.getDateTimeString();
+      var fullurl = headers.host + '/api/newuserbasics/totalguest';
+      var token = headers['x-auth-token'];
+      var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
+      var totaldata = await this.basic2SS.findGuestUser();
+      var result = [
+          {
+              "id":"TIDAK TERDAFTAR",
+              "total":totaldata.length,
+              "persentase":100
+          },
+          {
+              "id":"TERDAFTAR",
+              "total":0,
+              "persentase":0
+          },
+      ];
+
+      var timestamps_end = await this.utilsService.getDateTimeString();
+
+      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, auth.email, null, null, null);
+
+      return {
+          response_code: 202, 
+          data: result, 
+          messages: {
+              "info": [
+                  "successfully"
+              ]
+          }
+      }
+  }
 }
