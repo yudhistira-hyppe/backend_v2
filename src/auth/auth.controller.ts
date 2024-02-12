@@ -4583,7 +4583,7 @@ export class AuthController {
       throw new BadRequestException("Unabled to proceed");
     }
 
-    await this.socmed.newsignupsosmed(request, Header);
+    return await this.socmed.newsignupsosmed(request, Header);
     // return await this.authService.signsosmed(request);
   }
 
