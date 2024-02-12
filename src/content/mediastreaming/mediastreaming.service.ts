@@ -44,7 +44,7 @@ export class MediastreamingService {
         },
         {
           "$lookup": {
-            from: "userbasics",
+            from: "newUserBasics",
             as: "user",
             let: {
               email: email,
@@ -104,40 +104,40 @@ export class MediastreamingService {
 
           }
         },
-        {
-          "$lookup": {
-            from: "mediaprofilepicts",
-            as: "avatars",
-            let: {
-              localID: { $arrayElemAt: ["$userStream.profilePict.$id", 0] }
-            },
-            pipeline: [
-              {
-                $match:
-                {
-                  $expr: {
-                    $eq: ['$mediaID', "$$localID"]
-                  }
-                }
-              },
-              {
-                $project: {
-                  "mediaBasePath": 1,
-                  "mediaUri": 1,
-                  "originalName": 1,
-                  "fsSourceUri": 1,
-                  "fsSourceName": 1,
-                  "fsTargetUri": 1,
-                  "mediaType": 1,
-                  "mediaEndpoint": {
-                    "$concat": ["/profilepict/", "$mediaID"]
-                  }
-                }
-              }
-            ],
+        // {
+        //   "$lookup": {
+        //     from: "mediaprofilepicts",
+        //     as: "avatars",
+        //     let: {
+        //       localID: { $arrayElemAt: ["$userStream.profilePict.$id", 0] }
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match:
+        //         {
+        //           $expr: {
+        //             $eq: ['$mediaID', "$$localID"]
+        //           }
+        //         }
+        //       },
+        //       {
+        //         $project: {
+        //           "mediaBasePath": 1,
+        //           "mediaUri": 1,
+        //           "originalName": 1,
+        //           "fsSourceUri": 1,
+        //           "fsSourceName": 1,
+        //           "fsTargetUri": 1,
+        //           "mediaType": 1,
+        //           "mediaEndpoint": {
+        //             "$concat": ["/profilepict/", "$mediaID"]
+        //           }
+        //         }
+        //       }
+        //     ],
 
-          }
-        },
+        //   }
+        // },
         {
           "$lookup": {
             from: "insights",
@@ -169,37 +169,37 @@ export class MediastreamingService {
             ]
           }
         },
-        {
-          "$lookup": {
-            from: "userauths",
-            as: "name",
-            let: {
-              email: { $arrayElemAt: ["$userStream.email", 0] }
-            },
-            pipeline: [
-              {
-                $match: {
-                  $or: [
-                    {
-                      $expr:
-                      {
-                        $eq: ["$email", "$$email"]
-                      },
+        // {
+        //   "$lookup": {
+        //     from: "userauths",
+        //     as: "name",
+        //     let: {
+        //       email: { $arrayElemAt: ["$userStream.email", 0] }
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match: {
+        //           $or: [
+        //             {
+        //               $expr:
+        //               {
+        //                 $eq: ["$email", "$$email"]
+        //               },
 
-                    },
+        //             },
 
-                  ]
-                },
+        //           ]
+        //         },
 
-              },
-              {
-                $project: {
-                  username: 1
-                }
-              }
-            ]
-          }
-        },
+        //       },
+        //       {
+        //         $project: {
+        //           username: 1
+        //         }
+        //       }
+        //     ]
+        //   }
+        // },
         {
           "$lookup": {
             from: "friend_list",
@@ -228,7 +228,7 @@ export class MediastreamingService {
                         {
                           friendlist: {
                             $elemMatch: {
-                              email: 'ilhamarahman97@gmail.com'
+                              email: email
                             }
                           }
                         },
@@ -475,14 +475,13 @@ export class MediastreamingService {
             totalFollower: 1,
             totalFriend: 1,
             totalFollowing: 1,
-
             fullName:
             {
               $arrayElemAt: ["$user.fullName", 0]
             },
             username:
             {
-              $arrayElemAt: ["$name.username", 0]
+              $arrayElemAt: ["$user.username", 0]
             },
             email:
             {
@@ -491,45 +490,17 @@ export class MediastreamingService {
             //avatar: 1,
             avatar: {
               "mediaBasePath": {
-                "$let": {
-                  "vars": {
-                    "tmp": {
-                      "$arrayElemAt": ["$avatars", 0]
-                    }
-                  },
-                  "in": "$$tmp.mediaBasePath"
-                }
+                $arrayElemAt: ["$user.mediaBasePath", 0]
               },
               "mediaUri": {
-                "$let": {
-                  "vars": {
-                    "tmp": {
-                      "$arrayElemAt": ["$avatars", 0]
-                    }
-                  },
-                  "in": "$$tmp.mediaUri"
-                }
+                $arrayElemAt: ["$user.mediaUri", 0]
               },
               "mediaType": {
-                "$let": {
-                  "vars": {
-                    "tmp": {
-                      "$arrayElemAt": ["$avatars", 0]
-                    }
-                  },
-                  "in": "$$tmp.mediaType"
-                }
+                $arrayElemAt: ["$user.mediaType", 0]
               },
               "mediaEndpoint": {
-                "$let": {
-                  "vars": {
-                    "tmp": {
-                      "$arrayElemAt": ["$avatars", 0]
-                    }
-                  },
-                  "in": "$$tmp.mediaEndpoint"
-                }
-              }
+                $arrayElemAt: ["$user.mediaEndpoint", 0]
+              },
             }
           }
         },
@@ -633,7 +604,7 @@ export class MediastreamingService {
       },
       {
         "$lookup": {
-          from: "userbasics",
+          from: "newUserBasics",
           as: "data_userbasics",
           let: {
             localID: "$comment.userId"
@@ -651,139 +622,108 @@ export class MediastreamingService {
               $project: {
                 fullName: 1,
                 email: 1,
-                userAuth: "$userAuth.$id",
-                profilePict: "$profilePict.$id",
-
-              }
-            },
-            {
-              "$lookup": {
-                from: "userauths",
-                as: "data_userauths",
-                let: {
-                  localID: '$userAuth'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
-                      $expr: {
-                        $eq: ['$_id', '$$localID']
-                      }
-                    }
-                  },
-                  {
-                    $project: {
-                      email: 1,
-                      username: 1
-                    }
-                  }
-                ],
-
-              }
-            },
-            {
-              "$lookup": {
-                from: "mediaprofilepicts",
-                as: "data_mediaprofilepicts",
-                let: {
-                  localID: '$profilePict'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
-                      $expr: {
-                        $eq: ['$_id', '$$localID']
-                      }
-                    }
-                  },
-                  {
-                    $project: {
-                      "mediaBasePath": 1,
-                      "mediaUri": 1,
-                      "originalName": 1,
-                      "fsSourceUri": 1,
-                      "fsSourceName": 1,
-                      "fsTargetUri": 1,
-                      "mediaType": 1,
-                      "mediaEndpoint": {
-                        "$concat": ["/profilepict/", "$mediaID"]
-                      }
-                    }
-                  }
-                ],
-
-              }
-            },
-            {
-              $project: {
-                fullName: 1,
-                email: 1,
-                userAuth: {
-                  "$let": {
-                    "vars": {
-                      "tmp": {
-                        "$arrayElemAt": ["$data_userauths", 0]
-                      }
-                    },
-                    "in": "$$tmp._id"
-                  }
-                },
-                username: {
-                  "$let": {
-                    "vars": {
-                      "tmp": {
-                        "$arrayElemAt": ["$data_userauths", 0]
-                      }
-                    },
-                    "in": "$$tmp.username"
-                  }
-                },
+                username: 1,
                 avatar: {
-                  "mediaBasePath": {
-                    "$let": {
-                      "vars": {
-                        "tmp": {
-                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
-                        }
-                      },
-                      "in": "$$tmp.mediaBasePath"
-                    }
-                  },
-                  "mediaUri": {
-                    "$let": {
-                      "vars": {
-                        "tmp": {
-                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
-                        }
-                      },
-                      "in": "$$tmp.mediaUri"
-                    }
-                  },
-                  "mediaType": {
-                    "$let": {
-                      "vars": {
-                        "tmp": {
-                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
-                        }
-                      },
-                      "in": "$$tmp.mediaType"
-                    }
-                  },
-                  "mediaEndpoint": {
-                    "$let": {
-                      "vars": {
-                        "tmp": {
-                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
-                        }
-                      },
-                      "in": "$$tmp.mediaEndpoint"
-                    }
-                  }
+                  "mediaBasePath": "$mediaBasePath",
+                  "mediaUri": "$mediaUri",
+                  "mediaType": "$mediaType",
+                  "mediaEndpoint": "$mediaEndpoint",
                 }
               }
             },
+            // {
+            //   "$lookup": {
+            //     from: "userauths",
+            //     as: "data_userauths",
+            //     let: {
+            //       localID: '$userAuth'
+            //     },
+            //     pipeline: [
+            //       {
+            //         $match:
+            //         {
+            //           $expr: {
+            //             $eq: ['$_id', '$$localID']
+            //           }
+            //         }
+            //       },
+            //       {
+            //         $project: {
+            //           email: 1,
+            //           username: 1
+            //         }
+            //       }
+            //     ],
+
+            //   }
+            // },
+            // {
+            //   "$lookup": {
+            //     from: "mediaprofilepicts",
+            //     as: "data_mediaprofilepicts",
+            //     let: {
+            //       localID: '$profilePict'
+            //     },
+            //     pipeline: [
+            //       {
+            //         $match:
+            //         {
+            //           $expr: {
+            //             $eq: ['$_id', '$$localID']
+            //           }
+            //         }
+            //       },
+            //       {
+            //         $project: {
+            //           "mediaBasePath": 1,
+            //           "mediaUri": 1,
+            //           "originalName": 1,
+            //           "fsSourceUri": 1,
+            //           "fsSourceName": 1,
+            //           "fsTargetUri": 1,
+            //           "mediaType": 1,
+            //           "mediaEndpoint": {
+            //             "$concat": ["/profilepict/", "$mediaID"]
+            //           }
+            //         }
+            //       }
+            //     ],
+
+            //   }
+            // },
+            // {
+            //   $project: {
+            //     fullName: 1,
+            //     email: 1,
+            //     username: 1,
+            //     // userAuth: {
+            //     //   "$let": {
+            //     //     "vars": {
+            //     //       "tmp": {
+            //     //         "$arrayElemAt": ["$data_userauths", 0]
+            //     //       }
+            //     //     },
+            //     //     "in": "$$tmp._id"
+            //     //   }
+            //     // },
+            //     // username: {
+            //     //   "$let": {
+            //     //     "vars": {
+            //     //       "tmp": {
+            //     //         "$arrayElemAt": ["$data_userauths", 0]
+            //     //       }
+            //     //     },
+            //     //     "in": "$$tmp.username"
+            //     //   }
+            //     // },
+            //     avatar: {
+            //       "mediaBasePath": "$mediaBasePath",
+            //       "mediaUri": "$mediaUri",
+            //       "mediaType": "$mediaType",
+            //       "mediaEndpoint": "$mediaEndpoint",
+            //     }
+            //   }
+            // },
 
           ],
         }
@@ -820,16 +760,16 @@ export class MediastreamingService {
               "in": "$$tmp.fullName"
             }
           },
-          "userAuth": {
-            "$let": {
-              "vars": {
-                "tmp": {
-                  "$arrayElemAt": ["$data_userbasics", 0]
-                }
-              },
-              "in": "$$tmp.userAuth"
-            }
-          },
+          // "userAuth": {
+          //   "$let": {
+          //     "vars": {
+          //       "tmp": {
+          //         "$arrayElemAt": ["$data_userbasics", 0]
+          //       }
+          //     },
+          //     "in": "$$tmp.userAuth"
+          //   }
+          // },
           "username": {
             "$let": {
               "vars": {
@@ -926,7 +866,7 @@ export class MediastreamingService {
       },
       {
         "$lookup": {
-          from: "userbasics",
+          from: "newUserBasics",
           as: "data_userbasics_streamer",
           let: {
             localID: "$userId"
@@ -953,7 +893,7 @@ export class MediastreamingService {
       { "$skip": page_ },
       {
         "$lookup": {
-          from: "userbasics",
+          from: "newUserBasics",
           as: "data_userbasics",
           let: {
             localID: "$view"
@@ -971,137 +911,101 @@ export class MediastreamingService {
               $project: {
                 fullName: 1,
                 email: 1,
-                userAuth: "$userAuth.$id",
-                profilePict: "$profilePict.$id",
-
+                username: 1,
+                avatar: {
+                  "mediaBasePath": "$mediaBasePath",
+                  "mediaUri": "$mediaUri",
+                  "mediaType": "$mediaType",
+                  "mediaEndpoint": "$mediaEndpoint",
+                }
               }
             },
-            {
-              "$lookup": {
-                from: "userauths",
-                as: "data_userauths",
-                let: {
-                  localID: '$userAuth'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
-                      $expr: {
-                        $eq: ['$_id', '$$localID']
-                      }
-                    }
-                  },
-                  {
-                    $project: {
-                      email: 1,
-                      username: 1
-                    }
-                  }
-                ],
+            // {
+            //   "$lookup": {
+            //     from: "userauths",
+            //     as: "data_userauths",
+            //     let: {
+            //       localID: '$userAuth'
+            //     },
+            //     pipeline: [
+            //       {
+            //         $match:
+            //         {
+            //           $expr: {
+            //             $eq: ['$_id', '$$localID']
+            //           }
+            //         }
+            //       },
+            //       {
+            //         $project: {
+            //           email: 1,
+            //           username: 1
+            //         }
+            //       }
+            //     ],
 
-              }
-            },
-            {
-              "$lookup": {
-                from: "mediaprofilepicts",
-                as: "data_mediaprofilepicts",
-                let: {
-                  localID: '$profilePict'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
-                      $expr: {
-                        $eq: ['$_id', '$$localID']
-                      }
-                    }
-                  },
-                  {
-                    $project: {
-                      "mediaBasePath": 1,
-                      "mediaUri": 1,
-                      "originalName": 1,
-                      "fsSourceUri": 1,
-                      "fsSourceName": 1,
-                      "fsTargetUri": 1,
-                      "mediaType": 1,
-                      "mediaEndpoint": {
-                        "$concat": ["/profilepict/", "$mediaID"]
-                      }
-                    }
-                  }
-                ],
+            //   }
+            // },
+            // {
+            //   "$lookup": {
+            //     from: "mediaprofilepicts",
+            //     as: "data_mediaprofilepicts",
+            //     let: {
+            //       localID: '$profilePict'
+            //     },
+            //     pipeline: [
+            //       {
+            //         $match:
+            //         {
+            //           $expr: {
+            //             $eq: ['$_id', '$$localID']
+            //           }
+            //         }
+            //       },
+            //       {
+            //         $project: {
+            //           "mediaBasePath": 1,
+            //           "mediaUri": 1,
+            //           "originalName": 1,
+            //           "fsSourceUri": 1,
+            //           "fsSourceName": 1,
+            //           "fsTargetUri": 1,
+            //           "mediaType": 1,
+            //           "mediaEndpoint": {
+            //             "$concat": ["/profilepict/", "$mediaID"]
+            //           }
+            //         }
+            //       }
+            //     ],
 
-              }
-            },
+            //   }
+            // },
             {
               $project: {
                 fullName: 1,
                 email: 1,
-                userAuth: {
-                  "$let": {
-                    "vars": {
-                      "tmp": {
-                        "$arrayElemAt": ["$data_userauths", 0]
-                      }
-                    },
-                    "in": "$$tmp._id"
-                  }
-                },
-                username: {
-                  "$let": {
-                    "vars": {
-                      "tmp": {
-                        "$arrayElemAt": ["$data_userauths", 0]
-                      }
-                    },
-                    "in": "$$tmp.username"
-                  }
-                },
-                avatar: {
-                  "mediaBasePath": {
-                    "$let": {
-                      "vars": {
-                        "tmp": {
-                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
-                        }
-                      },
-                      "in": "$$tmp.mediaBasePath"
-                    }
-                  },
-                  "mediaUri": {
-                    "$let": {
-                      "vars": {
-                        "tmp": {
-                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
-                        }
-                      },
-                      "in": "$$tmp.mediaUri"
-                    }
-                  },
-                  "mediaType": {
-                    "$let": {
-                      "vars": {
-                        "tmp": {
-                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
-                        }
-                      },
-                      "in": "$$tmp.mediaType"
-                    }
-                  },
-                  "mediaEndpoint": {
-                    "$let": {
-                      "vars": {
-                        "tmp": {
-                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
-                        }
-                      },
-                      "in": "$$tmp.mediaEndpoint"
-                    }
-                  }
-                }
+                username: 1,
+                // userAuth: {
+                //   "$let": {
+                //     "vars": {
+                //       "tmp": {
+                //         "$arrayElemAt": ["$data_userauths", 0]
+                //       }
+                //     },
+                //     "in": "$$tmp._id"
+                //   }
+                // },
+                // username: {
+                //   "$let": {
+                //     "vars": {
+                //       "tmp": {
+                //         "$arrayElemAt": ["$data_userauths", 0]
+                //       }
+                //     },
+                //     "in": "$$tmp.username"
+                //   }
+                // },
+                avatar: 1,
               }
             },
 
@@ -1320,7 +1224,7 @@ export class MediastreamingService {
       { "$skip": page_ },
       {
         "$lookup": {
-          from: "userbasics",
+          from: "newUserBasics",
           as: "data_userbasics",
           let: {
             localID: "$view.userId"
@@ -1338,137 +1242,101 @@ export class MediastreamingService {
               $project: {
                 fullName: 1,
                 email: 1,
-                userAuth: "$userAuth.$id",
-                profilePict: "$profilePict.$id",
-
+                username: 1,
+                avatar: {
+                  "mediaBasePath": "$mediaBasePath",
+                  "mediaUri": "$mediaUri",
+                  "mediaType": "$mediaType",
+                  "mediaEndpoint": "$mediaEndpoint",
+                }
               }
             },
-            {
-              "$lookup": {
-                from: "userauths",
-                as: "data_userauths",
-                let: {
-                  localID: '$userAuth'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
-                      $expr: {
-                        $eq: ['$_id', '$$localID']
-                      }
-                    }
-                  },
-                  {
-                    $project: {
-                      email: 1,
-                      username: 1
-                    }
-                  }
-                ],
+            // {
+            //   "$lookup": {
+            //     from: "userauths",
+            //     as: "data_userauths",
+            //     let: {
+            //       localID: '$userAuth'
+            //     },
+            //     pipeline: [
+            //       {
+            //         $match:
+            //         {
+            //           $expr: {
+            //             $eq: ['$_id', '$$localID']
+            //           }
+            //         }
+            //       },
+            //       {
+            //         $project: {
+            //           email: 1,
+            //           username: 1
+            //         }
+            //       }
+            //     ],
 
-              }
-            },
-            {
-              "$lookup": {
-                from: "mediaprofilepicts",
-                as: "data_mediaprofilepicts",
-                let: {
-                  localID: '$profilePict'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
-                      $expr: {
-                        $eq: ['$_id', '$$localID']
-                      }
-                    }
-                  },
-                  {
-                    $project: {
-                      "mediaBasePath": 1,
-                      "mediaUri": 1,
-                      "originalName": 1,
-                      "fsSourceUri": 1,
-                      "fsSourceName": 1,
-                      "fsTargetUri": 1,
-                      "mediaType": 1,
-                      "mediaEndpoint": {
-                        "$concat": ["/profilepict/", "$mediaID"]
-                      }
-                    }
-                  }
-                ],
+            //   }
+            // },
+            // {
+            //   "$lookup": {
+            //     from: "mediaprofilepicts",
+            //     as: "data_mediaprofilepicts",
+            //     let: {
+            //       localID: '$profilePict'
+            //     },
+            //     pipeline: [
+            //       {
+            //         $match:
+            //         {
+            //           $expr: {
+            //             $eq: ['$_id', '$$localID']
+            //           }
+            //         }
+            //       },
+            //       {
+            //         $project: {
+            //           "mediaBasePath": 1,
+            //           "mediaUri": 1,
+            //           "originalName": 1,
+            //           "fsSourceUri": 1,
+            //           "fsSourceName": 1,
+            //           "fsTargetUri": 1,
+            //           "mediaType": 1,
+            //           "mediaEndpoint": {
+            //             "$concat": ["/profilepict/", "$mediaID"]
+            //           }
+            //         }
+            //       }
+            //     ],
 
-              }
-            },
+            //   }
+            // },
             {
               $project: {
                 fullName: 1,
                 email: 1,
-                userAuth: {
-                  "$let": {
-                    "vars": {
-                      "tmp": {
-                        "$arrayElemAt": ["$data_userauths", 0]
-                      }
-                    },
-                    "in": "$$tmp._id"
-                  }
-                },
-                username: {
-                  "$let": {
-                    "vars": {
-                      "tmp": {
-                        "$arrayElemAt": ["$data_userauths", 0]
-                      }
-                    },
-                    "in": "$$tmp.username"
-                  }
-                },
-                avatar: {
-                  "mediaBasePath": {
-                    "$let": {
-                      "vars": {
-                        "tmp": {
-                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
-                        }
-                      },
-                      "in": "$$tmp.mediaBasePath"
-                    }
-                  },
-                  "mediaUri": {
-                    "$let": {
-                      "vars": {
-                        "tmp": {
-                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
-                        }
-                      },
-                      "in": "$$tmp.mediaUri"
-                    }
-                  },
-                  "mediaType": {
-                    "$let": {
-                      "vars": {
-                        "tmp": {
-                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
-                        }
-                      },
-                      "in": "$$tmp.mediaType"
-                    }
-                  },
-                  "mediaEndpoint": {
-                    "$let": {
-                      "vars": {
-                        "tmp": {
-                          "$arrayElemAt": ["$data_mediaprofilepicts", 0]
-                        }
-                      },
-                      "in": "$$tmp.mediaEndpoint"
-                    }
-                  }
-                }
+                username: 1,
+                // userAuth: {
+                //   "$let": {
+                //     "vars": {
+                //       "tmp": {
+                //         "$arrayElemAt": ["$data_userauths", 0]
+                //       }
+                //     },
+                //     "in": "$$tmp._id"
+                //   }
+                // },
+                // username: {
+                //   "$let": {
+                //     "vars": {
+                //       "tmp": {
+                //         "$arrayElemAt": ["$data_userauths", 0]
+                //       }
+                //     },
+                //     "in": "$$tmp.username"
+                //   }
+                // },
+                avatar: 1
               }
             },
 
@@ -1508,16 +1376,16 @@ export class MediastreamingService {
               "in": "$$tmp.fullName"
             }
           },
-          "userAuth": {
-            "$let": {
-              "vars": {
-                "tmp": {
-                  "$arrayElemAt": ["$data_userbasics", 0]
-                }
-              },
-              "in": "$$tmp.userAuth"
-            }
-          },
+          // "userAuth": {
+          //   "$let": {
+          //     "vars": {
+          //       "tmp": {
+          //         "$arrayElemAt": ["$data_userbasics", 0]
+          //       }
+          //     },
+          //     "in": "$$tmp.userAuth"
+          //   }
+          // },
           "username": {
             "$let": {
               "vars": {
