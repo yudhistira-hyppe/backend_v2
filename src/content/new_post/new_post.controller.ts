@@ -57,9 +57,15 @@ export class NewPostController {
     @UseGuards(JwtAuthGuard)
     @Post('posts/createpost/v2')
     @UseInterceptors(FileInterceptor('postContent'))
-    async createPostV4new(@UploadedFile() file: Express.Multer.File, @Body() CreatePostRequest_: CreatePostRequest, @Headers() headers): Promise<CreatePostResponse> {
+    async createPostV4new(@UploadedFile() file: Express.Multer.File, @Body() CreatePostRequest_: CreatePostRequest, @Headers() headers,@Req() request: Request): Promise<CreatePostResponse> {
         console.log('============================================== CREATE POST HEADERS ==============================================', JSON.stringify(headers));
         console.log('============================================== CREATE POST BODY ==============================================', JSON.stringify(CreatePostRequest_));
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var listchallenge=null;
+        if (request_json["listchallenge"] !== undefined) {
+            listchallenge = request_json["listchallenge"];
+        }
+       
         if (CreatePostRequest_.stiker !== undefined && CreatePostRequest_.image !== undefined && CreatePostRequest_.type !== undefined && CreatePostRequest_.position !== undefined) {
 
             var arrayStiker = [];
@@ -141,7 +147,14 @@ export class NewPostController {
             var iduser = null;
             if (databasic !== null) {
                 iduser = databasic._id;
-                // this.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID);
+                if (listchallenge !== null && listchallenge !== undefined) {
+                    var parseChallenge=JSON.parse(listchallenge);
+                    console.log(parseChallenge)
+                    if (parseChallenge.length > 0) {
+                        this.scorepostrequest(iduser.toString(), postID.toString(), "posts", "POST", postID,parseChallenge);
+                    }
+                  }
+                
             }
         }
 
@@ -2480,8 +2493,8 @@ export class NewPostController {
 
         return { response_code: 202, data, messages };
     }
-    async scorepostrequest(iduser: string, idevent: string, namatabel: string, event: string, postID: string) {
-        await this.contenteventsService.scorepostrequest(iduser, idevent, namatabel, event, postID);
+    async scorepostrequest(iduser: string, idevent: string, namatabel: string, event: string, postID: string,listchallenge:any[]) {
+        await this.contenteventsService.scorepostrequest(iduser, idevent, namatabel, event, postID,listchallenge);
     }
 
     @HttpCode(HttpStatus.ACCEPTED)

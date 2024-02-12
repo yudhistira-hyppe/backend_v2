@@ -17,15 +17,15 @@ export class TaskService {
 
   private readonly logger = new Logger(TaskService.name);
 
-  // @Cron('0 */7 * * * *')
-  // challengeJob2() {
-  //   this.logger.debug('----------CHALLEGE JOB START----------', new Date());
-  //   this.challengeService.sendNotifeChallenge();
-  //   this.challengeService.updateBadgeex();
-  //   this.challengeService.updateSubchallengeex();
+  @Cron('0 */7 * * * *')
+  challengeJob2() {
+    this.logger.debug('----------CHALLEGE JOB START----------', new Date());
+    this.challengeService.sendNotifeChallenge();
+    this.challengeService.updateBadgeex();
+    this.challengeService.updateSubchallengeex();
 
-  //   // }
-  // }
+    // }
+  }
 
   @Cron('0 */10 * * * *')
   ceckStatus() {
