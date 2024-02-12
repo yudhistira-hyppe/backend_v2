@@ -2314,7 +2314,7 @@ export class AdsController {
             data_response['idUser'] = data_userbasic_ads._id.toString();
             data_response['fullName'] = data_userbasic_ads.fullName;
             data_response['email'] = data_userbasic_ads.email;
-            data_response['username'] = data_ads[0].username;
+            data_response['username'] = data_userbasic_ads.username;
             data_response['avartar'] = data_ads[0].avatar;
             data_response['scoreUmur'] = data_ads[0].scoreUmur;
             data_response['scoreKelamin'] = data_ads[0].scoreKelamin;
@@ -2325,7 +2325,7 @@ export class AdsController {
                 mediaBasePath: (data_userbasic_ads.mediaBasePath != undefined) ? data_userbasic_ads.mediaBasePath : null,
                 mediaUri: (data_userbasic_ads.mediaUri != undefined) ? data_userbasic_ads.mediaUri : null,
                 mediaType: (data_userbasic_ads.mediaType != undefined) ? data_userbasic_ads.mediaType : null,
-                mediaEndpoint: (data_userbasic_ads.mediaEndpoint != undefined) ? '/profilepict/' + data_userbasic_ads.mediaEndpoint : null,
+                mediaEndpoint: (data_userbasic_ads.mediaEndpoint != undefined) ? data_userbasic_ads.mediaEndpoint : null,
             }
             try {
                 data_response['placingID'] = data_ads[0].placingID.toString();
