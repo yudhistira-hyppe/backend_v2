@@ -2602,7 +2602,7 @@ export class AdsController {
             request: AdsAction_
         }
         AdsLogsDto_.requestAds = JSON.stringify(logRequest);
-        AdsLogsDto_.endPointAds = "api/adsv2/ads/clickads/";
+        AdsLogsDto_.endPointAds = "api/adsv2/ads/clicked/";
         AdsLogsDto_.type = "CLICKED ADS";
         AdsLogsDto_.dateTime = await this.utilsService.getDateTimeString();
         AdsLogsDto_.nameActivitas = ["ClickedAds"];

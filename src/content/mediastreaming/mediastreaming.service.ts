@@ -40,7 +40,6 @@ export class MediastreamingService {
               $in: ['$_id', '$idStream']
             }
           },
-
         },
         {
           "$lookup": {
@@ -101,7 +100,6 @@ export class MediastreamingService {
                 }
               }
             },
-
           }
         },
         // {
@@ -138,37 +136,37 @@ export class MediastreamingService {
 
         //   }
         // },
-        {
-          "$lookup": {
-            from: "insights",
-            as: "follower",
-            let: {
-              email: { $arrayElemAt: ["$userStream.email", 0] }
-            },
-            pipeline: [
-              {
-                $match: {
-                  $or: [
-                    {
-                      $expr:
-                      {
-                        $eq: ["$email", "$$email"]
-                      },
+        // {
+        //   "$lookup": {
+        //     from: "insights",
+        //     as: "follower",
+        //     let: {
+        //       email: { $arrayElemAt: ["$userStream.email", 0] }
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match: {
+        //           $or: [
+        //             {
+        //               $expr:
+        //               {
+        //                 $eq: ["$email", "$$email"]
+        //               },
 
-                    },
+        //             },
 
-                  ]
-                },
+        //           ]
+        //         },
 
-              },
-              {
-                $project: {
-                  followers: 1
-                }
-              }
-            ]
-          }
-        },
+        //       },
+        //       {
+        //         $project: {
+        //           followers: 1
+        //         }
+        //       }
+        //     ]
+        //   }
+        // },
         // {
         //   "$lookup": {
         //     from: "userauths",
@@ -200,148 +198,147 @@ export class MediastreamingService {
         //     ]
         //   }
         // },
-        {
-          "$lookup": {
-            from: "friend_list",
-            as: "friend",
-            let: {
-              userStream: {
-                $arrayElemAt: ['$userStream.email', 0]
-              },
-              userLogin: {
-                $arrayElemAt: ["$userLogin.email", 0]
-              },
+        // {
+        //   "$lookup": {
+        //     from: "friend_list",
+        //     as: "friend",
+        //     let: {
+        //       userStream: {
+        //         $arrayElemAt: ['$userStream.email', 0]
+        //       },
+        //       userLogin: {
+        //         $arrayElemAt: ["$userLogin.email", 0]
+        //       },
 
-            },
-            pipeline: [
-              {
-                $match:
-                {
-                  $or: [
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$email', '$$userStream']
-                          }
-                        },
-                        {
-                          friendlist: {
-                            $elemMatch: {
-                              email: email
-                            }
-                          }
-                        },
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match:
+        //         {
+        //           $or: [
+        //             {
+        //               $and: [
+        //                 {
+        //                   $expr: {
+        //                     $eq: ['$email', '$$userStream']
+        //                   }
+        //                 },
+        //                 {
+        //                   friendlist: {
+        //                     $elemMatch: {
+        //                       email: email
+        //                     }
+        //                   }
+        //                 },
 
-                      ]
-                    },
-                    {
-                      $and: [
-                        {
-                          friendlist: {
-                            $elemMatch: {
-                              email: '$$userStream'
-                            }
-                          }
-                        },
-                        {
-                          $expr: {
-                            $eq: ['$email', 'ilhamarahman97@gmail.com']
-                          }
-                        },
+        //               ]
+        //             },
+        //             {
+        //               $and: [
+        //                 {
+        //                   friendlist: {
+        //                     $elemMatch: {
+        //                       email: '$$userStream'
+        //                     }
+        //                   }
+        //                 },
+        //                 {
+        //                   $expr: {
+        //                     $eq: ['$email', 'ilhamarahman97@gmail.com']
+        //                   }
+        //                 },
 
-                      ]
-                    }
-                  ]
-                }
-              },
-              {
-                $project: {
-                  email: 1,
-                  friend:
-                  {
-                    $cond: {
-                      if: {
-                        $gt: [{
-                          $size: '$friendlist'
-                        }, 0]
-                      },
-                      then: 1,
-                      else: 0
-                    }
-                  },
+        //               ]
+        //             }
+        //           ]
+        //         }
+        //       },
+        //       {
+        //         $project: {
+        //           email: 1,
+        //           friend:
+        //           {
+        //             $cond: {
+        //               if: {
+        //                 $gt: [{
+        //                   $size: '$friendlist'
+        //                 }, 0]
+        //               },
+        //               then: 1,
+        //               else: 0
+        //             }
+        //           },
 
-                }
-              },
+        //         }
+        //       },
 
-            ]
-          },
+        //     ]
+        //   },
 
-        },
-        {
-          "$lookup": {
-            from: "contentevents",
-            as: "following",
-            let: {
-              localID: {
-                $arrayElemAt: ['$userStream.email', 0]
-              },
-              user: {
-                $arrayElemAt: ["$userLogin.email", 0]
-              },
+        // },
+        // {
+        //   "$lookup": {
+        //     from: "contentevents",
+        //     as: "following",
+        //     let: {
+        //       localID: {
+        //         $arrayElemAt: ['$userStream.email', 0]
+        //       },
+        //       user: {
+        //         $arrayElemAt: ["$userLogin.email", 0]
+        //       },
 
-            },
-            pipeline: [
-              {
-                $match:
-                {
-                  $and: [
-                    {
-                      $expr: {
-                        $eq: ['$senderParty', '$$localID']
-                      }
-                    },
-                    {
-                      $expr: {
-                        $eq: ['$email', '$$user']
-                      }
-                    },
-                    {
-                      "eventType": "FOLLOWING",
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match:
+        //         {
+        //           $and: [
+        //             {
+        //               $expr: {
+        //                 $eq: ['$senderParty', '$$localID']
+        //               }
+        //             },
+        //             {
+        //               $expr: {
+        //                 $eq: ['$email', '$$user']
+        //               }
+        //             },
+        //             {
+        //               "eventType": "FOLLOWING",
 
-                    },
-                    {
-                      "event": "ACCEPT"
-                    },
-                    {
-                      "active": true
-                    },
+        //             },
+        //             {
+        //               "event": "ACCEPT"
+        //             },
+        //             {
+        //               "active": true
+        //             },
 
-                  ]
-                }
-              },
-              {
-                $project: {
-                  senderParty: 1,
-                  following:
-                  {
-                    $cond: {
-                      if: {
-                        $gt: [{
-                          $strLenCP: "$email"
-                        }, 0]
-                      },
-                      then: true,
-                      else: false
-                    }
-                  },
+        //           ]
+        //         }
+        //       },
+        //       {
+        //         $project: {
+        //           senderParty: 1,
+        //           following:
+        //           {
+        //             $cond: {
+        //               if: {
+        //                 $gt: [{
+        //                   $strLenCP: "$email"
+        //                 }, 0]
+        //               },
+        //               then: true,
+        //               else: false
+        //             }
+        //           },
 
-                }
-              }
-            ]
-          },
-
-        },
+        //         }
+        //       }
+        //     ]
+        //   },
+        // },
         {
           $set: {
             interestLogin: {
@@ -418,9 +415,33 @@ export class MediastreamingService {
         },
         {
           $set: {
+            follower: {
+              $arrayElemAt: ["$userStream.follower", 0]
+            },
+
+          }
+        },
+        {
+          $set: {
+            following: {
+              $arrayElemAt: ["$userStream.following", 0]
+            },
+
+          }
+        },
+        {
+          $set: {
+            friend: {
+              $arrayElemAt: ["$userStream.friend", 0]
+            },
+
+          }
+        },
+        {
+          $set: {
             totalFollower:
             {
-              $arrayElemAt: ["$follower.followers", 0]
+              $size: "$follower"
             }
           }
         },
@@ -428,7 +449,7 @@ export class MediastreamingService {
           $set: {
             totalFriend:
             {
-              $arrayElemAt: ["$friend.friend", 0]
+              $size: "$friend"
             }
           }
         },
@@ -436,7 +457,7 @@ export class MediastreamingService {
           $set: {
             totalFollowing:
             {
-              $arrayElemAt: ["$following.following", 0]
+              $size: "$following"
             }
           }
         },
@@ -477,29 +498,29 @@ export class MediastreamingService {
             totalFollowing: 1,
             fullName:
             {
-              $arrayElemAt: ["$user.fullName", 0]
+              $arrayElemAt: ["$userStream.fullName", 0]
             },
             username:
             {
-              $arrayElemAt: ["$user.username", 0]
+              $arrayElemAt: ["$userStream.username", 0]
             },
             email:
             {
-              $arrayElemAt: ["$user.email", 0]
+              $arrayElemAt: ["$userStream.email", 0]
             },
             //avatar: 1,
             avatar: {
               "mediaBasePath": {
-                $arrayElemAt: ["$user.mediaBasePath", 0]
+                $arrayElemAt: ["$userStream.mediaBasePath", 0]
               },
               "mediaUri": {
-                $arrayElemAt: ["$user.mediaUri", 0]
+                $arrayElemAt: ["$userStream.mediaUri", 0]
               },
               "mediaType": {
-                $arrayElemAt: ["$user.mediaType", 0]
+                $arrayElemAt: ["$userStream.mediaType", 0]
               },
               "mediaEndpoint": {
-                $arrayElemAt: ["$user.mediaEndpoint", 0]
+                $arrayElemAt: ["$userStream.mediaEndpoint", 0]
               },
             }
           }
@@ -884,6 +905,13 @@ export class MediastreamingService {
               $project: {
                 fullName: 1,
                 email: 1,
+                username: 1,
+                avatar: {
+                  "mediaBasePath": "$mediaBasePath",
+                  "mediaUri": "$mediaUri",
+                  "mediaType": "$mediaType",
+                  "mediaEndpoint": "$mediaEndpoint",
+                }
               }
             },
           ],
@@ -943,7 +971,6 @@ export class MediastreamingService {
             //         }
             //       }
             //     ],
-
             //   }
             // },
             // {
@@ -1008,88 +1035,100 @@ export class MediastreamingService {
                 avatar: 1,
               }
             },
-
           ],
+        }
+      },
+      // {
+      //   "$lookup": {
+      //     from: "contentevents",
+      //     as: "following",
+      //     let: {
+      //       localID: {
+      //         "$let": {
+      //           "vars": {
+      //             "tmp": {
+      //               "$arrayElemAt": ["$data_userbasics_streamer", 0]
+      //             }
+      //           },
+      //           "in": "$$tmp.email"
+      //         }
+      //       },
+      //       user: {
+      //         "$let": {
+      //           "vars": {
+      //             "tmp": {
+      //               "$arrayElemAt": ["$data_userbasics", 0]
+      //             }
+      //           },
+      //           "in": "$$tmp.email"
+      //         }
+      //       },
+      //     },
+      //     pipeline: [
+      //       {
+      //         $match:
+      //         {
+      //           $and: [
+      //             {
+      //               $expr: {
+      //                 $eq: ['$senderParty', '$$user']
+      //               }
+      //             },
+      //             {
+      //               $expr: {
+      //                 $eq: ['$email', '$$localID']
+      //               }
+      //             },
+      //             {
+      //               "eventType": "FOLLOWING",
+      //             },
+      //             {
+      //               "event": "ACCEPT"
+      //             },
+      //             {
+      //               "active": true
+      //             },
+      //           ]
+      //         }
+      //       },
+      //       {
+      //         $project: {
+      //           senderParty: 1,
+      //           v:
+      //           {
+      //             $cond: {
+      //               if: {
+      //                 $gt: [{
+      //                   $strLenCP: "$email"
+      //                 }, 0]
+      //               },
+      //               then: true,
+      //               else: false
+      //             }
+      //           },
 
+      //         }
+      //       }
+      //     ]
+      //   },
+      // },
+      {
+        $set: {
+          follower_view: {
+            "$let": {
+              "vars": {
+                "tmp": {
+                  "$arrayElemAt": ["$data_userbasics", 0]
+                }
+              },
+              "in": "$$tmp.follower"
+            }
+          },
         }
       },
       {
-        "$lookup": {
-          from: "contentevents",
-          as: "following",
-          let: {
-            localID: {
-              "$let": {
-                "vars": {
-                  "tmp": {
-                    "$arrayElemAt": ["$data_userbasics_streamer", 0]
-                  }
-                },
-                "in": "$$tmp.email"
-              }
-            },
-            user: {
-              "$let": {
-                "vars": {
-                  "tmp": {
-                    "$arrayElemAt": ["$data_userbasics", 0]
-                  }
-                },
-                "in": "$$tmp.email"
-              }
-            },
-          },
-          pipeline: [
-            {
-              $match:
-              {
-                $and: [
-                  {
-                    $expr: {
-                      $eq: ['$senderParty', '$$user']
-                    }
-                  },
-                  {
-                    $expr: {
-                      $eq: ['$email', '$$localID']
-                    }
-                  },
-                  {
-                    "eventType": "FOLLOWING",
-                  },
-                  {
-                    "event": "ACCEPT"
-                  },
-                  {
-                    "active": true
-                  },
-                ]
-              }
-            },
-            {
-              $project: {
-                senderParty: 1,
-                following:
-                {
-                  $cond: {
-                    if: {
-                      $gt: [{
-                        $strLenCP: "$email"
-                      }, 0]
-                    },
-                    then: true,
-                    else: false
-                  }
-                },
-
-              }
-            }
-          ]
-        },
-      },
-      {
-        "$project": {
-          userview: {
+        $set: {
+          userStream: {
             "$let": {
               "vars": {
                 "tmp": {
@@ -1099,7 +1138,11 @@ export class MediastreamingService {
               "in": "$$tmp.email"
             }
           },
-          userstream: {
+        }
+      },
+      {
+        $set: {
+          userView: {
             "$let": {
               "vars": {
                 "tmp": {
@@ -1109,6 +1152,12 @@ export class MediastreamingService {
               "in": "$$tmp.email"
             }
           },
+        }
+      },
+      {
+        "$project": {
+          userview: 1,
+          userstream: 1,
           "_id": {
             "$let": {
               "vars": {
@@ -1139,16 +1188,16 @@ export class MediastreamingService {
               "in": "$$tmp.fullName"
             }
           },
-          "userAuth": {
-            "$let": {
-              "vars": {
-                "tmp": {
-                  "$arrayElemAt": ["$data_userbasics", 0]
-                }
-              },
-              "in": "$$tmp.userAuth"
-            }
-          },
+          // "userAuth": {
+          //   "$let": {
+          //     "vars": {
+          //       "tmp": {
+          //         "$arrayElemAt": ["$data_userbasics", 0]
+          //       }
+          //     },
+          //     "in": "$$tmp.userAuth"
+          //   }
+          // },
           "username": {
             "$let": {
               "vars": {
@@ -1169,16 +1218,45 @@ export class MediastreamingService {
               "in": "$$tmp.avatar"
             }
           },
-          following:
-          {
-            $cond: {
-              if: {
-                $gt: [{ $size: "$following" }, 0]
-              },
-              then: true,
-              else: false
-            }
+          following: {
+            "$ifNull":
+              [
+                {
+                  "$cond":
+                  {
+                    if:
+                    {
+                      "$eq":
+                        [
+                          {
+                            "$size": "$follower_view"
+                          },
+                          0
+                        ]
+                    },
+                    then: false,
+                    else:
+                    {
+                      "$in": [
+                        "$userstream",
+                        "$follower_view"
+                      ]
+                    }
+                  }
+                },
+                false
+              ]
           },
+          // following:
+          // {
+          //   $cond: {
+          //     if: {
+          //       $gt: [{ $size: "$following" }, 0]
+          //     },
+          //     then: true,
+          //     else: false
+          //   }
+          // },
         }
       },
     ];
@@ -1339,9 +1417,7 @@ export class MediastreamingService {
                 avatar: 1
               }
             },
-
           ],
-
         }
       },
       {
