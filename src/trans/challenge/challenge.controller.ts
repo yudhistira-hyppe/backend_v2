@@ -3297,7 +3297,6 @@ export class ChallengeController {
 
     var timestamps_end = await this.util.getDateTimeString();
     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, null, request_json['idUser'], null, request_json);
-
     if (firstdata != null && parentdata.objectChallenge == "KONTEN" && statuskick == false) {
       this.beforejoinchallenge2(getuserbasic, firstdata);
     }
@@ -6105,7 +6104,6 @@ export class ChallengeController {
           }
         }
 
-        // console.log(insertdata);
         await this.postchallengeService.create(insertdata);
       }
 
