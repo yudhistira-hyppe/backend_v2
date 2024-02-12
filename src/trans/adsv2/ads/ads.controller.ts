@@ -2007,7 +2007,7 @@ export class AdsController {
         }
         AdsLogsDto_.iduser = new mongoose.Types.ObjectId(data_userbasic._id.toString());
         console.log("ok")
-        const data_ads = await this.adsService.getAdsUser(headers['x-auth-user'], data_userbasic._id.toString(), id);
+        const data_ads = await this.adsService.getAdsUser2(headers['x-auth-user'], data_userbasic._id.toString(), id);
         console.log(data_ads);
         if (await this.utilsService.ceckData(data_ads)) {
             var ceckData = await this.userAdsService.findAdsIDUserID(data_userbasic._id.toString(), data_ads[0]._id.toString());
@@ -2235,7 +2235,7 @@ export class AdsController {
         }
         AdsLogsDto_.iduser = new mongoose.Types.ObjectId(data_userbasic._id.toString());
         console.log("ok")
-        const data_ads = await this.adsService.getAdsUser(headers['x-auth-user'], data_userbasic._id.toString(), id);
+        const data_ads = await this.adsService.getAdsUser2(headers['x-auth-user'], data_userbasic._id.toString(), id);
         console.log(data_ads);
         if (await this.utilsService.ceckData(data_ads)) {
             var ceckData = await this.userAdsService.findAdsIDUserID(data_userbasic._id.toString(), data_ads[0]._id.toString());

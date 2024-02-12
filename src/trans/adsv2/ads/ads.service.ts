@@ -9106,7 +9106,7 @@ export class AdsService {
                                 $project: {
 
                                     "email": 1,
-                                    "userName": 1,
+                                    "userName": "$username",
                                     // "userName":
                                     // {
                                     //     "$arrayElemAt":
@@ -12345,9 +12345,21 @@ export class AdsService {
                             {
                                 $match:
                                 {
-                                    $expr: {
-                                        $eq: ['$_id', '$$localID']
-                                    }
+                                    // $expr: {
+                                    //     $eq: ['$_id', '$$localID']
+                                    // }
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$localID']
+                                            }
+                                        },
+                                        {
+                                            $expr: {
+                                                $ne: ['$guestMode', true]
+                                            }
+                                        }
+                                    ]
                                 }
                             },
                             {
