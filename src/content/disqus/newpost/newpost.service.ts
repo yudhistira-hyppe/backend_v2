@@ -447,6 +447,16 @@ export class NewpostService {
                 {
                     $and: [
                         {
+                            "$expr": 
+                            {
+                                $not: [
+                                    {
+                                        $in: [email, "$userView"]
+                                    }
+                                ]
+                            }
+                        },
+                        {
                             "$expr":
                             {
                                 "$eq": ["$postType", "story"]
