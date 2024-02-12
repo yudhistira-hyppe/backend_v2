@@ -2121,6 +2121,18 @@ export class AdsController {
             data_response['mediaThumUri'] = data_ads[0].mediaThumUri;
             data_response['width'] = data_ads[0].width;
             data_response['height'] = data_ads[0].height;
+            data_response['mediaPortraitBasePath'] = data_ads[0].mediaPortraitBasePath;
+            data_response['mediaPortraitUri'] = data_ads[0].mediaPortraitUri;
+            data_response['mediaPortraitThumBasePath'] = data_ads[0].mediaPortraitThumBasePath;
+            data_response['mediaPortraitThumUri'] = data_ads[0].mediaPortraitThumUri;
+            data_response['widthPortrait'] = data_ads[0].widthPortrait;
+            data_response['heightPortrait'] = data_ads[0].heightPortrait;
+            data_response['mediaLandscapeBasePath'] = data_ads[0].mediaLandscapeBasePath;
+            data_response['mediaLandscapeUri'] = data_ads[0].mediaLandscapeUri;
+            data_response['mediaLandscapeThumBasePath'] = data_ads[0].mediaLandscapeThumBasePath;
+            data_response['mediaLandscapeThumUri'] = data_ads[0].mediaLandscapeThumUri;
+            data_response['widthLandscape'] = data_ads[0].widthLandscape;
+            data_response['heightLandscape'] = data_ads[0].heightLandscape;
 
             AdsLogsDto_.responseAds = JSON.stringify(data_response);
             await this.adslogsService.create(AdsLogsDto_);
