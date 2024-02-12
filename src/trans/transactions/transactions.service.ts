@@ -4113,7 +4113,7 @@ export class TransactionsService {
                                         {
                                             "$eq":
                                                 [
-                                                    "$postType", "pict"
+                                                    "$mediaSource.mediaType", "image"
                                                 ]
                                         },
                                         then:
@@ -5141,7 +5141,7 @@ export class TransactionsService {
                                         {
                                             "$eq":
                                                 [
-                                                    "$postType", "pict"
+                                                    "$mediaSource.mediaType", "image"
                                                 ]
                                         },
                                         then:
