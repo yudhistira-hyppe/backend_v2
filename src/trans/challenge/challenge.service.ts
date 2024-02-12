@@ -6166,7 +6166,7 @@ export class ChallengeService {
     var mongo = require('mongoose');
     var totalall = null;
 
-    var gettotaluser = await this.userbasicsSS.gettotalyopmail(null, null);
+    var gettotaluser = await this.UserbasicnewService.gettotalyopmail(null, null);
     // var gettotaluser = await this.userbasicsSS.getcount();
     try {
       totalall = gettotaluser.length / limit;
@@ -6210,7 +6210,7 @@ export class ChallengeService {
 
       var array = [];
       for (let i = 0; i < totalpage; i++) {
-        var data = await this.userbasicsSS.gettotalyopmail(i, limit);
+        var data = await this.UserbasicnewService.gettotalyopmail(i, limit);
         // var data = await this.userbasicsSS.getpanggilanuser(i, limit);
         // console.log('page ke - ' + i);
         // console.log(data);
