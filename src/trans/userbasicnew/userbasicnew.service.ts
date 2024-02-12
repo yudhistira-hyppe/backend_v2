@@ -7473,4 +7473,23 @@ export class UserbasicnewService {
         const data = await this.UserbasicnewModel.aggregate(paramaggregate);
         return data;
     }
+
+    async updateTutor(email: string, key: string, value: boolean) {
+        console.log(email)
+        console.log(key)
+        console.log(value)
+        this.UserbasicnewModel.updateOne({ 'tutor.key': key, email: email }, {
+            '$set': {
+                'tutor.$.status': value
+            }
+        },
+            function (err, docs) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(docs);
+                }
+            },
+        ).clone().exec();
+    }
 }

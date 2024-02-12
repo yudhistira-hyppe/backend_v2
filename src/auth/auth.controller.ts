@@ -8266,8 +8266,6 @@ export class AuthController {
     };
   }
 
-
-
   @UseGuards(JwtAuthGuard)
   @Post('api/user/tutor/update')
   @HttpCode(HttpStatus.ACCEPTED)
@@ -8282,7 +8280,7 @@ export class AuthController {
         'Unabled to proceed email header dan token not match',
       );
     }
-    await this.userbasicsService.updateTutor(headers['x-auth-user'], body.key, body.value);
+    await this.basic2SS.updateTutor(headers['x-auth-user'], body.key, body.value);
     return await this.errorHandler.generateAcceptResponseCode(
       "Update tutor succesfully",
     );
