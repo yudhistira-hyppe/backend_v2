@@ -446,6 +446,7 @@ export class NewpostService {
                 "$match":
                 {
                     $and: [
+                      
                         {
                             "$expr":
                             {
@@ -512,12 +513,12 @@ export class NewpostService {
                     createdAt: - 1
                 }
             },
-            {
-                $skip: (page * limit)
-            },
-            {
-                $limit: limit
-            },
+            // {
+            //     $skip: (page * limit)
+            // },
+            // {
+            //     $limit: limit
+            // },
             {
                 $lookup: {
                     from: 'newUserBasics',
@@ -856,12 +857,16 @@ export class NewpostService {
                     story: 1
                 }
             },
+            {
+                $skip: (page * limit)
+            },
+            {
+                $limit: limit
+            },
         ]);
 
 
         return query;
     }
-
-
 
 }

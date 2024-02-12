@@ -26070,54 +26070,54 @@ export class PostsReadService {
         },
         {
           "$lookup": {
-              from: "mediamusic",
-              as: "music",
-              let: {
-                  localID: '$musicId'
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $expr: {
-                              $eq: ['$_id', '$$localID']
-                          }
-                      }
-                  },
-                  {
-                      $project: {
-                          "_id":1,
-                          "musicTitle": 1,
-                          "artistName": 1,
-                          "albumName": 1,
-                          "apsaraMusic": 1,
-                          "apsaraThumnail": 1,
-                          "genre": "$genre.name",
-                          "theme": "$theme.name",
-                          "mood": "$mood.name",
-                          //
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$genre",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$theme",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$mood",
-                          preserveNullAndEmptyArrays: true
-                      }
+            from: "mediamusic",
+            as: "music",
+            let: {
+              localID: '$musicId'
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$_id', '$$localID']
                   }
-              ],
-              //
+                }
+              },
+              {
+                $project: {
+                  "_id": 1,
+                  "musicTitle": 1,
+                  "artistName": 1,
+                  "albumName": 1,
+                  "apsaraMusic": 1,
+                  "apsaraThumnail": 1,
+                  "genre": "$genre.name",
+                  "theme": "$theme.name",
+                  "mood": "$mood.name",
+                  //
+                }
+              },
+              {
+                $unwind: {
+                  path: "$genre",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$theme",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$mood",
+                  preserveNullAndEmptyArrays: true
+                }
+              }
+            ],
+            //
           }
         },
 
@@ -26284,7 +26284,7 @@ export class PostsReadService {
             "shares": 1,
             "userView": 1,
             "userLike": 1,
-            "stiker":1,
+            "stiker": 1,
             "uploadSource": {
               $arrayElemAt: ["$uploadSource.uploadSource", 0]
             },
@@ -26306,26 +26306,26 @@ export class PostsReadService {
             selfContent: 1,
             official:
             {
-                $cond: {
-                    if : {
-                        $eq: ["$email", "hyppers@hyppe.id"]
-                    },
-                    then: 1,
-                    else : 0
-                }
+              $cond: {
+                if: {
+                  $eq: ["$email", "hyppers@hyppe.id"]
+                },
+                then: 1,
+                else: 0
+              }
             },
-            "music":  {
+            "music": {
               $arrayElemAt: ["$music", 0]
             },
-            isLike: 
-                {
-                $cond: {
-                    if : {
-                        $eq: ["$userLike", "hyppers@hyppe.id"]
-                    },
-                    then: true,
-                    else : false
-                }
+            isLike:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$userLike", "hyppers@hyppe.id"]
+                },
+                then: true,
+                else: false
+              }
             },
             comment: "$comment",
             interest: "$categoryInt",
@@ -26345,7 +26345,7 @@ export class PostsReadService {
                   $cond:
                   {
                     if: {
-                      $in: [email, {$arrayElemAt:["$userBasic.follower",0]}]
+                      $in: [email, { $arrayElemAt: ["$userBasic.follower", 0] }]
                     },
                     then: true,
                     else: false
@@ -26583,7 +26583,49 @@ export class PostsReadService {
               $arrayElemAt: ["$userInt.userInterests", 0]
             },
             tutor: {
-              $arrayElemAt: ["$userBasic.tutor", 0]
+              $ifNull: [
+                {
+                  $arrayElemAt: ["$userBasic.tutor", 0]
+                },
+                [
+                  {
+                    "key": "protection",
+                    "status": false
+                  },
+                  {
+                    "key": "sell",
+                    "status": false
+                  },
+                  {
+                    "key": "interest",
+                    "status": false
+                  },
+                  {
+                    "key": "ownership",
+                    "status": false
+                  },
+                  {
+                    "key": "boost",
+                    "status": false
+                  },
+                  {
+                    "key": "transaction",
+                    "status": false
+                  },
+                  {
+                    "key": "idRefferal",
+                    "status": false
+                  },
+                  {
+                    "key": "shareRefferal",
+                    "status": false
+                  },
+                  {
+                    "key": "codeRefferal",
+                    "status": false
+                  }
+                ],
+              ]
             },
             intScore: {
               $size: "$intScore"
@@ -27132,54 +27174,54 @@ export class PostsReadService {
         },
         {
           "$lookup": {
-              from: "mediamusic",
-              as: "music",
-              let: {
-                  localID: '$musicId'
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $expr: {
-                              $eq: ['$_id', '$$localID']
-                          }
-                      }
-                  },
-                  {
-                      $project: {
-                        "_id":1,
-                          "musicTitle": 1,
-                          "artistName": 1,
-                          "albumName": 1,
-                          "apsaraMusic": 1,
-                          "apsaraThumnail": 1,
-                          "genre": "$genre.name",
-                          "theme": "$theme.name",
-                          "mood": "$mood.name",
-                          //
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$genre",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$theme",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$mood",
-                          preserveNullAndEmptyArrays: true
-                      }
+            from: "mediamusic",
+            as: "music",
+            let: {
+              localID: '$musicId'
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$_id', '$$localID']
                   }
-              ],
-              //
+                }
+              },
+              {
+                $project: {
+                  "_id": 1,
+                  "musicTitle": 1,
+                  "artistName": 1,
+                  "albumName": 1,
+                  "apsaraMusic": 1,
+                  "apsaraThumnail": 1,
+                  "genre": "$genre.name",
+                  "theme": "$theme.name",
+                  "mood": "$mood.name",
+                  //
+                }
+              },
+              {
+                $unwind: {
+                  path: "$genre",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$theme",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$mood",
+                  preserveNullAndEmptyArrays: true
+                }
+              }
+            ],
+            //
           }
         },
         {
@@ -27308,7 +27350,7 @@ export class PostsReadService {
             "shares": 1,
             "userView": 1,
             "userLike": 1,
-            "stiker":1,
+            "stiker": 1,
             "uploadSource": {
               $arrayElemAt: ["$uploadSource.uploadSource", 0]
             },
@@ -27330,26 +27372,26 @@ export class PostsReadService {
             selfContent: 1,
             official:
             {
-                $cond: {
-                    if : {
-                        $eq: ["$email", "hyppers@hyppe.id"]
-                    },
-                    then: 1,
-                    else : 0
-                }
+              $cond: {
+                if: {
+                  $eq: ["$email", "hyppers@hyppe.id"]
+                },
+                then: 1,
+                else: 0
+              }
             },
-            "music":  {
+            "music": {
               $arrayElemAt: ["$music", 0]
             },
-            isLike: 
-                {
-                $cond: {
-                    if : {
-                        $eq: ["$userLike", "hyppers@hyppe.id"]
-                    },
-                    then: true,
-                    else : false
-                }
+            isLike:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$userLike", "hyppers@hyppe.id"]
+                },
+                then: true,
+                else: false
+              }
             },
             comment: "$comment",
             interest: "$categoryInt",
@@ -27369,7 +27411,7 @@ export class PostsReadService {
                   $cond:
                   {
                     if: {
-                      $in: [email, {$arrayElemAt:["$userBasic.follower",0]}]
+                      $in: [email, { $arrayElemAt: ["$userBasic.follower", 0] }]
                     },
                     then: true,
                     else: false
@@ -27607,7 +27649,49 @@ export class PostsReadService {
               $arrayElemAt: ["$userInt.userInterests", 0]
             },
             tutor: {
-              $arrayElemAt: ["$userBasic.tutor", 0]
+              $ifNull: [
+                {
+                  $arrayElemAt: ["$userBasic.tutor", 0]
+                },
+                [
+                  {
+                    "key": "protection",
+                    "status": false
+                  },
+                  {
+                    "key": "sell",
+                    "status": false
+                  },
+                  {
+                    "key": "interest",
+                    "status": false
+                  },
+                  {
+                    "key": "ownership",
+                    "status": false
+                  },
+                  {
+                    "key": "boost",
+                    "status": false
+                  },
+                  {
+                    "key": "transaction",
+                    "status": false
+                  },
+                  {
+                    "key": "idRefferal",
+                    "status": false
+                  },
+                  {
+                    "key": "shareRefferal",
+                    "status": false
+                  },
+                  {
+                    "key": "codeRefferal",
+                    "status": false
+                  }
+                ],
+              ]
             },
             intScore: {
               $size: "$intScore"
@@ -28155,54 +28239,54 @@ export class PostsReadService {
         },
         {
           "$lookup": {
-              from: "mediamusic",
-              as: "music",
-              let: {
-                  localID: '$musicId'
-              },
-              pipeline: [
-                  {
-                      $match: 
-                      {
-                          $expr: {
-                              $eq: ['$_id', '$$localID']
-                          }
-                      }
-                  },
-                  {
-                      $project: {
-                        "_id":1,
-                          "musicTitle": 1,
-                          "artistName": 1,
-                          "albumName": 1,
-                          "apsaraMusic": 1,
-                          "apsaraThumnail": 1,
-                          "genre": "$genre.name",
-                          "theme": "$theme.name",
-                          "mood": "$mood.name",
-                          //
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$genre",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$theme",
-                          preserveNullAndEmptyArrays: true
-                      }
-                  },
-                  {
-                      $unwind: {
-                          path: "$mood",
-                          preserveNullAndEmptyArrays: true
-                      }
+            from: "mediamusic",
+            as: "music",
+            let: {
+              localID: '$musicId'
+            },
+            pipeline: [
+              {
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$_id', '$$localID']
                   }
-              ],
-              //
+                }
+              },
+              {
+                $project: {
+                  "_id": 1,
+                  "musicTitle": 1,
+                  "artistName": 1,
+                  "albumName": 1,
+                  "apsaraMusic": 1,
+                  "apsaraThumnail": 1,
+                  "genre": "$genre.name",
+                  "theme": "$theme.name",
+                  "mood": "$mood.name",
+                  //
+                }
+              },
+              {
+                $unwind: {
+                  path: "$genre",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$theme",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$mood",
+                  preserveNullAndEmptyArrays: true
+                }
+              }
+            ],
+            //
           }
         },
         {
@@ -28331,7 +28415,7 @@ export class PostsReadService {
             "shares": 1,
             "userView": 1,
             "userLike": 1,
-            "stiker":1,
+            "stiker": 1,
             "uploadSource": {
               $arrayElemAt: ["$uploadSource.uploadSource", 0]
             },
@@ -28353,26 +28437,26 @@ export class PostsReadService {
             selfContent: 1,
             official:
             {
-                $cond: {
-                    if : {
-                        $eq: ["$email", "hyppers@hyppe.id"]
-                    },
-                    then: 1,
-                    else : 0
-                }
+              $cond: {
+                if: {
+                  $eq: ["$email", "hyppers@hyppe.id"]
+                },
+                then: 1,
+                else: 0
+              }
             },
-            "music":  {
+            "music": {
               $arrayElemAt: ["$music", 0]
             },
-            isLike: 
-                {
-                $cond: {
-                    if : {
-                        $eq: ["$userLike", "hyppers@hyppe.id"]
-                    },
-                    then: true,
-                    else : false
-                }
+            isLike:
+            {
+              $cond: {
+                if: {
+                  $eq: ["$userLike", "hyppers@hyppe.id"]
+                },
+                then: true,
+                else: false
+              }
             },
             comment: "$comment",
             interest: "$categoryInt",
@@ -28392,7 +28476,7 @@ export class PostsReadService {
                   $cond:
                   {
                     if: {
-                      $in: [email, {$arrayElemAt:["$userBasic.follower",0]}]
+                      $in: [email, { $arrayElemAt: ["$userBasic.follower", 0] }]
                     },
                     then: true,
                     else: false
@@ -28630,7 +28714,49 @@ export class PostsReadService {
               $arrayElemAt: ["$userInt.userInterests", 0]
             },
             tutor: {
-              $arrayElemAt: ["$userBasic.tutor", 0]
+              $ifNull: [
+                {
+                  $arrayElemAt: ["$userBasic.tutor", 0]
+                },
+                [
+                  {
+                    "key": "protection",
+                    "status": false
+                  },
+                  {
+                    "key": "sell",
+                    "status": false
+                  },
+                  {
+                    "key": "interest",
+                    "status": false
+                  },
+                  {
+                    "key": "ownership",
+                    "status": false
+                  },
+                  {
+                    "key": "boost",
+                    "status": false
+                  },
+                  {
+                    "key": "transaction",
+                    "status": false
+                  },
+                  {
+                    "key": "idRefferal",
+                    "status": false
+                  },
+                  {
+                    "key": "shareRefferal",
+                    "status": false
+                  },
+                  {
+                    "key": "codeRefferal",
+                    "status": false
+                  }
+                ],
+              ]
             },
             intScore: {
               $size: "$intScore"
