@@ -26224,6 +26224,19 @@ export class PostsReadService {
           }
         },
         {
+          $set: {
+            tutor:
+            {
+              $ifNull: [
+                {
+                  $arrayElemAt: ["$userBasic.tutor", 0]
+                },
+                []
+              ],
+            },
+          }
+        },
+        {
           $project: {
             _id: 1,
             version: {
@@ -26582,50 +26595,36 @@ export class PostsReadService {
             userInterested: {
               $arrayElemAt: ["$userInt.userInterests", 0]
             },
-            tutor: {
-              $ifNull: [
-                {
-                  $arrayElemAt: ["$userBasic.tutor", 0]
+            tutorial: {
+              $map: {
+                input: {
+                  $range: [
+                    0,
+                    {
+                      $size: "$tutor"
+                    }
+                  ]
                 },
-                [
-                  {
-                    "key": "protection",
-                    "status": false
-                  },
-                  {
-                    "key": "sell",
-                    "status": false
-                  },
-                  {
-                    "key": "interest",
-                    "status": false
-                  },
-                  {
-                    "key": "ownership",
-                    "status": false
-                  },
-                  {
-                    "key": "boost",
-                    "status": false
-                  },
-                  {
-                    "key": "transaction",
-                    "status": false
-                  },
-                  {
-                    "key": "idRefferal",
-                    "status": false
-                  },
-                  {
-                    "key": "shareRefferal",
-                    "status": false
-                  },
-                  {
-                    "key": "codeRefferal",
-                    "status": false
-                  }
-                ],
-              ]
+                as: "idx",
+                in: {
+                  $mergeObjects: [
+                    {
+                      $arrayElemAt: [
+                        "$tutor",
+                        "$$idx"
+                      ]
+                    },
+                    {
+                      $arrayElemAt: [
+                        {
+                          $arrayElemAt: ["$setting.value", 3]
+                        },
+                        "$$idx"
+                      ]
+                    }
+                  ]
+                }
+              }
             },
             intScore: {
               $size: "$intScore"
@@ -27290,6 +27289,19 @@ export class PostsReadService {
           }
         },
         {
+          $set:{
+              tutor: 
+              {
+                  $ifNull: [
+                      {
+                          $arrayElemAt: ["$userBasic.tutor", 0]
+                      },
+                      []
+                  ],
+              },
+          }
+      },
+        {
           $project: {
             _id: 1,
             version: {
@@ -27648,50 +27660,36 @@ export class PostsReadService {
             userInterested: {
               $arrayElemAt: ["$userInt.userInterests", 0]
             },
-            tutor: {
-              $ifNull: [
-                {
-                  $arrayElemAt: ["$userBasic.tutor", 0]
+            tutorial: {
+              $map: {
+                input: {
+                  $range: [
+                    0,
+                    {
+                      $size: "$tutor"
+                    }
+                  ]
                 },
-                [
-                  {
-                    "key": "protection",
-                    "status": false
-                  },
-                  {
-                    "key": "sell",
-                    "status": false
-                  },
-                  {
-                    "key": "interest",
-                    "status": false
-                  },
-                  {
-                    "key": "ownership",
-                    "status": false
-                  },
-                  {
-                    "key": "boost",
-                    "status": false
-                  },
-                  {
-                    "key": "transaction",
-                    "status": false
-                  },
-                  {
-                    "key": "idRefferal",
-                    "status": false
-                  },
-                  {
-                    "key": "shareRefferal",
-                    "status": false
-                  },
-                  {
-                    "key": "codeRefferal",
-                    "status": false
-                  }
-                ],
-              ]
+                as: "idx",
+                in: {
+                  $mergeObjects: [
+                    {
+                      $arrayElemAt: [
+                        "$tutor",
+                        "$$idx"
+                      ]
+                    },
+                    {
+                      $arrayElemAt: [
+                        {
+                          $arrayElemAt: ["$setting.value", 3]
+                        },
+                        "$$idx"
+                      ]
+                    }
+                  ]
+                }
+              }
             },
             intScore: {
               $size: "$intScore"
@@ -28355,6 +28353,19 @@ export class PostsReadService {
           }
         },
         {
+          $set:{
+              tutor: 
+              {
+                  $ifNull: [
+                      {
+                          $arrayElemAt: ["$userBasic.tutor", 0]
+                      },
+                      []
+                  ],
+              },
+          }
+      },
+        {
           $project: {
             _id: 1,
             version: {
@@ -28713,50 +28724,36 @@ export class PostsReadService {
             userInterested: {
               $arrayElemAt: ["$userInt.userInterests", 0]
             },
-            tutor: {
-              $ifNull: [
-                {
-                  $arrayElemAt: ["$userBasic.tutor", 0]
+            tutorial: {
+              $map: {
+                input: {
+                  $range: [
+                    0,
+                    {
+                      $size: "$tutor"
+                    }
+                  ]
                 },
-                [
-                  {
-                    "key": "protection",
-                    "status": false
-                  },
-                  {
-                    "key": "sell",
-                    "status": false
-                  },
-                  {
-                    "key": "interest",
-                    "status": false
-                  },
-                  {
-                    "key": "ownership",
-                    "status": false
-                  },
-                  {
-                    "key": "boost",
-                    "status": false
-                  },
-                  {
-                    "key": "transaction",
-                    "status": false
-                  },
-                  {
-                    "key": "idRefferal",
-                    "status": false
-                  },
-                  {
-                    "key": "shareRefferal",
-                    "status": false
-                  },
-                  {
-                    "key": "codeRefferal",
-                    "status": false
-                  }
-                ],
-              ]
+                as: "idx",
+                in: {
+                  $mergeObjects: [
+                    {
+                      $arrayElemAt: [
+                        "$tutor",
+                        "$$idx"
+                      ]
+                    },
+                    {
+                      $arrayElemAt: [
+                        {
+                          $arrayElemAt: ["$setting.value", 3]
+                        },
+                        "$$idx"
+                      ]
+                    }
+                  ]
+                }
+              }
             },
             intScore: {
               $size: "$intScore"
