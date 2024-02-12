@@ -446,16 +446,7 @@ export class NewpostService {
                 "$match":
                 {
                     $and: [
-                        {
-                            "$expr": 
-                            {
-                                $not: [
-                                    {
-                                        $in: [email, "$userView"]
-                                    }
-                                ]
-                            }
-                        },
+                      
                         {
                             "$expr":
                             {
@@ -871,7 +862,5 @@ export class NewpostService {
 
         return query;
     }
-
-
 
 }
