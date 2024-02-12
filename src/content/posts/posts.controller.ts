@@ -3259,7 +3259,7 @@ export class PostsController {
                 var thum_data = "";
                 if (dataMedia.mediaSource[0].apsara) {
                   if (dataMedia.mediaSource[0].apsaraId != undefined) {
-                    var resultpictapsara = await this.postContentService.getVideoApsara([dataMedia[0].mediaSource[0].apsaraId.toString()]);
+                    var resultpictapsara = await this.postContentService.getVideoApsara([dataMedia.mediaSource[0].apsaraId.toString()]);
                     var UrlThumnail = resultpictapsara.VideoList[0].CoverURL;
                     var data_thum = await this.PostsService.urlToBuffer(UrlThumnail);
                     //var data_thum = await this.postContentService.generate_thumnail_buffer(data, "jpg");
