@@ -9117,15 +9117,7 @@ export class AdsService {
                                     // },
                                     avatar:
                                     {
-                                        mediaEndpoint:
-                                        {
-                                            "$concat":
-                                                [
-                                                    "/profilepict/",
-                                                    "$profilePict.$id",
-
-                                                ]
-                                        }
+                                        mediaEndpoint: "$mediaEndpoint" 
                                     },
                                 }
                             }
@@ -10766,16 +10758,8 @@ export class AdsService {
                                     // },
                                     avatar:
                                     {
-                                        mediaEndpoint:
-                                        {
-                                            "$concat":
-                                                [
-                                                    "/profilepict/",
-                                                    "$profilePict.$id",
-
-                                                ]
-                                        }
-                                    },
+                                        mediaEndpoint: "$mediaEndpoint" 
+                                    }
                                 }
                             }
                         ],
@@ -12369,15 +12353,7 @@ export class AdsService {
                                     "userName": "$username",
                                     avatar:
                                     {
-                                        mediaEndpoint:
-                                        {
-                                            "$concat":
-                                                [
-                                                    "/profilepict/",
-                                                    "$profilePict.$id",
-
-                                                ]
-                                        }
+                                        mediaEndpoint: "$mediaEndpoint" 
                                     },
                                 }
                             }
@@ -13157,7 +13133,6 @@ export class AdsService {
                         widthLandscape: 1,
                         idApsaraPortrait: 1,
                         idApsaraLandscape: 1,
-
                     }
                 },
 
