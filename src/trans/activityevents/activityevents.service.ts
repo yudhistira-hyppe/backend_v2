@@ -1001,10 +1001,69 @@ export class ActivityeventsService {
           },
           gender: 
           {
-              "$arrayElemAt":
-              [
-                  "$user.gender", 0
-              ]
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, 'FEMALE']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, ' FEMALE']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, 'Perempuan']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, 'Wanita']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, 'MALE']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, ' MALE']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, 'Laki-laki']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ["$user.gender", 0] }, 'Pria']
+                  },
+                  then: 'MALE',
+
+                },
+
+              ],
+              default: "OTHER",
+
+            },
           },
           username: 
           { 
