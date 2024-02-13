@@ -864,9 +864,11 @@ export class MediastreamingService {
     return data;
   }
 
-  async getDataViewUnic(_id: string, page: number, limit: number) {
+  async getDataViewUnic(_id: string, page: number, limit: number, email_view: string) {
     let page_ = (page > 0) ? (page * limit) : page;
     let limit_ = (page > 0) ? ((page + 1) * limit) : limit;
+    console.log(limit_);
+    console.log(page_);
     let paramaggregate = [
       {
         $match: {
@@ -906,6 +908,8 @@ export class MediastreamingService {
                 fullName: 1,
                 email: 1,
                 username: 1,
+                follower: 1,
+                following: 1,
                 avatar: {
                   "mediaBasePath": "$mediaBasePath",
                   "mediaUri": "$mediaUri",
@@ -940,6 +944,8 @@ export class MediastreamingService {
                 fullName: 1,
                 email: 1,
                 username: 1,
+                follower: 1,
+                following: 1,
                 avatar: {
                   "mediaBasePath": "$mediaBasePath",
                   "mediaUri": "$mediaUri",
@@ -948,170 +954,19 @@ export class MediastreamingService {
                 }
               }
             },
-            // {
-            //   "$lookup": {
-            //     from: "userauths",
-            //     as: "data_userauths",
-            //     let: {
-            //       localID: '$userAuth'
-            //     },
-            //     pipeline: [
-            //       {
-            //         $match:
-            //         {
-            //           $expr: {
-            //             $eq: ['$_id', '$$localID']
-            //           }
-            //         }
-            //       },
-            //       {
-            //         $project: {
-            //           email: 1,
-            //           username: 1
-            //         }
-            //       }
-            //     ],
-            //   }
-            // },
-            // {
-            //   "$lookup": {
-            //     from: "mediaprofilepicts",
-            //     as: "data_mediaprofilepicts",
-            //     let: {
-            //       localID: '$profilePict'
-            //     },
-            //     pipeline: [
-            //       {
-            //         $match:
-            //         {
-            //           $expr: {
-            //             $eq: ['$_id', '$$localID']
-            //           }
-            //         }
-            //       },
-            //       {
-            //         $project: {
-            //           "mediaBasePath": 1,
-            //           "mediaUri": 1,
-            //           "originalName": 1,
-            //           "fsSourceUri": 1,
-            //           "fsSourceName": 1,
-            //           "fsTargetUri": 1,
-            //           "mediaType": 1,
-            //           "mediaEndpoint": {
-            //             "$concat": ["/profilepict/", "$mediaID"]
-            //           }
-            //         }
-            //       }
-            //     ],
-
-            //   }
-            // },
             {
               $project: {
                 fullName: 1,
                 email: 1,
                 username: 1,
-                // userAuth: {
-                //   "$let": {
-                //     "vars": {
-                //       "tmp": {
-                //         "$arrayElemAt": ["$data_userauths", 0]
-                //       }
-                //     },
-                //     "in": "$$tmp._id"
-                //   }
-                // },
-                // username: {
-                //   "$let": {
-                //     "vars": {
-                //       "tmp": {
-                //         "$arrayElemAt": ["$data_userauths", 0]
-                //       }
-                //     },
-                //     "in": "$$tmp.username"
-                //   }
-                // },
                 avatar: 1,
+                follower: 1,
+                following: 1,
               }
             },
           ],
         }
       },
-      // {
-      //   "$lookup": {
-      //     from: "contentevents",
-      //     as: "following",
-      //     let: {
-      //       localID: {
-      //         "$let": {
-      //           "vars": {
-      //             "tmp": {
-      //               "$arrayElemAt": ["$data_userbasics_streamer", 0]
-      //             }
-      //           },
-      //           "in": "$$tmp.email"
-      //         }
-      //       },
-      //       user: {
-      //         "$let": {
-      //           "vars": {
-      //             "tmp": {
-      //               "$arrayElemAt": ["$data_userbasics", 0]
-      //             }
-      //           },
-      //           "in": "$$tmp.email"
-      //         }
-      //       },
-      //     },
-      //     pipeline: [
-      //       {
-      //         $match:
-      //         {
-      //           $and: [
-      //             {
-      //               $expr: {
-      //                 $eq: ['$senderParty', '$$user']
-      //               }
-      //             },
-      //             {
-      //               $expr: {
-      //                 $eq: ['$email', '$$localID']
-      //               }
-      //             },
-      //             {
-      //               "eventType": "FOLLOWING",
-      //             },
-      //             {
-      //               "event": "ACCEPT"
-      //             },
-      //             {
-      //               "active": true
-      //             },
-      //           ]
-      //         }
-      //       },
-      //       {
-      //         $project: {
-      //           senderParty: 1,
-      //           v:
-      //           {
-      //             $cond: {
-      //               if: {
-      //                 $gt: [{
-      //                   $strLenCP: "$email"
-      //                 }, 0]
-      //               },
-      //               then: true,
-      //               else: false
-      //             }
-      //           },
-
-      //         }
-      //       }
-      //     ]
-      //   },
-      // },
       {
         $set: {
           follower_view: {
@@ -1218,6 +1073,8 @@ export class MediastreamingService {
               "in": "$$tmp.avatar"
             }
           },
+          // email_view: email_view,
+          // follower_view:1,
           following: {
             "$ifNull":
               [
@@ -1238,7 +1095,7 @@ export class MediastreamingService {
                     else:
                     {
                       "$in": [
-                        "$userstream",
+                        email_view,
                         "$follower_view"
                       ]
                     }
@@ -1247,6 +1104,42 @@ export class MediastreamingService {
                 false
               ]
           },
+          // following_: {
+          //   "$cond":{
+          //     if:
+          //     {
+          //       "$ne":
+          //         [
+          //           "$follower_view",
+          //           null
+          //         ]
+          //     },
+          //     then: {
+          //       "$cond":
+          //       {
+          //         if:
+          //         {
+          //           "$eq":
+          //             [
+          //               {
+          //                 "$size": "$follower_view"
+          //               },
+          //               0
+          //             ]
+          //         },
+          //         then: false,
+          //         else:
+          //         {
+          //           "$in": [
+          //             "$userstream",
+          //             "$follower_view"
+          //           ]
+          //         }
+          //       }
+          //     },
+          //     else: false
+          //   }
+          // },
           // following:
           // {
           //   $cond: {
@@ -1321,6 +1214,8 @@ export class MediastreamingService {
                 fullName: 1,
                 email: 1,
                 username: 1,
+                follower: 1,
+                following: 1,
                 avatar: {
                   "mediaBasePath": "$mediaBasePath",
                   "mediaUri": "$mediaUri",
@@ -1329,91 +1224,13 @@ export class MediastreamingService {
                 }
               }
             },
-            // {
-            //   "$lookup": {
-            //     from: "userauths",
-            //     as: "data_userauths",
-            //     let: {
-            //       localID: '$userAuth'
-            //     },
-            //     pipeline: [
-            //       {
-            //         $match:
-            //         {
-            //           $expr: {
-            //             $eq: ['$_id', '$$localID']
-            //           }
-            //         }
-            //       },
-            //       {
-            //         $project: {
-            //           email: 1,
-            //           username: 1
-            //         }
-            //       }
-            //     ],
-
-            //   }
-            // },
-            // {
-            //   "$lookup": {
-            //     from: "mediaprofilepicts",
-            //     as: "data_mediaprofilepicts",
-            //     let: {
-            //       localID: '$profilePict'
-            //     },
-            //     pipeline: [
-            //       {
-            //         $match:
-            //         {
-            //           $expr: {
-            //             $eq: ['$_id', '$$localID']
-            //           }
-            //         }
-            //       },
-            //       {
-            //         $project: {
-            //           "mediaBasePath": 1,
-            //           "mediaUri": 1,
-            //           "originalName": 1,
-            //           "fsSourceUri": 1,
-            //           "fsSourceName": 1,
-            //           "fsTargetUri": 1,
-            //           "mediaType": 1,
-            //           "mediaEndpoint": {
-            //             "$concat": ["/profilepict/", "$mediaID"]
-            //           }
-            //         }
-            //       }
-            //     ],
-
-            //   }
-            // },
             {
               $project: {
                 fullName: 1,
                 email: 1,
                 username: 1,
-                // userAuth: {
-                //   "$let": {
-                //     "vars": {
-                //       "tmp": {
-                //         "$arrayElemAt": ["$data_userauths", 0]
-                //       }
-                //     },
-                //     "in": "$$tmp._id"
-                //   }
-                // },
-                // username: {
-                //   "$let": {
-                //     "vars": {
-                //       "tmp": {
-                //         "$arrayElemAt": ["$data_userauths", 0]
-                //       }
-                //     },
-                //     "in": "$$tmp.username"
-                //   }
-                // },
+                follower: 1,
+                following: 1,
                 avatar: 1
               }
             },
