@@ -4893,7 +4893,7 @@ export class AuthController {
 
         var user_view = headers['x-auth-user'];
         await this.authService.viewProfile(SearchUserbasicDto_.search.toString(), user_view);
-        var Data = await this.utilsService.generateProfile2(SearchUserbasicDto_.search.toString(), 'PROFILE');
+        var Data = await this.utilsService.generateProfile2(SearchUserbasicDto_.search.toString(), 'PROFILE', headers["x-auth-user"]);
 
         var numPost = await this.NewPostService.findUserPost(SearchUserbasicDto_.search.toString());
         let aNumPost = <any>numPost;
