@@ -12197,9 +12197,18 @@ export class AdsService {
                             {
                                 $match:
                                 {
-                                    $expr: {
-                                        $eq: ['$_id', '$$localID']
-                                    }
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$localID']
+                                            }
+                                        },
+                                        {
+                                            $expr: {
+                                                $ne: ['$guestMode', true]
+                                            }
+                                        }
+                                    ]
                                 }
                             },
                             {
@@ -12329,21 +12338,21 @@ export class AdsService {
                             {
                                 $match:
                                 {
-                                    // $expr: {
-                                    //     $eq: ['$_id', '$$localID']
-                                    // }
-                                    $and: [
-                                        {
-                                            $expr: {
-                                                $eq: ['$_id', '$$localID']
-                                            }
-                                        },
-                                        {
-                                            $expr: {
-                                                $ne: ['$guestMode', true]
-                                            }
-                                        }
-                                    ]
+                                    $expr: {
+                                        $eq: ['$_id', '$$localID']
+                                    }
+                                    // $and: [
+                                    //     {
+                                    //         $expr: {
+                                    //             $eq: ['$_id', '$$localID']
+                                    //         }
+                                    //     },
+                                    //     {
+                                    //         $expr: {
+                                    //             $ne: ['$guestMode', true]
+                                    //         }
+                                    //     }
+                                    // ]
                                 }
                             },
                             {
