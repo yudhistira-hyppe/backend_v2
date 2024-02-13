@@ -2307,18 +2307,18 @@ export class UtilsService {
         ProfileDTO_.following = false;
       }
 
-      if (get_userbasic.email == email_view) {
-        ProfileDTO_.status = "UNLINK";
-      } else {
-        let ceckFOLLOWING = get_userbasic.following.includes(email_view)
-        if (ceckFOLLOWING) {
-          ProfileDTO_.following = true;
-          ProfileDTO_.status = "FOLLOWING";
-        } else {
-          ProfileDTO_.following = false;
-          ProfileDTO_.status = 'TOFOLLOW';
-        }
-      }
+      // if (get_userbasic.email == email_view) {
+      //   ProfileDTO_.status = "UNLINK";
+      // } else {
+      //   let ceckFOLLOWING = get_userbasic.following.includes(email_view)
+      //   if (ceckFOLLOWING) {
+      //     ProfileDTO_.following = true;
+      //     ProfileDTO_.status = "FOLLOWING";
+      //   } else {
+      //     ProfileDTO_.following = false;
+      //     ProfileDTO_.status = 'TOFOLLOW';
+      //   }
+      // }
     }
 
     if (await this.ceckData(get_userbasic)) {
