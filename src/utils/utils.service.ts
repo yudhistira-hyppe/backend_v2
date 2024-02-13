@@ -2300,7 +2300,7 @@ export class UtilsService {
     }
 
     if (email_view != undefined) {
-      let ceckFOLLOWING = get_userbasic.following.includes(email_view)
+      let ceckFOLLOWING = get_userbasic.follower.includes(email_view)
       if (ceckFOLLOWING) {
         ProfileDTO_.following = true;
       } else {
