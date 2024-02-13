@@ -2176,7 +2176,7 @@ export class UtilsService {
     return ProfileDTO_;
   }
 
-  async generateProfile2(email: string, datafor: string): Promise<ProfileDTO> {
+  async generateProfile2(email: string, datafor: string, email_view?: string): Promise<ProfileDTO> {
     var get_userbasic = await this.basic2SS.finddetail(email);
 
     var get_languages = null;
@@ -2296,6 +2296,15 @@ export class UtilsService {
         //ProfileDTO_.imei = 
         //ProfileDTO_.referralCount =
         //ProfileDTO_.children = 
+      }
+    }
+
+    if (email_view != undefined) {
+      let ceckFOLLOWING = get_userbasic.following.includes(email_view)
+      if (ceckFOLLOWING) {
+        ProfileDTO_.following = true;
+      } else {
+        ProfileDTO_.following = false;
       }
     }
 
