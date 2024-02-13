@@ -10051,7 +10051,7 @@ export class NewPostService {
                     {
                       "$eq":
                         [
-                          "$postType", "pict"
+                          "$mediaSource.mediaType", "image"
                         ]
                     },
                     then:

@@ -416,10 +416,10 @@ export class UserbasicnewService {
                     "mediaUri": 1,
                     "avatar":
                     {
-                        "mediaBasePath":"$mediaBasePath",
-                        "mediaEndpoint":"$mediaEndpoint",
-                        "mediaType":"$mediaType",
-                        "mediaUri":"$mediaUri"
+                        "mediaBasePath": "$mediaBasePath",
+                        "mediaEndpoint": "$mediaEndpoint",
+                        "mediaType": "$mediaType",
+                        "mediaUri": "$mediaUri"
                     },
                     "mediaType": 1,
                     "mediaEndpoint": 1,
@@ -2395,7 +2395,7 @@ export class UserbasicnewService {
                                             bank: 1,
                                             amount: 1,
                                             totalamount: 1,
-                                            status: 'Success',
+                                            status: 1,
                                             postid: 1,
                                             iduserbuyer: 1,
                                             idusersell: 1,
@@ -7502,67 +7502,67 @@ export class UserbasicnewService {
 
     async gettotalyopmail(skip: number, limit: number) {
         var pipeline = [];
-    
+
         pipeline.push(
-          {
-            "$match":
             {
-              "email":
-              {
-                "$regex": "yopmail.com",
-                "$options": "i"
-              }
-            }
-          }
-        );
-    
-        if (skip != null && skip != undefined && skip > 0) {
-          pipeline.push(
-            {
-              "$skip": skip * limit
-            }
-          );
-        }
-    
-        if (limit != null && limit != undefined && limit > 0) {
-          pipeline.push(
-            {
-              "$limit": limit
-            }
-          );
-        }
-    
-        pipeline.push(
-          {
-            "$project":
-            {
-              email: 1,
-              fullName: 1,
-              languages:
-              {
-                "$ifNull":
-                  [
-                    "$languagesLangIso",
-                    "id"
-                  ]
-              },
-              username:1,
-              akunmati:
-              {
-                "$regexMatch":
+                "$match":
                 {
-                  input: "$email",
-                  regex: "noneactive",
-                  options: "i"
+                    "email":
+                    {
+                        "$regex": "yopmail.com",
+                        "$options": "i"
+                    }
                 }
-              }
             }
-          }
         );
-    
+
+        if (skip != null && skip != undefined && skip > 0) {
+            pipeline.push(
+                {
+                    "$skip": skip * limit
+                }
+            );
+        }
+
+        if (limit != null && limit != undefined && limit > 0) {
+            pipeline.push(
+                {
+                    "$limit": limit
+                }
+            );
+        }
+
+        pipeline.push(
+            {
+                "$project":
+                {
+                    email: 1,
+                    fullName: 1,
+                    languages:
+                    {
+                        "$ifNull":
+                            [
+                                "$languagesLangIso",
+                                "id"
+                            ]
+                    },
+                    username: 1,
+                    akunmati:
+                    {
+                        "$regexMatch":
+                        {
+                            input: "$email",
+                            regex: "noneactive",
+                            options: "i"
+                        }
+                    }
+                }
+            }
+        );
+
         // console.log(JSON.stringify(pipeline));
         var result = await this.UserbasicnewModel.aggregate(pipeline);
-    
+
         return result;
     }
 }
