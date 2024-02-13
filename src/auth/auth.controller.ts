@@ -2678,74 +2678,7 @@ export class AuthController {
   @Post('api/user/referral/v2')
   @HttpCode(HttpStatus.ACCEPTED)
   async referral2(@Req() request: any, @Headers() headers) {
-    var timestamps_start = await this.utilsService.getDateTimeString();
-    var ceck_data_FOLLOWER = await this.contenteventsService.ceckData(request.body.email, "FOLLOWER", "ACCEPT", headers['x-auth-user'], "", "");
-    var ceck_data_FOLLOWING = await this.contenteventsService.ceckData(headers['x-auth-user'], "FOLLOWING", "ACCEPT", "", request.body.email, "");
-    if (!(await this.utilsService.ceckData(ceck_data_FOLLOWER)) && !(await this.utilsService.ceckData(ceck_data_FOLLOWING))) 
-    {
-      console.log('masuk karena datanya baru');
-      return await this.authService.referral3(request, headers);
-    }
-    else
-    {
-      console.log('masuk karena datanya udah ada');
-      var datasource = await this.basic2SS.findbyemail(headers['x-auth-user']);
-      var listchallenge = null;
-      if (!ceck_data_FOLLOWER.active && !ceck_data_FOLLOWING.active) 
-      {
-        try {
-          listchallenge = request.body.listchallenge;
-        } catch (e) {
-          listchallenge = null;
-        }
-
-        await this.contenteventsService.updateFollowing(headers['x-auth-user'], "FOLLOWING", request.body.email);
-        await this.contenteventsService.updateFollower(request.body.email, "FOLLOWER", headers['x-auth-user']);
-        await this.insightsService.updateFollower(request.body.email);
-        await this.insightsService.updateFollowing(headers['x-auth-user']);
-        await this.basic2SS.updatefollowSystem(request.body.email, headers['x-auth-user'], "FOLLOWING");
-        await this.basic2SS.updatefollowSystem(headers['x-auth-user'], request.body.email, "FOLLOWER");
-
-        try
-        {
-          let idevent1 = ceck_data_FOLLOWING._id;
-  
-          var iduser = null;
-          if (datasource !== null) {
-            iduser = datasource._id;
-            //this.userChallengeFollow(iduser.toString(), idevent1.toString(), "contentevents", "FOLLOW");
-            await this.contenteventsService.scorereferralrequest(iduser.toString(), idevent1.toString(), "referral", "REFERAL",listchallenge);
-          }
-        }
-        catch(e)
-        {
-
-        }
-      }
-
-      var errorMessages = null;
-      if (datasource.languagesLangIso == "id") {
-        errorMessages = "Selamat kode referral berhasil digunakan";
-      } else if (datasource.languagesLangIso == "en") {
-        errorMessages = "Congratulation referral applied successfully";
-      } else {
-        errorMessages = "Selamat kode referral berhasil digunakan";
-      }
-
-      var fullurl = request.get("Host") + request.originalUrl;
-      var timestamps_end = await this.utilsService.getDateTimeString();
-      var reqbody = JSON.parse(JSON.stringify(request.body));
-      this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, headers['x-auth-user'], null, null, reqbody);
-
-      return {
-        "response_code": 202,
-        "messages": {
-          "info": [
-            errorMessages
-          ]
-        }
-      };
-    }
+    return await this.authService.referral3(request, headers);
   }
 
   @Post('api/user/referral-qrcode')
