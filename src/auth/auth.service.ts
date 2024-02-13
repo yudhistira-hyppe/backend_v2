@@ -9376,6 +9376,7 @@ export class AuthService {
     var user_email_children = null;
     var email_ceck = false;
     var iduser = null;
+    var listchallenge=null;
     var current_date = await this.utilsService.getDateTimeString();
 
     if (head['x-auth-user'] == undefined) {
@@ -9390,7 +9391,11 @@ export class AuthService {
     } else {
       user_email_children = head['x-auth-user'];
     }
-
+    try {
+      listchallenge = req.body.listchallenge;
+    } catch (e) {
+      listchallenge = null;
+    }
     if (req.body.imei == undefined) {
       var fullurl = req.get("Host") + req.originalUrl;
       var timestamps_end = await this.utilsService.getDateTimeString();
@@ -9533,12 +9538,12 @@ export class AuthService {
             userid = databasics._id;
           }
 
-          // try {
-          //   //this.userChallenge(userid.toString(), idref.toString(), "referral", "REFERAL");
-          //   await this.contenteventsService.scorereferralrequest(userid.toString(), idref.toString(), "referral", "REFERAL")
-          // } catch (e) {
+          try {
+            //this.userChallenge(userid.toString(), idref.toString(), "referral", "REFERAL");
+            await this.contenteventsService.scorereferralrequest(userid.toString(), idref.toString(), "referral", "REFERAL",listchallenge)
+          } catch (e) {
 
-          // }
+          }
 
 
           var _id_1 = (await this.utilsService.generateId());
