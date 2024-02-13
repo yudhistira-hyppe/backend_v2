@@ -2570,10 +2570,10 @@ export class ChallengeController {
       var checkjoinchallenge = getdata.peserta[0].caraGabung;
       var checkpartisipan = getdata.listParticipant;
       if (checkjoinchallenge == 'DENGAN UNDANGAN' && checkpartisipan != null && checkpartisipan != undefined && checkpartisipan.length != 0) {
-        this.insertchildofchallenge(getdata, checkpartisipan);
+        this.insertchildofchallenge2(getdata, checkpartisipan);
       }
       else {
-        this.insertchildofchallenge(getdata, null);
+        this.insertchildofchallenge2(getdata, null);
       }
     }
     else if (statusChallenge == "NONACTIVE" || statusChallenge == "NONEACTIVE") {
