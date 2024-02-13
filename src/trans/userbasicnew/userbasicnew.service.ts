@@ -951,7 +951,72 @@ export class UserbasicnewService {
                                     proofpictUploadSource: "$kyc.proofpictUploadSource",
                                     nama: "$kyc.nama",
                                     tempatLahir: "$kyc.tempatLahir",
-                                    jenisKelamin: "$kyc.jenisKelamin",
+                                    // jenisKelamin: "$kyc.jenisKelamin",
+                                    jenisKelamin: {
+                                        $switch: {
+                                            branches: [
+                                                {
+                                                    case: {
+                                                        $eq: ["$kyc.jenisKelamin", 'FEMALE']
+                                                    },
+                                                    then: 'FEMALE',
+
+                                                },
+                                                {
+                                                    case: {
+                                                        $eq: ["$kyc.jenisKelamin", ' FEMALE']
+                                                    },
+                                                    then: 'FEMALE',
+
+                                                },
+                                                {
+                                                    case: {
+                                                        $eq: ["$kyc.jenisKelamin", 'Perempuan']
+                                                    },
+                                                    then: 'FEMALE',
+
+                                                },
+                                                {
+                                                    case: {
+                                                        $eq: ["$kyc.jenisKelamin", 'Wanita']
+                                                    },
+                                                    then: 'FEMALE',
+
+                                                },
+                                                {
+                                                    case: {
+                                                        $eq: ["$kyc.jenisKelamin", 'MALE']
+                                                    },
+                                                    then: 'MALE',
+
+                                                },
+                                                {
+                                                    case: {
+                                                        $eq: ["$kyc.jenisKelamin", ' MALE']
+                                                    },
+                                                    then: 'MALE',
+
+                                                },
+                                                {
+                                                    case: {
+                                                        $eq: ["$kyc.jenisKelamin", 'Laki-laki']
+                                                    },
+                                                    then: 'MALE',
+
+                                                },
+                                                {
+                                                    case: {
+                                                        $eq: ["$kyc.jenisKelamin", 'Pria']
+                                                    },
+                                                    then: 'MALE',
+
+                                                },
+
+                                            ],
+                                            default: "OTHER",
+
+                                        },
+                                    },
                                     alamat: "$kyc.alamat",
                                     agama: "$kyc.agama",
                                     statusPerkawinan: "$kyc.statusPerkawinan",
@@ -2061,7 +2126,72 @@ export class UserbasicnewService {
                     },
                     nama: "$kyc.nama",
                     tempatLahir: "$kyc.tempatLahir",
-                    jenisKelamin: "$kyc.jenisKelamin",
+                    // jenisKelamin: "$kyc.jenisKelamin",
+                    jenisKelamin: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: ["$kyc.jenisKelamin", 'FEMALE']
+                                    },
+                                    then: 'FEMALE',
+
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$kyc.jenisKelamin", ' FEMALE']
+                                    },
+                                    then: 'FEMALE',
+
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$kyc.jenisKelamin", 'Perempuan']
+                                    },
+                                    then: 'FEMALE',
+
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$kyc.jenisKelamin", 'Wanita']
+                                    },
+                                    then: 'FEMALE',
+
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$kyc.jenisKelamin", 'MALE']
+                                    },
+                                    then: 'MALE',
+
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$kyc.jenisKelamin", ' MALE']
+                                    },
+                                    then: 'MALE',
+
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$kyc.jenisKelamin", 'Laki-laki']
+                                    },
+                                    then: 'MALE',
+
+                                },
+                                {
+                                    case: {
+                                        $eq: ["$kyc.jenisKelamin", 'Pria']
+                                    },
+                                    then: 'MALE',
+
+                                },
+
+                            ],
+                            default: "OTHER",
+
+                        },
+                    },
                     alamat: "$kyc.alamat",
                     agama: "$kyc.agama",
                     statusPerkawinan: "$kyc.statusPerkawinan",
