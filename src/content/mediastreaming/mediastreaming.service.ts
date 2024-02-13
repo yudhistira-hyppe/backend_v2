@@ -1095,7 +1095,7 @@ export class MediastreamingService {
                     else:
                     {
                       "$in": [
-                        email_view,
+                        "$userstream",
                         "$follower_view"
                       ]
                     }
