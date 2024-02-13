@@ -864,7 +864,7 @@ export class MediastreamingService {
     return data;
   }
 
-  async getDataViewUnic(_id: string, page: number, limit: number, email_view: string) {
+  async getDataViewUnic(_id: string, page: number, limit: number) {
     let page_ = (page > 0) ? (page * limit) : page;
     let limit_ = (page > 0) ? ((page + 1) * limit) : limit;
     console.log(limit_);
@@ -968,7 +968,7 @@ export class MediastreamingService {
         }
       },
       {
-        $set: {
+        $addFields: {
           follower_view: {
             "$let": {
               "vars": {
@@ -982,7 +982,7 @@ export class MediastreamingService {
         }
       },
       {
-        $set: {
+        $addFields: {
           userStream: {
             "$let": {
               "vars": {
@@ -996,7 +996,7 @@ export class MediastreamingService {
         }
       },
       {
-        $set: {
+        $addFields: {
           userView: {
             "$let": {
               "vars": {
@@ -1011,8 +1011,22 @@ export class MediastreamingService {
       },
       {
         "$project": {
-          userview: 1,
-          userstream: 1,
+          // userview: "$userView",
+          //userstream: "$userStream",
+          // follower_view: "$follower_view",
+          // asd: {
+          //   $filter: {
+          //     input: "$follower_view",
+          //     as: "num",
+          //     cond: {
+          //       "$eq":
+          //         [
+          //           "$$num",
+          //           "$userStream"
+          //         ]
+          //     }
+          //   }
+          // },
           "_id": {
             "$let": {
               "vars": {
@@ -1043,16 +1057,6 @@ export class MediastreamingService {
               "in": "$$tmp.fullName"
             }
           },
-          // "userAuth": {
-          //   "$let": {
-          //     "vars": {
-          //       "tmp": {
-          //         "$arrayElemAt": ["$data_userbasics", 0]
-          //       }
-          //     },
-          //     "in": "$$tmp.userAuth"
-          //   }
-          // },
           "username": {
             "$let": {
               "vars": {
@@ -1073,83 +1077,40 @@ export class MediastreamingService {
               "in": "$$tmp.avatar"
             }
           },
-          // email_view: email_view,
-          // follower_view:1,
-          following: {
-            "$ifNull":
-              [
+          following:
+          {
+            $cond:
+            {
+              if: {
+                $eq: ["$follower_view", []]
+              },
+              then: false,
+              else:
+              {
+                $cond:
                 {
-                  "$cond":
-                  {
-                    if:
-                    {
-                      "$eq":
-                        [
-                          {
-                            "$size": "$follower_view"
-                          },
-                          0
-                        ]
-                    },
-                    then: false,
-                    else:
-                    {
-                      "$in": [
-                        "$userstream",
-                        "$follower_view"
-                      ]
-                    }
-                  }
-                },
-                false
-              ]
-          },
-          // following_: {
-          //   "$cond":{
-          //     if:
-          //     {
-          //       "$ne":
-          //         [
-          //           "$follower_view",
-          //           null
-          //         ]
-          //     },
-          //     then: {
-          //       "$cond":
-          //       {
-          //         if:
-          //         {
-          //           "$eq":
-          //             [
-          //               {
-          //                 "$size": "$follower_view"
-          //               },
-          //               0
-          //             ]
-          //         },
-          //         then: false,
-          //         else:
-          //         {
-          //           "$in": [
-          //             "$userstream",
-          //             "$follower_view"
-          //           ]
-          //         }
-          //       }
-          //     },
-          //     else: false
-          //   }
-          // },
-          // following:
-          // {
-          //   $cond: {
-          //     if: {
-          //       $gt: [{ $size: "$following" }, 0]
-          //     },
-          //     then: true,
-          //     else: false
-          //   }
-          // },
+                  if: {
+                    $gt: [{
+                      $size: {
+                        $filter: {
+                          input: "$follower_view",
+                          as: "num",
+                          cond: {
+                            "$eq":
+                              [
+                                "$$num",
+                                "$userStream"
+                              ]
+                          }
+                        }
+                      }
+                    }, 0] },
+                  then: true,
+                  else: false
+                }
+              },
+            }
+          }, 
         }
       },
     ];

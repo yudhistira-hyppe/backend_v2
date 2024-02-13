@@ -519,7 +519,7 @@ export class MediastreamingController {
     let data = [];
     if (MediastreamingDto_.type != undefined) {
       if (MediastreamingDto_.type == "END") {
-        data = await this.mediastreamingService.getDataViewUnic(MediastreamingDto_._id.toString(), MediastreamingDto_.page, MediastreamingDto_.limit, headers['x-auth-user']);
+        data = await this.mediastreamingService.getDataViewUnic(MediastreamingDto_._id.toString(), MediastreamingDto_.page, MediastreamingDto_.limit);
       }
     } else {
       data = await this.mediastreamingService.getDataView(MediastreamingDto_._id.toString(), MediastreamingDto_.page, MediastreamingDto_.limit);
