@@ -2683,10 +2683,12 @@ export class AuthController {
     var ceck_data_FOLLOWING = await this.contenteventsService.ceckData(headers['x-auth-user'], "FOLLOWING", "ACCEPT", "", request.body.email, "");
     if (!(await this.utilsService.ceckData(ceck_data_FOLLOWER)) && !(await this.utilsService.ceckData(ceck_data_FOLLOWING))) 
     {
+      console.log('masuk karena datanya baru');
       return await this.authService.referral3(request, headers);
     }
     else
     {
+      console.log('masuk karena datanya udah ada');
       var datasource = await this.basic2SS.findbyemail(headers['x-auth-user']);
       var listchallenge = null;
       if (!ceck_data_FOLLOWER.active && !ceck_data_FOLLOWING.active) 
