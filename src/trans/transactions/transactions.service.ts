@@ -10930,7 +10930,7 @@ export class TransactionsService {
                         }
                         await this.withdrawsService.updateoneData(getwithdraws[i]._id.toString(), CreateWithdrawsDto_, OyDisbursementStatusResponse_);
                     } else {
-                        console.log("STAUS ", "THE SAME");
+                        console.log("STATUS ", "THE SAME");
                     }
                 } catch (e) {
                     console.log("------------- ERROR " + e + " -------------");
