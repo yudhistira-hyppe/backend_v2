@@ -2102,7 +2102,7 @@ export class ContenteventsController {
     var timestamps_start = await this.utilsService.getDateTimeString();
     var listchallenge = null;
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(request.body));
-    if (headers['x-auth-user'] == undefined) {
+    if (headers['x-auth-user'] == undefined || headers['x-auth-user'] == null || headers['x-auth-user'] == '') {
       var fullurl = request.get("Host") + request.originalUrl;
       var timestamps_end = await this.utilsService.getDateTimeString();
       var reqbody = JSON.parse(JSON.stringify(request.body));
@@ -2112,7 +2112,7 @@ export class ContenteventsController {
         'Unabled to proceed auth-user undefined',
       );
     }
-    if (request.body.eventType == undefined) {
+    if (request.body.eventType == undefined || request.body.eventType == null || request.body.eventType == '') {
       var fullurl = request.get("Host") + request.originalUrl;
       var timestamps_end = await this.utilsService.getDateTimeString();
       var reqbody = JSON.parse(JSON.stringify(request.body));
@@ -2122,7 +2122,7 @@ export class ContenteventsController {
         'Unabled to proceed, param eventType is required',
       );
     }
-    if (request.body.receiverParty == undefined) {
+    if (request.body.receiverParty == undefined || request.body.receiverParty == null || request.body.receiverParty == '') {
       var fullurl = request.get("Host") + request.originalUrl;
       var timestamps_end = await this.utilsService.getDateTimeString();
       var reqbody = JSON.parse(JSON.stringify(request.body));

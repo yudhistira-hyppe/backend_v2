@@ -4592,172 +4592,345 @@ export class subChallengeService {
                 }
             },
             {
-                '$lookup': {
-                    from: 'newUserBasics',
-                    localField: 'idUser',
-                    foreignField: '_id',
-                    as: 'userbasics_data'
+                "$sort":
+                {
+                    score: -1
                 }
             },
             {
-                '$project': {
+                "$setWindowFields":
+                {
+                    partitionBy: "$$userChallenge_fk",
+                    sortBy:
+                    {
+                        score: -1
+                    },
+                    output:
+                    {
+                        setRank:
+                        {
+                            $documentNumber: {}
+                        }
+                    }
+                }
+            },
+            {
+                "$lookup":
+                {
+                    "from": "newUserBasics",
+                    "localField": "idUser",
+                    "foreignField": "_id",
+                    "as": "userbasics_data"
+                }
+            },
+            // {
+            //     "$lookup":
+            //     {
+            //         "from": "userauths",
+            //         "localField": "userbasics_data.email",
+            //         "foreignField": "email",
+            //         "as": "userauth_data"
+            //     }
+            // },
+            // {
+            //     "$lookup":
+            //     {
+            //         "from": "mediaprofilepicts",
+            //         "as": 'avatar',
+            //         "localField": "userbasics_data.profilePict.$id",
+            //         "foreignField": "_id",
+            //     }
+            // },
+            {
+                "$project":
+                {
                     _id: 1,
                     idSubChallenge: 1,
                     startDatetime: 1,
                     endDatetime: 1,
                     updatedAt: 1,
-                    score: { '$ifNull': ['$score', 0] },
-                    ranking: {
-                        '$ifNull': [{ '$toInt': '$ranking' }, { '$toInt': 0 }]
+                    score:
+                    {
+                        "$ifNull":
+                            [
+                                "$score",
+                                0
+                            ]
                     },
-                    username: { '$arrayElemAt': ['$userbasics_data.username', 0] },
-                    email: { '$arrayElemAt': ['$userbasics_data.email', 0] },
-                    fullName: { '$arrayElemAt': ['$userbasics_data.fullName', 0] },
-                    gender: {
-                        '$switch': {
-                            branches: [
-                                {
-                                    case: {
-                                        '$eq': [
-                                            {
-                                                '$arrayElemAt': ['$userbasics_data.gender', 0]
-                                            },
-                                            'FEMALE'
-                                        ]
-                                    },
-                                    then: 'FEMALE'
-                                },
-                                {
-                                    case: {
-                                        '$eq': [
-                                            {
-                                                '$arrayElemAt': ['$userbasics_data.gender', 0]
-                                            },
-                                            ' FEMALE'
-                                        ]
-                                    },
-                                    then: 'FEMALE'
-                                },
-                                {
-                                    case: {
-                                        '$eq': [
-                                            {
-                                                '$arrayElemAt': ['$userbasics_data.gender', 0]
-                                            },
-                                            'Perempuan'
-                                        ]
-                                    },
-                                    then: 'FEMALE'
-                                },
-                                {
-                                    case: {
-                                        '$eq': [
-                                            {
-                                                '$arrayElemAt': ['$userbasics_data.gender', 0]
-                                            },
-                                            'Wanita'
-                                        ]
-                                    },
-                                    then: 'FEMALE'
-                                },
-                                {
-                                    case: {
-                                        '$eq': [
-                                            {
-                                                '$arrayElemAt': ['$userbasics_data.gender', 0]
-                                            },
-                                            'MALE'
-                                        ]
-                                    },
-                                    then: 'MALE'
-                                },
-                                {
-                                    case: {
-                                        '$eq': [
-                                            {
-                                                '$arrayElemAt': ['$userbasics_data.gender', 0]
-                                            },
-                                            ' MALE'
-                                        ]
-                                    },
-                                    then: 'MALE'
-                                },
-                                {
-                                    case: {
-                                        '$eq': [
-                                            {
-                                                '$arrayElemAt': ['$userbasics_data.gender', 0]
-                                            },
-                                            'Laki-laki'
-                                        ]
-                                    },
-                                    then: 'MALE'
-                                },
-                                {
-                                    case: {
-                                        '$eq': [
-                                            {
-                                                '$arrayElemAt': ['$userbasics_data.gender', 0]
-                                            },
-                                            'Pria'
-                                        ]
-                                    },
-                                    then: 'MALE'
-                                }
-                            ],
-                            default: 'OTHER'
-                        }
+                    ranking: "$setRank",
+                    username:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasics_data.username", 0
+                            ]
                     },
-                    dob: {
-                        '$cond': {
-                            if: {
-                                '$and': [
-                                    { '$arrayElemAt': ['$userbasics_data.dob', 0] },
+                    email:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasics_data.email", 0
+                            ]
+                    },
+                    fullName:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasics_data.fullName", 0
+                            ]
+                    },
+                    gender:
+                    {
+                        $switch:
+                        {
+                            branches:
+                                [
                                     {
-                                        '$ne': [
-                                            {
-                                                '$arrayElemAt': ['$userbasics_data.dob', 0]
-                                            },
-                                            ''
-                                        ]
-                                    }
-                                ]
-                            },
-                            then: {
-                                '$toInt': {
-                                    '$divide': [
-                                        {
-                                            '$subtract': [
-                                                new Date(),
+                                        case: {
+                                            $eq: [
                                                 {
-                                                    '$toDate': {
-                                                        '$arrayElemAt': ['$userbasics_data.dob', 0]
-                                                    }
-                                                }
+                                                    "$arrayElemAt":
+                                                        [
+                                                            "$userbasics_data.gender", 0
+                                                        ]
+                                                },
+                                                'FEMALE'
                                             ]
                                         },
-                                        31536000000
+                                        then: 'FEMALE',
+
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                {
+                                                    "$arrayElemAt":
+                                                        [
+                                                            "$userbasics_data.gender", 0
+                                                        ]
+                                                },
+                                                ' FEMALE'
+                                            ]
+                                        },
+                                        then: 'FEMALE',
+
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                {
+                                                    "$arrayElemAt":
+                                                        [
+                                                            "$userbasics_data.gender", 0
+                                                        ]
+                                                },
+                                                'Perempuan'
+                                            ]
+                                        },
+                                        then: 'FEMALE',
+
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                {
+                                                    "$arrayElemAt":
+                                                        [
+                                                            "$userbasics_data.gender", 0
+                                                        ]
+                                                },
+                                                'Wanita'
+                                            ]
+                                        },
+                                        then: 'FEMALE',
+
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                {
+                                                    "$arrayElemAt":
+                                                        [
+                                                            "$userbasics_data.gender", 0
+                                                        ]
+                                                },
+                                                'MALE'
+                                            ]
+                                        },
+                                        then: 'MALE',
+
+                                    },
+                                    {
+                                        case: {
+                                            $eq:
+                                                [
+                                                    {
+                                                        "$arrayElemAt":
+                                                            [
+                                                                "$userbasics_data.gender", 0
+                                                            ]
+                                                    },
+                                                    ' MALE'
+                                                ]
+                                        },
+                                        then: 'MALE',
+
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                {
+                                                    "$arrayElemAt":
+                                                        [
+                                                            "$userbasics_data.gender", 0
+                                                        ]
+                                                },
+                                                'Laki-laki'
+                                            ]
+                                        },
+                                        then: 'MALE',
+
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                {
+                                                    "$arrayElemAt":
+                                                        [
+                                                            "$userbasics_data.gender", 0
+                                                        ]
+                                                },
+                                                'Pria'
+                                            ]
+                                        },
+                                        then: 'MALE',
+
+                                    },
+
+                                ],
+                            default: "OTHER",
+                        },
+                    },
+                    dob:
+                    {
+                        $cond:
+                        {
+                            if:
+                            {
+                                $and:
+                                    [
+                                        {
+                                            "$arrayElemAt":
+                                                [
+                                                    "$userbasics_data.dob", 0
+                                                ]
+                                        },
+                                        {
+                                            $ne:
+                                                [
+                                                    {
+                                                        "$arrayElemAt":
+                                                            [
+                                                                "$userbasics_data.dob", 0
+                                                            ]
+                                                    },
+                                                    ""
+                                                ]
+                                        }
                                     ]
+                            },
+                            then:
+                            {
+                                $toInt: {
+                                    $divide: [{
+                                        $subtract: [new Date(), {
+                                            $toDate: {
+                                                "$arrayElemAt":
+                                                    [
+                                                        "$userbasics_data.dob", 0
+                                                    ]
+                                            },
+                                        }]
+                                    }, (365 * 24 * 60 * 60 * 1000)]
                                 }
                             },
                             else: 0
                         }
                     },
-                    statusKyc: { '$arrayElemAt': ['$userbasics_data.statusKyc', 0] },
-                    profilePict: {
-                        mediaBasePath: {
-                            '$ifNull': [{ '$arrayElemAt': ['$userbasics_data.mediaBasePath', 0] }, null]
+                    statusKyc:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$userbasics_data.statusKyc", 0
+                            ]
+                    },
+                    profilePict:
+                    {
+                        mediaBasePath:
+                        {
+                            "$ifNull":
+                                [
+                                    {
+                                        "$concat":
+                                            [
+                                                {
+                                                    $arrayElemAt: ['$userbasics_data.mediaBasePath', 0]
+                                                },
+                                                {
+                                                    $arrayElemAt: ['$userbasics_data.mediaUri', 0]
+                                                }
+                                            ]
+                                    },
+                                    null
+                                ]
                         },
-                        mediaUri: {
-                            '$ifNull': [{ '$arrayElemAt': ['$userbasics_data.mediaUri', 0] }, null]
+                        mediaUri:
+                        {
+                            "$ifNull":
+                                [
+                                    {
+                                        $arrayElemAt: ['$userbasics_data.mediaUri', 0]
+                                    },
+                                    null
+                                ]
                         },
-                        mediaType: {
-                            '$ifNull': [{ '$arrayElemAt': ['$userbasics_data.mediaType', 0] }, null]
+                        mediaType:
+                        {
+                            "$ifNull":
+                                [
+                                    {
+                                        $arrayElemAt: ['$userbasics_data.mediaType', 0]
+                                    },
+                                    null
+                                ]
                         },
-                        mediaEndpoint: {
-                            '$ifNull': [{ '$arrayElemAt': ['$userbasics_data.mediaEndpoint', 0] }, null]
-                        },
-                    }
+                        // mediaEndpoint:
+                        // {
+                        //   $concat: [
+                        //     '/profilepict/',
+                        //     {
+                        //       $replaceOne: {
+                        //         input: {
+                        //           $arrayElemAt: ["$avatar.mediaUri", 0]
+                        //         },
+                        //         find: "_0001.jpeg",
+                        //         replacement: ""
+                        //       }
+                        //     },
+
+                        //   ]
+                        // },
+                        mediaEndpoint:
+                        {
+                            "$ifNull":
+                                [
+                                    {
+                                        $arrayElemAt: ['$userbasics_data.mediaType', 0]
+                                    },
+                                    null
+                                ]
+                        }
+                    },
                 }
             },
         );
@@ -4770,7 +4943,7 @@ export class subChallengeService {
                     username:
                     {
                         "$regex": setusername,
-                        "$option": "i"
+                        "$options": "i"
                     }
                 }
             );
@@ -4838,19 +5011,23 @@ export class subChallengeService {
             );
         }
 
-        var setsorting = null;
+        var setsranking = null;
+        var setscore = null;
         if (sortingranking == true) {
-            setsorting = 1;
+            setsranking = 1;
+            setscore = -1;
         }
         else {
-            setsorting = -1;
+            setsranking = -1;
+            setscore = 1;
         }
 
         userchallengepipeline.push(
             {
                 "$sort":
                 {
-                    ranking: setsorting
+                    score: setscore,
+                    ranking: setsranking
                 }
             }
         );
@@ -4882,7 +5059,10 @@ export class subChallengeService {
             },
         );
 
+        // var setutil = require('util');
+        // console.log(setutil.inspect(pipeline, { depth:null, showHidden:false }));
         // console.log(JSON.stringify(pipeline));
+        //
 
         var query = await this.subChallengeModel.aggregate(pipeline);
         return query;
