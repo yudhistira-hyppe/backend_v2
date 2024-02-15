@@ -9,7 +9,7 @@ import { LogapisService } from 'src/trans/logapis/logapis.service';
 @Controller()
 export class NotificationsController {
   constructor(private readonly NotificationsService: NotificationsService,
-    private readonly logapiSS:LogapisService) { }
+    private readonly logapiSS: LogapisService) { }
 
   @Post()
   async create(@Body() CreateNotificationsDto: CreateNotificationsDto) {
@@ -109,7 +109,7 @@ export class NotificationsController {
     var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
     var timestamps_start = DateTime.substring(0, DateTime.lastIndexOf('.'));
     var fullurl = request.get("Host") + request.originalUrl;
-    
+
     var skip = 0;
     var limit = 0;
     var email = null;
@@ -183,83 +183,152 @@ export class NotificationsController {
     var ascending = null;
 
     var request_json = JSON.parse(JSON.stringify(request.body));
-    if(request_json['templateid'] != null && request_json['templateid'] != undefined)
-    {
-        templateid = request_json['templateid'];
+    if (request_json['templateid'] != null && request_json['templateid'] != undefined) {
+      templateid = request_json['templateid'];
     }
-    else
-    {
+    else {
       throw new BadRequestException("Unabled to proceed, templateid field is required");
     }
 
-    if(request_json['page'] != null && request_json['page'] != undefined)
-    {
+    if (request_json['page'] != null && request_json['page'] != undefined) {
       page = request_json['page'];
     }
-    else
-    {
+    else {
       throw new BadRequestException("Unabled to proceed, page field is required");
     }
 
-    if(request_json['limit'] != null && request_json['limit'] != undefined)
-    {
+    if (request_json['limit'] != null && request_json['limit'] != undefined) {
       limit = request_json['limit'];
     }
-    else
-    {
+    else {
       throw new BadRequestException("Unabled to proceed, limit field is required");
     }
 
-    if(request_json['ascending'] != null && request_json['ascending'] != undefined)
-    {
+    if (request_json['ascending'] != null && request_json['ascending'] != undefined) {
       ascending = request_json['ascending'];
     }
-    else
-    {
+    else {
       throw new BadRequestException("Unabled to proceed, ascending field is required");
     }
 
-    if(request_json['fullname'] != null && request_json['fullname'] != undefined)
-    {
+    if (request_json['fullname'] != null && request_json['fullname'] != undefined) {
       fullname = request_json['fullname'];
     }
 
-    if(request_json['gender'] != null && request_json['gender'] != undefined)
-    {
+    if (request_json['gender'] != null && request_json['gender'] != undefined) {
       gender = request_json['gender'];
     }
 
-    if(request_json['minage'] != null && request_json['minage'] != undefined && request_json['maxage'] != null && request_json['maxage'] != undefined)
-    {
+    if (request_json['minage'] != null && request_json['minage'] != undefined && request_json['maxage'] != null && request_json['maxage'] != undefined) {
       minage = request_json['minage'];
       maxage = request_json['maxage'];
     }
-    
-    if(request_json['location'] != null && request_json['location'] != undefined)
-    {
+
+    if (request_json['location'] != null && request_json['location'] != undefined) {
       location = request_json['location'];
     }
 
-    if(request_json['accounttype'] != null && request_json['accounttype'] != undefined)
-    {
+    if (request_json['accounttype'] != null && request_json['accounttype'] != undefined) {
       accounttype = request_json['accounttype'];
     }
 
-    if(request_json['sendstatus'] != null && request_json['sendstatus'] != undefined)
-    {
+    if (request_json['sendstatus'] != null && request_json['sendstatus'] != undefined) {
       sendstatus = request_json['sendstatus'];
     }
 
     var data = await this.NotificationsService.listingtargetaudiens(templateid, fullname, gender, minage, maxage, location, accounttype, sendstatus, ascending, page, limit);
-    
+
     const messages = {
       "info": ["The process successful"],
     };
-    
+
     return {
-        response_code: 202, 
-        data,
-        messages 
+      response_code: 202,
+      data,
+      messages
+    }
+
+  }
+
+  @Post('api/templates/listaudiens/v2')
+  @UseGuards(JwtAuthGuard)
+  async listingaudiensv2(@Req() request: Request): Promise<any> {
+    var templateid = null;
+    var fullname = null;
+    var gender = null;
+    var minage = null;
+    var maxage = null;
+    var location = null;
+    var accounttype = null;
+    var sendstatus = null;
+    var page = null;
+    var limit = null;
+    var ascending = null;
+
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json['templateid'] != null && request_json['templateid'] != undefined) {
+      templateid = request_json['templateid'];
+    }
+    else {
+      throw new BadRequestException("Unable to proceed, templateid field is required");
+    }
+
+    if (request_json['page'] != null && request_json['page'] != undefined) {
+      page = request_json['page'];
+    }
+    else {
+      throw new BadRequestException("Unable to proceed, page field is required");
+    }
+
+    if (request_json['limit'] != null && request_json['limit'] != undefined) {
+      limit = request_json['limit'];
+    }
+    else {
+      throw new BadRequestException("Unable to proceed, limit field is required");
+    }
+
+    if (request_json['ascending'] != null && request_json['ascending'] != undefined) {
+      ascending = request_json['ascending'];
+    }
+    else {
+      throw new BadRequestException("Unable to proceed, ascending field is required");
+    }
+
+    if (request_json['fullname'] != null && request_json['fullname'] != undefined) {
+      fullname = request_json['fullname'];
+    }
+
+    if (request_json['gender'] != null && request_json['gender'] != undefined) {
+      gender = request_json['gender'];
+    }
+
+    if (request_json['minage'] != null && request_json['minage'] != undefined && request_json['maxage'] != null && request_json['maxage'] != undefined) {
+      minage = request_json['minage'];
+      maxage = request_json['maxage'];
+    }
+
+    if (request_json['location'] != null && request_json['location'] != undefined) {
+      location = request_json['location'];
+    }
+
+    if (request_json['accounttype'] != null && request_json['accounttype'] != undefined) {
+      accounttype = request_json['accounttype'];
+    }
+
+    if (request_json['sendstatus'] != null && request_json['sendstatus'] != undefined) {
+      sendstatus = request_json['sendstatus'];
+    }
+
+    var data = await this.NotificationsService.listingtargetaudiensv2(templateid, fullname, gender, minage, maxage, location, accounttype, sendstatus, ascending, page, limit);
+
+    const messages = {
+      "info": ["The process was successful"],
+    };
+
+    return {
+      response_code: 202,
+      data,
+      messages
     }
 
   }

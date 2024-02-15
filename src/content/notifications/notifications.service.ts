@@ -1317,4 +1317,431 @@ export class NotificationsService {
 
     return query;
   }
+
+  async listingtargetaudiensv2(id: string, fullname: string, jeniskelamin: any[], startage: number, endage: number, lokasi: any[], jenisakun: any[], statuskirim: any[], ascending: boolean, page: number, limit: number) {
+    var mongo = require('mongoose');
+    var konvertid = mongo.Types.ObjectId(id);
+
+    var pipeline = [];
+    pipeline.push(
+      {
+        "$match":
+        {
+          "$expr":
+          {
+            "$eq":
+              [
+                "$templateID", konvertid
+              ]
+          }
+        },
+      },
+      {
+        "$project":
+        {
+          _id: 1,
+          email: 1,
+          createdAt: 1,
+          status:
+          {
+            "$filter":
+            {
+              input: "$statusDevices",
+              as: "list",
+              cond:
+              {
+                "$eq":
+                  [
+                    "$$list.status",
+                    "SEND"
+                  ]
+              },
+              limit: 1
+            }
+          },
+        }
+      },
+      {
+        "$project":
+        {
+          _id: 1,
+          email: 1,
+          createdAt: 1,
+          status:
+          {
+            "$cond":
+            {
+              if:
+              {
+                "$eq":
+                  [
+                    {
+                      "$size": "$status"
+                    },
+                    0
+                  ]
+              },
+              then: "NOTSEND",
+              else: "SEND"
+            }
+          },
+        }
+      },
+      {
+        "$lookup":
+        {
+          from: "newUserBasics",
+          as: "basic_data",
+          let:
+          {
+            email_fk: "$email"
+          },
+          pipeline:
+            [
+              {
+                "$match":
+                {
+                  "$expr":
+                  {
+                    "$eq":
+                      [
+                        "$email", "$$email_fk"
+                      ]
+                  }
+                }
+              },
+              {
+                "$project":
+                {
+                  _id: 1,
+                  fullName: 1,
+                  email: 1,
+                  cities: "$cities.$id",
+                  state: "$states.$id",
+                  jenis:
+                  {
+                    $cond:
+                    {
+                      if:
+                      {
+                        "$eq":
+                          [
+                            "$isIdVerified",
+                            true
+                          ]
+                      },
+                      then: "PREMIUM",
+                      else: "BASIC"
+                    },
+                  },
+                  age:
+                  {
+                    "$toInt":
+                    {
+                      $cond:
+                      {
+                        if:
+                        {
+                          $and: ['$dob', {
+                            $ne: ["$dob", ""]
+                          }]
+                        },
+                        then:
+                        {
+                          $toInt: {
+                            $divide: [{
+                              $subtract: [new Date(), {
+                                $toDate: "$dob"
+                              }]
+                            }, (365 * 24 * 60 * 60 * 1000)]
+                          }
+                        },
+                        else: 0
+                      }
+                    }
+                  },
+                  gender:
+                  {
+                    "$switch":
+                    {
+                      branches:
+                        [
+                          {
+                            case: {
+                              $eq: ['$gender', 'FEMALE']
+                            },
+                            then: 'P',
+
+                          },
+                          {
+                            case: {
+                              $eq: ['$gender', ' FEMALE']
+                            },
+                            then: 'P',
+
+                          },
+                          {
+                            case: {
+                              $eq: ['$gender', 'Perempuan']
+                            },
+                            then: 'P',
+
+                          },
+                          {
+                            case: {
+                              $eq: ['$gender', 'Wanita']
+                            },
+                            then: 'P',
+
+                          },
+                          {
+                            case: {
+                              $eq: ['$gender', 'MALE']
+                            },
+                            then: 'L',
+
+                          },
+                          {
+                            case: {
+                              $eq: ['$gender', ' MALE']
+                            },
+                            then: 'L',
+
+                          },
+                          {
+                            case: {
+                              $eq: ['$gender', 'Laki-laki']
+                            },
+                            then: 'L',
+
+                          },
+                          {
+                            case: {
+                              $eq: ['$gender', 'Pria']
+                            },
+                            then: 'L',
+
+                          },
+                        ],
+                      default: "O",
+                    }
+                  },
+                },
+              },
+              {
+                $lookup:
+                {
+                  from: 'areas',
+                  localField: 'state',
+                  foreignField: '_id',
+                  as: 'state_data',
+                }
+              },
+              {
+                $lookup:
+                {
+                  from: 'cities',
+                  localField: 'cities',
+                  foreignField: '_id',
+                  as: 'city_data',
+                }
+              },
+              {
+                "$project":
+                {
+                  _id: 0,
+                  fullName: 1,
+                  email: 1,
+                  username: 1,
+                  avatar:
+                  {
+                    mediaBasePath: "$mediaBasePath",
+                    mediaUri: "$mediaUri",
+                    mediaType: "$mediaType",
+                    mediaEndpoint: "$mediaEndpoint",
+                  },
+                  jenis: 1,
+                  age: 1,
+                  gender: 1,
+                  state:
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$state_data.stateName", 0
+                            ]
+                        },
+                        null
+                      ]
+                  },
+                  city:
+                  {
+                    "$ifNull":
+                      [
+                        {
+                          "$arrayElemAt":
+                            [
+                              "$city_data.cityName", 0
+                            ]
+                        },
+                        null
+                      ]
+                  },
+                }
+              }
+            ]
+        }
+      },
+      {
+        "$unwind":
+        {
+          path: "$basic_data",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        "$project":
+        {
+          _id: 1,
+          email: 1,
+          status: 1,
+          createdAt: 1,
+          fullName: "$basic_data.fullName",
+          username: "$basic_data.username",
+          avatar: "$basic_data.avatar",
+          jenis: "$basic_data.jenis",
+          age: "$basic_data.age",
+          gender: "$basic_data.gender",
+          state: "$basic_data.state",
+          city: "$basic_data.city"
+        }
+      }
+    );
+
+    var firstmatch = [];
+    if (fullname != null) {
+      firstmatch.push(
+        {
+          "fullName":
+          {
+            "$regex": fullname,
+            "$options": "i"
+          }
+        }
+      );
+    }
+
+    if (jeniskelamin != null) {
+      firstmatch.push(
+        {
+          "gender":
+          {
+            "$in": jeniskelamin
+          }
+        }
+      );
+    }
+
+    if (startage != null) {
+      firstmatch.push(
+        {
+          "age":
+          {
+            "$gte": startage
+          }
+        },
+        {
+          "age":
+          {
+            "$lte": endage
+          }
+        }
+      )
+    }
+
+    if (lokasi != null) {
+      firstmatch.push(
+        {
+          "state":
+          {
+            "$in": lokasi
+          }
+        }
+      );
+    }
+
+    if (jenisakun != null) {
+      firstmatch.push(
+        {
+          "jenis":
+          {
+            "$in": jenisakun
+          }
+        }
+      );
+    }
+
+    if (statuskirim != null) {
+      firstmatch.push(
+        {
+          "status":
+          {
+            "$in": statuskirim
+          }
+        }
+      );
+    }
+
+    if (firstmatch.length != 0) {
+      pipeline.push(
+        {
+          "$match":
+          {
+            "$and": firstmatch
+          }
+        }
+      );
+    }
+
+    if (ascending != null) {
+      var setsorting = null;
+      if (ascending == true) {
+        setsorting = 1;
+      }
+      else {
+        setsorting = -1;
+      }
+
+      pipeline.push(
+        {
+          "$sort":
+          {
+            "fullName": setsorting
+          }
+        }
+      );
+    }
+
+    if (page > 0) {
+      pipeline.push(
+        {
+          "$skip": (page * limit)
+        }
+      );
+    }
+
+    if (limit > 0) {
+      pipeline.push(
+        {
+          "$limit": limit
+        }
+      );
+    }
+
+    var query = await this.NotificationsModel.aggregate(pipeline);
+
+    return query;
+  }
 }
