@@ -1416,6 +1416,7 @@ export class NotificationsService {
                   _id: 1,
                   fullName: 1,
                   email: 1,
+                  username: 1,
                   cities: "$cities.$id",
                   state: "$states.$id",
                   jenis:
@@ -1526,6 +1527,10 @@ export class NotificationsService {
                       default: "O",
                     }
                   },
+                  mediaBasePath: 1,
+                  mediaUri: 1,
+                  mediaType: 1,
+                  mediaEndpoint: 1,
                 },
               },
               {
