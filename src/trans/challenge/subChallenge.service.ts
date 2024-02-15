@@ -4925,7 +4925,7 @@ export class subChallengeService {
                             "$ifNull":
                                 [
                                     {
-                                        $arrayElemAt: ['$userbasics_data.mediaType', 0]
+                                        $arrayElemAt: ['$userbasics_data.mediaEndpoint', 0]
                                     },
                                     null
                                 ]

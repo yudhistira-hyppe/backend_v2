@@ -6475,6 +6475,10 @@ export class UserbasicnewService {
         if (getdata != null) {
             try {
                 listpertemanan = (type == "FOLLOWING" ? getdata.following : getdata.follower);
+                if(listpertemanan == null)
+                {
+                    listpertemanan = [];
+                }
             }
             catch (e) {
                 listpertemanan = [];
@@ -6504,6 +6508,10 @@ export class UserbasicnewService {
         if (getdata != null) {
             try {
                 listpertemanan = (type == "FOLLOWING" ? getdata.following : getdata.follower);
+                if(listpertemanan == null)
+                {
+                    listpertemanan = [];
+                }
             }
             catch (e) {
                 listpertemanan = [];
@@ -6531,20 +6539,12 @@ export class UserbasicnewService {
         var listarray = null;
         try {
             //bermasalah disini
-            // if(convertdata.friend != null && convertdata.friend != undefined)
-            // {
-            //     listarray = convertdata.friend;
-            // }
-            // else
-            // {
-            //     listarray = [];
-            // }
-            for (const key in email_source) {
-                if (key == "friend") {
-                    listarray = email_source[key];
-                }
+            if(convertdata.friend != null && convertdata.friend != undefined && convertdata.friend.length != 0)
+            {
+                listarray = convertdata.friend;
             }
-            if (listarray == null || listarray == undefined) {
+            else
+            {
                 listarray = [];
             }
         }
@@ -6555,19 +6555,13 @@ export class UserbasicnewService {
         var checkfriendexist = true;
         if (listarray.length == 0) {
             checkfriendexist = false;
-            listarray = [
-                {
-                    "email": email_target.email
-                }
-            ];
+            listarray = [email_target.email];
         }
         else {
-            var checkdata = listarray.find(getdata => getdata.email === email_target.email);
+            var checkdata = listarray.find(getdata => getdata === email_target.email);
             if (checkdata == undefined) {
                 checkfriendexist = false;
-                listarray.push({
-                    "email": email_target.email
-                });
+                listarray.push(email_target.email);
             }
             else {
                 checkfriendexist = true;
@@ -6582,17 +6576,11 @@ export class UserbasicnewService {
                         "_id": new mongo.Types.ObjectId(email_source._id.toString())
                     },
                     {
-                        "$push":
+                        "$set":
                         {
-                            "friend": email_target.email.toString()
+                            "friend":listarray
                         }
                     },
-                    // {
-                    //     "$set":
-                    //     {
-                    //         "friend":listarray
-                    //     }
-                    // },
                     function (err, docs) {
                         if (err) {
                             console.log(err);
@@ -6611,7 +6599,7 @@ export class UserbasicnewService {
     async deleteFriendList(email_target: Userbasicnew, email_source: Userbasicnew) {
         var convertdata = JSON.parse(JSON.stringify(email_source));
         // var getdata = await this.UserbasicnewModel.findOne({ email:email_source }).exec();
-        if (convertdata.friend == null || convertdata.friend == undefined || convertdata.friend.length == 0) {
+        if (convertdata.friend == null || convertdata.friend == undefined) {
             return false;
         }
         else {

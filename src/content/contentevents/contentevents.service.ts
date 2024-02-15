@@ -6251,6 +6251,49 @@ export class ContenteventsService {
     return query;
   }
 
+  async checkFriendListdata2(email1: string, email2: string) {
+    var query = await this.ContenteventsModel.aggregate([
+      {
+        "$match":
+        {
+          "$or":
+          [
+            {
+              "$and":
+              [
+                {
+                  "eventType": "FOLLOWING"
+                },
+                {
+                  "email": email1
+                },
+                {
+                  "senderParty": email2
+                }
+              ]
+            },
+            {
+              "$and":
+              [
+                {
+                  "eventType": "FOLLOWING"
+                },
+                {
+                  "email": email2
+                },
+                {
+                  "senderParty": email1
+                }
+              ]
+            },
+          ]
+        }
+      }
+    ]);
+
+    return query;
+  }
+
   async updatesalelike(postid: string) {
     let data = await this.ContenteventsModel.updateMany({ "postID": postid, "eventType": "LIKE", "event": "DONE", },
       {
