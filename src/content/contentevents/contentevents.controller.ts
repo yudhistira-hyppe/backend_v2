@@ -3563,7 +3563,7 @@ export class ContenteventsController {
     var data = await this.contenteventsService.checkFriendListdata(email1.email.toString(), email2.email.toString());
     var checkexist = await this.utilsService.ceckData(data);
 
-    console.log(data);
+    // console.log(data);
     // console.log(checkexist);
 
     // if (checklist1 == true && checklist2 == true) {
