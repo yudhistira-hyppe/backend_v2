@@ -19,6 +19,7 @@ import { AdsPriceCreditsService } from '../adspricecredits/adspricecredits.servi
 import { AdsPriceCredits } from '../adspricecredits/schema/adspricecredits.schema';
 import { AdsRewardsService } from '../adsrewards/adsrewards.service';
 import { AdsRewards } from '../adsrewards/schema/adsrewards.schema';
+import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 
 @Controller('api/adsv2/setting')
 export class AdsSettingController {
@@ -27,13 +28,14 @@ export class AdsSettingController {
         private readonly utilsService: UtilsService,
         private readonly adsNotificationService: AdsNotificationService,
         private readonly adsTypeService: AdsTypeService,
-        private readonly userbasicsService: UserbasicsService,
+        //private readonly userbasicsService: UserbasicsService,
         private readonly adslogsService: AdslogsService,
         private readonly configService: ConfigService,
         private readonly adsObjectivitasService: AdsObjectivitasService,
         private readonly logapiSS: LogapisService,
         private readonly adsPriceCreditsService: AdsPriceCreditsService,
         private readonly adsRewardsService: AdsRewardsService,
+        private readonly basic2SS: UserbasicnewService,
         private readonly errorHandler: ErrorHandler) { }
 
     @UseGuards(JwtAuthGuard)
@@ -593,7 +595,7 @@ export class AdsSettingController {
         }
 
         //--------------------GET USERID--------------------
-        const ubasic = await this.userbasicsService.findOne(headers['x-auth-user']);
+        const ubasic = await this.basic2SS.findBymail(headers['x-auth-user']);
         //ADS ID OBJECTIVITAS
         var _id_Objectivitas_Action = this.configService.get("ID_ADS_OBJECTTIVITAS_ACTION");
         var _remark_Objectivitas_Action_Similirity_Min = this.configService.get("REMARK_ADS_OBJECTTIVITAS_ACTION_SIMILARITY_MIN");

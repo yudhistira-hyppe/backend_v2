@@ -14,15 +14,17 @@ import { AdsObjectivitasModule } from '../adsobjectivitas/adsobjectivitas.module
 import { LogapisModule } from 'src/trans/logapis/logapis.module';
 import { AdsPriceCreditsModule } from '../adspricecredits/adspricecredits.module';
 import { AdsRewardsModule } from '../adsrewards/adsrewards.module';
+import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
 
 @Module({
     imports: [
+        UserbasicnewModule,
         AdsRewardsModule,
         LogapisModule,
         AdsPriceCreditsModule,
         AdsObjectivitasModule,
         AdslogsModule,
-        UserbasicsModule,
+        //UserbasicsModule,
         TemplatesRepoModule,
         AdsTypesModule,
         UtilsModule,
