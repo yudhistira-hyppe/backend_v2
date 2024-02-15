@@ -32,7 +32,7 @@ export class MediamusicController {
         'Unabled to proceed email header dan token not match',
       );
     }
-    var profile = await this.userbasicnewService.findOne(headers['x-auth-user']);
+    var profile = await this.userbasicnewService.findBymail(headers['x-auth-user']);
     if (!(await this.utilsService.ceckData(profile))) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed user not found',
@@ -114,7 +114,7 @@ export class MediamusicController {
         'Unabled to proceed email header dan token not match',
       );
     }
-    var profile = await this.userbasicnewService.findOne(headers['x-auth-user']);
+    var profile = await this.userbasicnewService.findBymail(headers['x-auth-user']);
     if (!(await this.utilsService.ceckData(profile))) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed user not found',
