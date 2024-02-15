@@ -9545,110 +9545,147 @@ export class AuthService {
 
           }
 
+          var ceck_data_FOLLOWER = await this.contenteventsService.ceckData(user_email_parent, "FOLLOWER", "ACCEPT", user_email_children, "", "");
+          var ceck_data_FOLLOWING = await this.contenteventsService.ceckData(user_email_children, "FOLLOWING", "ACCEPT", "", user_email_parent, "");
+          if (!(await this.utilsService.ceckData(ceck_data_FOLLOWER)) && !(await this.utilsService.ceckData(ceck_data_FOLLOWING))) 
+          {
+            var _id_1 = (await this.utilsService.generateId());
+            var _id_2 = (await this.utilsService.generateId());
+            var _id_3 = (await this.utilsService.generateId());
+            var _id_4 = (await this.utilsService.generateId());
 
-          var _id_1 = (await this.utilsService.generateId());
-          var _id_2 = (await this.utilsService.generateId());
-          var _id_3 = (await this.utilsService.generateId());
-          var _id_4 = (await this.utilsService.generateId());
+            // var CreateContenteventsDto1 = new CreateContenteventsDto();
+            // CreateContenteventsDto1._id = _id_1
+            // CreateContenteventsDto1.contentEventID = (await this.utilsService.generateId())
+            // CreateContenteventsDto1.email = LoginRequest_.referral
+            // CreateContenteventsDto1.eventType = "FOLLOWER"
+            // CreateContenteventsDto1.active = true
+            // CreateContenteventsDto1.event = "REQUEST"
+            // CreateContenteventsDto1.createdAt = current_date
+            // CreateContenteventsDto1.updatedAt = current_date
+            // CreateContenteventsDto1.sequenceNumber = 0
+            // CreateContenteventsDto1.flowIsDone = true
+            // CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
+            // CreateContenteventsDto1.senderParty = LoginRequest_.email
+            // CreateContenteventsDto1.transitions = [{
+            //   $ref: 'contentevents',
+            //   $id: Object(_id_2),
+            //   $db: 'hyppe_trans_db',
+            // }]
 
-          // var CreateContenteventsDto1 = new CreateContenteventsDto();
-          // CreateContenteventsDto1._id = _id_1
-          // CreateContenteventsDto1.contentEventID = (await this.utilsService.generateId())
-          // CreateContenteventsDto1.email = LoginRequest_.referral
-          // CreateContenteventsDto1.eventType = "FOLLOWER"
-          // CreateContenteventsDto1.active = true
-          // CreateContenteventsDto1.event = "REQUEST"
-          // CreateContenteventsDto1.createdAt = current_date
-          // CreateContenteventsDto1.updatedAt = current_date
-          // CreateContenteventsDto1.sequenceNumber = 0
-          // CreateContenteventsDto1.flowIsDone = true
-          // CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
-          // CreateContenteventsDto1.senderParty = LoginRequest_.email
-          // CreateContenteventsDto1.transitions = [{
-          //   $ref: 'contentevents',
-          //   $id: Object(_id_2),
-          //   $db: 'hyppe_trans_db',
-          // }]
+            var CreateContenteventsDto2 = new CreateContenteventsDto();
+            CreateContenteventsDto2._id = _id_2
+            CreateContenteventsDto2.contentEventID = (await this.utilsService.generateId())
+            CreateContenteventsDto2.email = user_email_parent
+            CreateContenteventsDto2.eventType = "FOLLOWER"
+            CreateContenteventsDto2.active = true
+            CreateContenteventsDto2.event = "ACCEPT"
+            CreateContenteventsDto2.createdAt = current_date
+            CreateContenteventsDto2.updatedAt = current_date
+            CreateContenteventsDto2.sequenceNumber = 1
+            CreateContenteventsDto2.flowIsDone = true
+            CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+            CreateContenteventsDto2.receiverParty = user_email_children
+            CreateContenteventsDto2.parentContentEventID = _id_1
 
-          var CreateContenteventsDto2 = new CreateContenteventsDto();
-          CreateContenteventsDto2._id = _id_2
-          CreateContenteventsDto2.contentEventID = (await this.utilsService.generateId())
-          CreateContenteventsDto2.email = user_email_parent
-          CreateContenteventsDto2.eventType = "FOLLOWER"
-          CreateContenteventsDto2.active = true
-          CreateContenteventsDto2.event = "ACCEPT"
-          CreateContenteventsDto2.createdAt = current_date
-          CreateContenteventsDto2.updatedAt = current_date
-          CreateContenteventsDto2.sequenceNumber = 1
-          CreateContenteventsDto2.flowIsDone = true
-          CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
-          CreateContenteventsDto2.receiverParty = user_email_children
-          CreateContenteventsDto2.parentContentEventID = _id_1
+            // var CreateContenteventsDto3 = new CreateContenteventsDto();
+            // CreateContenteventsDto3._id = _id_3
+            // CreateContenteventsDto3.contentEventID = (await this.utilsService.generateId())
+            // CreateContenteventsDto3.email = LoginRequest_.email
+            // CreateContenteventsDto3.eventType = "FOLLOWING"
+            // CreateContenteventsDto3.active = true
+            // CreateContenteventsDto3.event = "INITIAL"
+            // CreateContenteventsDto3.createdAt = current_date
+            // CreateContenteventsDto3.updatedAt = current_date
+            // CreateContenteventsDto3.sequenceNumber = 0
+            // CreateContenteventsDto3.flowIsDone = true
+            // CreateContenteventsDto3._class = "io.melody.hyppe.content.domain.ContentEvent"
+            // CreateContenteventsDto3.receiverParty = LoginRequest_.referral
+            // CreateContenteventsDto3.transitions = [{
+            //   $ref: 'contentevents',
+            //   $id: Object(_id_4),
+            //   $db: 'hyppe_trans_db',
+            // }]
 
-          // var CreateContenteventsDto3 = new CreateContenteventsDto();
-          // CreateContenteventsDto3._id = _id_3
-          // CreateContenteventsDto3.contentEventID = (await this.utilsService.generateId())
-          // CreateContenteventsDto3.email = LoginRequest_.email
-          // CreateContenteventsDto3.eventType = "FOLLOWING"
-          // CreateContenteventsDto3.active = true
-          // CreateContenteventsDto3.event = "INITIAL"
-          // CreateContenteventsDto3.createdAt = current_date
-          // CreateContenteventsDto3.updatedAt = current_date
-          // CreateContenteventsDto3.sequenceNumber = 0
-          // CreateContenteventsDto3.flowIsDone = true
-          // CreateContenteventsDto3._class = "io.melody.hyppe.content.domain.ContentEvent"
-          // CreateContenteventsDto3.receiverParty = LoginRequest_.referral
-          // CreateContenteventsDto3.transitions = [{
-          //   $ref: 'contentevents',
-          //   $id: Object(_id_4),
-          //   $db: 'hyppe_trans_db',
-          // }]
+            var CreateContenteventsDto4 = new CreateContenteventsDto();
+            CreateContenteventsDto4._id = _id_4
+            CreateContenteventsDto4.contentEventID = (await this.utilsService.generateId())
+            CreateContenteventsDto4.email = user_email_children
+            CreateContenteventsDto4.eventType = "FOLLOWING"
+            CreateContenteventsDto4.active = true
+            CreateContenteventsDto4.event = "ACCEPT"
+            CreateContenteventsDto4.createdAt = current_date
+            CreateContenteventsDto4.updatedAt = current_date
+            CreateContenteventsDto4.sequenceNumber = 1
+            CreateContenteventsDto4.flowIsDone = true
+            CreateContenteventsDto4._class = "io.melody.hyppe.content.domain.ContentEvent"
+            CreateContenteventsDto4.senderParty = user_email_parent
+            CreateContenteventsDto4.parentContentEventID = _id_3
 
-          var CreateContenteventsDto4 = new CreateContenteventsDto();
-          CreateContenteventsDto4._id = _id_4
-          CreateContenteventsDto4.contentEventID = (await this.utilsService.generateId())
-          CreateContenteventsDto4.email = user_email_children
-          CreateContenteventsDto4.eventType = "FOLLOWING"
-          CreateContenteventsDto4.active = true
-          CreateContenteventsDto4.event = "ACCEPT"
-          CreateContenteventsDto4.createdAt = current_date
-          CreateContenteventsDto4.updatedAt = current_date
-          CreateContenteventsDto4.sequenceNumber = 1
-          CreateContenteventsDto4.flowIsDone = true
-          CreateContenteventsDto4._class = "io.melody.hyppe.content.domain.ContentEvent"
-          CreateContenteventsDto4.senderParty = user_email_parent
-          CreateContenteventsDto4.parentContentEventID = _id_3
+            //await this.contenteventsService.create(CreateContenteventsDto1);
+            await this.contenteventsService.create(CreateContenteventsDto2);
+            //await this.contenteventsService.create(CreateContenteventsDto3);
+            await this.contenteventsService.create(CreateContenteventsDto4);
+            await this.insightsService.updateFollower(user_email_parent);
+            await this.insightsService.updateFollowing(user_email_children);
+            await this.basic2SS.updatefollowSystem(user_email_parent, user_email_children, "FOLLOWING");
+            await this.basic2SS.updatefollowSystem(user_email_children, user_email_parent, "FOLLOWER");
 
-          //await this.contenteventsService.create(CreateContenteventsDto1);
-          await this.contenteventsService.create(CreateContenteventsDto2);
-          //await this.contenteventsService.create(CreateContenteventsDto3);
-          await this.contenteventsService.create(CreateContenteventsDto4);
-          await this.insightsService.updateFollower(user_email_parent);
-          await this.insightsService.updateFollowing(user_email_children);
-          await this.basic2SS.updatefollowSystem(user_email_parent, user_email_children, "FOLLOWING");
-          await this.basic2SS.updatefollowSystem(user_email_children, user_email_parent, "FOLLOWER");
-
-          if (useLanguage == "id") {
-            errorMessages = "Selamat kode referral berhasil digunakan";
-          } else if (useLanguage == "en") {
-            errorMessages = "Congratulation referral applied successfully";
-          } else {
-            errorMessages = "Selamat kode referral berhasil digunakan";
-          }
-
-          var fullurl = req.get("Host") + req.originalUrl;
-          var timestamps_end = await this.utilsService.getDateTimeString();
-          var reqbody = JSON.parse(JSON.stringify(req.body));
-          this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
-
-          return {
-            "response_code": 202,
-            "messages": {
-              "info": [
-                errorMessages
-              ]
+            if (useLanguage == "id") {
+              errorMessages = "Selamat kode referral berhasil digunakan";
+            } else if (useLanguage == "en") {
+              errorMessages = "Congratulation referral applied successfully";
+            } else {
+              errorMessages = "Selamat kode referral berhasil digunakan";
             }
-          };
+
+            var fullurl = req.get("Host") + req.originalUrl;
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            var reqbody = JSON.parse(JSON.stringify(req.body));
+            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+
+            return {
+              "response_code": 202,
+              "messages": {
+                "info": [
+                  errorMessages
+                ]
+              }
+            };
+          }
+          else
+          {
+            if (!ceck_data_FOLLOWER.active && !ceck_data_FOLLOWING.active) {
+              await this.contenteventsService.updateFollowing(user_email_children, "FOLLOWING", user_email_parent);
+              await this.contenteventsService.updateFollower(user_email_parent, "FOLLOWER", user_email_children);
+              await this.insightsService.updateFollower(user_email_parent);
+              await this.insightsService.updateFollowing(user_email_children);
+              await this.basic2SS.updatefollowSystem(user_email_children, user_email_parent, "FOLLOWER");
+              await this.basic2SS.updatefollowSystem(user_email_parent, user_email_children, "FOLLOWING");
+
+              if (useLanguage == "id") {
+                errorMessages = "Selamat kode referral berhasil digunakan";
+              } else if (useLanguage == "en") {
+                errorMessages = "Congratulation referral applied successfully";
+              } else {
+                errorMessages = "Selamat kode referral berhasil digunakan";
+              }
+  
+              var fullurl = req.get("Host") + req.originalUrl;
+              var timestamps_end = await this.utilsService.getDateTimeString();
+              var reqbody = JSON.parse(JSON.stringify(req.body));
+              this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
+  
+              return {
+                "response_code": 202,
+                "messages": {
+                  "info": [
+                    errorMessages
+                  ]
+                }
+              };
+            }
+          }
         } else {
           if (useLanguage == "id") {
             errorMessages = "Referral Tidak Berhasil, Perangkat kamu telah terdaftar, harap gunakan perangkat lainnya";
