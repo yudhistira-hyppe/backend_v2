@@ -657,7 +657,15 @@ export class UtilsService {
         //     data: data_send,
         //   }
         // }
-        await admin.messaging().sendToDevice(datadevice[i].deviceID, notification, option);
+        try
+        {
+          await admin.messaging().sendToDevice(datadevice[i].deviceID, notification, option);
+        }
+        catch(e)
+        {
+          console.log('-------------------------------------------------- FCM ERROR --------------------------------------------------');  
+          console.log(e);  
+        }
         device_user.push(datadevice[i].deviceID)
       }
     }
