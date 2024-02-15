@@ -7,13 +7,15 @@ import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import mongoose from 'mongoose';
+import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
 
 @Controller()
 export class MediamusicController {
   constructor(
     private readonly mediamusicService: MediamusicService,
     private readonly utilsService: UtilsService,
-    private readonly userbasicsService: UserbasicsService,
+    //private readonly userbasicsService: UserbasicsService,
+    private readonly userbasicnewService: UserbasicnewService,
     private readonly errorHandler: ErrorHandler) { }
 
   @UseGuards(JwtAuthGuard)
@@ -30,7 +32,7 @@ export class MediamusicController {
         'Unabled to proceed email header dan token not match',
       );
     }
-    var profile = await this.userbasicsService.findOne(headers['x-auth-user']);
+    var profile = await this.userbasicnewService.findOne(headers['x-auth-user']);
     if (!(await this.utilsService.ceckData(profile))) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed user not found',
@@ -112,7 +114,7 @@ export class MediamusicController {
         'Unabled to proceed email header dan token not match',
       );
     }
-    var profile = await this.userbasicsService.findOne(headers['x-auth-user']);
+    var profile = await this.userbasicnewService.findOne(headers['x-auth-user']);
     if (!(await this.utilsService.ceckData(profile))) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed user not found',
