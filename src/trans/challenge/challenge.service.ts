@@ -5536,7 +5536,8 @@ export class ChallengeService {
 
                   if (dt > endDatetime) {
                     try {
-                      datapemenang = await this.subchallenge.getpemenang2(challengeID.toString(), subChallengeID.toString());
+                      // datapemenang = await this.subchallenge.getpemenang2(challengeID.toString(), subChallengeID.toString());
+                      datapemenang = await this.UserchallengesService.getpemenang2(challengeID.toString(), subChallengeID.toString());
                     } catch (e) {
                       datapemenang = null;
                     }
