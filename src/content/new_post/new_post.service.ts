@@ -46027,6 +46027,56 @@ export class NewPostService {
         }
       },
       {
+        "$lookup":
+        {
+          from:"disquslogs",
+          let:
+          {
+            id_fk:"$postID"
+          },
+          as:"totalcomment",
+          pipeline:
+          [
+            {
+              "$match":
+              {
+                "$and":
+                [
+                  {
+                    "$expr":
+                    {
+                      "$eq":
+                      [
+                        "$$id_fk", "$postID"
+                      ]
+                    }
+                  },
+                  {
+                    "parentID":
+                    {
+                      "$exists":false
+                    }
+                  },
+                  {
+                    "active":true
+                  }
+                ]
+              }
+            },
+            {
+              "$group":
+              {
+                _id:null,
+                total:
+                {
+                  "$sum":1
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
         "$set":
         {
           "cleanUri":
@@ -46102,7 +46152,18 @@ export class NewPostService {
           "category": 1,
           "email": 1,
           "active": 1,
-          "comments":"$comment",
+          "comments":
+          {
+            "$ifNull":
+            [
+              {
+                "$arrayElemAt":
+                [
+                  "$totalcomment.total",0
+                ]
+              }, 0
+            ]
+          },
           "createdAt": 1,
           "updatedAt": 1,
           "description": 1,
