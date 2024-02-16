@@ -45195,7 +45195,17 @@ export class NewPostService {
           "setinsight":
           {
               "likes": "$likes",
-              "views": "$views",
+              "views": {
+                $cond: {
+                  if: {
+                    $eq: ["$userView", []]
+                  },
+                  then: 0,
+                  else: {
+                    $size: "$userView"
+                  }
+                }
+              },
               "shares": "$shares",
               "comments": "$comments",
           },
