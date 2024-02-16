@@ -26370,7 +26370,16 @@ export class PostsReadService {
             "insight":
             {
               "likes": "$likes",
-              "views": "$views",
+              "views":
+              {
+                "$ifNull":
+                [
+                  {
+                    "$size":"$userView"
+                  },
+                  0
+                ]
+              },
               "shares": "$shares",
               "comments": "$comments",
 
@@ -27435,7 +27444,16 @@ export class PostsReadService {
             "insight":
             {
               "likes": "$likes",
-              "views": "$views",
+              "views":
+              {
+                "$ifNull":
+                [
+                  {
+                    "$size":"$userView"
+                  },
+                  0
+                ]
+              },
               "shares": "$shares",
               "comments": "$comments",
 
@@ -28499,7 +28517,16 @@ export class PostsReadService {
             "insight":
             {
               "likes": "$likes",
-              "views": "$views",
+              "views":
+              {
+                "$ifNull":
+                [
+                  {
+                    "$size":"$userView"
+                  },
+                  0
+                ]
+              },
               "shares": "$shares",
               "comments": "$comments",
 
@@ -28772,7 +28799,7 @@ export class PostsReadService {
       );
     }
 
-    console.log(JSON.stringify(pipeline));
+    // console.log(JSON.stringify(pipeline));
     var query = await this.PostsReadModel.aggregate(pipeline);
     return query;
   }

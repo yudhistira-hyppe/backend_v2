@@ -1390,7 +1390,7 @@ export class PostsReadController {
                         tempapsaraThumbId.push(data[i].apsaraThumbId);
                     }
                 }
-                console.log("");
+                // console.log("");
                 tempapsaraId_result = await this.postContentService.getImageApsara(tempapsaraId);
                 tempapsaraThumbId_result = await this.postContentService.getImageApsara(tempapsaraThumbId);
 
