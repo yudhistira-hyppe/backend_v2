@@ -7600,22 +7600,65 @@ export class UserbasicnewService {
     }
 
     async updateTutor(email: string, key: string, value: boolean) {
-        console.log(email)
-        console.log(key)
-        console.log(value)
-        this.UserbasicnewModel.updateOne({ 'tutor.key': key, email: email }, {
-            '$set': {
-                'tutor.$.status': value
+        var tutor = [
+            {
+                key: "protection",
+                status: false
+            },
+            {
+                key: "sell",
+                status: false
+            },
+            {
+                key: "interest",
+                status: false
+            },
+            {
+                key: "ownership",
+                status: false
+            },
+            {
+                key: "boost",
+                status: false
+            },
+            {
+                key: "transaction",
+                status: false
+            },
+            {
+                key: "idRefferal",
+                status: false
+            },
+            {
+                key: "shareRefferal",
+                status: false
+            },
+            {
+                key: "codeRefferal",
+                status: false
             }
-        },
-            function (err, docs) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log(docs);
+        ];
+        let getUser = await this.findBymail(email);
+        if (getUser.tutor!=undefined){
+            this.UserbasicnewModel.updateOne({ 'tutor.key': key, email: email }, {
+                '$set': {
+                    'tutor.$.status': value
                 }
             },
-        ).clone().exec();
+                function (err, docs) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log(docs);
+                    }
+                },
+            ).clone().exec();
+        }else{
+            let objIndex = tutor.findIndex(obj => obj.key == key);
+            tutor[objIndex].status = value;
+            await this.UserbasicnewModel.updateOne({ "_id": new Types.ObjectId(getUser._id.toString()) },
+                { $set: { "tutor": tutor } });
+        }
     }
 
     async gettotalyopmail(skip: number, limit: number) {

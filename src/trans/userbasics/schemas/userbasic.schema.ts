@@ -3,7 +3,8 @@ import mongoose, { Document } from 'mongoose';
 
 export type UserbasicDocument = Userbasic & Document;
 
-@Schema()
+//@Schema()
+@Schema({ collection: 'oldUserBasics' })
 export class Userbasic {
   @Prop({ type: Object })
   _id: { oid: String };
