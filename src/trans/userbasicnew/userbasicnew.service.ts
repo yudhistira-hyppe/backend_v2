@@ -4,6 +4,7 @@ import mongoose, { Model, ObjectId, Types } from 'mongoose';
 import { Userbasicnew, UserbasicnewDocument } from './schemas/userbasicnew.schema';
 import { LogapisService } from '../logapis/logapis.service';
 import { CreateuserbasicnewDto } from './dto/Createuserbasicnew-dto';
+import { log } from 'console';
 
 @Injectable()
 export class UserbasicnewService {
@@ -7639,7 +7640,8 @@ export class UserbasicnewService {
             }
         ];
         let getUser = await this.findBymail(email);
-        if (getUser.tutor!=undefined){
+        console.log(getUser.tutor)
+        if (getUser.tutor.length>0){
             this.UserbasicnewModel.updateOne({ 'tutor.key': key, email: email }, {
                 '$set': {
                     'tutor.$.status': value
@@ -7657,7 +7659,7 @@ export class UserbasicnewService {
             let objIndex = tutor.findIndex(obj => obj.key == key);
             tutor[objIndex].status = value;
             await this.UserbasicnewModel.updateOne({ "_id": new Types.ObjectId(getUser._id.toString()) },
-                { $set: { "tutor": tutor } });
+                { $set: { "tutor": tutor } }).clone().exec();
         }
     }
 
