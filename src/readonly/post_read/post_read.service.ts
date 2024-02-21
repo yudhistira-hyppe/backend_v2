@@ -28310,7 +28310,7 @@ export class PostsReadService {
             from: "newUserBasics",
             as: "userTag",
             let: {
-              localID: '$tagPeople.$id'
+              localID: { $ifNull: ['$tagPeople', []] }
             },
             pipeline: [
               {
