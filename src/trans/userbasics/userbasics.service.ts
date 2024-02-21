@@ -1,13 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, ObjectId, Types } from 'mongoose';
-import { CreateUserbasicDto } from './dto/create-userbasic.dto';
+import { CreateUserbasicDto, mingrionRun } from './dto/create-userbasic.dto';
 import { Userbasic, UserbasicDocument } from './schemas/userbasic.schema';
 import { LanguagesService } from '../../infra/languages/languages.service';
 import { InterestsRepoService } from '../../infra/interests_repo/interests_repo.service';
 import { MediaproofpictsService } from '../../content/mediaproofpicts/mediaproofpicts.service';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 import { LogapisService } from '../logapis/logapis.service';
+import { skip } from 'rxjs';
 
 @Injectable()
 export class UserbasicsService {
@@ -8466,5 +8467,719 @@ export class UserbasicsService {
     ];
 
     return data;
+  }
+
+  async migrationRun(mingrionRun_: mingrionRun){
+    let countData = await this.userbasicModel.countDocuments();
+    if (mingrionRun_.limitstop != undefined){
+      if (mingrionRun_.limitstop > mingrionRun_.limit) {
+        if (countData > mingrionRun_.limitstop) {
+          countData = mingrionRun_.limitstop;
+        } else {
+          throw new BadRequestException({
+            response_code: 400,
+            messages: {
+              info: ["Data User > Limit Stop"],
+            },
+          });
+        }
+      } else {
+        throw new BadRequestException({
+          response_code: 400,
+          messages: {
+            info: ["Limit stop > Limit"],
+          },
+        });
+      }
+    }
+    console.log("countData",countData)
+    if (mingrionRun_.limit!=undefined){
+      let skip = 0;
+      let limit = mingrionRun_.limit;
+      let modulus = countData % limit;
+      let dataLoop = 0;
+
+      if (modulus == 0) {
+        dataLoop = countData / limit;
+      } else {
+        dataLoop = (countData - modulus) / limit;
+      }
+      console.log("modulus", modulus)
+
+      for (let i = 0; i < dataLoop; i++) {
+        if (modulus == 0) {
+          skip = i * mingrionRun_.limit;
+        }else{
+          if ((dataLoop - 1) == i) {
+            skip = (limit * mingrionRun_.limit) + modulus;
+          } else {
+            skip = limit * mingrionRun_.limit;
+          }
+        }
+        console.log("skip", skip)
+        console.log("limit", limit)
+        await this.migrtionQuery(skip, limit);
+      }
+    } else {
+      await this.migrtionQuery();
+    }
+  }
+
+  async migrtionQuery(skip?: number, limit?:number){
+    let aggregate = [];
+    aggregate.push({
+      $sort: {
+        createdAt: - 1
+      }
+    });
+
+    if ((skip != undefined) && (limit != undefined)) {
+      console.log("--------------------------------------------------------------------------------------------------")
+      console.log("skip", skip)
+      console.log("limit", limit)
+      console.log("--------------------------------------------------------------------------------------------------")
+      aggregate.push(
+        {
+          $skip: skip
+        },
+        {
+          $limit: limit
+        },);
+    }
+
+    aggregate.push({
+      "$lookup": {
+        from: "userauths",
+        as: "authUser",
+        let: {
+          localID: "$email"
+        },
+        pipeline: [
+          {
+            $match:
+            {
+              $and: [
+                {
+                  $expr: {
+                    $eq: ['$email', '$$localID']
+                  }
+                },
+              ]
+            },
+          },
+        ],
+      },
+    },
+      {
+        $unwind: {
+          path: "$authUser",
+          "preserveNullAndEmptyArrays": true
+        }
+      },
+      {
+        "$lookup": {
+          from: "referral",
+          as: "referral",
+          let: {
+            localID: "$email"
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$parent', '$$localID']
+                    }
+                  },
+                ]
+              },
+            },
+            {
+              $project: {
+                "email": "$children",
+                "active": 1,
+                "verified": 1,
+                "imei": 1,
+                "createdAt": 1,
+                "updatedAt": 1,
+              }
+            }
+          ],
+        },
+      },
+      {
+        "$lookup": {
+          from: "friend_list",
+          as: "friend",
+          let: {
+            localID: "$email"
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$email', '$$localID']
+                    }
+                  },
+                ]
+              },
+            },
+            {
+              $project: {
+                "friendlist": 1,
+              }
+            }
+          ],
+        },
+      },
+      {
+        "$lookup": {
+          from: "mediaprofilepicts",
+          as: "avatar",
+          let: {
+            localID: '$profilePict.$id'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $eq: ['$mediaID', "$$localID"]
+                }
+              }
+            },
+            {
+              $project: {
+                "mediaBasePath": 1,
+                "mediaUri": 1,
+                "originalName": 1,
+                "fsSourceUri": 1,
+                "fsSourceName": 1,
+                "fsTargetUri": 1,
+                "mediaType": 1,
+                uploadSource: 1,
+                mediaThumBasePath: 1,
+                mediaThumName: 1,
+                mediaThumUri: 1,
+                postType: 1,
+                "mediaEndpoint": {
+                  "$concat": ["/profilepict/", "$mediaID"]
+                }
+              }
+            }
+          ],
+        }
+      },
+      {
+        $unwind: {
+          path: "$avatar",
+          "preserveNullAndEmptyArrays": true
+        }
+      },
+      {
+        "$lookup": {
+          from: "cities",
+          as: "city",
+          let: {
+            localID: '$cities.$id'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $eq: ['$_id', "$$localID"]
+                }
+              }
+            },
+            {
+              $project: {
+                "cityName": 1,
+              }
+            }
+          ],
+        }
+      },
+      {
+        $unwind: {
+          path: "$city",
+          "preserveNullAndEmptyArrays": true
+        }
+      },
+      {
+        "$lookup": {
+          from: "areas",
+          as: "state",
+          let: {
+            localID: '$states.$id'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $eq: ['$_id', "$$localID"]
+                }
+              }
+            },
+            {
+              $project: {
+                "stateName": 1,
+
+              }
+            }
+          ],
+        }
+      },
+      {
+        $unwind: {
+          path: "$state",
+          "preserveNullAndEmptyArrays": true
+        }
+      },
+      {
+        "$lookup": {
+          from: "countries",
+          as: "country",
+          let: {
+            localID: '$countries.$id'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $eq: ['$_id', "$$localID"]
+                }
+              }
+            },
+            {
+              $project: {
+                "country": 1,
+
+              }
+            }
+          ],
+        }
+      },
+      {
+        $unwind: {
+          path: "$country",
+          "preserveNullAndEmptyArrays": true
+        }
+      },
+      {
+        "$lookup": {
+          from: "languages",
+          as: "bahasa",
+          let: {
+            localID: '$languages.$id'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $expr: {
+                  $eq: ['$_id', "$$localID"]
+                }
+              }
+            },
+            {
+              $project: {
+                "lang": 1,
+                "langIso": 1,
+              }
+            }
+          ],
+        }
+      },
+      {
+        $unwind: {
+          path: "$bahasa",
+          "preserveNullAndEmptyArrays": true
+        }
+      },
+      {
+        "$lookup": {
+          from: "contentevents",
+          as: "follow",
+          let: {
+            localID: '$email'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $or: [
+                  {
+                    $and: [
+                      {
+                        $expr: {
+                          $eq: ['$email', "$$localID"]
+                        }
+                      },
+                      {
+                        event: "ACCEPT"
+                      },
+                      {
+                        active: true
+                      },
+                      {
+                        eventType: "FOLLOWING"
+                      },
+
+                    ]
+                  },
+                  {
+                    $and: [
+                      {
+                        $expr: {
+                          $eq: ['$email', "$$localID"]
+                        }
+                      },
+                      {
+                        event: "ACCEPT"
+                      },
+                      {
+                        active: true
+                      },
+                      {
+                        eventType: "FOLLOWER"
+                      },
+
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              $project: {
+                follower: {
+                  $ifNull: ["$receiverParty", "$kancut"]
+                },
+                following: {
+                  $ifNull: ["$senderParty", "$kancut"]
+                },
+              }
+            },
+          ],
+        }
+      },
+      {
+        "$lookup": {
+          from: "activityevents",
+          as: "eventUser",
+          let: {
+            localID: '$email'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$payload.email', "$$localID"]
+                    }
+                  },
+                  {
+                    parentActivityEventID: {
+                      $ne: null
+                    }
+                  },
+                  {
+                    "activityType": "ENROL",
+                  },
+
+                ]
+              }
+            },
+            {
+              $project: {
+                event: 1,
+              }
+            },
+            {
+              $sort: {
+                createdAt: - 1
+              }
+            },
+            {
+              $limit: 1
+            }
+          ],
+        }
+      },
+      {
+        "$lookup": {
+          from: "mediaproofpicts",
+          as: "ktp",
+          let: {
+            localID: '$proofPict.$id'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$_id', "$$localID"]
+                    }
+                  },
+                ]
+              }
+            },
+            {
+              $project: {
+                mediaproofpict: 1,
+                valid: 1,
+                idcardnumber: 1,
+                postType: 1,
+                proofpictUploadSource: 1,
+                nama: 1,
+                tempatLahir: 1,
+                jenisKelamin: 1,
+                alamat: 1,
+                agama: 1,
+                statusPerkawinan: 1,
+                pekerjaan: 1,
+                kewarganegaraan: 1,
+                mediaSelfieType: 1,
+                mediaSelfieBasePath: 1,
+                mediaSelfieUri: 1,
+                SelfieOriginalName: 1,
+                SelfiefsSourceUri: 1,
+                SelfiefsSourceName: 1,
+                SelfiefsTargetUri: 1,
+                SelfiemediaMime: 1,
+                SelfieUploadSource: 1,
+                mediaSupportUri: 1,
+                SupportOriginalName: 1,
+                SupportfsSourceUri: 1,
+                SupportfsSourceName: 1,
+                SupportfsTargetUri: 1,
+                mediaSupportUriThumb: 1,
+                kycHandle: 1,
+                state: 1,
+                status: 1,
+                active: 1,
+                mediaType: 1,
+                mediaBasePath: 1,
+                mediaUri: 1,
+                originalName: 1,
+                fsSourceUri: 1,
+                fsSourceName: 1,
+                fsTargetUri: 1,
+                mediaMime: 1,
+                tglLahir: 1,
+              }
+            },
+          ],
+        }
+      },
+      {
+        $unwind: {
+          path: "$ktp",
+          "preserveNullAndEmptyArrays": true
+        }
+      },
+      {
+        $set:
+        {
+          cewek: ["FEMALE", " FEMALE", "Perempuan", "Wanita"]
+        }
+      },
+      {
+        $set:
+        {
+          cowok: ["MALE", " MALE", "Laki-laki", "Pria"]
+        },
+
+      },
+      {
+        $set:
+        {
+          guestMode: false,
+
+        },
+      },
+      {
+        $project: {
+          kyc: [{
+            mediaproofpict: "$ktp.mediaproofpict",
+            valid: "$ktp.valid",
+            idcardnumber: "$ktp.idcardnumber",
+            postType: "$ktp.postType",
+            proofpictUploadSource: "$ktp.proofpictUploadSource",
+            nama: "$ktp.nama",
+            tempatLahir: "$ktp.tempatLahir",
+            jenisKelamin: "$ktp.jenisKelamin",
+            alamat: "$ktp.alamat",
+            agama: "$ktp.agama",
+            statusPerkawinan: "$ktp.statusPerkawinan",
+            pekerjaan: "$ktp.pekerjaan",
+            kewarganegaraan: "$ktp.kewarganegaraan",
+            mediaSelfieType: "$ktp.mediaSelfieType",
+            mediaSelfieBasePath: "$ktp.mediaSelfieBasePath",
+            mediaSelfieUri: "$ktp.mediaSelfieUri",
+            SelfieOriginalName: "$ktp.SelfieOriginalName",
+            SelfiefsSourceUri: "$ktp.SelfiefsSourceUri",
+            SelfiefsSourceName: "$ktp.SelfiefsSourceName",
+            SelfiefsTargetUri: "$ktp.SelfiefsTargetUri",
+            SelfiemediaMime: "$ktp.SelfiemediaMime",
+            SelfieUploadSource: "$ktp.SelfieUploadSource",
+            mediaSupportUri: "$ktp.mediaSupportUri",
+            SupportOriginalName: "$ktp.SupportOriginalName",
+            SupportfsSourceUri: "$ktp.SupportfsSourceUri",
+            SupportfsSourceName: "$ktp.SupportfsSourceName",
+            SupportfsTargetUri: "$ktp.SupportfsTargetUri",
+            mediaSupportUriThumb: "$ktp.mediaSupportUriThumb",
+            kycHandle: "$ktp.kycHandle",
+            state: "$ktp.state",
+            status: "$ktp.status",
+            active: "$ktp.active",
+            mediaType: "$ktp.mediaType",
+            mediaBasePath: "$ktp.mediaBasePath",
+            mediaUri: "$ktp.mediaUri",
+            originalName: "$ktp.originalName",
+            fsSourceUri: "$ktp.fsSourceUri",
+            fsSourceName: "$ktp.fsSourceName",
+            fsTargetUri: "$ktp.fsTargetUri",
+            mediaMime: "$ktp.mediaMime",
+            tglLahir: "$ktp.tglLahir",
+
+          }],
+          userEvent: {
+            $arrayElemAt: ["$eventUser.event", 0]
+          },
+          tester: "$follow",
+          follower: "$follow.follower",
+          following: "$follow.following",
+          citiesName: "$city.cityName",
+          statesName: "$state.stateName",
+          countriesName: "$country.country",
+          languagesLang: "$bahasa.lang",
+          languagesLangIso: "$bahasa.langIso",
+          "_id": 1,
+          "profileID": 1,
+          "email": 1,
+          "emailLogin": "$email",
+          "fullName": 1,
+          "dob": 1,
+          "gender":
+          {
+            $cond: {
+              if: {
+                $in: ["$gender", "$cowok"]
+              },
+              then: "Laki-laki",
+              else:
+              {
+                $cond: {
+                  if: {
+                    $in: ["$gender", "$cewek"]
+                  },
+                  then: "Perempuan",
+                  else: "Other"
+                }
+              },
+
+            }
+          },
+          "status": 1,
+          "event": 1,
+          "idProofName": 1,
+          "idProofStatus": 1,
+          "isComplete": 1,
+          "isCelebrity": 1,
+          "isIdVerified": 1,
+          "isPrivate": 1,
+          "isFollowPrivate": 1,
+          "isPostPrivate": 1,
+          "createdAt": 1,
+          "updatedAt": 1,
+          "bio": 1,
+          "icon": 1,
+          "statusKyc": 1,
+          "profilePict": 1,
+          "insight": 1,
+          "userInterests": 1,
+          "countries": 1,
+          "languages": 1,
+          "_class": 1,
+          "mobileNumber": 1,
+          "idProofNumber": 1,
+          "listAddKyc": 1,
+          "proofPict": 1,
+          "_idAuth": "$authUser._id",
+          "username": "$authUser.username",
+          "password": "$authUser.password",
+          "userID": "$authUser.userID",
+          "isExpiryPass": "$authUser.isExpiryPass",
+          "isEmailVerified": "$authUser.isEmailVerified",
+          "oneTimePassword": "$authUser.oneTimePassword",
+          "otpRequestTime": "$authUser.otpRequestTime",
+          "otpAttempt": "$authUser.otpAttempt",
+          "otpNextAttemptAllow": "$authUser.otpNextAttemptAllow",
+          "location": "$authUser.location",
+          "isEnabled": "$authUser.isEnabled",
+          "isAccountNonExpired": "$authUser.isAccountNonExpired",
+          "isAccountNonLocked": "$authUser.isAccountNonLocked",
+          "isCredentialsNonExpired": "$authUser.isCredentialsNonExpired",
+          "roles": "$authUser.roles",
+          "authUsers.devices": "$authUser.devices",
+          "authUsers._class": "$authUser._class",
+          "authUsers.loginSource": "$authUser.loginSource",
+          "authUsers.loginSrc": "$authUser.loginSrc",
+          "_idAvatar": "$avatar._id",
+          "mediaType": "$avatar.mediaType",
+          "mediaBasePath": "$avatar.mediaBasePath",
+          "mediaUri": "$avatar.mediaUri",
+          "originalName": "$avatar.originalName",
+          "fsSourceUri": "$avatar.fsSourceUri",
+          "fsSourceName": "$avatar.fsSourceName",
+          "fsTargetUri": "$avatar.fsTargetUri",
+          "mediaEndpoint": "$avatar.mediaEndpoint",
+          "otp_attemp": 1,
+          "otp_expired_time": 1,
+          "otp_pin": 1,
+          "otp_request_time": 1,
+          "otppinVerified": 1,
+          "pin": 1,
+          userAssets: 1,
+          "cities": 1,
+          "states": 1,
+          tutor: 1,
+          guestMode: 1,
+          referral: 1,
+          friend:
+          {
+            $arrayElemAt: [
+              {
+                $arrayElemAt: ["$friend.friendlist", 0]
+              },
+              0
+            ]
+          },
+        }
+      },
+      {
+        $merge: {
+          into: "testUserBasics",
+          on: "_id",
+          whenMatched: "replace",
+          whenNotMatched: "insert"
+        }
+      });
+    // console.log("--------------------------------------------------------------------------------------------------")
+    // console.log(JSON.stringify(aggregate));
+    // console.log("--------------------------------------------------------------------------------------------------")
+    await this.userbasicModel.aggregate(aggregate);
   }
 }

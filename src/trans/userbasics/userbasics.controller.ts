@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Req, Request, Query, Headers, HttpCode, BadRequestException } from '@nestjs/common';
 import { UserbasicsService } from './userbasics.service';
-import { CreateUserbasicDto } from './dto/create-userbasic.dto';
+import { CreateUserbasicDto, mingrionRun } from './dto/create-userbasic.dto';
 import { Userbasic } from './schemas/userbasic.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { Res, HttpStatus, Response } from '@nestjs/common';
@@ -409,6 +409,9 @@ export class UserbasicsController {
 
   }
 
-
-
+  @Post('migration')
+  async runMigrationDBNewUserBasic(@Body() mingrionRun_: mingrionRun){
+    this.userbasicsService.migrationRun(mingrionRun_);
+    return { response_code: 202, messages: "Success" };
+  }
 }

@@ -17453,12 +17453,12 @@ export class NewPostService {
                 "guest": false
               }
             },
-            {
-              "$skip": (CreateGetcontenteventsDto_.skip * CreateGetcontenteventsDto_.limit)
-            },
-            {
-              "$limit": CreateGetcontenteventsDto_.limit
-            },
+            // {
+            //   "$skip": (CreateGetcontenteventsDto_.skip * CreateGetcontenteventsDto_.limit)
+            // },
+            // {
+            //   "$limit": CreateGetcontenteventsDto_.limit
+            // },
           ],
           guest: [
             {

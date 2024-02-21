@@ -98,3 +98,8 @@ export class SearchUserbasicDto {
   pageRow: number;
   pageNumber: number;
 }
+
+export class mingrionRun {
+  limit: number;
+  limitstop: number;
+}
