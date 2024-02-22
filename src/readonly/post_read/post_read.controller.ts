@@ -1913,7 +1913,8 @@ export class PostsReadController {
                     postType = "";
                 }
                 try {
-                    mediaTypeStory = data[i].mediaTypeStory;
+                    // mediaTypeStory = data[i].mediaTypeStory;
+                    mediaTypeStory = data[i].content.mediaType;
                 } catch (e) {
                     mediaTypeStory = "";
                 }
