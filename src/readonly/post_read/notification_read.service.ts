@@ -838,6 +838,9 @@ export class NotificationReadService {
                         isApsara: {
                             "$arrayElemAt": ["$post.mediaSource.apsara", 0]
                         },
+                        mediaType: {
+                            "$arrayElemAt": ["$post.mediaSource.mediaType", 0]
+                        },
                         mediaEndpoint:
                         {
                             $cond: {
@@ -891,7 +894,22 @@ export class NotificationReadService {
 
                             }
                         },
-
+                        "mediaThumbEndpoint": 
+                        {
+                            "$ifNull":
+                            [
+                                {
+                                    "$arrayElemAt": ["$post.mediaSource.mediaThumbEndpoint", 0]
+                                },
+                                {
+                                    "$concat":
+                                    [
+                                        "/thumb/",
+                                        "$postID"
+                                    ]
+                                }
+                            ]
+                        },
                     },
                     // boosted: "$post.boosted",
                     // boostCount: "$post.boostCount",
