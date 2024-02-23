@@ -658,7 +658,7 @@ export class PostsReadController {
                     if (boosted !== null || boosted.length > 0) {
                         console.log("boosted: " + data[i].postID);
                         if (data[i].postID != undefined) {
-                            this.postsService.updateBoostViewer(data[i].postID, email);
+                            this.postsService.updateBoostViewer(data[i].postID, emailLogin);
                         }
                         //pd.boostJangkauan = this.countBoosted(obj, email);
                         if (boosted.length > 0) {
@@ -778,7 +778,7 @@ export class PostsReadController {
                     if (boosted !== null || boosted.length > 0) {
                         console.log("boosted: " + data[i].postID);
                         if (data[i].postID != undefined) {
-                            this.postsService.updateBoostViewer(data[i].postID, email);
+                            this.postsService.updateBoostViewer(data[i].postID, emailLogin);
                         }
                         //pd.boostJangkauan = this.countBoosted(obj, email);
                         if (boosted.length > 0) {
@@ -1025,7 +1025,7 @@ export class PostsReadController {
                     if (boosted !== null || boosted.length > 0) {
                         console.log("boosted: " + data[i].postID);
                         if (data[i].postID != undefined) {
-                            this.post2SS.updateBoostViewer(data[i].postID, email);
+                            this.post2SS.updateBoostViewer(data[i].postID, emailLogin);
                         }
                         if (boosted.length > 0) {
                             if (boosted[0] != undefined) {
@@ -1140,7 +1140,7 @@ export class PostsReadController {
                     if (boosted !== null || boosted.length > 0) {
                         console.log("boosted: " + data[i].postID);
                         if (data[i].postID != undefined) {
-                            this.post2SS.updateBoostViewer(data[i].postID, email);
+                            this.post2SS.updateBoostViewer(data[i].postID, emailLogin);
                         }
                         if (boosted.length > 0) {
                             if (boosted[0] != undefined) {
@@ -1514,7 +1514,7 @@ export class PostsReadController {
 
                         if (boosted.length > 0) {
                             console.log("boosted: " + data[i].postID);
-                            this.postsReadService.updateBoostViewer(data[i].postID, email);
+                            this.postsReadService.updateBoostViewer(data[i].postID, auth.email);
                             //pd.boostJangkauan = this.countBoosted(obj, email);
                             if (boosted.length > 0) {
                                 if (boosted[0] != undefined) {
@@ -1583,7 +1583,7 @@ export class PostsReadController {
                     if (boosted !== null && boosted !== undefined) {
                         if (boosted.length > 0) {
                             console.log("boosted: " + data[i].postID);
-                            this.postsReadService.updateBoostViewer(data[i].postID, email);
+                            this.postsReadService.updateBoostViewer(data[i].postID, auth.email);
                             //pd.boostJangkauan = this.countBoosted(obj, email);
                             if (boosted.length > 0) {
                                 if (boosted[0] != undefined) {
