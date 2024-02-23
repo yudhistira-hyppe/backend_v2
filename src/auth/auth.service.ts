@@ -5660,9 +5660,7 @@ export class AuthService {
     //Ceck User auth child
     datauserauthService_children = await this.userauthsService.findOneemail(user_email_children);
     if (!(await this.utilsService.ceckData(datauserauthService_children))) {
-      if (useLanguage == "id") {
-        errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
-      } else if (useLanguage == "en") {
+      if (useLanguage == "en") {
         errorMessages = "User not found, please check the username again";
       } else {
         errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
@@ -5678,9 +5676,7 @@ export class AuthService {
       if (await this.utilsService.ceckData(datauserauthService_parent)) {
         user_email_parent = datauserauthService_parent.email;
       } else {
-        if (useLanguage == "id") {
-          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
-        } else if (useLanguage == "en") {
+        if (useLanguage == "en") {
           errorMessages = "User not found, please check the username again";
         } else {
           errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
@@ -5693,9 +5689,7 @@ export class AuthService {
       //Ceck User auth parent
       datauserauthService_parent = await this.userauthsService.findOneemail(user_email_parent);
       if (!(await this.utilsService.ceckData(datauserauthService_parent))) {
-        if (useLanguage == "id") {
-          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
-        } else if (useLanguage == "en") {
+        if (useLanguage == "en") {
           errorMessages = "User not found, please check the username again";
         } else {
           errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
@@ -5805,9 +5799,7 @@ export class AuthService {
           await this.insightsService.updateFollower(user_email_parent);
           await this.insightsService.updateFollowing(user_email_children);
 
-          if (useLanguage == "id") {
-            errorMessages = "Selamat kode referral berhasil digunakan";
-          } else if (useLanguage == "en") {
+          if (useLanguage == "en") {
             errorMessages = "Congratulation referral applied successfully";
           } else {
             errorMessages = "Selamat kode referral berhasil digunakan";
@@ -5821,9 +5813,7 @@ export class AuthService {
             }
           };
         } else {
-          if (useLanguage == "id") {
-            errorMessages = "Referral Tidak Berhasil, Perangkat kamu telah terdaftar, harap gunakan perangkat lainnya";
-          } else if (useLanguage == "en") {
+          if (useLanguage == "en") {
             errorMessages = "Referral Failed, Your device has been registered, please use another device";
           } else {
             errorMessages = "Referral Tidak Berhasil, Perangkat kamu telah terdaftar, harap gunakan perangkat lainnya";
@@ -5833,9 +5823,7 @@ export class AuthService {
           );
         }
       } else {
-        if (useLanguage == "id") {
-          errorMessages = "Referral Tidak Berhasil, Username telah terdaftar sebagai referral kamu, silahkan ganti dengan username lainnya";
-        } else if (useLanguage == "en") {
+        if (useLanguage == "en") {
           errorMessages = "Referral Failed, Username has been registered, please use another username";
         } else {
           errorMessages = "Referral Tidak Berhasil, Username telah terdaftar sebagai referral kamu, silahkan ganti dengan username lainnya";
@@ -9129,9 +9117,7 @@ export class AuthService {
     //Ceck User auth child
     datauserauthService_children = await this.userauthsService.findOneemail(user_email_children);
     if (!(await this.utilsService.ceckData(datauserauthService_children))) {
-      if (useLanguage == "id") {
-        errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
-      } else if (useLanguage == "en") {
+      if (useLanguage == "en") {
         errorMessages = "User not found, please check the username again";
       } else {
         errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
@@ -9153,9 +9139,7 @@ export class AuthService {
       if (await this.utilsService.ceckData(datauserauthService_parent)) {
         user_email_parent = datauserauthService_parent.email;
       } else {
-        if (useLanguage == "id") {
-          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
-        } else if (useLanguage == "en") {
+        if (useLanguage == "en") {
           errorMessages = "User not found, please check the username again";
         } else {
           errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
@@ -9174,9 +9158,7 @@ export class AuthService {
       //Ceck User auth parent
       datauserauthService_parent = await this.userauthsService.findOneemail(user_email_parent);
       if (!(await this.utilsService.ceckData(datauserauthService_parent))) {
-        if (useLanguage == "id") {
-          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
-        } else if (useLanguage == "en") {
+        if (useLanguage == "en") {
           errorMessages = "User not found, please check the username again";
         } else {
           errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
@@ -9307,9 +9289,7 @@ export class AuthService {
           await this.insightsService.updateFollower(user_email_parent);
           await this.insightsService.updateFollowing(user_email_children);
 
-          if (useLanguage == "id") {
-            errorMessages = "Selamat kode referral berhasil digunakan";
-          } else if (useLanguage == "en") {
+          if (useLanguage == "en") {
             errorMessages = "Congratulation referral applied successfully";
           } else {
             errorMessages = "Selamat kode referral berhasil digunakan";
@@ -9329,9 +9309,7 @@ export class AuthService {
             }
           };
         } else {
-          if (useLanguage == "id") {
-            errorMessages = "Referral Tidak Berhasil, Perangkat kamu telah terdaftar, harap gunakan perangkat lainnya";
-          } else if (useLanguage == "en") {
+          if (useLanguage == "en") {
             errorMessages = "Referral Failed, Your device has been registered, please use another device";
           } else {
             errorMessages = "Referral Tidak Berhasil, Perangkat kamu telah terdaftar, harap gunakan perangkat lainnya";
@@ -9347,9 +9325,7 @@ export class AuthService {
           );
         }
       } else {
-        if (useLanguage == "id") {
-          errorMessages = "Referral Tidak Berhasil, Username telah terdaftar sebagai referral kamu, silahkan ganti dengan username lainnya";
-        } else if (useLanguage == "en") {
+        if (useLanguage == "en") {
           errorMessages = "Referral Failed, Username has been registered, please use another username";
         } else {
           errorMessages = "Referral Tidak Berhasil, Username telah terdaftar sebagai referral kamu, silahkan ganti dengan username lainnya";
@@ -9376,7 +9352,7 @@ export class AuthService {
     var user_email_children = null;
     var email_ceck = false;
     var iduser = null;
-    var listchallenge=null;
+    var listchallenge = null;
     var current_date = await this.utilsService.getDateTimeString();
 
     if (head['x-auth-user'] == undefined) {
@@ -9447,9 +9423,7 @@ export class AuthService {
     //Ceck User auth child
     datauserauthService_children = await this.basic2SS.findbyemail(user_email_children);
     if (!(await this.utilsService.ceckData(datauserauthService_children))) {
-      if (useLanguage == "id") {
-        errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
-      } else if (useLanguage == "en") {
+      if (useLanguage == "en") {
         errorMessages = "User not found, please check the username again";
       } else {
         errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
@@ -9472,9 +9446,7 @@ export class AuthService {
       if (await this.utilsService.ceckData(datauserauthService_parent)) {
         user_email_parent = datauserauthService_parent.email;
       } else {
-        if (useLanguage == "id") {
-          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
-        } else if (useLanguage == "en") {
+        if (useLanguage == "en") {
           errorMessages = "User not found, please check the username again";
         } else {
           errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
@@ -9493,9 +9465,7 @@ export class AuthService {
       //Ceck User auth parent
       datauserauthService_parent = await this.basic2SS.findbyemail(user_email_parent);
       if (!(await this.utilsService.ceckData(datauserauthService_parent))) {
-        if (useLanguage == "id") {
-          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
-        } else if (useLanguage == "en") {
+        if (useLanguage == "en") {
           errorMessages = "User not found, please check the username again";
         } else {
           errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
@@ -9540,15 +9510,14 @@ export class AuthService {
 
           try {
             //this.userChallenge(userid.toString(), idref.toString(), "referral", "REFERAL");
-            await this.contenteventsService.scorereferralrequest(userid.toString(), idref.toString(), "referral", "REFERAL",listchallenge)
+            await this.contenteventsService.scorereferralrequest(userid.toString(), idref.toString(), "referral", "REFERAL", listchallenge)
           } catch (e) {
 
           }
 
           var ceck_data_FOLLOWER = await this.contenteventsService.ceckData(user_email_parent, "FOLLOWER", "ACCEPT", user_email_children, "", "");
           var ceck_data_FOLLOWING = await this.contenteventsService.ceckData(user_email_children, "FOLLOWING", "ACCEPT", "", user_email_parent, "");
-          if (!(await this.utilsService.ceckData(ceck_data_FOLLOWER)) && !(await this.utilsService.ceckData(ceck_data_FOLLOWING))) 
-          {
+          if (!(await this.utilsService.ceckData(ceck_data_FOLLOWER)) && !(await this.utilsService.ceckData(ceck_data_FOLLOWING))) {
             var _id_1 = (await this.utilsService.generateId());
             var _id_2 = (await this.utilsService.generateId());
             var _id_3 = (await this.utilsService.generateId());
@@ -9631,9 +9600,7 @@ export class AuthService {
             await this.basic2SS.updatefollowSystem(user_email_parent, user_email_children, "FOLLOWING");
             await this.basic2SS.updatefollowSystem(user_email_children, user_email_parent, "FOLLOWER");
 
-            if (useLanguage == "id") {
-              errorMessages = "Selamat kode referral berhasil digunakan";
-            } else if (useLanguage == "en") {
+            if (useLanguage == "en") {
               errorMessages = "Congratulation referral applied successfully";
             } else {
               errorMessages = "Selamat kode referral berhasil digunakan";
@@ -9653,8 +9620,7 @@ export class AuthService {
               }
             };
           }
-          else
-          {
+          else {
             if (!ceck_data_FOLLOWER.active && !ceck_data_FOLLOWING.active) {
               await this.contenteventsService.updateFollowing(user_email_children, "FOLLOWING", user_email_parent);
               await this.contenteventsService.updateFollower(user_email_parent, "FOLLOWER", user_email_children);
@@ -9663,19 +9629,17 @@ export class AuthService {
               await this.basic2SS.updatefollowSystem(user_email_children, user_email_parent, "FOLLOWER");
               await this.basic2SS.updatefollowSystem(user_email_parent, user_email_children, "FOLLOWING");
 
-              if (useLanguage == "id") {
-                errorMessages = "Selamat kode referral berhasil digunakan";
-              } else if (useLanguage == "en") {
+              if (useLanguage == "en") {
                 errorMessages = "Congratulation referral applied successfully";
               } else {
                 errorMessages = "Selamat kode referral berhasil digunakan";
               }
-  
+
               var fullurl = req.get("Host") + req.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
               var reqbody = JSON.parse(JSON.stringify(req.body));
               this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, user_email_children, null, null, reqbody);
-  
+
               return {
                 "response_code": 202,
                 "messages": {
@@ -9687,9 +9651,7 @@ export class AuthService {
             }
           }
         } else {
-          if (useLanguage == "id") {
-            errorMessages = "Referral Tidak Berhasil, Perangkat kamu telah terdaftar, harap gunakan perangkat lainnya";
-          } else if (useLanguage == "en") {
+          if (useLanguage == "en") {
             errorMessages = "Referral Failed, Your device has been registered, please use another device";
           } else {
             errorMessages = "Referral Tidak Berhasil, Perangkat kamu telah terdaftar, harap gunakan perangkat lainnya";
@@ -9705,9 +9667,7 @@ export class AuthService {
           );
         }
       } else {
-        if (useLanguage == "id") {
-          errorMessages = "Referral Tidak Berhasil, Username telah terdaftar sebagai referral kamu, silahkan ganti dengan username lainnya";
-        } else if (useLanguage == "en") {
+        if (useLanguage == "en") {
           errorMessages = "Referral Failed, Username has been registered, please use another username";
         } else {
           errorMessages = "Referral Tidak Berhasil, Username telah terdaftar sebagai referral kamu, silahkan ganti dengan username lainnya";
@@ -11230,7 +11190,7 @@ export class AuthService {
     var CurrentStatus = '';
     var CurrentEvent = '';
     var user_regSrc = "";
-    var listchallenge=null;
+    var listchallenge = null;
 
     var lang = "id";
     if (req.body.lang != undefined) {
@@ -11833,14 +11793,14 @@ export class AuthService {
                         //   var idref = insertdata._id;
                         //   this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
                         // }
-                        
-                       
+
+
 
                         if (databasic !== null) {
                           var idref = insertdata._id;
                           try {
                             //this.userChallenge(databasic._id.toString(), idref.toString(), "referral", "REFERAL");
-                            this.scorereferralrequest(databasic._id.toString(), idref.toString(), "referral", "REFERAL",listchallenge)
+                            this.scorereferralrequest(databasic._id.toString(), idref.toString(), "referral", "REFERAL", listchallenge)
 
                           } catch (e) {
 
@@ -11964,7 +11924,7 @@ export class AuthService {
                 if (await this.utilsService.ceckData(user_Basic)) {
                   if (Number(user_Basic.otpAttempt) >= 3) {
                     try {
-                      var updateotp = new Userbasicnew(); 
+                      var updateotp = new Userbasicnew();
                       var OTP_expires = await this.utilsService.generateOTPExpiresNextAttemptAllow();
                       updateotp.otpNextAttemptAllow = Long.fromString(OTP_expires.toString());
                       this.basic2SS.update(user_email, updateotp);
@@ -14933,7 +14893,7 @@ export class AuthService {
                 var languages = await this.languagesService.findOneLangiso(user_langIso);
                 if ((await this.utilsService.ceckData(languages))) {
                   var languages_id = (await languages)._id;
-                  data_update_userbasict['languagesLang'] = (await languages).lang; 
+                  data_update_userbasict['languagesLang'] = (await languages).lang;
                   data_update_userbasict['languagesLangIso'] = (await languages).langIso;
                   data_update_userbasict['languages'] = {
                     $ref: 'languages',
@@ -15124,18 +15084,15 @@ export class AuthService {
   }
 
 
-  async scorereferralrequest(iduser: string, idevent: string, namatabel: string, event: string,listchallenge:any[]) {
-    await this.contenteventsService.scorereferralrequest(iduser, idevent, namatabel, event,listchallenge)
+  async scorereferralrequest(iduser: string, idevent: string, namatabel: string, event: string, listchallenge: any[]) {
+    await this.contenteventsService.scorereferralrequest(iduser, idevent, namatabel, event, listchallenge)
   }
 
-  async guestToreal(data:Userbasicnew)
-  {
-    if(data.tempfollowing.length != 0)
-    {
+  async guestToreal(data: Userbasicnew) {
+    if (data.tempfollowing.length != 0) {
       var inputfollowing = data.following;
       var listfollower = data.tempfollowing;
-      for(var i = 0; i < listfollower.length; i++)
-      {
+      for (var i = 0; i < listfollower.length; i++) {
         inputfollowing.push(listfollower[i]);
 
         var getdata = await this.basic2SS.findbyemail(listfollower[i]);
@@ -15143,7 +15100,7 @@ export class AuthService {
         listuser.push(data.email.toString());
         var updateuser = new CreateuserbasicnewDto();
         updateuser.follower = listuser;
-        await this.basic2SS.update(getdata._id.toString(), updateuser); 
+        await this.basic2SS.update(getdata._id.toString(), updateuser);
         // await this.utilsService.sendFcmV2(data.email.toString(), listfollower[i], "FOLLOWER", "ACCEPT", "FOLLOWER");
       }
 
@@ -15155,39 +15112,34 @@ export class AuthService {
 
     var getlisttemp = await this.post2SS.countTemppost(data.email.toString(), "like");
     var totalpostlike = null;
-    try
-    {
+    try {
       totalpostlike = getlisttemp[0].total;
     }
-    catch(e)
-    {
+    catch (e) {
       totalpostlike = 0;
     }
 
-    if(totalpostlike != 0)
-    {
+    if (totalpostlike != 0) {
       var listlike = getlisttemp[0].data;
       var pagelike = null;
       var totalpage = totalpostlike / 25;
-      
+
       var tpage2 = (totalpage).toFixed(0);
       var tpage = (totalpostlike % 25);
       if (tpage > 0 && tpage < 5) {
         pagelike = parseInt(tpage2) + 1;
-  
+
       } else {
         pagelike = parseInt(tpage2);
       }
 
-      for(var i = 0; i < pagelike; i++)
-      {
+      for (var i = 0; i < pagelike; i++) {
         var currentlikepage = i * 25;
         var nextlikepage = (i + 1) * 25;
         var getlistpost = listlike.slice(currentlikepage, nextlikepage);
-        
+
         var getresultlike = await this.post2SS.findById(getlistpost);
-        for(var j = 0; j < getresultlike.length; j++)
-        {
+        for (var j = 0; j < getresultlike.length; j++) {
           var datapost = getresultlike[j];
           var getuserview = datapost.tempLike;
           var filterlike = getuserview.filter((element) => element != data.email.toString());
@@ -15195,7 +15147,7 @@ export class AuthService {
           updatedata.tempLike = filterlike;
           updatedata.userLike = datapost.userLike;
           updatedata.userLike.push(data.email.toString());
-          
+
           await this.post2SS.update(datapost.postID, updatedata);
         }
       }
@@ -15203,39 +15155,34 @@ export class AuthService {
 
     var getlisttemp = await this.post2SS.countTemppost(data.email.toString(), "view");
     var totalpostview = null;
-    try
-    {
+    try {
       totalpostview = getlisttemp[0].total;
     }
-    catch(e)
-    {
+    catch (e) {
       totalpostview = 0;
     }
 
-    if(totalpostview != 0)
-    {
-      var listview = getlisttemp[0].data; 
+    if (totalpostview != 0) {
+      var listview = getlisttemp[0].data;
       var pageview = null;
       var totalpage = totalpostview / 25;
-      
+
       var tpage2 = (totalpage).toFixed(0);
       var tpage = (totalpostview % 25);
       if (tpage > 0 && tpage < 5) {
         pageview = parseInt(tpage2) + 1;
-  
+
       } else {
         pageview = parseInt(tpage2);
       }
 
-      for(var i = 0; i < pageview; i++)
-      {
+      for (var i = 0; i < pageview; i++) {
         var currentviewpage = i * 25;
         var nextviewpage = (i + 1) * 25;
         var getlistpost = listview.slice(currentviewpage, nextviewpage);
-        
+
         var getresultview = await this.post2SS.findById(getlistpost);
-        for(var j = 0; j < getresultview.length; j++)
-        {
+        for (var j = 0; j < getresultview.length; j++) {
           var datapost = getresultview[j];
           var getuserview = datapost.tempView;
           var filterview = getuserview.filter((element) => element != data.email.toString());
@@ -15243,7 +15190,7 @@ export class AuthService {
           updatedata.tempView = filterview;
           updatedata.userView = datapost.userView;
           updatedata.userView.push(data.email.toString());
-          
+
           await this.post2SS.update(datapost.postID, updatedata);
         }
       }
