@@ -5206,7 +5206,7 @@ export class AuthController {
       );
     }
   }
-
+  
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/user/pin/')
@@ -5455,13 +5455,13 @@ export class AuthController {
                     );
                   }
 
-                  var createUserbasicDto_ = new CreateUserbasicDto();
+                  var createUserbasicDto_ = new CreateuserbasicnewDto();
                   createUserbasicDto_.otp_pin = null;
                   createUserbasicDto_.otp_request_time = new Long(0);
                   createUserbasicDto_.otp_expired_time = new Long(0);
                   createUserbasicDto_.otp_attemp = 0;
                   createUserbasicDto_.otppinVerified = true;
-                  await this.userbasicsService.updateData(user_email, createUserbasicDto_);
+                  await this.basic2SS.updateData(user_email, createUserbasicDto_);
 
                   return {
                     response_code: 202,
@@ -5470,7 +5470,7 @@ export class AuthController {
                     },
                   };
                 } else {
-                  await this.userbasicsService.findOneupdatebyEmail(user_email);
+                  await this.basic2SS.findOneupdatebyEmail(user_email);
                   var messages = "";
                   if (lang == "en") {
                     messages = "The OTP code you entered is incorrect; please check again.";
@@ -5594,9 +5594,9 @@ export class AuthController {
             //Update Pin
             try {
               var encrypt_pin = await this.utilsService.encrypt(body_.pin.toString());
-              var createUserbasicDto_ = new CreateUserbasicDto();
+              var createUserbasicDto_ = new CreateuserbasicnewDto();
               createUserbasicDto_.pin = encrypt_pin;
-              await this.userbasicsService.updateData(user_email, createUserbasicDto_);
+              await this.basic2SS.updateData(user_email, createUserbasicDto_);
             } catch (error) {
               var fullurl = request.get("Host") + request.originalUrl;
               var timestamps_end = await this.utilsService.getDateTimeString();
@@ -6106,7 +6106,7 @@ export class AuthController {
                     },
                   };
                 } else {
-                  await this.userbasicsService.findOneupdatebyEmail(user_email);
+                  await this.basic2SS.findOneupdatebyEmail(user_email);
                   var messages = "";
                   if (lang == "en") {
                     messages = "The OTP code you entered is incorrect; please check again.";
@@ -6905,7 +6905,7 @@ export class AuthController {
     //   const user_userAuth = await this.userauthsService.findOne(
     //     user_email_header,
     //   );
-    //   const user_userbasics = await this.userbasicsService.findOne(
+    //   const user_userbasics = await this.basic2SS.findOne(
     //     user_email_header,
     //   );
     //   if ((await this.utilsService.ceckData(user_userAuth)) && (await this.utilsService.ceckData(user_userbasics))){
@@ -6919,12 +6919,12 @@ export class AuthController {
     //           var otp_request_time = curent_date.getTime();
     //           var otp_expired_time = (curent_date.setMinutes(curent_date.getMinutes() + Number(setting_ExpiredTimeOTPPin)));
 
-    //           var createUserbasicDto_ = new CreateUserbasicDto();
+    //           var createUserbasicDto_ = new CreateuserbasicnewDto();
     //           createUserbasicDto_.pin = encrypt_pin;
     //           createUserbasicDto_.otp_pin = OTP;
     //           createUserbasicDto_.otp_request_time = Long.fromString(otp_request_time.toString());
     //           createUserbasicDto_.otp_expired_time = Long.fromString(otp_expired_time.toString());
-    //           await this.userbasicsService.updateData(user_userbasics.email.toString(), createUserbasicDto_);
+    //           await this.basic2SS.updateData(user_userbasics.email.toString(), createUserbasicDto_);
 
     //           await this.authService.sendemailOTP(
     //             user_userAuth.email.toString(),
@@ -6956,9 +6956,9 @@ export class AuthController {
 
     //           }
     //           if (otp == user_userbasics.otp_pin) {
-    //             var createUserbasicDto_ = new CreateUserbasicDto();
+    //             var createUserbasicDto_ = new CreateuserbasicnewDto();
     //             createUserbasicDto_.otp_pin = null;
-    //             await this.userbasicsService.updateData(user_userbasics.email.toString(), createUserbasicDto_);
+    //             await this.basic2SS.updateData(user_userbasics.email.toString(), createUserbasicDto_);
 
     //             return {
     //               response_code: 202,
@@ -6970,9 +6970,9 @@ export class AuthController {
     //             try {
     //               var OTP = await this.utilsService.generateOTP();
 
-    //               var createUserbasicDto_ = new CreateUserbasicDto();
+    //               var createUserbasicDto_ = new CreateuserbasicnewDto();
     //               createUserbasicDto_.otp_pin = OTP;
-    //               await this.userbasicsService.updateData(user_userbasics.email.toString(), createUserbasicDto_);
+    //               await this.basic2SS.updateData(user_userbasics.email.toString(), createUserbasicDto_);
 
     //               await this.authService.sendemailOTP(
     //                 user_userAuth.email.toString(),
