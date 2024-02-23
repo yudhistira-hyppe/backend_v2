@@ -25634,12 +25634,12 @@ export class PostsReadService {
                   },
                   {
                     $expr: {
-                      $lte: ["$boosted.boostSession.start", "$testDate",]
+                      $lte: [{ $arrayElemAt: ["$boosted.boostSession.start", 0] }, "$testDate",]
                     }
                   },
                   {
                     $expr: {
-                      $gt: ["$boosted.boostSession.end", "$testDate",]
+                      $gt: [{ $arrayElemAt: ["$boosted.boostSession.end", 0] }, "$testDate",]
                     }
                   },
                   {
@@ -26373,12 +26373,12 @@ export class PostsReadService {
               "views":
               {
                 "$ifNull":
-                [
-                  {
-                    "$size":"$userView"
-                  },
-                  0
-                ]
+                  [
+                    {
+                      "$size": "$userView"
+                    },
+                    0
+                  ]
               },
               "shares": "$shares",
               "comments": "$comments",
@@ -26741,12 +26741,12 @@ export class PostsReadService {
                   },
                   {
                     $expr: {
-                      $lte: ["$boosted.boostSession.start", "$testDate",]
+                      $lte: [{ $arrayElemAt: ["$boosted.boostSession.start", 0] }, "$testDate",]
                     }
                   },
                   {
                     $expr: {
-                      $gt: ["$boosted.boostSession.end", "$testDate",]
+                      $gt: [{ $arrayElemAt: ["$boosted.boostSession.end", 0] }, "$testDate",]
                     }
                   },
                   {
@@ -27298,18 +27298,18 @@ export class PostsReadService {
           }
         },
         {
-          $set:{
-              tutor: 
-              {
-                  $ifNull: [
-                      {
-                          $arrayElemAt: ["$userBasic.tutor", 0]
-                      },
-                      []
-                  ],
-              },
+          $set: {
+            tutor:
+            {
+              $ifNull: [
+                {
+                  $arrayElemAt: ["$userBasic.tutor", 0]
+                },
+                []
+              ],
+            },
           }
-      },
+        },
         {
           $project: {
             _id: 1,
@@ -27447,12 +27447,12 @@ export class PostsReadService {
               "views":
               {
                 "$ifNull":
-                [
-                  {
-                    "$size":"$userView"
-                  },
-                  0
-                ]
+                  [
+                    {
+                      "$size": "$userView"
+                    },
+                    0
+                  ]
               },
               "shares": "$shares",
               "comments": "$comments",
@@ -27814,12 +27814,12 @@ export class PostsReadService {
                   },
                   {
                     $expr: {
-                      $lte: ["$boosted.boostSession.start", "$testDate",]
+                      $lte: [{ $arrayElemAt: ["$boosted.boostSession.start", 0] }, "$testDate",]
                     }
                   },
                   {
                     $expr: {
-                      $gt: ["$boosted.boostSession.end", "$testDate",]
+                      $gt: [{ $arrayElemAt: ["$boosted.boostSession.end", 0] }, "$testDate",]
                     }
                   },
                   {
@@ -28371,18 +28371,18 @@ export class PostsReadService {
           }
         },
         {
-          $set:{
-              tutor: 
-              {
-                  $ifNull: [
-                      {
-                          $arrayElemAt: ["$userBasic.tutor", 0]
-                      },
-                      []
-                  ],
-              },
+          $set: {
+            tutor:
+            {
+              $ifNull: [
+                {
+                  $arrayElemAt: ["$userBasic.tutor", 0]
+                },
+                []
+              ],
+            },
           }
-      },
+        },
         {
           $project: {
             _id: 1,
@@ -28520,12 +28520,12 @@ export class PostsReadService {
               "views":
               {
                 "$ifNull":
-                [
-                  {
-                    "$size":"$userView"
-                  },
-                  0
-                ]
+                  [
+                    {
+                      "$size": "$userView"
+                    },
+                    0
+                  ]
               },
               "shares": "$shares",
               "comments": "$comments",
