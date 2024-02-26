@@ -127,6 +127,7 @@ import { PostsReadModule } from './readonly/post_read/post_read.module';
 import { ChallengeReadModule } from './readonly/challenge_read/challenge_read.module';
 import { MediastreamingModule } from './content/mediastreaming/mediastreaming.module';
 import { FiltercategoryModule } from './assets/filtercategory/filtercategory.module';
+import { GuidelineModule } from './trans/guideline/guideline.module';
 import { AppController } from './app.controller';
 @Module({
   imports: [
@@ -279,7 +280,8 @@ import { AppController } from './app.controller';
     BadgeModule,
     StickerCategoryModule,
     NewPostModule,
-    FiltercategoryModule
+    FiltercategoryModule,
+    GuidelineModule
     //  ChallengeModule
   ], providers: [],
 })
