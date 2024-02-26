@@ -58,6 +58,24 @@ export class InsightsService {
     );
   }
 
+  async updateoneByID(id: string, CreateInsightsDto: CreateInsightsDto) {
+    this.InsightsModel.updateOne(
+      {
+        _id: id
+      },
+      {
+        $set: CreateInsightsDto
+      },
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
   async findAll(): Promise<Insights[]> {
     return this.InsightsModel.find().exec();
   }
@@ -99,6 +117,23 @@ export class InsightsService {
     this.InsightsModel.updateOne(
       {
         email: email,
+      },
+      { $inc: { followings: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateFollowingByID(id: string) {
+    
+    this.InsightsModel.updateOne(
+      {
+        _id: id
       },
       { $inc: { followings: 1 } },
       function (err, docs) {
@@ -310,6 +345,23 @@ export class InsightsService {
     );
   }
 
+  async updateFollowerByID(id: string) {
+    
+    this.InsightsModel.updateOne(
+      {
+        _id: id
+      },
+      { $inc: { followers: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
   async updateComment(email: string) {
     this.InsightsModel.updateOne(
       {
@@ -342,10 +394,44 @@ export class InsightsService {
     );
   }
 
+  async updateLikeByID(id: string) {
+    
+    this.InsightsModel.updateOne(
+      {
+        _id: id
+      },
+      { $inc: { likes: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
   async updateUnlike(email: string) {
     this.InsightsModel.updateOne(
       {
         email: email,
+      },
+      { $inc: { likes: -1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateUnlikeByID(id: string) {
+    
+    this.InsightsModel.updateOne(
+      {
+        _id: id
       },
       { $inc: { likes: -1 } },
       function (err, docs) {
@@ -374,10 +460,44 @@ export class InsightsService {
     );
   }
 
+  async updateUnFollowerByID(id: string) {
+    
+    this.InsightsModel.updateOne(
+      {
+        _id: id
+      },
+      { $inc: { followers: -1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
   async updateUnFollowing(email: string) {
     this.InsightsModel.updateOne(
       {
         email: email,
+      },
+      { $inc: { followings: -1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateUnFollowingByID(id: string) {
+    
+    this.InsightsModel.updateOne(
+      {
+        _id: id
       },
       { $inc: { followings: -1 } },
       function (err, docs) {
@@ -406,6 +526,23 @@ export class InsightsService {
     );
   }
 
+  async updateUnFollowByID(id: string) {
+    
+    this.InsightsModel.updateOne(
+      {
+        _id: id
+      },
+      { $inc: { unfollows: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
   async updateReactions(email: string) {
     this.InsightsModel.updateOne(
       {
@@ -422,10 +559,44 @@ export class InsightsService {
     );
   }
 
+  async updateReactionsByID(id: string) {
+    
+    this.InsightsModel.updateOne(
+      {
+        _id: id
+      },
+      { $inc: { reactions: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
   async updateViews(email: string) {
     this.InsightsModel.updateOne(
       {
         email: email,
+      },
+      { $inc: { views: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateViewsByID(id: string) {
+    
+    this.InsightsModel.updateOne(
+      {
+        _id: id
       },
       { $inc: { views: 1 } },
       function (err, docs) {
