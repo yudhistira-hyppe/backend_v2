@@ -131,6 +131,7 @@ export class GuidelineService {
                     title_en: 1,
                     value_id: 1,
                     value_en: 1,
+                    createdAt: 1,
                     updatedAt: 1,
                     isActive: 1,
                     status: 1,
