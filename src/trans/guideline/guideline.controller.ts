@@ -27,6 +27,7 @@ export class GuidelineController {
             request_json.status = 'DRAFT';
             request_json.isActive = true;
             request_json.approvedBy = null;
+            request_json.approvedAt = null;
             let data = await this.getGuidelineService.create(request_json);
             res.send({ response_code: 202, data });
             return { response_code: 202, data };
