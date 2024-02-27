@@ -75,4 +75,14 @@ export class GuidelineController {
             return { response_code: 202, data };
         } else { throw new BadRequestException("Missing id parameter"); }
     }
+
+    @Post("/approve")
+    @UseGuards(JwtAuthGuard)
+    async approve(@Req() request: Request, @Headers() headers, @Res() res): Promise<any> {
+        const userdata = await this.basic2SS.findBymail(headers['x-auth-user']);
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        let data = await this.getGuidelineService.approve(request_json.id, userdata._id);
+        res.send({ response_code: 202, data });
+        return { response_code: 202, data };
+    }
 }

@@ -44,6 +44,20 @@ export class GuidelineService {
             return data;
         }
     }
+    async approve(id: string, approver: mongoose.Types.ObjectId): Promise<Guideline> {
+        let now = new Date(Date.now());
+        let data = await this.guidelineModel.findByIdAndUpdate(id,
+            {
+                status: "APPROVED",
+                updatedAt: now,
+                approvedAt: now,
+                approvedBy: approver
+            },
+            { new: true }
+        );
+        if (!data) throw new Error('Todo is not found');
+        return data;
+    }
     async listAll(skip: number, limit: number, descending: boolean, language: string, isActive: boolean): Promise<any> {
         let order = descending ? -1 : 1;
         let pipeline = [];
