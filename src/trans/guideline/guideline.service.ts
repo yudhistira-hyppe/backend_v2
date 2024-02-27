@@ -24,7 +24,8 @@ export class GuidelineService {
     async delete(id: string): Promise<Guideline> {
         let data = await this.guidelineModel.findByIdAndUpdate(id, {
             isActive: false,
-            updatedAt: new Date(Date.now())
+            updatedAt: new Date(Date.now()),
+            isDeleted: true
         }, { new: true });
         if (!data) throw new Error('Todo is not found');
         return data;

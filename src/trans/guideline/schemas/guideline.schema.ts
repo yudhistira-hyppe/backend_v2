@@ -36,6 +36,8 @@ export class Guideline {
     updatedBy: mongoose.Schema.Types.ObjectId;
     @Prop()
     approvedBy: mongoose.Schema.Types.ObjectId;
+    @Prop()
+    isDeleted: boolean
 }
 
 export const GuidelineSchema = SchemaFactory.createForClass(Guideline);
