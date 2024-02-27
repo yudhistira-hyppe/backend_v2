@@ -61,8 +61,18 @@ export class GuidelineController {
         let skip = request_json.page * request_json.limit;
         let isActive = undefined;
         if (request_json.filterIsActive) isActive = request_json.isActive;
-        let data = await this.getGuidelineService.listAll(skip, request_json.limit, request_json.descending, isActive);
+        let data = await this.getGuidelineService.listAll(skip, request_json.limit, request_json.descending, request_json.language, isActive);
         res.send({ response_code: 202, data });
         return { response_code: 202, data };
+    }
+
+    @Get("/:id")
+    @UseGuards(JwtAuthGuard)
+    async get(@Param('id') id: string, @Headers() Headers, @Res() res): Promise<any> {
+        if (id && id !== undefined) {
+            let data = await this.getGuidelineService.findById(id);
+            res.send({ response_code: 202, data });
+            return { response_code: 202, data };
+        } else { throw new BadRequestException("Missing id parameter"); }
     }
 }

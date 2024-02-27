@@ -44,7 +44,7 @@ export class GuidelineService {
             return data;
         }
     }
-    async listAll(skip: number, limit: number, descending: boolean, isActive: boolean): Promise<any> {
+    async listAll(skip: number, limit: number, descending: boolean, language: string, isActive: boolean): Promise<any> {
         let order = descending ? -1 : 1;
         let pipeline = [];
         pipeline.push({
@@ -60,16 +60,36 @@ export class GuidelineService {
                     'isActive': isActive
                 }
             })
+        };
+        if (language == 'en') {
+            pipeline.push({
+                "$match":
+                {
+                    'value_en': {
+                        $ne: null
+                    }
+                }
+            });
+        } else if (language == 'id') {
+            pipeline.push({
+                "$match":
+                {
+                    'value_id': {
+                        $ne: null
+                    }
+                }
+            });
         }
-        pipeline.push({
-            "$lookup":
+        pipeline.push(
             {
-                from: 'newUserBasics',
-                localField: 'createdBy',
-                foreignField: '_id',
-                as: 'creator'
+                "$lookup":
+                {
+                    from: 'newUserBasics',
+                    localField: 'createdBy',
+                    foreignField: '_id',
+                    as: 'creator'
+                },
             },
-        },
             {
                 "$lookup":
                 {
@@ -127,7 +147,8 @@ export class GuidelineService {
                         },
                     }
                 },
-            });
+            }
+        );
         if (skip > 0) {
             pipeline.push({ $skip: skip });
         }
