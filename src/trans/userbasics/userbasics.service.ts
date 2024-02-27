@@ -8518,14 +8518,14 @@ export class UserbasicsService {
         }
         console.log("skip", skip)
         console.log("limit", limit)
-        await this.migrtionQuery(skip, limit);
+        await this.migrtionQuery(mingrionRun_.out,skip, limit);
       }
     } else {
       await this.migrtionQuery();
     }
   }
 
-  async migrtionQuery(skip?: number, limit?:number){
+  async migrtionQuery(out?:string, skip?: number, limit?:number){
     let aggregate = [];
     aggregate.push({
       $sort: {
@@ -8548,28 +8548,28 @@ export class UserbasicsService {
     }
 
     aggregate.push({
-      "$lookup": {
-        from: "userauths",
-        as: "authUser",
-        let: {
-          localID: "$email"
-        },
-        pipeline: [
-          {
-            $match:
-            {
-              $and: [
-                {
-                  $expr: {
-                    $eq: ['$email', '$$localID']
-                  }
-                },
-              ]
-            },
+        "$lookup": {
+          from: "userauths",
+          as: "authUser",
+          let: {
+            localID: "$email"
           },
-        ],
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$email', '$$localID']
+                    }
+                  },
+                ]
+              },
+            },
+          ],
+        },
       },
-    },
       {
         $unwind: {
           path: "$authUser",
@@ -9171,7 +9171,7 @@ export class UserbasicsService {
       },
       {
         $merge: {
-          into: "testUserBasics",
+          into: out,
           on: "_id",
           whenMatched: "replace",
           whenNotMatched: "insert"
