@@ -60,9 +60,7 @@ export class GuidelineController {
     async list(@Req() request: Request, @Headers() headers, @Res() res): Promise<any> {
         var request_json = JSON.parse(JSON.stringify(request.body));
         let skip = request_json.page * request_json.limit;
-        let isActive = undefined;
-        if (request_json.filterIsActive) isActive = request_json.isActive;
-        let data = await this.getGuidelineService.listAll(skip, request_json.limit, request_json.descending, request_json.language, isActive);
+        let data = await this.getGuidelineService.listAll(skip, request_json.limit, request_json.descending, request_json.language, request_json.isActive);
         res.send({ response_code: 202, data });
         return { response_code: 202, data };
     }
