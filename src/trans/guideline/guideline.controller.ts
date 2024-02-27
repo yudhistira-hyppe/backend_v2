@@ -24,7 +24,7 @@ export class GuidelineController {
             request_json.createdAt = new Date(Date.now());
             request_json.updatedAt = new Date(Date.now());
             request_json.createdBy = userdata._id;
-            request_json.status = 'DRAFT';
+            // request_json.status = 'DRAFT';
             request_json.isActive = true;
             request_json.approvedBy = null;
             request_json.approvedAt = null;
