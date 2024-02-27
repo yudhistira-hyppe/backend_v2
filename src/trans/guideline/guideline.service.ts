@@ -58,7 +58,7 @@ export class GuidelineService {
         if (!data) throw new Error('Todo is not found');
         return data;
     }
-    async listAll(skip: number, limit: number, descending: boolean, language?: string, isActive?: boolean): Promise<any> {
+    async listAll(skip: number, limit: number, descending: boolean, language?: string, isActive?: boolean, name?: string): Promise<any> {
         let order = descending ? -1 : 1;
         let pipeline = [];
         pipeline.push({
@@ -73,8 +73,16 @@ export class GuidelineService {
                 {
                     'isActive': isActive
                 }
-            })
-        };
+            });
+        }
+        if (name && name !== undefined) {
+            pipeline.push({
+                "$match":
+                {
+                    'name': new RegExp(name, "i")
+                }
+            });
+        }
         if (language && language == 'en') {
             pipeline.push({
                 "$match":
