@@ -351,24 +351,27 @@ export class GuidelineService {
     }
     async reject(id: string, rejecter: mongoose.Types.ObjectId): Promise<Guideline> {
         let now = new Date(Date.now());
-        let data_old = await this.guidelineModel.findByIdAndUpdate(id,
-            {
-                status: "REJECTED",
-                updatedAt: now,
-                rejectedAt: now,
-                rejectedBy: rejecter,
-                isActive: false
-            },
-            { new: true }
-        );
-        if (!data_old) throw new Error('Old todo is not found');
-        let new_data = JSON.parse(JSON.stringify(data_old.toJSON()));
-        new_data._id = new mongoose.Types.ObjectId();
-        new_data.status = "DRAFT";
-        new_data.isActive = true;
-        let data = await this.guidelineModel.create(new_data);
-        if (!data) throw new Error('Todo is not found');
-        return data;
+        let toReject = await this.guidelineModel.findById(id);
+        if (toReject.status !== "REJECTED") {
+            let data_old = await this.guidelineModel.findByIdAndUpdate(id,
+                {
+                    status: "REJECTED",
+                    updatedAt: now,
+                    rejectedAt: now,
+                    rejectedBy: rejecter,
+                    isActive: false
+                },
+                { new: true }
+            );
+            if (!data_old) throw new Error('Old todo is not found');
+            let new_data = JSON.parse(JSON.stringify(data_old.toJSON()));
+            new_data._id = new mongoose.Types.ObjectId();
+            new_data.status = "DRAFT";
+            new_data.isActive = true;
+            let data = await this.guidelineModel.create(new_data);
+            if (!data) throw new Error('Todo is not found');
+            return data;
+        } else { throw new Error('Guideline is already rejected'); }
     }
     async listAll(skip: number, limit: number, descending: boolean, language?: string, isActive?: boolean, name?: string): Promise<any> {
         let order = descending ? -1 : 1;
