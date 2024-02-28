@@ -362,10 +362,11 @@ export class GuidelineService {
             { new: true }
         );
         if (!data_old) throw new Error('Old todo is not found');
-        data_old._id = new mongoose.Types.ObjectId();
-        data_old.status = "DRAFT";
-        data_old.isActive = true;
-        let data = await this.guidelineModel.create(data_old);
+        let new_data = JSON.parse(JSON.stringify(data_old.toJSON()));
+        new_data._id = new mongoose.Types.ObjectId();
+        new_data.status = "DRAFT";
+        new_data.isActive = true;
+        let data = await this.guidelineModel.create(new_data);
         if (!data) throw new Error('Todo is not found');
         return data;
     }
