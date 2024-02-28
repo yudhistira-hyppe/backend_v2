@@ -337,17 +337,20 @@ export class GuidelineService {
     }
     async approve(id: string, approver: mongoose.Types.ObjectId): Promise<Guideline> {
         let now = new Date(Date.now());
-        let data = await this.guidelineModel.findByIdAndUpdate(id,
-            {
-                status: "APPROVED",
-                updatedAt: now,
-                approvedAt: now,
-                approvedBy: approver
-            },
-            { new: true }
-        );
-        if (!data) throw new Error('Todo is not found');
-        return data;
+        let toApprove = await this.guidelineModel.findById(id);
+        if (toApprove.status !== "APPROVED") {
+            let data = await this.guidelineModel.findByIdAndUpdate(id,
+                {
+                    status: "APPROVED",
+                    updatedAt: now,
+                    approvedAt: now,
+                    approvedBy: approver
+                },
+                { new: true }
+            );
+            if (!data) throw new Error('Todo is not found');
+            return data;
+        } else { throw new Error('Guideline is already approved'); }
     }
     async reject(id: string, rejecter: mongoose.Types.ObjectId): Promise<Guideline> {
         let now = new Date(Date.now());
