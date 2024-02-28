@@ -719,6 +719,15 @@ export class GuidelineService {
                 },
             },
             {
+                "$lookup":
+                {
+                    from: 'newUserBasics',
+                    localField: 'rejectedBy',
+                    foreignField: '_id',
+                    as: 'rejecter'
+                },
+            },
+            {
                 "$project":
                 {
                     _id: 1,
@@ -732,6 +741,7 @@ export class GuidelineService {
                     isActive: 1,
                     status: 1,
                     approvedAt: 1,
+                    rejectedAt: 1,
                     creatorUsername: {
                         $arrayElemAt: ['$creator.username', 0]
                     },
@@ -764,6 +774,23 @@ export class GuidelineService {
                         },
                         mediaEndpoint: {
                             $arrayElemAt: ['$approver.mediaEndpoint', 0]
+                        },
+                    },
+                    rejecterUsername: {
+                        $arrayElemAt: ['$rejecter.username', 0]
+                    },
+                    rejecterFullname: {
+                        $arrayElemAt: ['$rejecter.fullName', 0]
+                    },
+                    rejecterAvatar: {
+                        mediaBasePath: {
+                            $arrayElemAt: ['$rejecter.mediaBasePath', 0]
+                        },
+                        mediaUri: {
+                            $arrayElemAt: ['$rejecter.mediaUri', 0]
+                        },
+                        mediaEndpoint: {
+                            $arrayElemAt: ['$rejecter.mediaEndpoint', 0]
                         },
                     }
                 },
