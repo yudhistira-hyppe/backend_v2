@@ -23,7 +23,7 @@ export class GuidelineService {
     async create(CreateGuidelineDto: any, username: string): Promise<Guideline> {
         let data = await this.guidelineModel.create(CreateGuidelineDto);
         if (CreateGuidelineDto.status == "SUBMITTED") {
-            CreateGuidelineDto.redirectUrl += CreateGuidelineDto._id;
+            // CreateGuidelineDto.redirectUrl += CreateGuidelineDto._id;
             let lookupData = await this.moduleService.listModuleGroupUsers("community_support");
             // let lookupData = [{
             //     userdata: [
