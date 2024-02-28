@@ -47,15 +47,15 @@ export class GuidelineService {
             if (data_old.status == "DRAFT") {
                 if (CreateGuidelineDto.status == "SUBMITTED") {
                     CreateGuidelineDto.redirectUrl += id;
-                    // let lookupData = await this.moduleService.listModuleGroupUsers("community_support");
-                    let lookupData = [{
-                        userdata: [
-                            {
-                                fullName: "Haris Dwi Prakoso",
-                                email: "harisdwi.prakoso@gmail.com"
-                            },
-                        ]
-                    }]
+                    let lookupData = await this.moduleService.listModuleGroupUsers("community_support");
+                    // let lookupData = [{
+                    //     userdata: [
+                    //         {
+                    //             fullName: "Haris Dwi Prakoso",
+                    //             email: "harisdwi.prakoso@gmail.com"
+                    //         },
+                    //     ]
+                    // }]
                     for (let user of lookupData[0].userdata) {
                         await this.utilsService.sendEmail(user.email, "no-reply@hyppe.app", "Permintaan Persetujuan Perubahan Panduan Komunitas", `<!DOCTYPE html>
                         <html>
