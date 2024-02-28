@@ -30,7 +30,7 @@ export class GuidelineController {
             request_json.approvedAt = null;
             request_json.isDeleted = false;
             if (request_json.status == 'SUBMITTED') { request_json.redirectUrl += request_json._id.toString(); }
-            let data = await this.getGuidelineService.create(request_json);
+            let data = await this.getGuidelineService.create(request_json, userdata.fullName.toString());
             res.send({ response_code: 202, data });
             return { response_code: 202, data };
         } else { throw new BadRequestException("Name already exists"); }
