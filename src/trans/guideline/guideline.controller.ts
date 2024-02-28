@@ -29,6 +29,7 @@ export class GuidelineController {
             request_json.approvedBy = null;
             request_json.approvedAt = null;
             request_json.isDeleted = false;
+            if (request_json.status == 'SUBMITTED') { request_json.redirectUrl += request_json._id.toString(); }
             let data = await this.getGuidelineService.create(request_json);
             res.send({ response_code: 202, data });
             return { response_code: 202, data };
@@ -42,7 +43,7 @@ export class GuidelineController {
         var request_json = JSON.parse(JSON.stringify(request.body));
         request_json.updatedAt = new Date(Date.now());
         request_json.updatedBy = userdata._id;
-        let data = await this.getGuidelineService.update(request_json.id, request_json);
+        let data = await this.getGuidelineService.update(request_json.id, request_json, userdata.fullName.toString());
         res.send({ response_code: 202, data });
         return { response_code: 202, data };
     }
@@ -82,6 +83,16 @@ export class GuidelineController {
         const userdata = await this.basic2SS.findBymail(headers['x-auth-user']);
         var request_json = JSON.parse(JSON.stringify(request.body));
         let data = await this.getGuidelineService.approve(request_json.id, userdata._id);
+        res.send({ response_code: 202, data });
+        return { response_code: 202, data };
+    }
+
+    @Post("/reject")
+    @UseGuards(JwtAuthGuard)
+    async reject(@Req() request: Request, @Headers() headers, @Res() res): Promise<any> {
+        const userdata = await this.basic2SS.findBymail(headers['x-auth-user']);
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        let data = await this.getGuidelineService.reject(request_json.id, userdata._id);
         res.send({ response_code: 202, data });
         return { response_code: 202, data };
     }

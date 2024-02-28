@@ -5,10 +5,12 @@ import { ConfigModule } from '@nestjs/config';
 import { Guideline, GuidelineSchema } from './schemas/guideline.schema';
 import { GuidelineController } from './guideline.controller';
 import { UserbasicnewModule } from 'src/trans/userbasicnew/userbasicnew.module';
+import { UtilsModule } from 'src/utils/utils.module';
+import { ModuleModule } from '../usermanagement/module/module.module';
 
 @Module({
     imports: [
-        ConfigModule.forRoot(), UserbasicnewModule,
+        ConfigModule.forRoot(), UserbasicnewModule, UtilsModule, ModuleModule,
 
         MongooseModule.forFeature([{ name: Guideline.name, schema: GuidelineSchema }], 'SERVER_FULL'),
 

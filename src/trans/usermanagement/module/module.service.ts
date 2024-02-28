@@ -111,4 +111,44 @@ export class ModuleService {
     async delete(_id: String) {
         return await this.moduleModel.findByIdAndRemove({ _id: _id }).exec();
     }
+
+    async listModuleGroupUsers(moduleName: string) {
+        let data = await this.moduleModel.aggregate([
+            {
+                "$match": {
+                    "nameModule": moduleName
+                }
+            },
+            {
+                "$lookup": {
+                    from: "groupmodule",
+                    localField: "_id",
+                    foreignField: "module",
+                    as: "groupModule"
+                }
+            },
+            {
+                "$lookup": {
+                    from: "group",
+                    localField: "groupModule.group",
+                    foreignField: "_id",
+                    as: "group"
+                }
+            },
+            {
+                "$lookup": {
+                    from: "newUserBasics",
+                    localField: "group.userbasics",
+                    foreignField: "_id",
+                    as: "userdata"
+                }
+            },
+            {
+                "$project": {
+                    userdata: 1
+                }
+            }
+        ]);
+        return data;
+    }
 }

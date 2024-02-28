@@ -27,6 +27,8 @@ export class Guideline {
     @Prop()
     approvedAt: String;
     @Prop()
+    rejectedAt: String;
+    @Prop()
     isActive: boolean;
     @Prop()
     status: String;
@@ -37,7 +39,11 @@ export class Guideline {
     @Prop()
     approvedBy: mongoose.Schema.Types.ObjectId;
     @Prop()
-    isDeleted: boolean
+    rejectedBy: mongoose.Schema.Types.ObjectId;
+    @Prop()
+    isDeleted: boolean;
+    @Prop()
+    redirectUrl: String;
 }
 
 export const GuidelineSchema = SchemaFactory.createForClass(Guideline);
