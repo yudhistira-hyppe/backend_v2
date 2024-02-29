@@ -46,6 +46,8 @@ export class Guideline {
     redirectUrl: String;
     @Prop()
     parentId: mongoose.Schema.Types.ObjectId;
+    @Prop()
+    childId: mongoose.Schema.Types.ObjectId;
 }
 
 export const GuidelineSchema = SchemaFactory.createForClass(Guideline);
