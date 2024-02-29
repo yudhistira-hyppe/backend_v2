@@ -13,9 +13,10 @@ export class GuidelineService {
         private readonly guidelineModel: Model<GuidelineDocument>,
         private readonly utilsService: UtilsService,
         private readonly moduleService: ModuleService,
-        private readonly templateService: TemplatesRepoService,
-        private readonly approverModule: "community_approval"
+        private readonly templateService: TemplatesRepoService
     ) { }
+
+    private approverModule = "community_approval";
 
     async findById(id: string): Promise<Guideline> {
         return this.guidelineModel.findById(id);
