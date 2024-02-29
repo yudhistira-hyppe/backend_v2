@@ -25,7 +25,6 @@ export class GuidelineService {
     async create(CreateGuidelineDto: any, username: string): Promise<Guideline> {
         let data = await this.guidelineModel.create(CreateGuidelineDto);
         if (CreateGuidelineDto.status == "SUBMITTED") {
-            // CreateGuidelineDto.redirectUrl += CreateGuidelineDto._id;
             let lookupData = await this.moduleService.listModuleGroupUsers("community_support");
             // let lookupData = [{
             //     userdata: [
@@ -74,7 +73,7 @@ export class GuidelineService {
                     //     ]
                     // }]
                     for (let user of lookupData[0].userdata) {
-                        await this.sendRequestEmail(user.email, user.fullName, username, data_old.name.toString(), CreateGuidelineDto.updatedAt, data_old.remark.toString(), CreateGuidelineDto.redirectUrl);
+                        this.sendRequestEmail(user.email, user.fullName, username, data_old.name.toString(), CreateGuidelineDto.updatedAt, data_old.remark.toString(), CreateGuidelineDto.redirectUrl);
                     }
                 };
                 data = await this.guidelineModel.findByIdAndUpdate(id, CreateGuidelineDto, { new: true });
@@ -86,7 +85,7 @@ export class GuidelineService {
                     CreateGuidelineDto.redirectUrl += CreateGuidelineDto._id;
                     let lookupData = await this.moduleService.listModuleGroupUsers("community_support");
                     for (let user of lookupData[0].userdata) {
-                        await this.sendRequestEmail(user.email, user.fullName, username, data_old.name.toString(), CreateGuidelineDto.updatedAt, data_old.remark.toString(), CreateGuidelineDto.redirectUrl);
+                        this.sendRequestEmail(user.email, user.fullName, username, data_old.name.toString(), CreateGuidelineDto.updatedAt, data_old.remark.toString(), CreateGuidelineDto.redirectUrl);
                     }
                 }
             } else {
