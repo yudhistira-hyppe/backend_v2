@@ -44,6 +44,8 @@ export class Guideline {
     isDeleted: boolean;
     @Prop()
     redirectUrl: String;
+    @Prop()
+    parentId: mongoose.Schema.Types.ObjectId;
 }
 
 export const GuidelineSchema = SchemaFactory.createForClass(Guideline);
