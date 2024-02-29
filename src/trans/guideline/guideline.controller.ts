@@ -4,13 +4,15 @@ import { Res, HttpStatus, Response, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { GuidelineService } from './guideline.service';
 import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service';
+import { UtilsService } from 'src/utils/utils.service';
 import mongoose, { Types } from 'mongoose';
 
 @Controller('api/guidelines')
 export class GuidelineController {
     constructor(
         private readonly getGuidelineService: GuidelineService,
-        private readonly basic2SS: UserbasicnewService
+        private readonly basic2SS: UserbasicnewService,
+        private readonly utilsService: UtilsService
     ) { }
 
     @Post()
@@ -21,8 +23,8 @@ export class GuidelineController {
         let checkDuplicate = await this.getGuidelineService.findByName(request_json.name);
         if (!checkDuplicate) {
             request_json._id = new mongoose.Types.ObjectId();
-            request_json.createdAt = new Date(Date.now());
-            request_json.updatedAt = new Date(Date.now());
+            request_json.createdAt = this.utilsService.getDateTimeString();
+            request_json.updatedAt = this.utilsService.getDateTimeString();
             request_json.createdBy = userdata._id;
             // request_json.status = 'DRAFT';
             request_json.isActive = true;
@@ -41,7 +43,7 @@ export class GuidelineController {
     async update(@Req() request: Request, @Headers() headers, @Res() res): Promise<any> {
         const userdata = await this.basic2SS.findBymail(headers['x-auth-user']);
         var request_json = JSON.parse(JSON.stringify(request.body));
-        request_json.updatedAt = new Date(Date.now());
+        request_json.updatedAt = this.utilsService.getDateTimeString();
         request_json.updatedBy = userdata._id;
         let data = await this.getGuidelineService.update(request_json.id, request_json, userdata.fullName.toString());
         res.send({ response_code: 202, data });

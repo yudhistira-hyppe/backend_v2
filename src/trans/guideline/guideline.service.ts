@@ -307,7 +307,7 @@ export class GuidelineService {
     async delete(id: string): Promise<Guideline> {
         let data = await this.guidelineModel.findByIdAndUpdate(id, {
             isActive: false,
-            updatedAt: new Date(Date.now()),
+            updatedAt: this.utilsService.getDateTimeString(),
             isDeleted: true
         }, { new: true });
         if (!data) throw new Error('Todo is not found');
@@ -609,7 +609,7 @@ export class GuidelineService {
                 CreateGuidelineDto._id = new mongoose.Types.ObjectId();
                 data = await this.guidelineModel.create(CreateGuidelineDto);
                 if (CreateGuidelineDto.status == "SUBMITTED") {
-                    CreateGuidelineDto.redirectUrl += id;
+                    CreateGuidelineDto.redirectUrl += CreateGuidelineDto._id;
                     let lookupData = await this.moduleService.listModuleGroupUsers("community_support");
                     for (let user of lookupData[0].userdata) {
                         await this.utilsService.sendEmail(user.email, "no-reply@hyppe.app", "Permintaan Persetujuan Perubahan Panduan Komunitas", `<!DOCTYPE html>
@@ -890,7 +890,7 @@ export class GuidelineService {
         }
     }
     async approve(id: string, approver: mongoose.Types.ObjectId): Promise<Guideline> {
-        let now = new Date(Date.now());
+        let now = this.utilsService.getDateTimeString();
         let toApprove = await this.guidelineModel.findById(id);
         if (toApprove.status !== "APPROVED") {
             let data = await this.guidelineModel.findByIdAndUpdate(id,
@@ -914,7 +914,7 @@ export class GuidelineService {
         } else { throw new Error('Guideline is already approved'); }
     }
     async reject(id: string, rejecter: mongoose.Types.ObjectId): Promise<Guideline> {
-        let now = new Date(Date.now());
+        let now = this.utilsService.getDateTimeString();
         let toReject = await this.guidelineModel.findById(id);
         if (toReject.status !== "REJECTED") {
             let data_old = await this.guidelineModel.findByIdAndUpdate(id,
