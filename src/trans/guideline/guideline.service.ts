@@ -80,6 +80,7 @@ export class GuidelineService {
             } else if (data_old.status == "APPROVED") {
                 CreateGuidelineDto.parentId = data_old._id;
                 CreateGuidelineDto._id = new mongoose.Types.ObjectId();
+                CreateGuidelineDto.isDeleted = false;
                 data_old = await this.guidelineModel.findByIdAndUpdate(id, { childId: CreateGuidelineDto._id }, { new: true });
                 data = await this.guidelineModel.create(CreateGuidelineDto);
                 if (CreateGuidelineDto.status == "SUBMITTED") {
@@ -92,6 +93,7 @@ export class GuidelineService {
             } else {
                 CreateGuidelineDto.parentId = data_old._id;
                 CreateGuidelineDto._id = new mongoose.Types.ObjectId();
+                CreateGuidelineDto.isDeleted = false;
                 data_old = await this.guidelineModel.findByIdAndUpdate(id, { isActive: false, childId: CreateGuidelineDto._id }, { new: true });
                 data = await this.guidelineModel.create(CreateGuidelineDto);
             }
@@ -142,6 +144,7 @@ export class GuidelineService {
             new_data._id = new mongoose.Types.ObjectId();
             new_data.status = "DRAFT";
             new_data.isActive = true;
+            new_data.isDeleted = false;
             let data = await this.guidelineModel.create(new_data);
             if (!data) throw new Error('Todo is not found');
             return data;
