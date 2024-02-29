@@ -13,7 +13,8 @@ export class GuidelineService {
         private readonly guidelineModel: Model<GuidelineDocument>,
         private readonly utilsService: UtilsService,
         private readonly moduleService: ModuleService,
-        private readonly templateService: TemplatesRepoService
+        private readonly templateService: TemplatesRepoService,
+        private readonly approverModule: "community_approval"
     ) { }
 
     async findById(id: string): Promise<Guideline> {
@@ -25,7 +26,7 @@ export class GuidelineService {
     async create(CreateGuidelineDto: any, username: string): Promise<Guideline> {
         let data = await this.guidelineModel.create(CreateGuidelineDto);
         if (CreateGuidelineDto.status == "SUBMITTED") {
-            let lookupData = await this.moduleService.listModuleGroupUsers("community_support");
+            let lookupData = await this.moduleService.listModuleGroupUsers(this.approverModule);
             // let lookupData = [{
             //     userdata: [
             //         {
@@ -63,7 +64,7 @@ export class GuidelineService {
             if (data_old.status == "DRAFT") {
                 if (CreateGuidelineDto.status == "SUBMITTED") {
                     CreateGuidelineDto.redirectUrl += id;
-                    let lookupData = await this.moduleService.listModuleGroupUsers("community_support");
+                    let lookupData = await this.moduleService.listModuleGroupUsers(this.approverModule);
                     // let lookupData = [{
                     //     userdata: [
                     //         {
@@ -85,7 +86,7 @@ export class GuidelineService {
                 data = await this.guidelineModel.create(CreateGuidelineDto);
                 if (CreateGuidelineDto.status == "SUBMITTED") {
                     CreateGuidelineDto.redirectUrl += CreateGuidelineDto._id;
-                    let lookupData = await this.moduleService.listModuleGroupUsers("community_support");
+                    let lookupData = await this.moduleService.listModuleGroupUsers(this.approverModule);
                     for (let user of lookupData[0].userdata) {
                         this.sendRequestEmail(user.email, user.fullName, username, data_old.name.toString(), CreateGuidelineDto.updatedAt, data_old.remark.toString(), CreateGuidelineDto.redirectUrl);
                     }
