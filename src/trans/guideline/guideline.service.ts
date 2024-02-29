@@ -661,7 +661,7 @@ export class GuidelineService {
         pipeline.push({
             "$sort":
             {
-                'createdAt': order
+                'updatedAt': order
             }
         });
         if (isActive !== undefined) {
