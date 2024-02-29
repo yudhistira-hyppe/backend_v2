@@ -23,8 +23,8 @@ export class GuidelineController {
         let checkDuplicate = await this.getGuidelineService.findByName(request_json.name);
         if (!checkDuplicate) {
             request_json._id = new mongoose.Types.ObjectId();
-            request_json.createdAt = this.utilsService.getDateTimeString();
-            request_json.updatedAt = this.utilsService.getDateTimeString();
+            request_json.createdAt = await this.utilsService.getDateTimeString();
+            request_json.updatedAt = await this.utilsService.getDateTimeString();
             request_json.createdBy = userdata._id;
             // request_json.status = 'DRAFT';
             request_json.isActive = true;
@@ -43,7 +43,7 @@ export class GuidelineController {
     async update(@Req() request: Request, @Headers() headers, @Res() res): Promise<any> {
         const userdata = await this.basic2SS.findBymail(headers['x-auth-user']);
         var request_json = JSON.parse(JSON.stringify(request.body));
-        request_json.updatedAt = this.utilsService.getDateTimeString();
+        request_json.updatedAt = await this.utilsService.getDateTimeString();
         request_json.updatedBy = userdata._id;
         let data = await this.getGuidelineService.update(request_json.id, request_json, userdata.fullName.toString());
         res.send({ response_code: 202, data });
