@@ -78,7 +78,7 @@ export class GuidelineService {
                 };
                 data = await this.guidelineModel.findByIdAndUpdate(id, CreateGuidelineDto, { new: true });
             } else if (data_old.status == "APPROVED") {
-                // CreateGuidelineDto.parentId = data_old._id;
+                CreateGuidelineDto.parentId = data_old._id;
                 CreateGuidelineDto._id = new mongoose.Types.ObjectId();
                 data_old = await this.guidelineModel.findByIdAndUpdate(id, { childId: CreateGuidelineDto._id }, { new: true });
                 data = await this.guidelineModel.create(CreateGuidelineDto);
@@ -90,7 +90,7 @@ export class GuidelineService {
                     }
                 }
             } else {
-                // CreateGuidelineDto.parentId = data_old._id;
+                CreateGuidelineDto.parentId = data_old._id;
                 CreateGuidelineDto._id = new mongoose.Types.ObjectId();
                 data_old = await this.guidelineModel.findByIdAndUpdate(id, { isActive: false, childId: CreateGuidelineDto._id }, { new: true });
                 data = await this.guidelineModel.create(CreateGuidelineDto);
