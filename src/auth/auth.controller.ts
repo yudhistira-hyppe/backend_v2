@@ -7423,6 +7423,7 @@ export class AuthController {
         "mobileNumber": datauserdetail[0].mobileNumber,
         "tempatLahir": tempatLahir,
         "statusUser": datauserdetail[0].statusUser,
+        "referralCount": datauserdetail[0].referralCount,
         "friend": lengfrend,
         "userbankaccounts": bankacount,
       };
