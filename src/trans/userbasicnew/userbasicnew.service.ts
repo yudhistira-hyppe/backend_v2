@@ -810,7 +810,41 @@ export class UserbasicnewService {
                                     areas: "$statesName",
                                     country: "$countriesName",
                                     city: "$citiesName",
-                                    gender: 1,
+                                    gender: {
+                                        $switch: {
+                                            branches: [
+                                                {
+                                                    case: { $eq: ["$gender", "Laki-laki"] },
+                                                    then: "MALE"
+                                                },
+                                                {
+                                                    case: { $eq: ["$gender", "Pria"] },
+                                                    then: "MALE"
+                                                },
+                                                {
+                                                    case: { $eq: ["$gender", "Female"] },
+                                                    then: "FEMALE"
+                                                },
+                                                {
+                                                    case: { $eq: ["$gender", "Wanita"] },
+                                                    then: "FEMALE"
+                                                },
+                                                {
+                                                    case: { $eq: ["$gender", "Perempuan"] },
+                                                    then: "FEMALE"
+                                                },
+                                                {
+                                                    case: { $eq: ["$gender", "MALE"] },
+                                                    then: "MALE"
+                                                },
+                                                {
+                                                    case: { $eq: ["$gender", "FEMALE"] },
+                                                    then: "FEMALE"
+                                                },
+                                            ],
+                                            "default": "OTHER"
+                                        }
+                                    },
                                     createdAt: 1,
                                     idProofNumber: 1,
                                     mobileNumber: 1,
