@@ -664,6 +664,66 @@ export class UserbasicnewService {
             {
                 $lookup:
                 {
+                    from: 'referral',
+                    let:
+                    {
+                        "fk_id": "$email"
+                    },
+                    as:"invitation",
+                    pipeline: 
+                    [
+                        {
+                            "$match":
+                            {
+                                "$expr":
+                                {
+                                    "$eq":
+                                    [
+                                        "$children",
+                                        "$$fk_id"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$sort":
+                            {
+                                createdAt:1
+                            }
+                        },
+                        {
+                            "$limit":1
+                        },
+                        {
+                            $lookup:
+                            {
+                                from: 'newUserBasics',
+                                localField: 'parent',
+                                foreignField: 'email',
+                                as: 'detail_user',
+                            },
+                        },
+                        {
+                            "$unwind":
+                            {
+                                path:"$newUserBasics"
+                            }
+                        },
+                        {
+                            "$project":
+                            {
+                                _id:"$newUserBasics._id",
+                                fullName:"$newUserBasics.fullName",
+                                email:"$newUserBasics.email",
+                                username:"$newUserBasics.username",
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                $lookup:
+                {
                     from: 'userbankaccounts',
                     let:
                     {
@@ -764,6 +824,27 @@ export class UserbasicnewService {
                                             {
                                                 "$size":"$total_referral"
                                             }, 0
+                                        ]
+                                    },
+                                    loginSrc:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            "$loginSrc",
+                                            "-"
+                                        ]
+                                    },
+                                    invitation:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$arrayElemAt":
+                                                [
+                                                    "$invitation", 0
+                                                ]
+                                            },
+                                            null
                                         ]
                                     },
                                     avatar:
@@ -1266,6 +1347,20 @@ export class UserbasicnewService {
                         "$arrayElemAt":
                             [
                                 "$detail.langIso", 0
+                            ]
+                    },
+                    loginSrc:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.loginSrc", 0
+                            ]
+                    },
+                    invitationDetail:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.invitation", 0
                             ]
                     },
                     statusUser:
