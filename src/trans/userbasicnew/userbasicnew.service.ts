@@ -655,6 +655,15 @@ export class UserbasicnewService {
             {
                 $lookup:
                 {
+                    from: 'referral',
+                    localField: 'email',
+                    foreignField: 'parent',
+                    as: 'total_referral',
+                },
+            },
+            {
+                $lookup:
+                {
                     from: 'userbankaccounts',
                     let:
                     {
@@ -748,6 +757,15 @@ export class UserbasicnewService {
                                     roles: 1,
                                     fullName: 1,
                                     bio: 1,
+                                    referralCount:
+                                    {
+                                        "$ifNull":
+                                        [
+                                            {
+                                                "$size":"$total_referral"
+                                            }, 0
+                                        ]
+                                    },
                                     avatar:
                                     {
                                         mediaBasePath:
@@ -1269,6 +1287,13 @@ export class UserbasicnewService {
                         "$arrayElemAt":
                             [
                                 "$detail.mediaId", 0
+                            ]
+                    },
+                    referralCount:
+                    {
+                        "$arrayElemAt":
+                            [
+                                "$detail.referralCount", 0
                             ]
                     },
                     loginSource:
