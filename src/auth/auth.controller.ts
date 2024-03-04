@@ -7424,6 +7424,8 @@ export class AuthController {
         "tempatLahir": tempatLahir,
         "statusUser": datauserdetail[0].statusUser,
         "referralCount": datauserdetail[0].referralCount,
+        "invitationDetail": datauserdetail[0].invitationDetail,
+        "loginSrc": datauserdetail[0].loginSrc,
         "friend": lengfrend,
         "userbankaccounts": bankacount,
       };
