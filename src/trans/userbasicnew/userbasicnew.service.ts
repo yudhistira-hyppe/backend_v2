@@ -706,16 +706,16 @@ export class UserbasicnewService {
                         {
                             "$unwind":
                             {
-                                path:"$newUserBasics"
+                                path:"$detail_user"
                             }
                         },
                         {
                             "$project":
                             {
-                                _id:"$newUserBasics._id",
-                                fullName:"$newUserBasics.fullName",
-                                email:"$newUserBasics.email",
-                                username:"$newUserBasics.username",
+                                _id:"$detail_user._id",
+                                fullName:"$detail_user.fullName",
+                                email:"$detail_user.email",
+                                username:"$detail_user.username",
                             }
                         }
                     ]
