@@ -59,7 +59,7 @@ export class ReferralService {
     return deletedCat;
   }
 
-  async listAll(parentEmail: string, fromDate?: string, toDate?: string) {
+  async listAll(parentEmail: string, fromDate?: string, toDate?: string, skip?: number, limit?: number) {
     let dataPipeline = [];
     dataPipeline.push({
       "$match": {
@@ -121,7 +121,8 @@ export class ReferralService {
                     $dateFromString: {
                       dateString: {
                         $arrayElemAt: ['$childData.dob', 0]
-                      }
+                      },
+                      onError: null
                     }
                   },
                   "endDate": "$$NOW",
@@ -154,6 +155,12 @@ export class ReferralService {
         }
       }
     )
+    if (skip > 0) {
+      dataPipeline.push({ $skip: skip });
+    }
+    if (limit > 0) {
+      dataPipeline.push({ $limit: limit });
+    }
     let data = await this.referralModel.aggregate([
       {
         "$facet": {
