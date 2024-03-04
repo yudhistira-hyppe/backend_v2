@@ -133,7 +133,70 @@ export class ReferralService {
             ]
           },
           childGender: {
-            $arrayElemAt: ['$childData.gender', 0]
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ['$childData.gender', 0] }, 'FEMALE']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ['$childData.gender', 0] }, ' FEMALE']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ['$childData.gender', 0] }, 'Perempuan']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ['$childData.gender', 0] }, 'Wanita']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ['$childData.gender', 0] }, 'MALE']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ['$childData.gender', 0] }, ' MALE']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ['$childData.gender', 0] }, 'Laki-laki']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: [{ $arrayElemAt: ['$childData.gender', 0] }, 'Pria']
+                  },
+                  then: 'MALE',
+
+                },
+
+              ],
+              default: "OTHER",
+
+            },
+            // $arrayElemAt: ['$childData.gender', 0]
           },
           childCity: {
             $arrayElemAt: ['$childData.citiesName', 0]
