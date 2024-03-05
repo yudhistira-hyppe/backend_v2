@@ -7,6 +7,7 @@ import { OssContentPictService } from 'src/content/posts/osscontentpict.service'
 import { PostContentService } from 'src/content/posts/postcontent.service';
 import { UtilsService } from 'src/utils/utils.service';
 import mongoose from 'mongoose';
+const sharp = require('sharp');
 
 @Injectable()
 export class MonetizationService {
@@ -29,13 +30,14 @@ export class MonetizationService {
 
     async createCoin(file: Express.Multer.File, request: any): Promise<Monetize> {
         let id = new mongoose.Types.ObjectId();
-        let extension = "jpg";
+        let image_information = await sharp(file.buffer).metadata();
+        let extension = image_information.format;
         let now = await this.utilsService.getDateTimeString();
 
         let filename = id + "." + extension;
         let path_file = "coin/" + id + "/" + filename;
 
-        let file_upload = await this.postContentService.generate_upload_noresize(file, "jpg");
+        let file_upload = await this.postContentService.generate_upload_noresize(file, extension);
         let upload_file_upload = await this.uploadOss(file_upload, path_file);
 
         let url_filename = "";
@@ -54,15 +56,17 @@ export class MonetizationService {
             name: request.name,
             item_id: request.item_id,
             package_id: request.package_id,
-            price: request.price,
-            amount: request.amount,
-            stock: request.stock,
+            price: Number(request.price),
+            amount: Number(request.amount),
+            stock: Number(request.stock),
             thumbnail: url_filename,
             createdAt: now,
             updatedAt: now,
             type: request.type,
             used_stock: 0,
-            last_stock: 0
+            last_stock: 0,
+            active: true,
+            status: true
         }
         return this.monetData.create(createCoinDto);
     }

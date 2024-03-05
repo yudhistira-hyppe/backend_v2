@@ -1,8 +1,6 @@
 import { Body, Headers, Controller, Delete, Get, Param, Post, UseGuards, HttpCode, HttpStatus, Req, Logger, UploadedFile, UseInterceptors } from '@nestjs/common';
-import mongoose from 'mongoose';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { MonetizationService } from './monetization.service';
-const sharp = require('sharp');
 
 @Controller('api/monetization')
 export class MonetizationController {

@@ -37,6 +37,10 @@ export class Monetize {
     used_stock: number;
     @Prop()
     last_stock: number;
+    @Prop()
+    active: boolean;
+    @Prop()
+    status: boolean;
 }
 
 export const monetizeSchema = SchemaFactory.createForClass(Monetize);
