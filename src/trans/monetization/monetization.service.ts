@@ -64,9 +64,9 @@ export class MonetizationService {
             updatedAt: now,
             type: request.type,
             used_stock: 0,
-            last_stock: 0,
-            active: true,
-            status: true
+            last_stock: Number(request.stock),
+            active: Boolean(request.active),
+            status: Boolean(request.status)
         }
         return this.monetData.create(createCoinDto);
     }
@@ -74,5 +74,78 @@ export class MonetizationService {
     async uploadOss(buffer: Buffer, path: string) {
         var result = await this.ossContentPictService.uploadFileBuffer(buffer, path);
         return result;
+    }
+
+    async listAllCoin(skip: number, limit: number, descending: boolean, name?: string, dateFrom?: string, dateTo?: string, stockFrom?: number, stockTo?: number, status?: boolean) {
+        let order = descending ? -1 : 1;
+        let pipeline = [];
+        pipeline.push({
+            "$match": {
+                "type": "COIN"
+            }
+        });
+        pipeline.push({
+            "$sort":
+            {
+                'updatedAt': order
+            }
+        });
+        if (name && name !== "") {
+            pipeline.push({
+                "$match": {
+                    "name": new RegExp(name, "i")
+                }
+            })
+        }
+        if (dateFrom && dateFrom !== undefined) {
+            pipeline.push({
+                "$match": {
+                    "createdAt": {
+                        $gte: dateFrom
+                    }
+                }
+            })
+        }
+        if (dateTo && dateTo !== undefined) {
+            pipeline.push({
+                "$match": {
+                    "createdAt": {
+                        $lte: dateTo
+                    }
+                }
+            })
+        }
+        if (stockFrom && stockFrom !== undefined) {
+            pipeline.push({
+                "$match": {
+                    "stock": {
+                        $gte: stockFrom
+                    }
+                }
+            })
+        }
+        if (stockTo && stockTo !== undefined) {
+            pipeline.push({
+                "$match": {
+                    "stock": {
+                        $lte: stockTo
+                    }
+                }
+            })
+        }
+        if (status !== null || status !== undefined) {
+            pipeline.push({
+                "$match": {
+                    "status": status
+                }
+            })
+        }
+        if (skip > 0) {
+            pipeline.push({ $skip: skip });
+        }
+        if (limit > 0) {
+            pipeline.push({ $limit: limit });
+        }
+        return this.monetData.aggregate(pipeline);
     }
 }
