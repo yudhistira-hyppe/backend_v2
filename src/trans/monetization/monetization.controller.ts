@@ -25,7 +25,7 @@ export class MonetizationController {
   async createn(@UploadedFile() file: Express.Multer.File, @Headers() headers, @Body() body) {
     let type = body.type;
 
-    if (type == 'coin') {
+    if (type == 'COIN') {
       return this.monetizationService.createCoin(file, body);
     }
   }
