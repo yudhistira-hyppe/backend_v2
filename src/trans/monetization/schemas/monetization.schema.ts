@@ -1,0 +1,42 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose, { Document } from 'mongoose';
+
+export type MonetizeDocument = Monetize & Document;
+
+@Schema({ collection: 'monetize' })
+export class Monetize {
+
+    _id: mongoose.Types.ObjectId;
+    @Prop()
+    type: string;
+    @Prop()
+    name: string;
+    @Prop()
+    description: string;
+    @Prop()
+    item_id: string;
+    @Prop()
+    package_id: string;
+    @Prop()
+    price: number;
+    @Prop()
+    amount: number;
+    @Prop()
+    stock: number;
+    @Prop()
+    thumbnail: string;
+    @Prop()
+    audiens: string;
+    @Prop()
+    audiens_user: any[];
+    @Prop()
+    createdAt: string;
+    @Prop()
+    updatedAt: string;
+    @Prop()
+    used_stock: number;
+    @Prop()
+    last_stock: number;
+}
+
+export const monetizeSchema = SchemaFactory.createForClass(Monetize);

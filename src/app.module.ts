@@ -129,6 +129,7 @@ import { MediastreamingModule } from './content/mediastreaming/mediastreaming.mo
 import { FiltercategoryModule } from './assets/filtercategory/filtercategory.module';
 import { GuidelineModule } from './trans/guideline/guideline.module';
 import { AppController } from './app.controller';
+import { MonetizationModule } from './trans/monetization/monetization.module';
 @Module({
   imports: [
     ChallengeReadModule,
@@ -281,7 +282,8 @@ import { AppController } from './app.controller';
     StickerCategoryModule,
     NewPostModule,
     FiltercategoryModule,
-    GuidelineModule
+    GuidelineModule,
+    MonetizationModule
     //  ChallengeModule
   ], providers: [],
 })
