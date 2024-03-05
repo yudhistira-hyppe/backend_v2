@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Monetize, MonetizeDocument } from './schemas/monetization.schema';
@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { OssContentPictService } from 'src/content/posts/osscontentpict.service';
 import { PostContentService } from 'src/content/posts/postcontent.service';
 import { UtilsService } from 'src/utils/utils.service';
+import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
 import mongoose from 'mongoose';
 const sharp = require('sharp');
 
@@ -17,7 +18,8 @@ export class MonetizationService {
         private readonly configService: ConfigService,
         private readonly ossContentPictService: OssContentPictService,
         private readonly postContentService: PostContentService,
-        private readonly utilsService: UtilsService
+        private readonly utilsService: UtilsService,
+        private readonly UserbasicnewService: UserbasicnewService
     ) { }
 
     async find(): Promise<Monetize[]> {
@@ -35,7 +37,7 @@ export class MonetizationService {
         let now = await this.utilsService.getDateTimeString();
 
         let filename = id + "." + extension;
-        let path_file = "coin/" + id + "/" + filename;
+        let path_file = "images/coin/" + id + "/" + filename;
 
         let file_upload = await this.postContentService.generate_upload_noresize(file, extension);
         let upload_file_upload = await this.uploadOss(file_upload, path_file);
@@ -70,6 +72,85 @@ export class MonetizationService {
         }
         return this.monetData.create(createCoinDto);
     }
+
+    async createCredit(inputdata: any)
+    {
+        var request_body = JSON.parse(JSON.stringify(inputdata));
+
+        if(request_body.audiens == "EXCLUSIVE" && (request_body.audiens_user == null || request_body.audiens_user == undefined))
+        {
+            throw new BadRequestException("Target user field must required");
+        }
+
+        var mongo = require('mongoose');
+        var insertdata = new Monetize();
+        insertdata._id = new mongo.Types.ObjectId();
+        insertdata.name = request_body.name;
+        insertdata.package_id = request_body.package_id;
+        insertdata.item_id = request_body.item_id;
+        insertdata.description = request_body.description;
+        insertdata.audiens = request_body.audiens;
+        insertdata.createdAt = await this.utilsService.getDateTimeString();
+        insertdata.updatedAt = await this.utilsService.getDateTimeString();
+        insertdata.active = ((request_body.active == "true" || request_body.active == true) ? true : false);
+        insertdata.status = ((request_body.status == "true" || request_body.status == true) ? true : false);
+        insertdata.price = Number(request_body.price);
+        insertdata.stock = Number(request_body.stock);
+        insertdata.amount = Number(request_body.amount);
+        insertdata.last_stock = Number(request_body.stock);
+        insertdata.used_stock = 0;
+        insertdata.type = 'CREDIT';
+        
+        if(request_body.audiens == "EXCLUSIVE")
+        {
+            this.insertmultipleTarget(insertdata, request_body.audiens_user);
+        }
+
+        await this.monetData.create(insertdata);
+
+        return {
+            response_code:202,
+            message:{
+                "info": ["The process successful"],
+            }
+        }
+    }
+
+    async insertmultipleTarget(setdata:any, setaudiens:string)
+    {
+        var mongo = require('mongoose');
+        var insertaudiens = [];
+        if(setaudiens == 'ALL')
+        {
+            var totaldata = await this.UserbasicnewService.getcount();
+            var setpagination = parseInt(totaldata[0].totalpost) / 200;
+            var ceksisa = (parseInt(totaldata[0].totalpost) % 200);
+            if (ceksisa > 0 && ceksisa < 5) {
+                setpagination = setpagination + 1;
+            }
+
+            for (var looppagination = 0; looppagination < setpagination; looppagination++) 
+            {
+                var getalluserbasic = await this.UserbasicnewService.getuser(looppagination, 200);
+
+                for (var loopuser = 0; loopuser < getalluserbasic.length; loopuser++) {
+                    insertaudiens.push(getalluserbasic[loopuser]._id);
+                }
+            }
+        }
+        else
+        {
+            var target_user = setaudiens.split(",");
+            for (var loopP = 0; loopP < target_user.length; loopP++) {
+                var setpartisipan = new mongo.Types.ObjectId(target_user[loopP]);
+                insertaudiens.push(setpartisipan);
+            }
+        }
+
+        setdata.audiens_user = insertaudiens;
+        await this.monetData.findByIdAndUpdate(setdata._id.toString(), setdata);
+    }
+
 
     async uploadOss(buffer: Buffer, path: string) {
         var result = await this.ossContentPictService.uploadFileBuffer(buffer, path);

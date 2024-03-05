@@ -1,6 +1,7 @@
 import { Body, Headers, Controller, Delete, Get, Param, Post, UseGuards, HttpCode, HttpStatus, Req, Logger, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { MonetizationService } from './monetization.service';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('api/monetization')
 export class MonetizationController {
@@ -19,12 +20,16 @@ export class MonetizationController {
   }
 
   @Post("/create")
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('coinThumb'))
   async create(@UploadedFile() file: Express.Multer.File, @Headers() headers, @Body() body) {
     let type = body.type;
 
     if (type == 'COIN') {
       return this.monetizationService.createCoin(file, body);
+    }
+    else if(type == 'CREDIT'){
+      return this.monetizationService.createCredit(body);
     }
   }
 
