@@ -1058,7 +1058,16 @@ export class UserbasicnewService {
                                 "$unwind":
                                 {
                                     path: "$kyc",
-                                    preserveNullAndEmptyArrays: true
+                                    // preserveNullAndEmptyArrays: true
+                                }
+                            },
+                            {
+                                "$match":
+                                {
+                                    "kyc":
+                                    {
+                                        "$ne":{}
+                                    }
                                 }
                             },
                             {
