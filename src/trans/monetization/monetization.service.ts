@@ -73,12 +73,10 @@ export class MonetizationService {
         return this.monetData.create(createCoinDto);
     }
 
-    async createCredit(inputdata: any)
-    {
+    async createCredit(inputdata: any) {
         var request_body = JSON.parse(JSON.stringify(inputdata));
 
-        if(request_body.audiens == "EXCLUSIVE" && (request_body.audiens_user == null || request_body.audiens_user == undefined))
-        {
+        if (request_body.audiens == "EXCLUSIVE" && (request_body.audiens_user == null || request_body.audiens_user == undefined)) {
             throw new BadRequestException("Target user field must required");
         }
 
@@ -100,28 +98,25 @@ export class MonetizationService {
         insertdata.last_stock = Number(request_body.stock);
         insertdata.used_stock = 0;
         insertdata.type = 'CREDIT';
-        
-        if(request_body.audiens == "EXCLUSIVE")
-        {
+
+        if (request_body.audiens == "EXCLUSIVE") {
             this.insertmultipleTarget(insertdata, request_body.audiens_user);
         }
 
         await this.monetData.create(insertdata);
 
         return {
-            response_code:202,
-            message:{
+            response_code: 202,
+            message: {
                 "info": ["The process successful"],
             }
         }
     }
 
-    async insertmultipleTarget(setdata:any, setaudiens:string)
-    {
+    async insertmultipleTarget(setdata: any, setaudiens: string) {
         var mongo = require('mongoose');
         var insertaudiens = [];
-        if(setaudiens == 'ALL')
-        {
+        if (setaudiens == 'ALL') {
             var totaldata = await this.UserbasicnewService.getcount();
             var setpagination = parseInt(totaldata[0].totalpost) / 200;
             var ceksisa = (parseInt(totaldata[0].totalpost) % 200);
@@ -129,8 +124,7 @@ export class MonetizationService {
                 setpagination = setpagination + 1;
             }
 
-            for (var looppagination = 0; looppagination < setpagination; looppagination++) 
-            {
+            for (var looppagination = 0; looppagination < setpagination; looppagination++) {
                 var getalluserbasic = await this.UserbasicnewService.getuser(looppagination, 200);
 
                 for (var loopuser = 0; loopuser < getalluserbasic.length; loopuser++) {
@@ -138,8 +132,7 @@ export class MonetizationService {
                 }
             }
         }
-        else
-        {
+        else {
             var target_user = setaudiens.split(",");
             for (var loopP = 0; loopP < target_user.length; loopP++) {
                 var setpartisipan = new mongo.Types.ObjectId(target_user[loopP]);
@@ -228,5 +221,13 @@ export class MonetizationService {
             pipeline.push({ $limit: limit });
         }
         return this.monetData.aggregate(pipeline);
+    }
+
+    async deactivate(id: string) {
+        return this.monetData.findByIdAndUpdate(id, { status: false, updatedAt: await this.utilsService.getDateTimeString() }, { new: true });
+    }
+
+    async delete(id: string) {
+        return this.monetData.findByIdAndUpdate(id, { active: false, updatedAt: await this.utilsService.getDateTimeString() }, { new: true });
     }
 }
