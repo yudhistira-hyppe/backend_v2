@@ -348,7 +348,7 @@ export class GuidelineService {
     }
 
     async sendRequestEmail(to: string, fullName: string, username: string, dataname: string, updatedAt: string, remark: string, redirectUrl: string) {
-        let template = await this.templateService.findByNameAndEventCategory("NOTIFY_GUIDELINE", "NOTIFY_GUIDELINE", "EMAIL");
+        let template = await this.templateService.findByNameAndEventCategory("NOTIFY_GUIDELINE", "NOTIFY_GUIDELINE", "GUIDELINE", "EMAIL");
         let body = template.body_detail_id.toString();
         body = body.replace("${fullName}", fullName);
         body = body.replace("${email}", to);

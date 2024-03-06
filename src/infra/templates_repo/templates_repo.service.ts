@@ -58,10 +58,11 @@ export class TemplatesRepoService {
     }).exec();
   }
 
-  async findByNameAndEventCategory(name: string, event: string, category: string): Promise<TemplatesRepo> {
+  async findByNameAndEventCategory(name: string, event: string, type:string, category: string): Promise<TemplatesRepo> {
     return this.TemplatesRepoModel.findOne({
       name: name,
       event: event,
+      type:type,
       category: category
     }).exec();
   }

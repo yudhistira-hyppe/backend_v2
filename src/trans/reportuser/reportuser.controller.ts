@@ -6051,7 +6051,7 @@ export class ReportuserController {
 
     async sendReportAppealFCM(name: string, event: string, type: string, postID: string) {
         var Templates_ = new TemplatesRepo();
-        Templates_ = await this.utilsService.getTemplateAppealReport(name, event, 'NOTIFICATION');
+        Templates_ = await this.utilsService.getTemplateAppealReport(name, event, type, 'NOTIFICATION');
 
         var titlein = Templates_.subject_id.toString();
         var titleen = Templates_.subject.toString();
@@ -6071,7 +6071,7 @@ export class ReportuserController {
 
     async sendReportAppealFCMV2(name: string, event: string, type: string, postID: string) {
         var Templates_ = new TemplatesRepo();
-        Templates_ = await this.utilsService.getTemplateAppealReport(name, event, 'NOTIFICATION');
+        Templates_ = await this.utilsService.getTemplateAppealReport(name, event, type, 'NOTIFICATION');
 
         var titlein = Templates_.subject_id.toString();
         var titleen = Templates_.subject.toString();

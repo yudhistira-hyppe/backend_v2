@@ -1390,8 +1390,8 @@ export class UtilsService {
     return await this.templatesRepoService.findOneByTypeAndCategory(type, category);
   }
 
-  async getTemplateAppealReport(name: string, event: string, category: string): Promise<TemplatesRepo> {
-    return await this.templatesRepoService.findByNameAndEventCategory(name, event, category);
+  async getTemplateAppealReport(name: string, event: string, type:string, category: string): Promise<TemplatesRepo> {
+    return await this.templatesRepoService.findByNameAndEventCategory(name, event, type, category);
   }
   async getTemplateAppealBank(name: string, event: string, category: string, type: string): Promise<TemplatesRepo> {
     return await this.templatesRepoService.findByNameAndEventCategoryType(name, event, category, type);
