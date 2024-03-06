@@ -194,7 +194,7 @@ export class MonetizationService {
             pipeline.push({
                 "$match": {
                     "createdAt": {
-                        $gte: dateFrom
+                        $gte: dateFrom + " 00:00:00"
                     }
                 }
             })
@@ -203,7 +203,7 @@ export class MonetizationService {
             pipeline.push({
                 "$match": {
                     "createdAt": {
-                        $lte: dateTo
+                        $lte: dateTo + " 23:59:59"
                     }
                 }
             })
@@ -226,7 +226,7 @@ export class MonetizationService {
                 }
             })
         }
-        if (status && status !== undefined) {
+        if (status !== null && status !== undefined) {
             pipeline.push({
                 "$match": {
                     "status": status
