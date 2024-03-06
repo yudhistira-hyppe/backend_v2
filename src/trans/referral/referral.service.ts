@@ -70,7 +70,7 @@ export class ReferralService {
       dataPipeline.push({
         "$match": {
           "createdAt": {
-            $gte: fromDate
+            $gte: fromDate + " 00:00:00"
           }
         }
       })
@@ -79,7 +79,7 @@ export class ReferralService {
       dataPipeline.push({
         "$match": {
           "createdAt": {
-            $lte: toDate
+            $lte: toDate + " 23:59:59"
           }
         }
       })
