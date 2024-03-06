@@ -57064,6 +57064,12 @@ export class NewPostService {
     return data;
   }
 
+  async updateTidakditangguhkanEmpty(id: string, updatedAt: string, reportedUserHandle: any[]) {
+    let data = await this.loaddata.updateMany({ "_id": id },
+      { $set: { "reportedStatus": "ALL", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle": reportedUserHandle } });
+    return data;
+  }
+
   async updateTidakditangguhkan(id: string, updatedAt: string) {
     let data = await this.loaddata.updateMany({ "_id": id },
       { $set: { "reportedStatus": "ALL", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle.$[].status": "TIDAK DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
