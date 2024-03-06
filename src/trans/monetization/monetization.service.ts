@@ -75,7 +75,7 @@ export class MonetizationService {
         return this.monetData.create(createCoinDto);
     }
 
-    async createCredit(header:any, inputdata: any) {
+    async createCredit(header: any, inputdata: any) {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var url = inputdata.get("Host") + inputdata.originalUrl;
         var token = header['x-auth-token'];
@@ -161,8 +161,8 @@ export class MonetizationService {
         return result;
     }
 
-    async listAllCoin(skip: number, limit: number, descending: boolean, type?: string, name?: string, dateFrom?: string, dateTo?: string, stockFrom?: number, stockTo?: number, status?: boolean, audiens_type?:string) {
-        
+    async listAllCoin(skip: number, limit: number, descending: boolean, type?: string, name?: string, dateFrom?: string, dateTo?: string, stockFrom?: number, stockTo?: number, status?: boolean, audiens_type?: string, item_id?: string) {
+
         let order = descending ? -1 : 1;
         let pipeline = [];
         pipeline.push({
@@ -180,6 +180,13 @@ export class MonetizationService {
             pipeline.push({
                 "$match": {
                     "name": new RegExp(name, "i")
+                }
+            })
+        }
+        if (item_id && item_id !== undefined) {
+            pipeline.push({
+                "$match": {
+                    "item_id": new RegExp(item_id, "i")
                 }
             })
         }
@@ -226,8 +233,7 @@ export class MonetizationService {
                 }
             })
         }
-        if(audiens_type && audiens_type !== undefined)
-        {
+        if (audiens_type && audiens_type !== undefined) {
             pipeline.push({
                 "$match": {
                     "audiens": audiens_type
