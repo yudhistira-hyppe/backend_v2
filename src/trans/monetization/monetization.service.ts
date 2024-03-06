@@ -7,6 +7,7 @@ import { OssContentPictService } from 'src/content/posts/osscontentpict.service'
 import { PostContentService } from 'src/content/posts/postcontent.service';
 import { UtilsService } from 'src/utils/utils.service';
 import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
+import { LogapisService } from '../logapis/logapis.service';
 import mongoose from 'mongoose';
 const sharp = require('sharp');
 
@@ -19,7 +20,8 @@ export class MonetizationService {
         private readonly ossContentPictService: OssContentPictService,
         private readonly postContentService: PostContentService,
         private readonly utilsService: UtilsService,
-        private readonly UserbasicnewService: UserbasicnewService
+        private readonly UserbasicnewService: UserbasicnewService,
+        private readonly LogAPISS: LogapisService,
     ) { }
 
     async find(): Promise<Monetize[]> {
@@ -73,7 +75,13 @@ export class MonetizationService {
         return this.monetData.create(createCoinDto);
     }
 
-    async createCredit(inputdata: any) {
+    async createCredit(header:any, inputdata: any) {
+        var timestamps_start = await this.utilsService.getDateTimeString();
+        var url = inputdata.get("Host") + inputdata.originalUrl;
+        var token = header['x-auth-token'];
+        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        var email = auth.email;
+
         var request_body = JSON.parse(JSON.stringify(inputdata));
 
         if (request_body.audiens == "EXCLUSIVE" && (request_body.audiens_user == null || request_body.audiens_user == undefined)) {
@@ -104,6 +112,9 @@ export class MonetizationService {
         }
 
         await this.monetData.create(insertdata);
+
+        var timestamps_end = await this.utilsService.getDateTimeString();
+        this.LogAPISS.create2(url, timestamps_start, timestamps_end, email, null, null, request_body);
 
         return {
             response_code: 202,
@@ -150,12 +161,13 @@ export class MonetizationService {
         return result;
     }
 
-    async listAllCoin(skip: number, limit: number, descending: boolean, name?: string, dateFrom?: string, dateTo?: string, stockFrom?: number, stockTo?: number, status?: boolean) {
+    async listAllCoin(skip: number, limit: number, descending: boolean, type?: string, name?: string, dateFrom?: string, dateTo?: string, stockFrom?: number, stockTo?: number, status?: boolean, audiens_type?:string) {
+        
         let order = descending ? -1 : 1;
         let pipeline = [];
         pipeline.push({
             "$match": {
-                "type": "COIN"
+                "type": type
             }
         });
         pipeline.push({
@@ -164,7 +176,7 @@ export class MonetizationService {
                 'updatedAt': order
             }
         });
-        if (name && name !== "") {
+        if (name && name !== undefined) {
             pipeline.push({
                 "$match": {
                     "name": new RegExp(name, "i")
@@ -207,10 +219,18 @@ export class MonetizationService {
                 }
             })
         }
-        if (status !== null || status !== undefined) {
+        if (status && status !== undefined) {
             pipeline.push({
                 "$match": {
                     "status": status
+                }
+            })
+        }
+        if(audiens_type && audiens_type !== undefined)
+        {
+            pipeline.push({
+                "$match": {
+                    "audiens": audiens_type
                 }
             })
         }
@@ -220,7 +240,9 @@ export class MonetizationService {
         if (limit > 0) {
             pipeline.push({ $limit: limit });
         }
-        return this.monetData.aggregate(pipeline);
+
+        var data = await this.monetData.aggregate(pipeline);
+        return data;
     }
 
     async deactivate(id: string) {

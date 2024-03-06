@@ -34,6 +34,12 @@ export class Monetize {
     @Prop()
     updatedAt: string;
     @Prop()
+    title: string;
+    @Prop()
+    body_message: string;
+    @Prop()
+    isSend: boolean;
+    @Prop()
     used_stock: number;
     @Prop()
     last_stock: number;

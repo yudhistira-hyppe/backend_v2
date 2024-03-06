@@ -28,6 +28,9 @@ export class CreateCreditDto {
     createdAt: string;
     updatedAt: string;
     type: string;
+    title: string;
+    body_message: string;
+    isSend: boolean;
     used_stock: number;
     last_stock: number;
 }
