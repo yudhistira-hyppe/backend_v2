@@ -69,7 +69,7 @@ export class MonetizationController {
     if (request_json.limit == undefined || request_json.limit == null) { throw new BadRequestException("Missing field: limit (number)"); }
     if (request_json.descending == undefined || request_json.descending == null) { throw new BadRequestException("Missing field: descending (boolean)"); }
     if (request_json.type == undefined || !request_json.type) { throw new BadRequestException("Missing field: type (string 'COIN'/'CREDIT')"); }
-    if (request_json.type != "COIN" || request_json.type != "CREDIT") { throw new BadRequestException("type must be 'COIN' or 'CREDIT'"); }
+    if (request_json.type !== "COIN" && request_json.type !== "CREDIT") { throw new BadRequestException("type must be 'COIN' or 'CREDIT'"); }
     let skip = (request_json.page > 0 ? (request_json.page - 1) : 0) * request_json.limit;
     var data = await this.monetizationService.listAllCoin(skip, request_json.limit, request_json.descending, request_json.type, request_json.name, request_json.from, request_json.to, request_json.stock_gte, request_json.stock_lte, request_json.status, request_json.audiens, request_json.item_id);
 
