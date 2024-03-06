@@ -1537,7 +1537,7 @@ export class ReportuserController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post('approval/v2')
+    @Post('approval')
     async reportHandleAproval2(@Req() request, @Headers() headers) {
         var timestamps_start = await this.utilsService.getDateTimeString();
         var fullurl = request.get("Host") + request.originalUrl;
@@ -1725,194 +1725,194 @@ export class ReportuserController {
         return { response_code: 202, messages };
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Post('approval')
-    async reportHandleAproval(@Req() request, @Headers() headers) {
-        var timestamps_start = await this.utilsService.getDateTimeString();
-        var fullurl = request.get("Host") + request.originalUrl;
-        var token = headers['x-auth-token'];
-        var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-        var email = auth.email;
+    // @UseGuards(JwtAuthGuard)
+    // @Post('approval')
+    // async reportHandleAproval(@Req() request, @Headers() headers) {
+    //     var timestamps_start = await this.utilsService.getDateTimeString();
+    //     var fullurl = request.get("Host") + request.originalUrl;
+    //     var token = headers['x-auth-token'];
+    //     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    //     var email = auth.email;
 
-        var postID = null;
+    //     var postID = null;
 
-        var type = null;
-        var ditangguhkan = null;
-        var reason = null;
-        var reasonId = null;
-        var request_json = JSON.parse(JSON.stringify(request.body));
+    //     var type = null;
+    //     var ditangguhkan = null;
+    //     var reason = null;
+    //     var reasonId = null;
+    //     var request_json = JSON.parse(JSON.stringify(request.body));
 
-        if (request_json["postID"] !== undefined) {
-            postID = request_json["postID"];
-        } else {
-            var timestamps_end = await this.utilsService.getDateTimeString();
-            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+    //     if (request_json["postID"] !== undefined) {
+    //         postID = request_json["postID"];
+    //     } else {
+    //         var timestamps_end = await this.utilsService.getDateTimeString();
+    //         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
-            throw new BadRequestException("Unabled to proceed");
-        }
-        if (request_json["type"] !== undefined) {
-            type = request_json["type"];
-        } else {
-            var timestamps_end = await this.utilsService.getDateTimeString();
-            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+    //     if (request_json["type"] !== undefined) {
+    //         type = request_json["type"];
+    //     } else {
+    //         var timestamps_end = await this.utilsService.getDateTimeString();
+    //         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
-            throw new BadRequestException("Unabled to proceed");
-        }
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
 
-        if (request_json["ditangguhkan"] !== undefined) {
-            ditangguhkan = request_json["ditangguhkan"];
-        } else {
-            var timestamps_end = await this.utilsService.getDateTimeString();
-            this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+    //     if (request_json["ditangguhkan"] !== undefined) {
+    //         ditangguhkan = request_json["ditangguhkan"];
+    //     } else {
+    //         var timestamps_end = await this.utilsService.getDateTimeString();
+    //         this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
 
-            throw new BadRequestException("Unabled to proceed");
-        }
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
 
-        reason = request_json["reason"];
-        reasonId = request_json["reasonId"];
-        const mongoose = require('mongoose');
-        var ObjectId = require('mongodb').ObjectId;
-        var idreason = mongoose.Types.ObjectId(reasonId);
-        const messages = {
-            "info": ["The update successful"],
-        };
+    //     reason = request_json["reason"];
+    //     reasonId = request_json["reasonId"];
+    //     const mongoose = require('mongoose');
+    //     var ObjectId = require('mongodb').ObjectId;
+    //     var idreason = mongoose.Types.ObjectId(reasonId);
+    //     const messages = {
+    //         "info": ["The update successful"],
+    //     };
 
-        const messagesEror = {
-            "info": ["Todo is not found!"],
-        };
-
-
-
-        var dt = new Date(Date.now());
-        dt.setHours(dt.getHours() + 7); // timestamp
-        dt = new Date(dt);
-        var datacontent = null;
-        var objreporthandle = {};
-        var arrayreportedHandle = [];
-        var reportedUserHandle = [];
-        var name = "";
-        var event = "";
-        var tipe = "";
-
-        if (type === "content") {
-            try {
-                datacontent = await this.postsService.findByPostId(postID);
-                reportedUserHandle = datacontent._doc.reportedUserHandle;
-
-            } catch (e) {
-                datacontent = null;
-                reportedUserHandle = [];
-            }
-            if (ditangguhkan === true) {
-                name = "NOTIFY_APPEAL";
-                event = "SUSPENDED_APPEAL";
-                tipe = "CONTENT";
-
-                if (reportedUserHandle.length > 0) {
-                    await this.postsService.updateDitangguhkan(postID, reason, dt.toISOString(), idreason);
-                    this.sendReportAppealFCM(name, event, tipe, postID);
-                } else {
-
-                    objreporthandle = {
-
-                        "reasonId": reasonId,
-                        "reasonAdmin": reason,
-                        "reason": "",
-                        "remark": "",
-                        "createdAt": dt.toISOString(),
-                        "updatedAt": dt.toISOString(),
-                        "status": "DITANGGUHKAN"
-                    };
-                    arrayreportedHandle.push(objreporthandle);
-
-                    await this.postsService.updateDitangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
-                    this.sendReportAppealFCM(name, event, tipe, postID);
-                }
+    //     const messagesEror = {
+    //         "info": ["Todo is not found!"],
+    //     };
 
 
-            } else {
-                name = "NOTIFY_APPEAL";
-                event = "NOTSUSPENDED_APPEAL";
-                tipe = "CONTENT";
-                if (reportedUserHandle.length > 0) {
-                    await this.postsService.updateTidakditangguhkan(postID, dt.toISOString());
-                    await this.postsService.nonactive(postID, dt.toISOString());
-                    this.sendReportAppealFCM(name, event, tipe, postID);
-                } else {
-                    objreporthandle = {
 
-                        "reasonId": null,
-                        "reasonAdmin": "",
-                        "reason": "",
-                        "remark": "",
-                        "createdAt": dt.toISOString(),
-                        "updatedAt": dt.toISOString(),
-                        "status": "TIDAK DITANGGUHKAN"
-                    };
-                    arrayreportedHandle.push(objreporthandle);
+    //     var dt = new Date(Date.now());
+    //     dt.setHours(dt.getHours() + 7); // timestamp
+    //     dt = new Date(dt);
+    //     var datacontent = null;
+    //     var objreporthandle = {};
+    //     var arrayreportedHandle = [];
+    //     var reportedUserHandle = [];
+    //     var name = "";
+    //     var event = "";
+    //     var tipe = "";
 
-                    await this.postsService.updateTidakditangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
-                    await this.postsService.nonactive(postID, dt.toISOString());
-                    this.sendReportAppealFCM(name, event, tipe, postID);
-                }
-            }
+    //     if (type === "content") {
+    //         try {
+    //             datacontent = await this.postsService.findByPostId(postID);
+    //             reportedUserHandle = datacontent._doc.reportedUserHandle;
 
-        }
-        else if (type === "ads") {
-            try {
-                datacontent = await this.adsService.findOne(postID);
-                reportedUserHandle = datacontent._doc.reportedUserHandle;
+    //         } catch (e) {
+    //             datacontent = null;
+    //             reportedUserHandle = [];
+    //         }
+    //         if (ditangguhkan === true) {
+    //             name = "NOTIFY_APPEAL";
+    //             event = "SUSPENDED_APPEAL";
+    //             tipe = "CONTENT";
 
-            } catch (e) {
-                datacontent = null;
-                reportedUserHandle = [];
-            }
-            var adsId = mongoose.Types.ObjectId(postID);
+    //             if (reportedUserHandle.length > 0) {
+    //                 await this.postsService.updateDitangguhkan(postID, reason, dt.toISOString(), idreason);
+    //                 this.sendReportAppealFCM(name, event, tipe, postID);
+    //             } else {
 
-            if (ditangguhkan === true) {
+    //                 objreporthandle = {
 
-                if (reportedUserHandle.length > 0) {
-                    await this.adsService.updateDitangguhkan(adsId, reason, dt.toISOString(), idreason);
-                } else {
+    //                     "reasonId": reasonId,
+    //                     "reasonAdmin": reason,
+    //                     "reason": "",
+    //                     "remark": "",
+    //                     "createdAt": dt.toISOString(),
+    //                     "updatedAt": dt.toISOString(),
+    //                     "status": "DITANGGUHKAN"
+    //                 };
+    //                 arrayreportedHandle.push(objreporthandle);
 
-                    objreporthandle = {
+    //                 await this.postsService.updateDitangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
+    //                 this.sendReportAppealFCM(name, event, tipe, postID);
+    //             }
 
-                        "reasonId": reasonId,
-                        "reasonAdmin": reason,
-                        "reason": "",
-                        "remark": "",
-                        "createdAt": dt.toISOString(),
-                        "updatedAt": dt.toISOString(),
-                        "status": "DITANGGUHKAN"
-                    };
-                    arrayreportedHandle.push(objreporthandle);
 
-                    await this.adsService.updateDitangguhkanEmpty(adsId, dt.toISOString(), arrayreportedHandle);
-                }
+    //         } else {
+    //             name = "NOTIFY_APPEAL";
+    //             event = "NOTSUSPENDED_APPEAL";
+    //             tipe = "CONTENT";
+    //             if (reportedUserHandle.length > 0) {
+    //                 await this.postsService.updateTidakditangguhkan(postID, dt.toISOString());
+    //                 await this.postsService.nonactive(postID, dt.toISOString());
+    //                 this.sendReportAppealFCM(name, event, tipe, postID);
+    //             } else {
+    //                 objreporthandle = {
 
-            } else {
-                objreporthandle = {
-                    "reasonId": null,
-                    "reasonAdmin": "",
-                    "reason": "",
-                    "remark": "",
-                    "createdAt": dt.toISOString(),
-                    "updatedAt": dt.toISOString(),
-                    "status": "TIDAK DITANGGUHKAN"
-                };
-                arrayreportedHandle.push(objreporthandle);
+    //                     "reasonId": null,
+    //                     "reasonAdmin": "",
+    //                     "reason": "",
+    //                     "remark": "",
+    //                     "createdAt": dt.toISOString(),
+    //                     "updatedAt": dt.toISOString(),
+    //                     "status": "TIDAK DITANGGUHKAN"
+    //                 };
+    //                 arrayreportedHandle.push(objreporthandle);
 
-                await this.adsService.updateTidakditangguhkanEmpty(adsId, dt.toISOString(), arrayreportedHandle);
-                await this.adsService.nonactive(adsId, dt.toISOString());
+    //                 await this.postsService.updateTidakditangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
+    //                 await this.postsService.nonactive(postID, dt.toISOString());
+    //                 this.sendReportAppealFCM(name, event, tipe, postID);
+    //             }
+    //         }
 
-            }
-        }
+    //     }
+    //     else if (type === "ads") {
+    //         try {
+    //             datacontent = await this.adsService.findOne(postID);
+    //             reportedUserHandle = datacontent._doc.reportedUserHandle;
 
-        var timestamps_end = await this.utilsService.getDateTimeString();
-        this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+    //         } catch (e) {
+    //             datacontent = null;
+    //             reportedUserHandle = [];
+    //         }
+    //         var adsId = mongoose.Types.ObjectId(postID);
 
-        return { response_code: 202, messages };
-    }
+    //         if (ditangguhkan === true) {
+
+    //             if (reportedUserHandle.length > 0) {
+    //                 await this.adsService.updateDitangguhkan(adsId, reason, dt.toISOString(), idreason);
+    //             } else {
+
+    //                 objreporthandle = {
+
+    //                     "reasonId": reasonId,
+    //                     "reasonAdmin": reason,
+    //                     "reason": "",
+    //                     "remark": "",
+    //                     "createdAt": dt.toISOString(),
+    //                     "updatedAt": dt.toISOString(),
+    //                     "status": "DITANGGUHKAN"
+    //                 };
+    //                 arrayreportedHandle.push(objreporthandle);
+
+    //                 await this.adsService.updateDitangguhkanEmpty(adsId, dt.toISOString(), arrayreportedHandle);
+    //             }
+
+    //         } else {
+    //             objreporthandle = {
+    //                 "reasonId": null,
+    //                 "reasonAdmin": "",
+    //                 "reason": "",
+    //                 "remark": "",
+    //                 "createdAt": dt.toISOString(),
+    //                 "updatedAt": dt.toISOString(),
+    //                 "status": "TIDAK DITANGGUHKAN"
+    //             };
+    //             arrayreportedHandle.push(objreporthandle);
+
+    //             await this.adsService.updateTidakditangguhkanEmpty(adsId, dt.toISOString(), arrayreportedHandle);
+    //             await this.adsService.nonactive(adsId, dt.toISOString());
+
+    //         }
+    //     }
+
+    //     var timestamps_end = await this.utilsService.getDateTimeString();
+    //     this.logapiSS.create2(fullurl, timestamps_start, timestamps_end, email, null, null, request_json);
+
+    //     return { response_code: 202, messages };
+    // }
 
     @UseGuards(JwtAuthGuard)
     @Post('flaging')
