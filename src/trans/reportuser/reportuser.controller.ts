@@ -1662,8 +1662,8 @@ export class ReportuserController {
                     };
                     arrayreportedHandle.push(objreporthandle);
 
-                    await this.postsService.updateTidakditangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
-                    await this.postsService.nonactive(postID, dt.toISOString());
+                    await this.post2SS.updateTidakditangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
+                    await this.post2SS.nonactive(postID, dt.toISOString());
                     this.sendReportAppealFCMV2(name, event, tipe, postID);
                 }
             }
