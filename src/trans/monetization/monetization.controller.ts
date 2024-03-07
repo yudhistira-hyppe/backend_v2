@@ -152,7 +152,6 @@ export class MonetizationController {
     {
       var setupdatedata = new Monetize();
       setupdatedata.status = request_json.status;
-      setupdatedata.updatedAt = await this.utilService.getDateTimeString();
 
       this.monetizationService.updateOne(id, setupdatedata);
       
