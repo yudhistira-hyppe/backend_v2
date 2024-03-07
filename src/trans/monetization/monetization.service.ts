@@ -108,8 +108,8 @@ export class MonetizationService {
         insertdata.audiens = request_body.audiens;
         insertdata.createdAt = await this.utilsService.getDateTimeString();
         insertdata.updatedAt = await this.utilsService.getDateTimeString();
-        insertdata.active = ((request_body.active == "true" || request_body.active == true) ? true : false);
-        insertdata.status = ((request_body.status == "true" || request_body.status == true) ? true : false);
+        insertdata.active = true;
+        insertdata.status = false;
         insertdata.price = Number(request_body.price);
         insertdata.stock = Number(request_body.stock);
         insertdata.amount = Number(request_body.amount);
