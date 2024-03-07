@@ -163,7 +163,7 @@ export class MonetizationController {
       {
         if(data.audiens == "EXCLUSIVE" && data.isSend == false)
         {
-          await this.sendNotifAudiens(data);
+          this.sendNotifAudiens(data);
         }
       }
 
