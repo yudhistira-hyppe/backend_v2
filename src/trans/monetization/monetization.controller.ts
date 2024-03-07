@@ -119,6 +119,29 @@ export class MonetizationController {
     }
   }
 
+  @Post("/activate")
+  @UseGuards(JwtAuthGuard)
+  async activate(@Req() request: Request, @Headers() headers) {
+    let timestamps_start = await this.utilService.getDateTimeString();
+    let url = headers.host + "/api/monetization/activate";
+    let token = headers['x-auth-token'];
+    let auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    let email = auth.email;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    let data = this.monetizationService.activate(request_json.id);
+
+    let timestamps_end = await this.utilService.getDateTimeString();
+    this.LogAPISS.create2(url, timestamps_start, timestamps_end, email, null, null, request_json);
+
+    return {
+      response_code: 202,
+      data: data,
+      message: {
+        "info": ["The process was successful"],
+      }
+    }
+  }
+
   @Post("/delete")
   @UseGuards(JwtAuthGuard)
   async delete(@Req() request: Request, @Headers() headers) {

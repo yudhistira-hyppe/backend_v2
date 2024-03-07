@@ -255,6 +255,10 @@ export class MonetizationService {
         return this.monetData.findByIdAndUpdate(id, { status: false, updatedAt: await this.utilsService.getDateTimeString() }, { new: true });
     }
 
+    async activate(id: string) {
+        return this.monetData.findByIdAndUpdate(id, { status: true, updatedAt: await this.utilsService.getDateTimeString() }, { new: true });
+    }
+
     async delete(id: string) {
         return this.monetData.findByIdAndUpdate(id, { active: false, updatedAt: await this.utilsService.getDateTimeString() }, { new: true });
     }
