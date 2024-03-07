@@ -17,6 +17,7 @@ export class CreateCoinDto {
 export class CreateCreditDto {
     readonly _id: { oid: String; };
     name: string;
+    redirectUrl: string;
     description: string;
     item_id: string;
     package_id: string;

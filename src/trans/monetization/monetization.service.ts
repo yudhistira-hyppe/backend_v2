@@ -29,7 +29,14 @@ export class MonetizationService {
     }
 
     async findOne(id: string): Promise<Monetize> {
-        return this.monetData.findOne({ _id: id }).exec();
+        var setid = new mongoose.Types.ObjectId(id);
+        var data = await this.monetData.findById(setid);
+        return data;
+    }
+
+    async updateOne(id: string, data: Monetize) {
+        var setid = new mongoose.Types.ObjectId(id);
+        return this.monetData.findByIdAndUpdate(setid, data, { new: true });
     }
 
     async createCoin(file: Express.Multer.File, request: any): Promise<Monetize> {
@@ -106,6 +113,7 @@ export class MonetizationService {
         insertdata.last_stock = Number(request_body.stock);
         insertdata.used_stock = 0;
         insertdata.type = 'CREDIT';
+        insertdata.redirectUrl = request_body.redirectUrl;
 
         if (request_body.audiens == "EXCLUSIVE") {
             this.insertmultipleTarget(insertdata, request_body.audiens_user);

@@ -3283,7 +3283,10 @@ export class UtilsService {
       createNotificationsDto.actionButtons = null;
       createNotificationsDto.contentEventID = null;
       createNotificationsDto.senderOrReceiverInfo = senderreceiver;
-      createNotificationsDto.templateID = new Types.ObjectId(idtemplate);
+      if(event != "CREDIT")
+      {
+        createNotificationsDto.templateID = new Types.ObjectId(idtemplate);
+      }
 
 
       if (url != undefined) {

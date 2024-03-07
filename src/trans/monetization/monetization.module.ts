@@ -8,10 +8,11 @@ import { Monetize, monetizeSchema } from './schemas/monetization.schema';
 import { PostsModule } from 'src/content/posts/posts.module';
 import { UtilsModule } from 'src/utils/utils.module';
 import { UserbasicnewModule } from '../userbasicnew/userbasicnew.module';
+import { TemplatesRepoModule } from 'src/infra/templates_repo/templates_repo.module';
 
 @Module({
   imports: [
-    LogapisModule, PostsModule, UtilsModule, UserbasicnewModule,
+    LogapisModule, PostsModule, UtilsModule, UserbasicnewModule, TemplatesRepoModule,
     ConfigModule.forRoot(),
     MongooseModule.forFeature([{ name: Monetize.name, schema: monetizeSchema }], 'SERVER_FULL')
   ],

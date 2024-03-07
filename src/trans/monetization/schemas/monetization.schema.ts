@@ -12,6 +12,8 @@ export class Monetize {
     @Prop()
     name: string;
     @Prop()
+    redirectUrl: string;
+    @Prop()
     description: string;
     @Prop()
     item_id: string;

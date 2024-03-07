@@ -1,9 +1,12 @@
-import { Body, Headers, Controller, Delete, Get, Param, Post, UseGuards, HttpCode, HttpStatus, Req, Logger, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
+import { Body, Headers, Controller, Delete, Get, Param, Post, UseGuards, HttpCode, HttpStatus, Req, Logger, UploadedFile, UseInterceptors, BadRequestException, Header, NotAcceptableException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { MonetizationService } from './monetization.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UtilsService } from 'src/utils/utils.service';
 import { LogapisService } from '../logapis/logapis.service';
+import { Monetize } from './schemas/monetization.schema';
+import { TemplatesRepoService } from 'src/infra/templates_repo/templates_repo.service';
+import { UserbasicnewService } from '../userbasicnew/userbasicnew.service';
 
 @Controller('api/monetization')
 export class MonetizationController {
@@ -11,6 +14,8 @@ export class MonetizationController {
     private readonly monetizationService: MonetizationService,
     private readonly utilService: UtilsService,
     private readonly LogAPISS: LogapisService,
+    private readonly repoSS: TemplatesRepoService,
+    private readonly basic2SS: UserbasicnewService,
   ) { }
 
   @Get(':id')
@@ -94,17 +99,7 @@ export class MonetizationController {
     let auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     let email = auth.email;
     var request_json = JSON.parse(JSON.stringify(request.body));
-    /*
-      Penulisan Notifikasi Paket Kredit: 
-
-      Ind: 
-      Title: Selamat! Kamu telah mendapatkan paket kredit Eksklusif [Nama Paket Kredit]. 
-      Body: Paket Kredit Eksklusif [Nama Paket Kredit] telah tersedia untukmu. Klik disini untuk mendapatkan paket nya!
-
-      Eng: 
-      Title: Congratulations! You have received Exclusive Credit Package [Nama Paket Kredit]. 
-      Body: An exclusive credit package [Nama Paket Kredit] is available for you to purchase. Click here to buy the package!
-    */
+    
     let data = this.monetizationService.deactivate(request_json.id);
 
     let timestamps_end = await this.utilService.getDateTimeString();
@@ -142,6 +137,49 @@ export class MonetizationController {
     }
   }
 
+  @Post('status/:id')
+  @UseGuards(JwtAuthGuard)
+  async changeStatus(@Param() id:string, @Req() req, @Headers() headers) {
+    let timestamps_start = await this.utilService.getDateTimeString();
+    let url = req.get('Host')  + req.originalUrl;
+    let token = headers['x-auth-token'];
+    let auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    let email = auth.email;
+    var request_json = JSON.parse(JSON.stringify(req.body));
+
+    var data = await this.monetizationService.findOne(id);
+    if(data != null)
+    {
+      var setupdatedata = new Monetize();
+      setupdatedata.status = request_json.status;
+      setupdatedata.updatedAt = await this.utilService.getDateTimeString();
+
+      this.monetizationService.updateOne(id, setupdatedata);
+      
+      let timestamps_end = await this.utilService.getDateTimeString();
+      this.LogAPISS.create2(url, timestamps_start, timestamps_end, email, null, null, request_json);
+
+      if(data.type == "CREDIT")
+      {
+        if(data.audiens == "EXCLUSIVE" && data.isSend == false)
+        {
+          await this.sendNotifAudiens(data);
+        }
+      }
+
+      return {
+        response_code: 202,
+        message: {
+          "info": ["The process was successful"],
+        }
+      }
+    }
+    else
+    {
+      throw new NotAcceptableException("Data not found");
+    }
+  }
+
   @Post("/delete")
   @UseGuards(JwtAuthGuard)
   async delete(@Req() request: Request, @Headers() headers) {
@@ -164,5 +202,34 @@ export class MonetizationController {
         "info": ["The process was successful"],
       }
     }
+  }
+
+  async sendNotifAudiens(data:any)
+  {
+    
+    var templatedata = await this.repoSS.findOne("65e932f8c87900009e001bc2");
+    let userdata = data.audiens_user;
+    var setpagination = parseInt(userdata.length) / 2;
+    var ceksisa = (parseInt(userdata.length) % 2);
+    if (ceksisa > 0 && ceksisa < 5) {
+      setpagination = setpagination + 1;
+    }
+
+    for (var looppagination = 0; looppagination < setpagination; looppagination++) {
+      var getalluserbasic = await this.basic2SS.findInbyid(userdata.slice((looppagination * 2),((looppagination + 1) * 2)));
+
+      for (var loopuser = 0; loopuser < getalluserbasic.length; loopuser++) {
+        var titleEN = templatedata.subject.replace("$paket", data.name);
+        var titleID = templatedata.subject_id.replace("$paket", data.name);
+        var bodyEN = templatedata.body_detail.replace("$paket", data.name);
+        var bodyID = templatedata.body_detail_id.replace("$paket", data.name);
+        await this.utilService.sendFcmPushNotif(getalluserbasic[loopuser].email, titleID, bodyID, titleEN, bodyEN, templatedata.category.toString(), templatedata.type.toString(), "", data.redirectUrl);
+      }
+    }
+
+    var updatedata = new Monetize();
+    updatedata.isSend = true;
+    updatedata.updatedAt = await this.utilService.getDateTimeString();
+    await this.monetizationService.updateOne(data._id.toString(), updatedata);
   }
 }
