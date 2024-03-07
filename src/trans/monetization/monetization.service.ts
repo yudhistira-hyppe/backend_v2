@@ -94,7 +94,7 @@ export class MonetizationService {
         if (request_body.audiens == "EXCLUSIVE" && (request_body.audiens_user == null || request_body.audiens_user == undefined)) {
             var timestamps_end = await this.utilsService.getDateTimeString();
             this.LogAPISS.create2(url, timestamps_start, timestamps_end, email, null, null, request_body);
-            
+
             throw new BadRequestException("Target user field must required");
         }
 
@@ -184,7 +184,7 @@ export class MonetizationService {
         pipeline.push({
             "$sort":
             {
-                'updatedAt': order
+                'createdAt': order
             }
         });
         if (name && name !== undefined) {
