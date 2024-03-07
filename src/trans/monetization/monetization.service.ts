@@ -84,7 +84,7 @@ export class MonetizationService {
 
     async createCredit(header: any, inputdata: any) {
         var timestamps_start = await this.utilsService.getDateTimeString();
-        var url = inputdata.get("Host") + inputdata.originalUrl;
+        var url = header.host + "/api/monetization/create";
         var token = header['x-auth-token'];
         var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
         var email = auth.email;
@@ -92,6 +92,9 @@ export class MonetizationService {
         var request_body = JSON.parse(JSON.stringify(inputdata));
 
         if (request_body.audiens == "EXCLUSIVE" && (request_body.audiens_user == null || request_body.audiens_user == undefined)) {
+            var timestamps_end = await this.utilsService.getDateTimeString();
+            this.LogAPISS.create2(url, timestamps_start, timestamps_end, email, null, null, request_body);
+            
             throw new BadRequestException("Target user field must required");
         }
 
