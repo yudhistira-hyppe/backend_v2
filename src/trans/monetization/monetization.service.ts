@@ -175,17 +175,24 @@ export class MonetizationService {
     async listAllCoin(skip: number, limit: number, descending: boolean, type?: string, name?: string, dateFrom?: string, dateTo?: string, stockFrom?: number, stockTo?: number, status?: boolean, audiens_type?: string, item_id?: string) {
 
         let order = descending ? -1 : 1;
+        let matchAnd = [];
         let pipeline = [];
-        pipeline.push({
-            "$match": {
-                "type": type
-            }
-        });
-        pipeline.push({
-            "$match": {
-                "active": true
-            }
-        });
+        // pipeline.push({
+        //     "$match": {
+        //         "type": type
+        //     }
+        // });
+        matchAnd.push({
+            "type": type
+        })
+        // pipeline.push({
+        //     "$match": {
+        //         "active": true
+        //     }
+        // });
+        matchAnd.push({
+            "active": true
+        })
         pipeline.push({
             "$sort":
             {
@@ -193,69 +200,106 @@ export class MonetizationService {
             }
         });
         if (name && name !== undefined) {
-            pipeline.push({
-                "$match": {
-                    "name": new RegExp(name, "i")
-                }
+            // pipeline.push({
+            //     "$match": {
+            //         "name": new RegExp(name, "i")
+            //     }
+            // })
+            matchAnd.push({
+                "name": new RegExp(name, "i")
             })
         }
         if (item_id && item_id !== undefined) {
-            pipeline.push({
-                "$match": {
-                    "item_id": new RegExp(item_id, "i")
-                }
+            // pipeline.push({
+            //     "$match": {
+            //         "item_id": new RegExp(item_id, "i")
+            //     }
+            // })
+            matchAnd.push({
+                "item_id": new RegExp(item_id, "i")
             })
         }
         if (dateFrom && dateFrom !== undefined) {
-            pipeline.push({
-                "$match": {
-                    "createdAt": {
-                        $gte: dateFrom + " 00:00:00"
-                    }
+            // pipeline.push({
+            //     "$match": {
+            //         "createdAt": {
+            //             $gte: dateFrom + " 00:00:00"
+            //         }
+            //     }
+            // })
+            matchAnd.push({
+                "createdAt": {
+                    $gte: dateFrom + " 00:00:00"
                 }
             })
         }
         if (dateTo && dateTo !== undefined) {
-            pipeline.push({
-                "$match": {
-                    "createdAt": {
-                        $lte: dateTo + " 23:59:59"
-                    }
+            // pipeline.push({
+            //     "$match": {
+            //         "createdAt": {
+            //             $lte: dateTo + " 23:59:59"
+            //         }
+            //     }
+            // })
+            matchAnd.push({
+                "createdAt": {
+                    $lte: dateTo + " 23:59:59"
                 }
             })
         }
         if (stockFrom && stockFrom !== undefined) {
-            pipeline.push({
-                "$match": {
-                    "stock": {
-                        $gte: stockFrom
-                    }
+            // pipeline.push({
+            //     "$match": {
+            //         "stock": {
+            //             $gte: stockFrom
+            //         }
+            //     }
+            // })
+            matchAnd.push({
+                "stock": {
+                    $gte: stockFrom
                 }
             })
         }
         if (stockTo && stockTo !== undefined) {
-            pipeline.push({
-                "$match": {
-                    "stock": {
-                        $lte: stockTo
-                    }
+            // pipeline.push({
+            //     "$match": {
+            //         "stock": {
+            //             $lte: stockTo
+            //         }
+            //     }
+            // })
+            matchAnd.push({
+                "stock": {
+                    $lte: stockTo
                 }
             })
         }
         if (status !== null && status !== undefined) {
-            pipeline.push({
-                "$match": {
-                    "status": status
-                }
+            // pipeline.push({
+            //     "$match": {
+            //         "status": status
+            //     }
+            // })
+            matchAnd.push({
+                "status": status
             })
         }
         if (audiens_type && audiens_type !== undefined) {
-            pipeline.push({
-                "$match": {
-                    "audiens": audiens_type
-                }
+            // pipeline.push({
+            //     "$match": {
+            //         "audiens": audiens_type
+            //     }
+            // })
+            matchAnd.push({
+                "audiens": audiens_type
             })
         }
+        pipeline.push({
+            "$match": {
+                $and: matchAnd
+            }
+        })
         if (skip > 0) {
             pipeline.push({ $skip: skip });
         }
