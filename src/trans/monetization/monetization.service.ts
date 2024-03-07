@@ -182,6 +182,11 @@ export class MonetizationService {
             }
         });
         pipeline.push({
+            "$match": {
+                "active": true
+            }
+        });
+        pipeline.push({
             "$sort":
             {
                 'createdAt': order
