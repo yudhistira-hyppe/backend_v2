@@ -153,7 +153,7 @@ export class MonetizationController {
       var setupdatedata = new Monetize();
       setupdatedata.status = request_json.status;
 
-      this.monetizationService.updateOne(id, setupdatedata);
+      await this.monetizationService.updateOne(id, setupdatedata);
       
       let timestamps_end = await this.utilService.getDateTimeString();
       this.LogAPISS.create2(url, timestamps_start, timestamps_end, email, null, null, request_json);
