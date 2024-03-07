@@ -34,6 +34,85 @@ export class MonetizationService {
         return data;
     }
 
+    async detailOne(id:string): Promise<Monetize> 
+    {
+        var mongo = require('mongoose');
+        var data = await this.monetData.aggregate([
+            {
+                "$match":
+                {
+                    _id:new mongo.Types.ObjectId(id)
+                }
+            },
+            {
+                "$project":
+                {
+                    name:1,
+                    price:1,
+                    amount:1,
+                    stock:1,
+                    thumbnail:1,
+                    used_stock:1,
+                    last_stock:1,
+                    audiens:
+                    {
+                        "$ifNull":
+                        [
+                            {
+                                "$cond":
+                                {
+                                    if:
+                                    {
+                                        "$eq":
+                                        [
+                                            "$type","CREDIT"
+                                        ]
+                                    },
+                                    then:
+                                    {
+                                        "$cond":
+                                        {
+                                            if:
+                                            {
+                                                "$eq":
+                                                [
+                                                    "$audiens", "EXCLUSIVE"
+                                                ]
+                                            },
+                                            then:"Ekslusif",
+                                            else:"Publik"
+                                        }
+                                    },
+                                    else:"$$REMOVE"
+                                }
+                            },
+                            "$$REMOVE"
+                        ]
+                    },
+                    total_transaction:
+                    {
+                        "$cond":
+                        {
+                            if:
+                            {
+                                "$eq":
+                                [
+                                    "$type","CREDIT"
+                                ]
+                            },
+                            then:
+                            {
+                                "$toInt":69
+                            },
+                            else:"$$REMOVE"
+                        }
+                    },
+                }
+            }
+        ]);
+        return data[0];
+    }
+
     async updateOne(id: string, data: Monetize) {
         var setid = new mongoose.Types.ObjectId(id);
         return this.monetData.findByIdAndUpdate(setid, data, { new: true });

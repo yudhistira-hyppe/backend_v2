@@ -23,6 +23,11 @@ export class MonetizationController {
     return this.monetizationService.findOne(id);
   }
 
+  @Get('/summary/:id')
+  async detailfindOne(@Param('id') id: string) {
+    return this.monetizationService.detailOne(id);
+  }
+
   @Get()
   async index() {
     return this.monetizationService.find();
