@@ -76,8 +76,8 @@ export class MonetizationService {
             type: request.type,
             used_stock: 0,
             last_stock: Number(request.stock),
-            active: Boolean(request.active),
-            status: Boolean(request.status)
+            active: true,
+            status: false
         }
         return this.monetData.create(createCoinDto);
     }
