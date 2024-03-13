@@ -2562,7 +2562,7 @@ export class ReportuserController {
 
             }
 
-            let query = await this.post2SS.findreport(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis, email);
+            let query = await this.post2SS.findreport2(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis, email);
             var data = null;
             var arrdata = [];
             let pict: String[] = [];

@@ -7290,6 +7290,575 @@ export class NewPostService {
               }
             }
           },
+        }
+      },
+      {
+        "$project":
+        {
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          contentModeration: 1,
+          contentModerationResponse: 1,
+          reportedStatus: 1,
+          reportedUserCount: 1,
+          reportedUserHandle: 1,
+          reportedUser: 1,
+          fullName: 1,
+          username: 1,
+          avatar: 1,
+          rotate: 1,
+          mediaBasePath: 1,
+          mediaUri: 1,
+          mediaType: 1,
+          mediaThumbEndpoint: 1,
+          mediaEndpoint: 1,
+          mediaThumbUri: 1,
+          apsaraId: 1,
+          apsara: 1,
+          reportReasonIdLast: 1,
+          reasonLast: 1,
+          lastAppeal: 1,
+          createdAtReportLast: 1,
+          createdAtAppealLast: 1,
+          statusLast: 1,
+          reasonLastAppeal: {
+            '$cond': {
+              if: {
+                '$or': [
+                  { '$eq': ['$lastAppeal', null] },
+                  { '$eq': ['$lastAppeal', ''] },
+                  { '$eq': ['$lastAppeal', 'Lainnya'] }
+                ]
+              },
+              then: 'Lainnya',
+              else: { '$last': '$reportedUserHandle.reason' }
+            }
+          },
+          reportStatusLast: {
+            '$cond': {
+              if: {
+                '$or': [
+                  { '$eq': ['$statusLast', null] },
+                  { '$eq': ['$statusLast', ''] },
+                  { '$eq': ['$statusLast', []] },
+                  { '$eq': ['$statusLast', 'BARU'] }
+                ]
+              },
+              then: 'BARU',
+              else: { '$last': '$reportedUserHandle.status' }
+            }
+          }
+        }
+      },
+    ];
+
+    if (jenis === "report") {
+      pipeline.push(
+        {
+          $match: {
+            $and: [
+              {
+                reportedUser: {
+                  $ne: null
+                }, active: true
+              },
+              {
+                reportedUser: {
+                  $ne: []
+                }, active: true
+              },
+
+            ]
+          }
+        },
+
+      );
+    } else if (jenis === "appeal") {
+      pipeline.push({
+        $match: {
+          $and: [
+            {
+              reportedUserHandle: {
+                $ne: []
+              },
+            },
+            {
+              reportedUserHandle: {
+                $ne: null
+              },
+            },
+          ]
+        }
+      },);
+    }
+
+    if (email && email !== undefined) {
+      pipeline.push({ $match: { email: email } });
+    }
+    if (keys && keys !== undefined) {
+
+      pipeline.push({
+        $match: {
+          description: {
+            $regex: keys,
+            $options: 'i'
+          },
+
+        }
+      },);
+
+    }
+    if (username && username !== undefined) {
+
+      pipeline.push({
+        $match: {
+          username: {
+            $regex: username,
+            $options: 'i'
+          },
+
+        }
+      },);
+
+    }
+
+    if (postType && postType !== undefined) {
+      pipeline.push({
+        $match: {
+          postType: postType
+
+        }
+      },);
+    }
+    if (startdate && startdate !== undefined) {
+      if (jenis === "report") {
+        pipeline.push({ $match: { createdAtReportLast: { "$gte": startdate } } });
+      }
+      else if (jenis === "appeal") {
+        pipeline.push({ $match: { createdAtAppealLast: { "$gte": startdate } } });
+      }
+    }
+    if (enddate && enddate !== undefined) {
+
+
+      if (jenis === "report") {
+        pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
+      }
+      else if (jenis === "appeal") {
+        pipeline.push({ $match: { createdAtAppealLast: { "$lte": dateend } } });
+      }
+    }
+    if (startreport && startreport !== undefined) {
+      pipeline.push({ $match: { reportedUserCount: { "$gte": startreport } } });
+    }
+    if (endreport && endreport !== undefined) {
+      pipeline.push({ $match: { reportedUserCount: { "$lte": endreport } } });
+    }
+
+    if (status && status !== undefined) {
+
+      pipeline.push(
+        {
+          $match: {
+            $or: [
+              {
+                reportStatusLast: {
+                  $in: status
+                }
+              },
+
+            ]
+          }
+        },
+      );
+
+    }
+    if (reason && reason !== undefined) {
+
+      let reasonsleng = reason.length;
+      let arrayReason = [];
+      for (var i = 0; i < reasonsleng; i++) {
+        var id = reason[i];
+        var idreason = mongoose.Types.ObjectId(id);
+        arrayReason.push(idreason);
+      }
+      pipeline.push(
+        {
+          $match: {
+            $or: [
+              {
+                reportReasonIdLast: {
+                  $in: arrayReason
+                }
+              },
+
+            ]
+          }
+        });
+
+    }
+    if (reasonAppeal && reasonAppeal !== undefined) {
+
+      pipeline.push(
+        {
+          $match: {
+            $or: [
+              {
+                reasonLastAppeal: {
+                  $in: reasonAppeal
+                }
+              },
+
+            ]
+          }
+        });
+
+    }
+    if (jenis === "report") {
+      pipeline.push({
+        $sort: {
+          createdAtReportLast: order
+        },
+
+      });
+    }
+    else if (jenis === "appeal") {
+      pipeline.push({
+        $sort: {
+          createdAtAppealLast: order
+        },
+
+      });
+    }
+    if (page > 0) {
+      pipeline.push({ $skip: (page * limit) });
+    }
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
+
+    // console.log(JSON.stringify(pipeline))
+
+    let query = await this.loaddata.aggregate(pipeline);
+
+    return query;
+  }
+
+  async findreport2(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[], descending: boolean, reasonAppeal: any[], username: string, jenis: string, email: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+    var order = null;
+
+    if (descending === true) {
+      order = -1;
+    } else {
+      order = 1;
+    }
+    var pipeline = [];
+
+
+    pipeline = [
+      {
+        '$lookup': {
+          from: 'newUserBasics',
+          localField: 'email',
+          foreignField: 'email',
+          as: 'basicdata'
+        }
+      },
+      {
+        "$addFields":
+        {
+          basic: { '$arrayElemAt': ['$basicdata', 0] },
+          mediaSource: { '$arrayElemAt': ['$mediaSource', 0] }
+        }
+      },
+      {
+        "$project":
+        {
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          contentModeration: 1,
+          contentModerationResponse: 1,
+          reportedStatus: 1,
+          reportedUserCount: {
+            '$ifNull': [
+              {
+                '$filter': {
+                  input: '$reportedUser',
+                  as: 'listuser',
+                  cond:
+                  {
+                    '$eq': ['$$listuser.active', true]
+                  }
+                }
+              },
+              []
+            ]
+          },
+          reportedUserHandle: 1,
+          reportedUser: 1,
+          fullName: '$basic.fullName',
+          username: '$basic.username',
+          avatar:
+          {
+            mediaBasePath:
+            {
+              "$ifNull":
+                [
+                  '$basic.mediaBasePath',
+                  null
+                ]
+            },
+            mediaUri:
+            {
+              "$ifNull":
+                [
+                  '$basic.mediaUri',
+                  null
+                ]
+            },
+            mediaType:
+            {
+              "$ifNull":
+                [
+                  '$basic.mediaType',
+                  null
+                ]
+            },
+            mediaEndpoint:
+            {
+              "$ifNull":
+                [
+                  '$basic.mediaEndpoint',
+                  null
+                ]
+            },
+          },
+          mediaSource: 1
+        }
+      },
+      {
+        "$addFields":
+        {
+          "cleanUri":
+          {
+            "$cond":
+            {
+              if:
+              {
+                "$eq":
+                  [
+                    "$mediaSource.apsara",
+                    true
+                  ]
+              },
+              then: null,
+              else:
+              {
+                "$substr":
+                  [
+                    "$mediaSource.mediaUri",
+                    0,
+                    36
+                  ]
+              }
+            }
+          }
+        }
+      },
+      {
+        "$project":
+        {
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          contentModeration: 1,
+          contentModerationResponse: 1,
+          reportedStatus: 1,
+          reportedUserCount: { '$size': '$reportedUserCount' },
+          reportedUserHandle: 1,
+          reportedUser: 1,
+          fullName: 1,
+          username: 1,
+          avatar: 1,
+          rotate:
+          {
+            "$ifNull":
+              [
+                "$mediaSource.rotate",
+                null
+              ]
+          },
+          mediaBasePath:
+          {
+            "$ifNull":
+              [
+                "$mediaSource.mediaBasePath",
+                null
+              ]
+          },
+          mediaUri:
+          {
+            "$ifNull":
+              [
+                "$mediaSource.mediaUri",
+                null
+              ]
+          },
+          mediaType:
+          {
+            "$ifNull":
+              [
+                "$mediaSource.mediaType",
+                null
+              ]
+          },
+          mediaThumbEndpoint:
+          {
+            "$ifNull":
+              [
+                "$mediaSource.mediaThumbEndpoint",
+                {
+                  "$concat":
+                    [
+                      "/thumb/",
+                      "$cleanUri"
+                    ]
+                }
+              ]
+          },
+          mediaEndpoint:
+          {
+            "$ifNull":
+              [
+                "$mediaSource.mediaEndpoint",
+                {
+                  "$cond":
+                  {
+                    if:
+                    {
+                      "$eq":
+                        [
+                          "$postType", "pict"
+                        ]
+                    },
+                    then:
+                    {
+                      "$concat":
+                        [
+                          "/pict/",
+                          "$cleanUri"
+                        ]
+                    },
+                    else:
+                    {
+                      "$concat":
+                        [
+                          "/stream/",
+                          "$cleanUri"
+                        ]
+                    }
+                  }
+                }
+              ]
+          },
+          mediaThumbUri:
+          {
+            "$ifNull":
+              [
+                "$mediaSource.mediaThumbUri",
+                null
+              ]
+          },
+          apsaraId:
+          {
+            "$ifNull":
+              [
+                "$mediaSource.apsaraId",
+                null
+              ]
+          },
+          apsara:
+          {
+            "$ifNull":
+              [
+                "$mediaSource.apsara",
+                false
+              ]
+          },
+          reportReasonIdLast:
+          {
+            '$last': '$reportedUser.reportReasonId'
+          },
+          reasonLast:
+          {
+            '$last': '$reportedUser.description'
+          },
+          lastAppeal:
+          {
+            '$cond': {
+              if: {
+                '$and': [
+                  { '$eq': ['$reportedUserHandle.reason', null] },
+                  { '$eq': ['$reportedUserHandle.reason', ''] },
+                  { '$eq': ['$reportedUserHandle.reason', 'Lainnya'] }
+                ]
+              },
+              then: 'Lainnya',
+              else: {
+                '$last': '$reportedUserHandle.reason'
+              }
+            }
+          },
+          createdAtReportLast:
+          {
+            '$last': '$reportedUser.createdAt'
+          },
+          createdAtAppealLast:
+          {
+            '$last': '$reportedUserHandle.createdAt'
+          },
+          statusLast:
+          {
+            '$cond': {
+              if: {
+                '$or': [
+                  { '$eq': ['$reportedUserHandle', null] },
+                  { '$eq': ['$reportedUserHandle', ''] },
+                  { '$eq': ['$reportedUserHandle', []] }
+                ]
+              },
+              then: 'BARU',
+              else: {
+                '$last': '$reportedUserHandle.status'
+              }
+            }
+          },
           hasAppeal:
           {
             "$ifNull":
@@ -7403,7 +7972,39 @@ export class NewPostService {
                 ]
               },
               then: 'BARU',
-              else: { '$last': '$reportedUserHandle.status' }
+              else: 
+              {
+                "$cond":
+                {
+                  "if":
+                  {
+                    "$and":
+                    [
+                      {
+                        "$eq":
+                        [
+                          { 
+                            '$last': '$reportedUserHandle.status' 
+                          }, 
+                          "TIDAK DITANGGUHKAN"
+                        ]
+                      },
+                      {
+                        "$ne":
+                        [
+                          "$reportedUserCount",
+                          0
+                        ]
+                      }
+                    ]
+                  },
+                  then:"BARU",
+                  else:
+                  { 
+                    '$last': '$reportedUserHandle.status' 
+                  },
+                }
+              } 
             }
           }
         }
