@@ -9186,26 +9186,72 @@ export class NewPostService {
             },
 
           },
-          reportStatusLast: {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$statusLast", null]
-                }, {
-                  $eq: ["$statusLast", ""]
-                }, {
-                  $eq: ["$statusLast", []]
-                }, {
-                  $eq: ["$statusLast", "BARU"]
-                }]
-              },
-              then: "BARU",
-              else: {
-                $last: "$reportedUserHandle.status"
-              }
-            },
+          // reportStatusLast: {
+          //   $cond: {
+          //     if: {
+          //       $or: [{
+          //         $eq: ["$statusLast", null]
+          //       }, {
+          //         $eq: ["$statusLast", ""]
+          //       }, {
+          //         $eq: ["$statusLast", []]
+          //       }, {
+          //         $eq: ["$statusLast", "BARU"]
+          //       }]
+          //     },
+          //     then: "BARU",
+          //     else: {
+          //       $last: "$reportedUserHandle.status"
+          //     }
+          //   },
 
-          },
+          // },
+          reportStatusLast: {
+            '$cond': {
+              if: {
+                '$or': [
+                  { '$eq': ['$statusLast', null] },
+                  { '$eq': ['$statusLast', ''] },
+                  { '$eq': ['$statusLast', []] },
+                  { '$eq': ['$statusLast', 'BARU'] }
+                ]
+              },
+              then: 'BARU',
+              else: 
+              {
+                "$cond":
+                {
+                  "if":
+                  {
+                    "$and":
+                    [
+                      {
+                        "$eq":
+                        [
+                          { 
+                            '$last': '$reportedUserHandle.status' 
+                          }, 
+                          "TIDAK DITANGGUHKAN"
+                        ]
+                      },
+                      {
+                        "$ne":
+                        [
+                          "$reportedUserCount",
+                          0
+                        ]
+                      }
+                    ]
+                  },
+                  then:"BARU",
+                  else:
+                  { 
+                    '$last': '$reportedUserHandle.status' 
+                  },
+                }
+              } 
+            }
+          }
         }
       },
     ]);
