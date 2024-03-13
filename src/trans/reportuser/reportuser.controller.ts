@@ -1299,20 +1299,29 @@ export class ReportuserController {
                 try {
 
                     datahandel = datacontent.reportedUserHandle;
-
+                    arrayreportedHandle = datahandel;
                 } catch (e) {
                     datahandel = null;
                 }
 
-                if (datahandel.length > 0) {
-                    for (let i = 0; i < datahandel.length; i++) {
-                        let status = datahandel[i].status;
+                // if (datahandel.length > 0) {
+                //     for (let i = 0; i < datahandel.length; i++) {
+                //         let status = datahandel[i].status;
 
-                        if (status === "BARU") {
-                            throw new BadRequestException("Appeal sudah diajukan...!");
-                        }
+                //         if (status === "BARU") {
+                //             throw new BadRequestException("Appeal sudah diajukan...!");
+                //         }
+                //     }
+
+                // }
+
+                if(datahandel.length > 0)
+                {
+                    var lastdata =  datahandel[datahandel.length - 1];
+                    if(lastdata.status === "BARU")
+                    {
+                        throw new BadRequestException("Appeal sudah diajukan...!");
                     }
-
                 }
 
                 // if (reportCount >= 200) {
@@ -1605,6 +1614,71 @@ export class ReportuserController {
         var event = "";
         var tipe = "";
 
+        // old
+        // if (type === "content") {
+        //     try {
+        //         datacontent = await this.post2SS.findByPostId(postID);
+        //         reportedUserHandle = datacontent._doc.reportedUserHandle;
+
+        //     } catch (e) {
+        //         datacontent = null;
+        //         reportedUserHandle = [];
+        //     }
+        //     if (ditangguhkan === true) {
+        //         name = "NOTIFY_APPEAL";
+        //         event = "SUSPENDED_APPEAL";
+        //         tipe = "CONTENT";
+
+        //         if (reportedUserHandle.length > 0) {
+        //             await this.post2SS.updateDitangguhkan(postID, reason, dt.toISOString(), idreason);
+        //             this.sendReportAppealFCMV2(name, event, tipe, postID);
+        //         } else {
+
+        //             objreporthandle = {
+
+        //                 "reasonId": reasonId,
+        //                 "reasonAdmin": reason,
+        //                 "reason": "",
+        //                 "remark": "",
+        //                 "createdAt": dt.toISOString(),
+        //                 "updatedAt": dt.toISOString(),
+        //                 "status": "DITANGGUHKAN"
+        //             };
+        //             arrayreportedHandle.push(objreporthandle);
+
+        //             await this.post2SS.updateDitangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
+        //             this.sendReportAppealFCMV2(name, event, tipe, postID);
+        //         }
+
+
+        //     } else {
+        //         name = "NOTIFY_APPEAL";
+        //         event = "NOTSUSPENDED_APPEAL";
+        //         tipe = "CONTENT";
+        //         if (reportedUserHandle.length > 0) {
+        //             await this.post2SS.updateTidakditangguhkan(postID, dt.toISOString());
+        //             await this.post2SS.nonactive(postID, dt.toISOString());
+        //             this.sendReportAppealFCMV2(name, event, tipe, postID);
+        //         } else {
+        //             objreporthandle = {
+
+        //                 "reasonId": null,
+        //                 "reasonAdmin": "",
+        //                 "reason": "",
+        //                 "remark": "",
+        //                 "createdAt": dt.toISOString(),
+        //                 "updatedAt": dt.toISOString(),
+        //                 "status": "TIDAK DITANGGUHKAN"
+        //             };
+        //             arrayreportedHandle.push(objreporthandle);
+
+        //             await this.post2SS.updateTidakditangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
+        //             await this.post2SS.nonactive(postID, dt.toISOString());
+        //             this.sendReportAppealFCMV2(name, event, tipe, postID);
+        //         }
+        //     }
+
+        // }
         if (type === "content") {
             try {
                 datacontent = await this.post2SS.findByPostId(postID);
@@ -1619,53 +1693,38 @@ export class ReportuserController {
                 event = "SUSPENDED_APPEAL";
                 tipe = "CONTENT";
 
-                if (reportedUserHandle.length > 0) {
-                    await this.post2SS.updateDitangguhkan(postID, reason, dt.toISOString(), idreason);
-                    this.sendReportAppealFCMV2(name, event, tipe, postID);
-                } else {
+                objreporthandle = {
 
-                    objreporthandle = {
-
-                        "reasonId": reasonId,
-                        "reasonAdmin": reason,
-                        "reason": "",
-                        "remark": "",
-                        "createdAt": dt.toISOString(),
-                        "updatedAt": dt.toISOString(),
-                        "status": "DITANGGUHKAN"
-                    };
-                    arrayreportedHandle.push(objreporthandle);
-
-                    await this.post2SS.updateDitangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
-                    this.sendReportAppealFCMV2(name, event, tipe, postID);
-                }
-
+                    "reasonId": reasonId,
+                    "reasonAdmin": reason,
+                    "reason": "",
+                    "remark": "",
+                    "createdAt": dt.toISOString(),
+                    "updatedAt": dt.toISOString(),
+                    "status": "DITANGGUHKAN"
+                };
+                reportedUserHandle.push(objreporthandle);
+                await this.post2SS.updateDitangguhkanEmpty(postID, dt.toISOString(), reportedUserHandle);
+                this.sendReportAppealFCMV2(name, event, tipe, postID);
 
             } else {
                 name = "NOTIFY_APPEAL";
                 event = "NOTSUSPENDED_APPEAL";
                 tipe = "CONTENT";
-                if (reportedUserHandle.length > 0) {
-                    await this.post2SS.updateTidakditangguhkan(postID, dt.toISOString());
-                    await this.post2SS.nonactive(postID, dt.toISOString());
-                    this.sendReportAppealFCMV2(name, event, tipe, postID);
-                } else {
-                    objreporthandle = {
+                objreporthandle = {
 
-                        "reasonId": null,
-                        "reasonAdmin": "",
-                        "reason": "",
-                        "remark": "",
-                        "createdAt": dt.toISOString(),
-                        "updatedAt": dt.toISOString(),
-                        "status": "TIDAK DITANGGUHKAN"
-                    };
-                    arrayreportedHandle.push(objreporthandle);
-
-                    await this.post2SS.updateTidakditangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
-                    await this.post2SS.nonactive(postID, dt.toISOString());
-                    this.sendReportAppealFCMV2(name, event, tipe, postID);
-                }
+                    "reasonId": null,
+                    "reasonAdmin": "",
+                    "reason": "",
+                    "remark": "",
+                    "createdAt": dt.toISOString(),
+                    "updatedAt": dt.toISOString(),
+                    "status": "TIDAK DITANGGUHKAN"
+                };
+                reportedUserHandle.push(objreporthandle);
+                await this.post2SS.updateTidakditangguhkanEmpty(postID, dt.toISOString(), reportedUserHandle);
+                await this.post2SS.nonactive(postID, dt.toISOString());
+                this.sendReportAppealFCMV2(name, event, tipe, postID);
             }
 
         }
@@ -2512,7 +2571,44 @@ export class ReportuserController {
 
             for (var i = 0; i < query.length; i++) {
                 let dataquery = await this.getusercontentsService.getapsaraDatabase(query, i);
-                arrdata.push(dataquery[i]);
+                var outputresult = {
+                    _id: query[i]._id,
+                    createdAt: query[i].createdAt,
+                    updatedAt: query[i].updatedAt,
+                    postID: query[i].postID,
+                    email: query[i].email,
+                    postType: query[i].postType,
+                    description: query[i].description,
+                    title: query[i].title,
+                    active: query[i].active,
+                    contentModeration: query[i].contentModeration,
+                    contentModerationResponse: query[i].contentModerationResponse,
+                    reportedStatus: query[i].reportedStatus,
+                    reportedUserCount: query[i].reportedUserCount,
+                    reportedUserHandle: query[i].reportedUserHandle,
+                    reportedUser: query[i].reportedUser,
+                    fullName: query[i].fullName,
+                    username: query[i].username,
+                    avatar: query[i].avatar,
+                    rotate: query[i].rotate,
+                    mediaBasePath: query[i].mediaBasePath,
+                    mediaUri: query[i].mediaUri,
+                    mediaType: query[i].mediaType,
+                    mediaThumbEndpoint: query[i].mediaThumbEndpoint,
+                    mediaEndpoint: query[i].mediaEndpoint,
+                    mediaThumbUri: query[i].mediaThumbUri,
+                    apsaraId: query[i].apsaraId,
+                    apsara: query[i].apsara,
+                    reportReasonIdLast: query[i].reportReasonIdLast,
+                    reasonLast: query[i].reasonLast,
+                    lastAppeal: query[i].lastAppeal,
+                    createdAtReportLast: query[i].createdAtReportLast,
+                    createdAtAppealLast: query[i].createdAtAppealLast,
+                    statusLast: query[i].statusLast,
+                    reportStatusLast: query[i].reportStatusLast,
+                    media: query[i].media
+                };
+                arrdata.push(outputresult);
             }
 
             total = query.length;
@@ -6083,6 +6179,25 @@ export class ReportuserController {
         if (await this.utilsService.ceckData(posts)) {
             post_type = posts.postType.toString();
             email_post = posts.email.toString();
+            var settype = null;
+            switch(post_type) {
+            case "pict":
+                settype = "HyppePict";
+                break;
+            case "vid":
+                settype = "HyppeVid";
+                break;
+            case "story":
+                settype = "HyppeStory";
+                break;
+            default:
+                settype = "HyppePict";
+                break;
+            }
+            var tempbodyEN = bodyen_get.replace("${post_type}", settype); 
+            var tempbodyID = bodyin_get.replace("${post_type}", settype); 
+            bodyin_get = tempbodyID;
+            bodyen_get = tempbodyEN;
         }
 
         var eventType = type.toString();
