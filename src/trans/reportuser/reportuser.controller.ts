@@ -2605,9 +2605,24 @@ export class ReportuserController {
                     createdAtReportLast: query[i].createdAtReportLast,
                     createdAtAppealLast: query[i].createdAtAppealLast,
                     statusLast: query[i].statusLast,
-                    reportStatusLast: query[i].reportStatusLast,
-                    media: query[i].media
+                    media: dataquery[i].media
                 };
+
+                if(jenis == "appeal")
+                {
+                    outputresult["reportStatusLast"] = query[i].reportStatusLast;
+                }
+                else
+                {
+                    if(query[i].reportStatusLast == "BARU" && query[i].reportedUserCount != 0)
+                    {
+                        outputresult["reportStatusLast"] = "DITANGGUHKAN";
+                    }
+                    else
+                    {
+                        outputresult["reportStatusLast"] = query[i].reportStatusLast;
+                    }
+                }             
                 arrdata.push(outputresult);
             }
 
