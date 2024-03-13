@@ -80,7 +80,7 @@ export class MonetizationController {
     if (request_json.descending == undefined || request_json.descending == null) { throw new BadRequestException("Missing field: descending (boolean)"); }
     if (request_json.type == undefined || !request_json.type) { throw new BadRequestException("Missing field: type (string 'COIN'/'CREDIT')"); }
     if (request_json.type !== "COIN" && request_json.type !== "CREDIT") { throw new BadRequestException("type must be 'COIN' or 'CREDIT'"); }
-    let skip = (request_json.page > 0 ? (request_json.page - 1) : 0) * request_json.limit;
+    let skip = (request_json.page >= 0 ? request_json.page : 0) * request_json.limit;
     var data = await this.monetizationService.listAllCoin(skip, request_json.limit, request_json.descending, request_json.type, request_json.name, request_json.from, request_json.to, request_json.stock_gte, request_json.stock_lte, request_json.status, request_json.audiens, request_json.item_id);
 
     var timestamps_end = await this.utilService.getDateTimeString();
@@ -104,7 +104,7 @@ export class MonetizationController {
     let auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     let email = auth.email;
     var request_json = JSON.parse(JSON.stringify(request.body));
-    
+
     let data = this.monetizationService.deactivate(request_json.id);
 
     let timestamps_end = await this.utilService.getDateTimeString();
@@ -144,29 +144,26 @@ export class MonetizationController {
 
   @Post('status/:id')
   @UseGuards(JwtAuthGuard)
-  async changeStatus(@Param() id:string, @Req() req, @Headers() headers) {
+  async changeStatus(@Param() id: string, @Req() req, @Headers() headers) {
     let timestamps_start = await this.utilService.getDateTimeString();
-    let url = req.get('Host')  + req.originalUrl;
+    let url = req.get('Host') + req.originalUrl;
     let token = headers['x-auth-token'];
     let auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     let email = auth.email;
     var request_json = JSON.parse(JSON.stringify(req.body));
 
     var data = await this.monetizationService.findOne(id);
-    if(data != null)
-    {
+    if (data != null) {
       var setupdatedata = new Monetize();
       setupdatedata.status = request_json.status;
 
       await this.monetizationService.updateOne(id, setupdatedata);
-      
+
       let timestamps_end = await this.utilService.getDateTimeString();
       this.LogAPISS.create2(url, timestamps_start, timestamps_end, email, null, null, request_json);
 
-      if(data.type == "CREDIT")
-      {
-        if(data.audiens == "EXCLUSIVE" && data.isSend == false)
-        {
+      if (data.type == "CREDIT") {
+        if (data.audiens == "EXCLUSIVE" && data.isSend == false) {
           this.sendNotifAudiens(data);
         }
       }
@@ -178,8 +175,7 @@ export class MonetizationController {
         }
       }
     }
-    else
-    {
+    else {
       throw new NotAcceptableException("Data not found");
     }
   }
@@ -208,9 +204,8 @@ export class MonetizationController {
     }
   }
 
-  async sendNotifAudiens(data:any)
-  {
-    
+  async sendNotifAudiens(data: any) {
+
     var templatedata = await this.repoSS.findOne("65e932f8c87900009e001bc2");
     let userdata = data.audiens_user;
     var setpagination = parseInt(userdata.length) / 2;
@@ -220,7 +215,7 @@ export class MonetizationController {
     }
 
     for (var looppagination = 0; looppagination < setpagination; looppagination++) {
-      var getalluserbasic = await this.basic2SS.findInbyid(userdata.slice((looppagination * 2),((looppagination + 1) * 2)));
+      var getalluserbasic = await this.basic2SS.findInbyid(userdata.slice((looppagination * 2), ((looppagination + 1) * 2)));
 
       for (var loopuser = 0; loopuser < getalluserbasic.length; loopuser++) {
         var titleEN = templatedata.subject.replace("$paket", data.name);
