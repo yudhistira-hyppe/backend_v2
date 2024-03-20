@@ -8493,8 +8493,11 @@ export class UserbasicsService {
       }
     }
     console.log("countData",countData)
-    if (mingrionRun_.limit!=undefined){
+    if (mingrionRun_.limit != undefined) {
       let skip = 0;
+      if (mingrionRun_.skip != undefined) {
+        skip = mingrionRun_.skip;
+      } 
       let limit = mingrionRun_.limit;
       let modulus = countData % limit;
       let dataLoop = 0;
@@ -8508,12 +8511,12 @@ export class UserbasicsService {
 
       for (let i = 0; i < dataLoop; i++) {
         if (modulus == 0) {
-          skip = i * mingrionRun_.limit;
+          skip += i * mingrionRun_.limit;
         }else{
           if ((dataLoop - 1) == i) {
-            skip = (i * mingrionRun_.limit) + modulus;
+            skip += (i * mingrionRun_.limit) + modulus;
           } else {
-            skip = i * mingrionRun_.limit;
+            skip += i * mingrionRun_.limit;
           }
         }
         console.log("modulus userbasic", modulus)
