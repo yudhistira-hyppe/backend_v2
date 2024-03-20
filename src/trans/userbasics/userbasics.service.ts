@@ -8511,9 +8511,9 @@ export class UserbasicsService {
           skip = i * mingrionRun_.limit;
         }else{
           if ((dataLoop - 1) == i) {
-            skip = (limit * mingrionRun_.limit) + modulus;
+            skip = (i * mingrionRun_.limit) + modulus;
           } else {
-            skip = limit * mingrionRun_.limit;
+            skip = i * mingrionRun_.limit;
           }
         }
         console.log("modulus userbasic", modulus)
@@ -8532,15 +8532,11 @@ export class UserbasicsService {
     let aggregate = [];
     aggregate.push({
       $sort: {
-        createdAt: - 1
+        createdAt: 1
       }
     });
 
     if ((skip != undefined) && (limit != undefined)) {
-      console.log("--------------------------------------------------------------------------------------------------")
-      console.log("skip", skip)
-      console.log("limit", limit)
-      console.log("--------------------------------------------------------------------------------------------------")
       aggregate.push(
         {
           $skip: skip

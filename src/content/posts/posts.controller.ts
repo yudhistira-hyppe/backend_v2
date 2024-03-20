@@ -4818,7 +4818,7 @@ export class PostsController {
     await this.contenteventsService.scorepostrequest(iduser, idevent, namatabel, event, postID,listchallenge);
   }
 
-  @Post('migration')
+  @Post('api/posts/migration')
   async runMigrationDBNewUserBasic(@Body() mingrionRun_: mingrionRun) {
     this.PostsService.migrationRun(mingrionRun_);
     return { response_code: 202, messages: "Success" };
