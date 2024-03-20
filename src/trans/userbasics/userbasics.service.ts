@@ -8510,6 +8510,11 @@ export class UserbasicsService {
       console.log("modulus", modulus)
 
       for (let i = 0; i < dataLoop; i++) {
+        if (mingrionRun_.skip != undefined) {
+          skip = mingrionRun_.skip;
+        }else{
+          skip = 0;
+        }
         if (modulus == 0) {
           skip += i * mingrionRun_.limit;
         }else{
