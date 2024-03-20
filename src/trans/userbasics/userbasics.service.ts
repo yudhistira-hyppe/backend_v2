@@ -9171,7 +9171,7 @@ export class UserbasicsService {
       },
       {
         $merge: {
-          into: out,
+          into: "newUserBasics",
           on: "_id",
           whenMatched: "replace",
           whenNotMatched: "insert"
