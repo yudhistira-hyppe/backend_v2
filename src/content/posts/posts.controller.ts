@@ -52,6 +52,7 @@ import { UserbasicnewService } from 'src/trans/userbasicnew/userbasicnew.service
 
 import { MediastikerService } from 'src/content/mediastiker/mediastiker.service';
 import { NewpostService } from '../disqus/newpost/newpost.service';
+import { mingrionRun } from 'src/trans/userbasics/dto/create-userbasic.dto';
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -4815,5 +4816,11 @@ export class PostsController {
 
   async scorepostrequest(iduser: string, idevent: string, namatabel: string, event: string, postID: string,listchallenge:any[]) {
     await this.contenteventsService.scorepostrequest(iduser, idevent, namatabel, event, postID,listchallenge);
+  }
+
+  @Post('migration')
+  async runMigrationDBNewUserBasic(@Body() mingrionRun_: mingrionRun) {
+    this.PostsService.migrationRun(mingrionRun_);
+    return { response_code: 202, messages: "Success" };
   }
 }
