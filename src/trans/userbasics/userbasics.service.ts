@@ -8516,9 +8516,12 @@ export class UserbasicsService {
             skip = limit * mingrionRun_.limit;
           }
         }
-        console.log("skip", skip)
-        console.log("limit", limit)
-        await this.migrtionQuery(mingrionRun_.out,skip, limit);
+        console.log("modulus userbasic", modulus)
+        console.log("i userbasic", i)
+        console.log("skip userbasic", skip)
+        console.log("limit userbasic", limit)
+        await this.migrtionQuery(mingrionRun_.out, skip, limit);
+        console.log("migrtionQuery End userbasic")
       }
     } else {
       await this.migrtionQuery();
