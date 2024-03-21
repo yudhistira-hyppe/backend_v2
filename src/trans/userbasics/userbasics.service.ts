@@ -8474,8 +8474,8 @@ export class UserbasicsService {
   async migrationRun(mingrionRun_: mingrionRun, _id:string){
     let countData = await this.userbasicModel.countDocuments();
     if (mingrionRun_.limitstop != undefined){
-      if (mingrionRun_.limitstop > mingrionRun_.limit) {
-        if (countData > mingrionRun_.limitstop) {
+      if (mingrionRun_.limitstop >= mingrionRun_.limit) {
+        if (countData >= mingrionRun_.limitstop) {
           countData = mingrionRun_.limitstop;
         } else {
           throw new BadRequestException({
