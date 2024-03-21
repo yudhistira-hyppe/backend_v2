@@ -9,6 +9,8 @@ import { MediaproofpictsService } from '../../content/mediaproofpicts/mediaproof
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 import { LogapisService } from '../logapis/logapis.service';
 import { skip } from 'rxjs';
+import { LogMigrationsService } from '../logmigrations/logmigrations.service';
+import { LogMigrations } from '../logmigrations/schema/logmigrations.schema';
 
 @Injectable()
 export class UserbasicsService {
@@ -19,8 +21,8 @@ export class UserbasicsService {
     private readonly interestsRepoService: InterestsRepoService,
     private readonly mediaprofilepictsService: MediaprofilepictsService,
     private readonly mediaproofpictsService: MediaproofpictsService,
-    private readonly logapiSS: LogapisService
-
+    private readonly logapiSS: LogapisService,
+    private readonly logMigrationsService: LogMigrationsService,
   ) { }
 
   async create(CreateUserbasicDto: CreateUserbasicDto): Promise<Userbasic> {
@@ -8469,7 +8471,7 @@ export class UserbasicsService {
     return data;
   }
 
-  async migrationRun(mingrionRun_: mingrionRun){
+  async migrationRun(mingrionRun_: mingrionRun, _id:string){
     let countData = await this.userbasicModel.countDocuments();
     if (mingrionRun_.limitstop != undefined){
       if (mingrionRun_.limitstop > mingrionRun_.limit) {
@@ -8531,8 +8533,20 @@ export class UserbasicsService {
         await this.migrtionQuery(mingrionRun_.out, skip, limit);
         console.log("migrtionQuery End userbasic")
       }
+      console.log("-----------------------------------------FINISH-----------------------------------------");
+      console.log("-------------PARAM-------------", JSON.stringify(mingrionRun_));
+      let LogMigrations_ = new LogMigrations();
+      LogMigrations_.finishAt = (await this.getDate()).dateString;
+      LogMigrations_.status = "FINISH";
+      this.logMigrationsService.update(_id,LogMigrations_);
     } else {
       await this.migrtionQuery();
+      console.log("-----------------------------------------FINISH-----------------------------------------");
+      console.log("-------------PARAM-------------", JSON.stringify(mingrionRun_));
+      let LogMigrations_ = new LogMigrations();
+      LogMigrations_.finishAt = (await this.getDate()).dateString;
+      LogMigrations_.status = "FINISH";
+      this.logMigrationsService.update(_id, LogMigrations_);
     }
   }
 
@@ -9188,5 +9202,14 @@ export class UserbasicsService {
     // console.log(JSON.stringify(aggregate));
     // console.log("--------------------------------------------------------------------------------------------------")
     await this.userbasicModel.aggregate(aggregate);
+  }
+
+  async getDate(): Promise<any> {
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    return {
+      date: date,
+      dateString: DateTime.substring(0, DateTime.lastIndexOf('.')),
+    }
   }
 }
