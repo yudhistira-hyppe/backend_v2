@@ -693,6 +693,11 @@ export class NotificationReadService {
         }
         pipeline.push(
             {
+                $sort: {
+                    createdAt: - 1
+                }
+            },
+            {
                 $skip: (skip * limit)
             },
             {
@@ -751,11 +756,11 @@ export class NotificationReadService {
                     preserveNullAndEmptyArrays: true
                 }
             },
-            {
-                $sort: {
-                    createdAt: - 1
-                }
-            },
+            // {
+            //     $sort: {
+            //         createdAt: - 1
+            //     }
+            // },
             // {
             //     $skip: (skip * limit)
             // },
