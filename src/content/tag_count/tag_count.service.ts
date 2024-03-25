@@ -24412,34 +24412,36 @@ export class TagCountService {
                                 [],
                               ],
                             },
-                            following: {
-                              $ifNull: [
-                                {
-                                  $filter: {
-                                    input: "$follower",
-                                    as: "listuser",
-                                    cond: {
-                                      $eq: ["$$listuser", email],
-                                    },
-                                  },
-                                },
-                                [],
-                              ],
-                            },
-                            friend: {
-                              $ifNull: [
-                                {
-                                  $filter: {
-                                    input: "$friend",
-                                    as: "listfriend",
-                                    cond: {
-                                      $eq: ["$$listfriend.email", email],
-                                    },
-                                  },
-                                },
-                                [],
-                              ],
-                            },
+                            following: [],
+                            friend: [],
+                            // following: {
+                            //   $ifNull: [
+                            //     {
+                            //       $filter: {
+                            //         input: "$follower",
+                            //         as: "listuser",
+                            //         cond: {
+                            //           $eq: ["$$listuser", email],
+                            //         },
+                            //       },
+                            //     },
+                            //     [],
+                            //   ],
+                            // },
+                            // friend: {
+                            //   $ifNull: [
+                            //     {
+                            //       $filter: {
+                            //         input: "$friend",
+                            //         as: "listfriend",
+                            //         cond: {
+                            //           $eq: ["$$listfriend.email", email],
+                            //         },
+                            //       },
+                            //     },
+                            //     [],
+                            //   ],
+                            // },
                           },
                         },
                         {
@@ -24929,20 +24931,36 @@ export class TagCountService {
                                 [],
                               ],
                             },
-                            following: {
-                              $ifNull: [
-                                {
-                                  $filter: {
-                                    input: "$follower",
-                                    as: "listuser",
-                                    cond: {
-                                      $eq: ["$$listuser", email],
-                                    },
-                                  },
-                                },
-                                [],
-                              ],
-                            },
+                            following: [],
+                            friend: [],
+                            // following: {
+                            //   $ifNull: [
+                            //     {
+                            //       $filter: {
+                            //         input: "$follower",
+                            //         as: "listuser",
+                            //         cond: {
+                            //           $eq: ["$$listuser", email],
+                            //         },
+                            //       },
+                            //     },
+                            //     [],
+                            //   ],
+                            // },
+                            // friend: {
+                            //   $ifNull: [
+                            //     {
+                            //       $filter: {
+                            //         input: "$friend",
+                            //         as: "listfriend",
+                            //         cond: {
+                            //           $eq: ["$$listfriend.email", email],
+                            //         },
+                            //       },
+                            //     },
+                            //     [],
+                            //   ],
+                            // },
                           },
                         },
                         {
@@ -24980,18 +24998,32 @@ export class TagCountService {
                               ],
                             },
                             following: {
-                              $cond: {
-                                if: {
-                                  $eq: [
-                                    {
-                                      $size: "$following",
-                                    },
-                                    0,
-                                  ],
+                                $cond: {
+                                  if: {
+                                    $eq: [
+                                      {
+                                        $size: "$following",
+                                      },
+                                      0,
+                                    ],
+                                  },
+                                  then: false,
+                                  else: true,
                                 },
-                                then: false,
-                                else: true,
-                              },
+                            },
+                            friend: {
+                                $cond: {
+                                  if: {
+                                    $eq: [
+                                      {
+                                        $size: "$friend",
+                                      },
+                                      0,
+                                    ],
+                                  },
+                                  then: 0,
+                                  else: 1,
+                                },
                             },
                           },
                         },
@@ -25416,20 +25448,50 @@ export class TagCountService {
                                 [],
                               ],
                             },
-                            following: {
-                              $ifNull: [
-                                {
-                                  $filter: {
-                                    input: "$follower",
-                                    as: "listuser",
-                                    cond: {
-                                      $eq: ["$$listuser", email],
-                                    },
-                                  },
-                                },
-                                [],
-                              ],
-                            },
+                            // following: {
+                            //   $ifNull: [
+                            //     {
+                            //       $filter: {
+                            //         input: "$follower",
+                            //         as: "listuser",
+                            //         cond: {
+                            //           $eq: ["$$listuser", email],
+                            //         },
+                            //       },
+                            //     },
+                            //     [],
+                            //   ],
+                            // },
+                            following: [],
+                            friend: [],
+                            // following: {
+                            //   $ifNull: [
+                            //     {
+                            //       $filter: {
+                            //         input: "$follower",
+                            //         as: "listuser",
+                            //         cond: {
+                            //           $eq: ["$$listuser", email],
+                            //         },
+                            //       },
+                            //     },
+                            //     [],
+                            //   ],
+                            // },
+                            // friend: {
+                            //   $ifNull: [
+                            //     {
+                            //       $filter: {
+                            //         input: "$friend",
+                            //         as: "listfriend",
+                            //         cond: {
+                            //           $eq: ["$$listfriend.email", email],
+                            //         },
+                            //       },
+                            //     },
+                            //     [],
+                            //   ],
+                            // },
                           },
                         },
                         {
@@ -25467,18 +25529,32 @@ export class TagCountService {
                               ],
                             },
                             following: {
-                              $cond: {
-                                if: {
-                                  $eq: [
-                                    {
-                                      $size: "$following",
-                                    },
-                                    0,
-                                  ],
+                                $cond: {
+                                  if: {
+                                    $eq: [
+                                      {
+                                        $size: "$following",
+                                      },
+                                      0,
+                                    ],
+                                  },
+                                  then: false,
+                                  else: true,
                                 },
-                                then: false,
-                                else: true,
-                              },
+                            },
+                            friend: {
+                                $cond: {
+                                  if: {
+                                    $eq: [
+                                      {
+                                        $size: "$friend",
+                                      },
+                                      0,
+                                    ],
+                                  },
+                                  then: 0,
+                                  else: 1,
+                                },
                             },
                           },
                         },
