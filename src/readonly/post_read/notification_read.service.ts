@@ -691,6 +691,14 @@ export class NotificationReadService {
                 },
             );
         }
+        pipeline.push(
+            {
+                $skip: (skip * limit)
+            },
+            {
+                $limit: limit
+            },
+        );
 
         pipeline.push(
             {
@@ -748,12 +756,12 @@ export class NotificationReadService {
                     createdAt: - 1
                 }
             },
-            {
-                $skip: (skip * limit)
-            },
-            {
-                $limit: limit
-            },
+            // {
+            //     $skip: (skip * limit)
+            // },
+            // {
+            //     $limit: limit
+            // },
             {
                 $project: {
                     active: 1,
