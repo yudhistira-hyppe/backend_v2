@@ -2109,7 +2109,9 @@ export class UserbasicnewService {
                                     null
                                 ]
                         },
-                    }
+                    },
+                    reasonValue: { $arrayElemAt: ['$kyc.kycHandle.reasonValue', 0] },
+                    remark: { $arrayElemAt: ['$kyc.kycHandle.remark', 0] }
                 }
             },
             {
@@ -2157,6 +2159,8 @@ export class UserbasicnewService {
                         }
                     },
                     createdAt: "$kyc.createdAt",
+                    reasonValue: 1,
+                    remark: 1
                 }
             }
         );
