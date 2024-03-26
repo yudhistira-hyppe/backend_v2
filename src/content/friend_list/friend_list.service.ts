@@ -266,4 +266,152 @@ export class FriendListService {
       }
     }
   }
+
+  async addFriendList3(email_target: string, email_source: string) {
+    var setfriendarray = null;
+    var setinput = null;
+    var ketemu = false;
+
+    //var datasource = await this.friendListModel.findOne({ email: email_source }).exec();
+    var datasource = await this.friendListModel.aggregate([
+      {
+        "$match":
+        {
+          email: email_source,
+          friendlist:
+          {
+            "$elemMatch":
+            {
+              "email": email_target
+            }
+          }
+        }
+      }
+    ]);
+
+    if (datasource.length == 0) {
+      var datasource2 = await this.friendListModel.findOne({ email: email_source }).exec();
+      // console.log(datasource2);
+      if (datasource2 == null) {
+        var query = await this.friendListModel.aggregate([
+          {
+            "$limit": 1
+          },
+          {
+            "$lookup":
+            {
+              from: "newUserBasics",
+              let:
+              {
+                basic_fk: email_source
+              },
+              as: "basic_data",
+              pipeline:
+                [
+                  {
+                    "$match":
+                    {
+                      "$expr":
+                      {
+                        "$eq":
+                          [
+                            "$email",
+                            "$$basic_fk"
+                          ]
+                      }
+                    }
+                  },
+                  {
+                    "$project":
+                    {
+                      _id: 1,
+                      fullName: 1,
+                      email: 1,
+                      username:1,
+                    }
+                  },
+                ]
+            }
+          },
+          {
+            "$project":
+            {
+              _id:
+              {
+                "$arrayElemAt":
+                  [
+                    "$basic_data._id", 0
+                  ]
+              },
+              fullName:
+              {
+                "$arrayElemAt":
+                  [
+                    "$basic_data.fullName", 0
+                  ]
+              },
+              username:
+              {
+                "$arrayElemAt":
+                  [
+                    "$basic_data.username", 0
+                  ]
+              }
+            }
+          }
+        ]);
+        setfriendarray = [];
+        setfriendarray.push({
+          "email": email_target
+        });
+
+        setinput =
+        {
+          _id: query[0]._id,
+          email: email_source,
+          fullName: query[0].fullName,
+          username: query[0].username,
+          totalfriend: 1,
+          friendlist: setfriendarray
+        };
+
+
+        return await this.create(setinput);
+      }
+      else {
+        var tempresult = datasource2.friendlist;
+        //cari data email_target dalam list email_source 
+        for (var i = 0; i < tempresult.length; i++) {
+          var tempdata = tempresult[i].email;
+          if (tempdata == email_target) {
+            ketemu = true;
+          }
+        }
+
+        if (ketemu == false) {
+          setfriendarray = tempresult;
+          setfriendarray.push({
+            "email": email_target
+          });
+
+          var total = setfriendarray.length;
+          setinput = {
+            totalfriend: total,
+            friendlist: setfriendarray
+          };
+
+          await this.friendListModel.updateOne(
+            {
+              _id: datasource2._id
+            },
+            {
+              "$set": setinput
+            }
+          );
+        }
+
+        return true;
+      }
+    }
+  }
 }
