@@ -1315,11 +1315,9 @@ export class ReportuserController {
 
                 // }
 
-                if(datahandel.length > 0)
-                {
-                    var lastdata =  datahandel[datahandel.length - 1];
-                    if(lastdata.status === "BARU")
-                    {
+                if (datahandel.length > 0) {
+                    var lastdata = datahandel[datahandel.length - 1];
+                    if (lastdata.status === "BARU") {
                         throw new BadRequestException("Appeal sudah diajukan...!");
                     }
                 }
@@ -2608,21 +2606,17 @@ export class ReportuserController {
                     media: dataquery[i].media
                 };
 
-                if(jenis == "appeal")
-                {
+                if (jenis == "appeal") {
                     outputresult["reportStatusLast"] = query[i].reportStatusLast;
                 }
-                else
-                {
-                    if(query[i].reportStatusLast == "BARU" && query[i].reportedUserCount != 0)
-                    {
+                else {
+                    if (query[i].reportStatusLast == "BARU" && query[i].reportedUserHandle.length > 0) {
                         outputresult["reportStatusLast"] = "DITANGGUHKAN";
                     }
-                    else
-                    {
+                    else {
                         outputresult["reportStatusLast"] = query[i].reportStatusLast;
                     }
-                }             
+                }
                 arrdata.push(outputresult);
             }
 
@@ -6195,22 +6189,22 @@ export class ReportuserController {
             post_type = posts.postType.toString();
             email_post = posts.email.toString();
             var settype = null;
-            switch(post_type) {
-            case "pict":
-                settype = "HyppePict";
-                break;
-            case "vid":
-                settype = "HyppeVid";
-                break;
-            case "story":
-                settype = "HyppeStory";
-                break;
-            default:
-                settype = "HyppePict";
-                break;
+            switch (post_type) {
+                case "pict":
+                    settype = "HyppePict";
+                    break;
+                case "vid":
+                    settype = "HyppeVid";
+                    break;
+                case "story":
+                    settype = "HyppeStory";
+                    break;
+                default:
+                    settype = "HyppePict";
+                    break;
             }
-            var tempbodyEN = bodyen_get.replace("${post_type}", settype); 
-            var tempbodyID = bodyin_get.replace("${post_type}", settype); 
+            var tempbodyEN = bodyen_get.replace("${post_type}", settype);
+            var tempbodyID = bodyin_get.replace("${post_type}", settype);
             bodyin_get = tempbodyID;
             bodyen_get = tempbodyEN;
         }
