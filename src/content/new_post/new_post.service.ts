@@ -45706,8 +45706,22 @@ export class NewPostService {
           from: "newUserBasics",
           as: "userTag",
           let: {
-            localID: '$tagPeople.$id',
-            localID2: '$tagPeople'
+            localID: 
+            {
+              "$ifNull":
+              [
+                '$tagPeople.$id',
+                []
+              ]
+            },
+            localID2: 
+            {
+              "$ifNull":
+              [
+                '$tagPeople',
+                []
+              ]
+            }
           },
           pipeline: [
             {
