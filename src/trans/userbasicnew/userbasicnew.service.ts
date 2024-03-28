@@ -2027,6 +2027,16 @@ export class UserbasicnewService {
                 {
                     "$ne": ""
                 }
+            },
+            {
+                "email": 
+                { 
+                    "$not":
+                    {
+                        "$regex":"noneactive",
+                        '$options': 'i'
+                    },
+                }
             }
         );
 
