@@ -851,27 +851,27 @@ export class ActivityeventsService {
       {
         $group: {
           _id: "$payload.email",
-          createAt: {
+          createdAt: {
             $last: "$createdAt"
           }
         }
       },
-      {
-        $project: {
-          createdAt: "$createAt",
-          email: "$_id",
-        }
-      },
-      {
-        $sort: {
-          "createdAt": - 1
-        }
-      },
+      // {
+      //   $project: {
+      //     createdAt: "$createAt",
+      //     email: "$_id",
+      //   }
+      // },
+      // {
+      //   $sort: {
+      //     "createdAt": - 1
+      //   }
+      // },
       {
         '$lookup':
         {
           from: 'newUserBasics',
-          localField: 'email',
+          localField: '_id',
           foreignField: 'email',
           as: 'user'
         }
@@ -1360,6 +1360,8 @@ export class ActivityeventsService {
       }
     }
 
+    var setutil = require('util');
+    console.log(setutil.inspect(pipeline, { depth: null, showHidden: false }));
     let query = await this.activityeventsModel.aggregate(pipeline);
 
     return query;
