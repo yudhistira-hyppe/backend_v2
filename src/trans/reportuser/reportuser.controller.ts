@@ -2606,17 +2606,6 @@ export class ReportuserController {
                     media: dataquery[i].media
                 };
 
-                if (jenis == "appeal") {
-                    outputresult["reportStatusLast"] = query[i].reportStatusLast;
-                }
-                else {
-                    if (query[i].reportStatusLast == "BARU" && query[i].reportedUserHandle.length > 0) {
-                        outputresult["reportStatusLast"] = "DITANGGUHKAN";
-                    }
-                    else {
-                        outputresult["reportStatusLast"] = query[i].reportStatusLast;
-                    }
-                }
                 arrdata.push(outputresult);
             }
 
