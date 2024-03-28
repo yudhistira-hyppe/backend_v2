@@ -984,7 +984,12 @@ export class ActivityeventsService {
             }
           },
           age: 1,
-          email: 1,
+          email: {
+            '$arrayElemAt':
+              [
+                '$user.email', 0
+              ]
+          },
           createdAt:
           {
             '$arrayElemAt':
